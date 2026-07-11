@@ -1,0 +1,35 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local machine config
+local.properties
+*.keystore
+
+# Archives and distributable builds
+*.zip
+*.apk
+*.aab
+PocketKB_給組員_20260511/
+
+# Android / Gradle generated files
+android/.gradle/
+android/.kotlin/
+android/.tooling/
+android/**/build/
+android/**/.cxx/
+android/local.properties
+
+# Swift / Xcode generated files
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcuserstate
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+android/native/llama.cpp/
