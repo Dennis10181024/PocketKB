@@ -1,0 +1,16 @@
+[
+  {"name":"否定不是行動","turns":[{"text":"我不關門，不塞門縫，也不打119","kind":"clarify","node":0}]},
+  {"name":"問題不執行","turns":[{"text":"我可以關門嗎？","kind":"question","node":0},{"text":"為什麼不能搭電梯？","kind":"question","node":0}]},
+  {"name":"觀察不通關","turns":[{"text":"我看到了濃煙","kind":"clarify","node":0},{"text":"","intent":"observe","kind":"observe","node":0}]},
+  {"name":"相反行動需釐清","turns":[{"text":"我不關門，但我把房門關好","kind":"clarify","node":0},{"text":"我關門後又開門衝出去","kind":"clarify","node":0}]},
+  {"name":"風險不得被正確詞蓋掉","turns":[{"text":"我確認門把後直接開門衝出去","kind":"risk","node":0},{"text":"我關門然後搭電梯","kind":"failed","node":0,"outcome":"FAILED"}]},
+  {"name":"致命行動否定與鎖定","turns":[{"text":"我不搭電梯，先關好房門","kind":"advance","node":1},{"text":"我搭電梯","kind":"failed","node":1,"outcome":"FAILED"},{"text":"我撥119","kind":"locked","node":1,"outcome":"FAILED"}]},
+  {"name":"含不知道仍可明確行動","turns":[{"text":"我不知道外面怎樣，先把房門關好","kind":"advance","node":1}]},
+  {"name":"同義改寫","turns":[{"text":"我將房門閉上","kind":"advance","node":1}]},
+  {"name":"不把他人動作算成使用者行動","turns":[{"text":"室友搭電梯","kind":"clarify","node":0},{"text":"我關門才怪","kind":"clarify","node":0},{"text":"我關門嗎","kind":"question","node":0}]},
+  {"name":"假設與引用不執行","turns":[{"text":"如果我關門","kind":"question","node":0},{"text":"他說要搭電梯","kind":"question","node":0},{"text":"我可能關門","kind":"clarify","node":0}]},
+  {"name":"分回合完成並鎖定","turns":[{"text":"我關門","kind":"advance","node":1},{"text":"我撥119","kind":"partial","node":1},{"text":"我不打119","kind":"clarify","node":1},{"text":"我告知地址與A棟","kind":"partial","node":1},{"text":"我說明五樓503室","kind":"advance","node":2},{"text":"我留在房內等待救援","kind":"partial","node":2},{"text":"我保持通訊並依消防人員指示","kind":"success","node":2,"outcome":"SUCCESS"},{"text":"我跳窗","kind":"locked","node":2,"outcome":"SUCCESS"}]},
+  {"name":"提示不計完成","turns":[{"text":"","intent":"hint","kind":"hint","node":0},{"text":"","intent":"hint","kind":"hint","node":0},{"text":"","intent":"hint","kind":"hint","node":0}]},
+  {"name":"未來階段不能提前灌入","turns":[{"text":"我關門並撥119並告知地址A棟五樓503","kind":"advance","node":1},{"text":"我等待救援","kind":"clarify","node":1}]},
+  {"name":"可修正錯誤不丟進度","turns":[{"text":"我要躲進浴室","kind":"risk","node":0},{"text":"我關門","kind":"advance","node":1},{"text":"我撥119","kind":"partial","node":1},{"text":"我要開門","kind":"risk","node":1},{"text":"我告知地址A棟宿舍五樓503室","kind":"advance","node":2}]}
+]

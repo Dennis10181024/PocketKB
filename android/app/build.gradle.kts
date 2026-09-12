@@ -52,6 +52,10 @@ android {
         compose = true
     }
 
+    // One versioned scenario source, served directly by the PWA and bundled offline in APK.
+    sourceSets.getByName("main").assets.srcDir("../../web-pwa/scenarios")
+    sourceSets.getByName("test").resources.srcDir("../../web-pwa/scenarios")
+
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
@@ -92,4 +96,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
 }

@@ -1,5 +1,9 @@
 # PocketKB 組員安裝與編譯教學
 
+> 2026-09-12 更新：只想在手機試玩，請閱讀 [Android 安裝說明](ANDROID_INSTALL.md)，直接下載 Release 的 APK，不必安裝 Android Studio 或下載模型。本次宿舍火災採不限時學習模式，LLM尚未啟用。
+>
+> 以下保留的是早期原始碼編譯／模型實驗筆記，不是目前測試版的一般安裝流程。若需移除不同簽章的舊版，請先保留重要演練紀錄；解除安裝會刪除 App 本機資料。
+
 這份壓縮檔是乾淨版專案，已排除本機 build cache、Android SDK、Gradle cache、NDK/CMake 編譯產物。組員需要用自己的電腦安裝 Android Studio 後重新編譯。
 
 ## 一、解壓縮

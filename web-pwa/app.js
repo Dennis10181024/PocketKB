@@ -192,7 +192,44 @@ const state = {
   searchTerm: ""
 };
 
+let fireSpec = globalThis.POCKETKB_FIRE_SPEC || null;
+let fireLoadError = false;
+state.fireSession = null;
+state.sessionId = null;
+state.saved = false;
+state.inputIntent = 'action';
+state.draft = '';
 const app = document.querySelector("#app");
+
+function installFireSpec(spec) {
+  fireSpec = spec;
+  const fire = scenarios.find(s => s.id === spec.id);
+  fire.title = spec.title;
+  fire.location = spec.location;
+  fire.openingLine = spec.opening;
+  fire.steps = spec.nodes;
+}
+if (fireSpec) installFireSpec(fireSpec);
+else fetch('./scenarios/fire-dorm.json').then(r => {
+  if (!r.ok) throw new Error('scenario unavailable');
+  return r.json();
+}).then(spec => { installFireSpec(spec); render(); }).catch(() => { fireLoadError = true; render(); });
+
+function isTerminal() { return ['SUCCESS', 'FAILED'].includes(state.lastResult?.outcome); }
+
+function fireInteract(text, intent = 'action') {
+  if (!state.fireSession || isTerminal()) return;
+  const result = FireDrill.step(fireSpec, state.fireSession, text, intent);
+  state.fireSession = result.state;
+  state.currentStep = result.state.node + 1;
+  state.lastResult = result;
+  const labels = { observe: '觀察環境', question: '詢問', hint: '查看提示', action: '採取行動' };
+  state.messages.push({ role: 'user', text: `${labels[intent]}：${text || labels[intent]}` });
+  state.messages.push({ role: result.outcome === 'FAILED' ? 'failed' : 'system', text: [...result.effects, result.message,
+    ...(result.progressDelta && result.outcome === 'CONTINUE' ? [`接下來：${fireSpec.nodes[result.state.node].situation}`] : [])].join('\n') });
+  if (isTerminal()) saveRecord(result.outcome, state.activeScenario, result);
+  render();
+}
 
 function normalize(text) {
   return text
@@ -209,6 +246,10 @@ function containsRuleTerm(normalizedText, term, allowNegated) {
 }
 
 function evaluateUserAction(scenario, userText) {
+  if (scenario.id === 'drill_fire_dorm') {
+    if (!fireSpec) throw new Error('Fire scenario is not loaded; legacy fallback is disabled.');
+    return FireDrill.step(fireSpec, state.fireSession || FireDrill.create(fireSpec), userText);
+  }
   const normalized = normalize(userText);
   const step = scenario.steps[state.currentStep - 1];
   const fatalMatches = step.fatalKeywords.filter((keyword) => containsRuleTerm(normalized, keyword, false));
@@ -408,6 +449,14 @@ function bestEvidence(category) {
 
 function startScenario(id = state.selectedScenarioId) {
   const scenario = scenarios.find((item) => item.id === id) || scenarios[0];
+  if (scenario.id === 'drill_fire_dorm' && !fireSpec) return;
+  if (state.activeScenario && !isTerminal() && state.messages.length > 1 && !confirm('重新開始會保存目前進度並另開新演練，確定嗎？')) return;
+  saveUnfinished();
+  state.sessionId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  state.saved = false;
+  state.draft = '';
+  state.inputIntent = 'action';
+  state.fireSession = scenario.id === 'drill_fire_dorm' ? FireDrill.create(fireSpec) : null;
   state.selectedScenarioId = scenario.id;
   state.activeScenario = scenario;
   state.currentStep = 1;
@@ -422,10 +471,16 @@ function startScenario(id = state.selectedScenarioId) {
 }
 
 function submitAction() {
-  if (!state.activeScenario) startScenario();
+  if (!state.activeScenario || isTerminal()) return;
   const input = document.querySelector("#actionInput");
   const text = input.value.trim();
   if (!text) return;
+  if (state.fireSession) {
+    state.draft = '';
+    input.value = '';
+    fireInteract(text, state.inputIntent);
+    return;
+  }
 
   const scenario = state.activeScenario;
   const result = evaluateUserAction(scenario, text);
@@ -447,18 +502,30 @@ function submitAction() {
 }
 
 function saveRecord(outcome, scenario, result) {
+  if (state.saved) return;
   const record = {
-    id: `${Date.now()}`,
+    id: state.sessionId,
     time: new Date().toLocaleString("zh-TW"),
     scenarioTitle: scenario.title,
     outcome,
     safety: result.safety,
     step: state.currentStep,
     totalSteps: scenario.steps.length,
-    summary: result.reason
+    summary: state.fireSession ? FireDrill.review(fireSpec, state.fireSession) : result.reason,
+    version: state.fireSession?.version || 'legacy',
+    completedSteps: state.fireSession?.completed.length ?? (outcome === 'SUCCESS' ? scenario.steps.length : state.currentStep - 1),
+    hints: state.fireSession?.hints || [],
+    messages: state.messages.map(m => ({ ...m }))
   };
   state.records = [record, ...state.records].slice(0, 20);
-  localStorage.setItem("pocketkb-records", JSON.stringify(state.records));
+  state.saved = true;
+  try { localStorage.setItem("pocketkb-records", JSON.stringify(state.records)); }
+  catch { state.messages.push({role:'system', text:'裝置儲存空間不足或不允許保存：本次紀錄僅留在記憶體，關閉頁面會遺失。'}); }
+}
+
+function saveUnfinished() {
+  if (state.activeScenario && !state.saved && state.messages.length > 1)
+    saveRecord('CONTINUE', state.activeScenario, state.lastResult || {safety:'MEDIUM', reason:'未完成'});
 }
 
 function loadRecords() {
@@ -492,21 +559,22 @@ function searchKnowledge(term) {
 
 function render() {
   app.innerHTML = `
+    <a class="skip-link" href="#workspace">跳到主要內容</a>
     <main class="app-shell">
       <div class="app-frame">
         <header class="topbar">
           <div class="brand">
-            <img src="./icon.svg" alt="" aria-hidden="true">
+            <img src="./icon.svg" width="44" height="44" alt="" aria-hidden="true">
             <div>
-              <h1 class="brand-title">PocketKB 防災演練</h1>
-              <div class="brand-subtitle">離線應急核心 + 情境式規則裁判</div>
+              <h1 class="brand-title">口袋知識庫</h1>
+              <div class="brand-subtitle">POCKETKB / 防災隨行</div>
             </div>
           </div>
-          <div class="status-pill">● 離線核心可用</div>
+          <div class="status-pill">本機防災資料</div>
         </header>
 
         <div class="layout">
-          <section class="workspace">
+          <section class="workspace" id="workspace" tabindex="-1">
             <nav class="tabs" aria-label="主要功能">
               ${tabButton("drill", "演練")}
               ${tabButton("guide", "查詢")}
@@ -520,16 +588,16 @@ function render() {
           </section>
 
           <aside class="side-panel">
-            <h2 class="section-title">模式邊界</h2>
-            <p class="section-note">目前先把能離線可靠運作的功能做紮實，AI 只作為有網路時的教練層。</p>
+            <h2 class="section-title">準備，從一次練習開始</h2>
+            <p class="section-note">觀察情況、做出決定、回顧下一步。每次練習都是一次準備。</p>
             <div class="mode-list">
               <div class="mode-item ready">
-                <strong>離線應急核心</strong>
-                <div class="tiny">官方知識摘要、情境腳本、規則裁判、演練紀錄。手機沒網路也應可用。</div>
+                <strong>讓知識隨身帶著走</strong>
+                <div class="tiny">知識摘要與演練資料可在完成離線快取後使用。紀錄保存在這個瀏覽器。</div>
               </div>
               <div class="mode-item planned">
-                <strong>線上 AI 教練</strong>
-                <div class="tiny">用於長回饋、反思報告、不同回答改寫。安全判定仍由離線規則守住。</div>
+                <strong>關於目前版本</strong>
+                <div class="tiny">目前演練使用內建規則。本機 AI 對話仍在開發，尚未啟用。</div>
               </div>
             </div>
             <div class="button-row">
@@ -548,19 +616,20 @@ function render() {
 }
 
 function tabButton(id, label) {
-  return `<button class="tab ${state.tab === id ? "active" : ""}" data-tab="${id}" type="button">${label}</button>`;
+  return `<button class="tab ${state.tab === id ? "active" : ""}" data-tab="${id}" aria-pressed="${state.tab === id}" type="button">${label}</button>`;
 }
 
 function renderDrillView() {
   const scenario = state.activeScenario || scenarios.find((item) => item.id === state.selectedScenarioId);
+  if (scenario.id === 'drill_fire_dorm') return renderFireView(scenario);
   const step = state.activeScenario?.steps[state.currentStep - 1] || scenario.steps[0];
   const isComplete = state.lastResult?.outcome === "SUCCESS";
   const completedSteps = isComplete ? scenario.steps.length : state.currentStep - 1;
   const progress = state.activeScenario ? Math.round((completedSteps / scenario.steps.length) * 100) : 0;
   return `
     <div class="view ${state.tab === "drill" ? "active" : ""}" id="view-drill">
-      <h2 class="section-title">離線情境演練</h2>
-      <p class="section-note">每一步都要回答具體動作。離題、模糊、危險動作不會推進。</p>
+      <h2 class="section-title">把準備，變成你的直覺。</h2>
+      <p class="section-note">選一個情境，試著說出你的下一步行動。</p>
       <div class="scenario-grid">
         ${scenarios.map(renderScenarioCard).join("")}
       </div>
@@ -589,8 +658,9 @@ function renderDrillView() {
             .join("")}
         </div>
         <div class="input-area">
-          <textarea id="actionInput" placeholder="輸入你的下一步，例如：我不進地下道，先停下並避開積水入口。" ${!state.activeScenario ? "disabled" : ""}></textarea>
-          <button class="primary" id="submitBtn" type="button" ${!state.activeScenario ? "disabled" : ""}>送出</button>
+          <label for="actionInput">你的下一步行動
+          <textarea id="actionInput" name="action" autocomplete="off" placeholder="例如：我不進地下道，先停下並避開積水入口…" ${!state.activeScenario || isTerminal() ? "disabled" : ""}></textarea></label>
+          <button class="primary" id="submitBtn" type="button" ${!state.activeScenario || isTerminal() ? "disabled" : ""}>送出</button>
         </div>
       </div>
       ${state.lastResult ? renderJudgeBox(state.lastResult) : ""}
@@ -601,7 +671,7 @@ function renderDrillView() {
 function renderScenarioCard(scenario) {
   const selected = state.selectedScenarioId === scenario.id;
   return `
-    <button class="scenario-card ${selected ? "selected" : ""}" data-scenario="${scenario.id}" type="button">
+    <button class="scenario-card ${selected ? "selected" : ""}" data-scenario="${scenario.id}" aria-pressed="${selected}" type="button">
       <div class="scenario-top">
         <h3 class="scenario-title">${escapeHtml(scenario.title)}</h3>
         <span class="badge">${escapeHtml(categories[scenario.category])}</span>
@@ -612,10 +682,34 @@ function renderScenarioCard(scenario) {
   `;
 }
 
+function renderFireView(scenario) {
+  if (!fireSpec) return `<section class="view ${state.tab === 'drill' ? 'active' : ''}"><h2>宿舍火災</h2><p role="status">${fireLoadError ? '劇本載入失敗，請重新整理；尚未啟用舊版判定。' : '正在載入離線劇本…'}</p></section>`;
+  const session = state.fireSession;
+  const node = fireSpec.nodes[session?.node || 0];
+  const active = session && !isTerminal();
+  const done = session?.completed.length || 0;
+  return `<section class="view ${state.tab === 'drill' ? 'active' : ''}" id="view-drill">
+    <div class="fire-heading"><div><span class="badge">示範劇本 v${escapeHtml(fireSpec.version)}</span><h2 class="section-title">先看清楚，再做決定。</h2></div><span class="status-pill">學習模式・不限時</span></div>
+    <p class="section-note">這次練習：走廊濃煙阻斷時，如何留在房內待救。</p>
+    ${!session ? `<div class="task-box"><h3>${escapeHtml(fireSpec.title)}</h3><p>${escapeHtml(fireSpec.opening)}</p><button class="primary" id="startBtn" type="button">開始練習</button></div>` : `
+    <div class="fire-progress" aria-label="已完成 ${done} 個階段，共 ${fireSpec.nodes.length} 個">${fireSpec.nodes.map((n,i)=>`<span class="${i < done ? 'done' : i === session.node ? 'current' : ''}">${i+1} ${escapeHtml(n.title)}</span>`).join('')}</div>
+    <div class="task-box"><p class="meta">現場發生什麼</p><p>${escapeHtml(node.situation)}</p><h3>目前要決定什麼</h3><p>${active ? escapeHtml(node.task) : '本次已結束，請查看回顧。'}</p>
+    ${active ? `<p class="tiny">本階段已完成：${session.accepted.map(id=>escapeHtml(fireSpec.actions.find(a=>a.id===id).label)).join('、') || '尚無；可以分次回答'}</p>` : ''}</div>
+    <div class="chat-log" id="chatLog" aria-label="演練對話">${state.messages.map(m=>`<div class="message ${m.role}">${escapeHtml(m.text)}</div>`).join('')}</div>
+    ${state.lastResult ? renderJudgeBox(state.lastResult) : ''}
+    ${active ? `<div class="fire-controls"><div class="button-row"><button class="ghost" id="observeBtn" type="button">觀察環境</button><button class="ghost" id="hintBtn" type="button">${session.hints.filter(h=>h.node===node.id).length < node.hints.length ? '給我下一層提示' : '重看提示'}</button></div>
+      <fieldset class="intent-picker"><legend>你的輸入是</legend>${[['action','採取行動'],['question','詢問']].map(([id,label])=>`<label><input type="radio" name="intent" value="${id}" ${state.inputIntent===id?'checked':''}>${label}</label>`).join('')}</fieldset>
+      <div class="input-area"><label for="actionInput">${state.inputIntent==='question'?'你的問題（目前提供階段說明）':'你的行動'}<textarea id="actionInput" placeholder="可以分次說明，不必一次寫完所有步驟。">${escapeHtml(state.draft)}</textarea></label><button class="primary" id="submitBtn" type="button">${state.inputIntent==='question'?'送出問題':'確認行動'}</button></div>
+      <details><summary>不知道怎麼表達？使用引導選項</summary><p class="tiny">選項不一定安全。點選只會填入，確認後才執行。</p><div class="guided-choices">${node.choices.map((c,i)=>`<button class="ghost" data-fire-choice="${i}" type="button">${escapeHtml(c)}</button>`).join('')}</div></details></div>` : `<div class="fire-review"><h3>這次練習的回顧</h3><p>${escapeHtml(FireDrill.review(fireSpec,session))}</p><button class="primary" id="startBtn" type="button">另開一次練習</button></div>`}`}
+    <details class="fire-sources"><summary>適用範圍與參考依據</summary><p>${escapeHtml(fireSpec.notice)}</p>${node.sources.concat('safety').map(id=>fireSpec.sources.find(s=>s.id===id)).map(s=>`<p><a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.title)}</a> · 核對 ${s.checked}</p>`).join('')}</details>
+    <details><summary>其他舊版情境（尚未套用本次新核心）</summary><div class="scenario-grid">${scenarios.filter(s=>s.id!=='drill_fire_dorm').map(renderScenarioCard).join('')}</div></details>
+    </section>`;
+}
+
 function renderJudgeBox(result) {
   const className = result.safety.toLowerCase();
   return `
-    <div class="judge-box ${className}">
+    <div class="judge-box ${className}" role="status" aria-live="polite">
       <h3>裁判結果：${escapeHtml(result.verdictLabel || result.safety)}</h3>
       <p>${escapeHtml(result.reason)}</p>
     </div>
@@ -629,7 +723,8 @@ function renderGuideView() {
       <h2 class="section-title">離線應急查詢</h2>
       <p class="section-note">目前收錄演練需要的核心知識。之後可擴充成完整官方知識庫。</p>
       <div class="search-box">
-        <input id="searchInput" value="${escapeHtml(state.searchTerm)}" placeholder="搜尋：濃煙、地下道、119、高處">
+        <label for="searchInput">搜尋防災知識
+        <input id="searchInput" name="query" autocomplete="off" type="search" value="${escapeHtml(state.searchTerm)}" placeholder="例如：濃煙、地下道、119、高處…"></label>
         <button class="primary" id="searchBtn" type="button">搜尋</button>
       </div>
       <div class="guide-list">
@@ -669,8 +764,9 @@ function renderRecordItem(record) {
   return `
     <article class="record-card">
       <h3 class="record-title">${escapeHtml(record.scenarioTitle)} · ${escapeHtml(record.outcome)}</h3>
-      <div class="meta">${escapeHtml(record.time)} · 安全評分 ${escapeHtml(record.safety)} · 任務 ${record.step}/${record.totalSteps}</div>
-      <p>${escapeHtml(record.summary)}</p>
+      <div class="meta">${escapeHtml(record.time)} · 已完成 ${record.completedSteps ?? Math.max(0,record.step-1)}/${record.totalSteps} · ${escapeHtml(record.version || 'legacy')}</div>
+      <p style="white-space:pre-line">${escapeHtml(record.summary)}</p>
+      ${record.messages ? `<details><summary>查看這次對話</summary>${record.messages.map(m=>`<p>${escapeHtml(m.text)}</p>`).join('')}</details>` : ''}
     </article>
   `;
 }
@@ -699,7 +795,10 @@ function bindEvents() {
 
   document.querySelectorAll("[data-scenario]").forEach((button) => {
     button.addEventListener("click", () => {
+      if (state.activeScenario && !isTerminal() && state.messages.length > 1 && !confirm('切換情境將保存並結束目前練習，確定嗎？')) return;
+      saveUnfinished();
       state.selectedScenarioId = button.dataset.scenario;
+      state.fireSession = null;
       state.activeScenario = null;
       state.messages = [];
       state.lastResult = null;
@@ -709,8 +808,18 @@ function bindEvents() {
 
   document.querySelector("#startBtn")?.addEventListener("click", () => startScenario());
   document.querySelector("#submitBtn")?.addEventListener("click", submitAction);
+  document.querySelector('#observeBtn')?.addEventListener('click', () => fireInteract('', 'observe'));
+  document.querySelector('#hintBtn')?.addEventListener('click', () => fireInteract('', 'hint'));
+  document.querySelectorAll('[name="intent"]').forEach(input => input.addEventListener('change', () => {
+    state.inputIntent = input.value; render(); document.querySelector('#actionInput')?.focus();
+  }));
+  document.querySelector('#actionInput')?.addEventListener('input', event => { state.draft = event.target.value; });
+  document.querySelectorAll('[data-fire-choice]').forEach(button => button.addEventListener('click', () => {
+    state.draft = fireSpec.nodes[state.fireSession.node].choices[Number(button.dataset.fireChoice)];
+    state.inputIntent = 'action'; render(); document.querySelector('#actionInput')?.focus();
+  }));
   document.querySelector("#actionInput")?.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
       event.preventDefault();
       submitAction();
     }
@@ -720,7 +829,7 @@ function bindEvents() {
     render();
   });
   document.querySelector("#searchInput")?.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && !event.isComposing) {
       state.searchTerm = event.currentTarget.value;
       render();
     }

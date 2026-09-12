@@ -33,3 +33,4 @@ DerivedData/
 tmp/
 temp/
 android/native/llama.cpp/
+web-pwa/test-results/

@@ -11,10 +11,6 @@ class RagEngine(
     private var idf: Map<String, Double> = emptyMap()
     private var avgDocLen = 1.0
 
-    init {
-        rebuild(corpus)
-    }
-
     fun rebuild(chunks: List<KnowledgeChunk>) {
         corpus = chunks
         termFrequencies = chunks.map {
@@ -127,4 +123,9 @@ class RagEngine(
         "的", "了", "我", "你", "他", "她", "它", "是", "在", "有", "和", "與",
         "就", "都", "也", "要", "會", "先", "再", "並", "或", "及", "可以",
     )
+
+    // Indexing calls tokenize(), so every tokenizer property must exist first.
+    init {
+        rebuild(corpus)
+    }
 }

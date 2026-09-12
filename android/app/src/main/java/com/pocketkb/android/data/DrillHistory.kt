@@ -110,6 +110,7 @@ class DrillHistoryRepository(
     private val dao: DrillHistoryDao,
 ) {
     fun recentSessions(): Flow<List<DrillSessionEntity>> = dao.recentSessions()
+    suspend fun messagesForSession(id: String): List<DrillMessageEntity> = dao.messagesForSession(id)
 
     suspend fun startSession(
         id: String,

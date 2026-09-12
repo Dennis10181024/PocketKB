@@ -32,6 +32,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.UUID
+import com.pocketkb.android.core.FireDrill
+import com.pocketkb.android.core.FireState
+import org.json.JSONObject
 
 private const val ENABLE_EXPERIMENTAL_LOCAL_LLM = false
 
@@ -46,6 +49,7 @@ data class PocketKbUiState(
     val activeSessionId: String? = null,
     val modelStatus: String = "正在初始化本地模型環境...",
     val lastReport: String = "",
+    val fireState: FireState? = null,
 )
 
 class PocketKbViewModel(
@@ -58,6 +62,8 @@ class PocketKbViewModel(
     }
     private val rag = RagEngine()
     private val judge = DrillJudge()
+    val fireDrill = FireDrill(JSONObject(application.assets.open("fire-dorm.json").bufferedReader(Charsets.UTF_8).use { it.readText() }))
+    val scenarios = KnowledgeBase.scenarios.map { if (it.id == "drill_fire_dorm") fireDrill.scenario() else it }
     private val historyRepository = DrillHistoryRepository(
         PocketKbDatabase.get(application).drillHistoryDao(),
     )
@@ -70,6 +76,14 @@ class PocketKbViewModel(
     val uiState: StateFlow<PocketKbUiState> = _uiState.asStateFlow()
 
     private var countdownJob: Job? = null
+    private var persistenceJob: Job? = null
+    private val finishedSessions = mutableSetOf<String>()
+
+    // Serialize Room writes: messages/finish must never overtake the session insert.
+    private fun persist(block: suspend () -> Unit) {
+        val previous = persistenceJob
+        persistenceJob = viewModelScope.launch { previous?.join(); block() }
+    }
 
     init {
         prepareModelDirectory()
@@ -84,10 +98,15 @@ class PocketKbViewModel(
         _uiState.update { it.copy(selectedCategory = category) }
     }
 
-    fun startScenario(scenario: DrillScenario) {
+    suspend fun savedMessages(id: String) = historyRepository.messagesForSession(id)
+
+    fun startScenario(requestedScenario: DrillScenario) {
+        val scenario = if (requestedScenario.id == "drill_fire_dorm") fireDrill.scenario() else requestedScenario
         countdownJob?.cancel()
         val sessionId = UUID.randomUUID().toString()
-        val opening = ChatMessage(role = ChatRole.ASSISTANT, content = scenario.openingLine)
+        val fireState = if (scenario.id == "drill_fire_dorm") fireDrill.create() else null
+        val opening = ChatMessage(role = ChatRole.ASSISTANT, content = scenario.openingLine +
+            if (fireState != null) "\n劇本 v${fireState.version} · 學習模式 · 不限時" else "")
         val initialStep = DrillStepState(totalSteps = scenario.steps.size.takeIf { it > 0 } ?: DrillStepState().totalSteps)
         _uiState.value = PocketKbUiState(
             selectedTab = AppTab.DRILL,
@@ -97,14 +116,15 @@ class PocketKbViewModel(
             drillStep = initialStep,
             activeSessionId = sessionId,
             modelStatus = _uiState.value.modelStatus,
+            fireState = fireState,
         )
-        viewModelScope.launch {
+        persist {
             historyRepository.startSession(
                 id = sessionId,
                 scenarioId = scenario.id,
                 scenarioTitle = scenario.title,
                 category = scenario.category.label,
-                totalSteps = _uiState.value.drillStep.totalSteps,
+                totalSteps = initialStep.totalSteps,
             )
             historyRepository.appendMessage(sessionId, opening)
         }
@@ -115,11 +135,12 @@ class PocketKbViewModel(
         val state = _uiState.value
         countdownJob?.cancel()
         val sessionId = state.activeSessionId
-        if (sessionId != null && state.selectedScenario != null) {
-            viewModelScope.launch {
+        if (sessionId != null && state.selectedScenario != null && finishedSessions.add(sessionId)) {
+            persist {
+                state.fireState?.let { historyRepository.appendMessage(sessionId, ChatMessage(role = ChatRole.SYSTEM, content = fireDrill.review(it))) }
                 historyRepository.finishSession(
                     sessionId = sessionId,
-                    finalStep = state.drillStep.currentStep,
+                    finalStep = state.fireState?.completed?.size ?: state.drillStep.currentStep,
                     totalSteps = state.drillStep.totalSteps,
                     finalSafety = state.drillStep.safetyLevel,
                     outcome = state.drillStep.outcome,
@@ -136,6 +157,7 @@ class PocketKbViewModel(
                 activeSessionId = null,
                 lastReport = "",
                 isGenerating = false,
+                fireState = null,
             )
         }
     }
@@ -143,7 +165,8 @@ class PocketKbViewModel(
     fun sendUserAction(text: String) {
         val trimmed = text.trim()
         val scenario = _uiState.value.selectedScenario ?: return
-        if (trimmed.isEmpty() || _uiState.value.isGenerating) return
+        if (trimmed.isEmpty() || _uiState.value.isGenerating || _uiState.value.drillStep.outcome != DrillOutcome.CONTINUE) return
+        if (_uiState.value.fireState != null) { sendFireInteraction(trimmed); return }
         countdownJob?.cancel()
 
         val beforeState = _uiState.value
@@ -238,6 +261,26 @@ class PocketKbViewModel(
         }
     }
 
+    fun sendFireInteraction(text: String = "", intent: String = "action") {
+        val before = _uiState.value
+        val fire = before.fireState ?: return
+        if (fire.outcome != DrillOutcome.CONTINUE || before.isGenerating) return
+        val result = fireDrill.step(fire, text, intent)
+        val title = when (intent) { "observe" -> "觀察環境"; "hint" -> "查看提示"; "question" -> "詢問"; else -> "採取行動" }
+        val user = ChatMessage(role = ChatRole.USER, content = "$title：${text.ifBlank { title }}")
+        val next = if (result.delta > 0 && result.state.outcome == DrillOutcome.CONTINUE)
+            "\n接下來：${fireDrill.nodes[result.state.node].getString("situation")}" else ""
+        val reply = ChatMessage(role = ChatRole.ASSISTANT, content = (result.effects + result.message).joinToString("\n") + next, judgeMetadata = result.judge())
+        val terminal = result.state.outcome != DrillOutcome.CONTINUE
+        val report = if (terminal) fireDrill.review(result.state) else ""
+        val extra = if (terminal) listOf(ChatMessage(role = ChatRole.SYSTEM, content = report)) else emptyList()
+        _uiState.update { it.copy(fireState = result.state,
+            drillStep = it.drillStep.copy(currentStep = result.state.node + 1, outcome = result.state.outcome, safetyLevel = result.judge().safety),
+            messages = it.messages + user + reply + extra, lastReport = report) }
+        persistMessages(user, reply, *extra.toTypedArray())
+        if (terminal) finishActiveSession()
+    }
+
     fun loadModelFromPath(modelPath: String) {
         if (!ENABLE_EXPERIMENTAL_LOCAL_LLM) {
             _uiState.update {
@@ -295,6 +338,7 @@ class PocketKbViewModel(
 
     private fun startDecisionTimer() {
         countdownJob?.cancel()
+        if (_uiState.value.fireState != null) return // Learning mode has no deadline.
         countdownJob = viewModelScope.launch {
             while (_uiState.value.selectedScenario != null &&
                 _uiState.value.drillStep.outcome == DrillOutcome.CONTINUE
@@ -320,7 +364,7 @@ class PocketKbViewModel(
 
     private fun persistMessages(vararg messages: ChatMessage) {
         val sessionId = _uiState.value.activeSessionId ?: return
-        viewModelScope.launch {
+        persist {
             messages.forEach { message -> historyRepository.appendMessage(sessionId, message) }
         }
     }
@@ -347,10 +391,11 @@ class PocketKbViewModel(
     private fun finishActiveSession() {
         val state = _uiState.value
         val sessionId = state.activeSessionId ?: return
-        viewModelScope.launch {
+        if (!finishedSessions.add(sessionId)) return
+        persist {
             historyRepository.finishSession(
                 sessionId = sessionId,
-                finalStep = state.drillStep.currentStep,
+                finalStep = state.fireState?.completed?.size ?: state.drillStep.currentStep,
                 totalSteps = state.drillStep.totalSteps,
                 finalSafety = state.drillStep.safetyLevel,
                 outcome = state.drillStep.outcome,

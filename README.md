@@ -1,4 +1,21 @@
-# 口袋知識庫（PocketKB）iOS App
+# 口袋知識庫（PocketKB）
+
+## 目前可安裝版本：Android 宿舍火災示範版
+
+更新日期：2026-09-12。優先開發 Android；iOS 目前仍為原型，不提供可安裝的 iPhone App。
+
+- [下載 Android 測試版 APK](https://github.com/Dennis10181024/PocketKB/releases/tag/demo-2026-09-12-fire-v2)
+- [手機安裝與測試說明](ANDROID_INSTALL.md)
+- [本次進度、架構與限制](FIRE_DRILL_IMPLEMENTATION.md)
+- [介面設計說明](DESIGN.md)
+
+宿舍火災已接上新版分階段判定、分次作答累積、觀察／詢問／提示、不限時學習模式、結束鎖定與回顧紀錄。Android 與網頁共用版本化劇本和38回合案例。其他災種仍是舊版；LLM自由對話尚未啟用，安裝此版不需要下載模型。
+
+儲存庫若為私人，下載 Release 需要具有權限的 GitHub 帳號；亦可請專案持有人直接轉傳 APK。不要為安裝而公開整個儲存庫。
+
+## 早期 iOS 原型與設定參考
+
+以下為既有 Swift 原型文件，不代表目前 Android 發布版已具有全部功能或效能驗證結果。
 
 > 基於離線 RAG 與邊緣運算之防災對話演練與災時引導系統  
 > 逢甲大學｜指導老師：劉明機｜競賽類別：智慧大數據及行動 APP 類

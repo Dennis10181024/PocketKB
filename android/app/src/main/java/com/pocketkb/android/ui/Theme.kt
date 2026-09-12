@@ -7,13 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 object PocketColors {
-    val SafetyOrange = Color(0xFFFF6A00)
-    val EmergencyRed = Color(0xFFC62828)
-    val AppBg = Color(0xFF0B0B0B)
-    val Surface = Color(0xFF1F1F1F)
-    val MidGray = Color(0xFF9E9E9E)
+    val SafetyOrange = Color(0xFFFFAB70)
+    val EmergencyRed = Color(0xFFFF8994)
+    val AppBg = Color(0xFF0B1423)
+    val Surface = Color(0xFF172438)
+    val MidGray = Color(0xFFB3C3D8)
     val AccentYellow = Color(0xFFFFD54F)
-    val SuccessGreen = Color(0xFF2E7D32)
+    val SuccessGreen = Color(0xFF7DDBB0)
+    val Info = Color(0xFF9CCBFF)
+    val MutedSurface = Color(0xFF21344C)
 }
 
 private val PocketColorScheme: ColorScheme = darkColorScheme(
@@ -26,6 +28,11 @@ private val PocketColorScheme: ColorScheme = darkColorScheme(
     onSecondary = Color.Black,
     onBackground = Color.White,
     onSurface = Color.White,
+    surfaceVariant = PocketColors.MutedSurface,
+    onSurfaceVariant = PocketColors.MidGray,
+    outline = Color(0xFF60738D),
+    secondaryContainer = PocketColors.MutedSurface,
+    onSecondaryContainer = PocketColors.SafetyOrange,
 )
 
 @Composable
