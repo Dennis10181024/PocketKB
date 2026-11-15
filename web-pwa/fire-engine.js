@@ -13,7 +13,7 @@
     }
     return signs;
   }
-  function step(spec, before, text, intent = 'action') {
+  function step(spec, before, text, intent = 'action', resolved = null) {
     const state = JSON.parse(JSON.stringify(before));
     const node = spec.nodes[state.node];
     function result(kind, message, effects = []) {
@@ -33,11 +33,13 @@
       if (used < node.hints.length) state.hints.push({ node: node.id, level: used + 1 });
       return result('hint', node.hints[Math.min(used, node.hints.length - 1)]);
     }
-    if (intent === 'question' || new RegExp(spec.questionPattern).test(text))
+    if (intent === 'question' || (!resolved && new RegExp(spec.questionPattern).test(text)))
       return result('question', `我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：${node.answer}`);
-    if (new RegExp(spec.uncertainPattern).test(text)) return result('clarify', '這句包含假設或不確定語意。請確認你現在實際決定做什麼；也可以選擇引導行動。');
-    const actionSigns = spec.actions.map(a => ({ ...a, signs: mentions(spec, text, a.pattern) }));
-    const hazardSigns = spec.hazards.map(a => ({ ...a, signs: mentions(spec, text, a.pattern) }));
+    if (!resolved && new RegExp(spec.uncertainPattern).test(text)) return result('clarify', '這句包含假設或不確定語意。請確認你現在實際決定做什麼；也可以選擇引導行動。');
+    if (resolved && (!Array.isArray(resolved.actionIds) || resolved.actionIds.some(id => ![...spec.actions, ...spec.hazards].some(a => a.id === id))))
+      return result('clarify', '這項行動不在本情境可驗證的範圍，尚未執行。');
+    const actionSigns = spec.actions.map(a => ({ ...a, signs: resolved ? new Set(resolved.actionIds.includes(a.id) ? ['positive'] : []) : mentions(spec, text, a.pattern) }));
+    const hazardSigns = spec.hazards.map(a => ({ ...a, signs: resolved ? new Set(resolved.actionIds.includes(a.id) ? ['positive'] : []) : mentions(spec, text, a.pattern) }));
     const positives = actionSigns.filter(a => a.signs.has('positive'));
     const hazards = hazardSigns.filter(a => a.signs.has('positive'));
     const contradictory = [...actionSigns, ...hazardSigns].some(a => a.signs.size > 1)

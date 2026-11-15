@@ -2,6 +2,7 @@ package com.pocketkb.android.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +11,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,6 +35,11 @@ import java.util.Date
 import java.util.Locale
 
 private val cardShape = RoundedCornerShape(24.dp)
+private val professorDemoScenarioIds = listOf(
+    "drill_fire_dorm",
+    "earthquake_home_trapped",
+    "barrier_lake_downstream",
+)
 
 @Composable
 fun PocketKbRoot(state: PocketKbUiState, recentSessions: List<DrillSessionEntity>, actions: PocketKbViewModel) {
@@ -47,7 +56,12 @@ fun PocketKbRoot(state: PocketKbUiState, recentSessions: List<DrillSessionEntity
     if (pendingTab != null) AlertDialog(
         onDismissRequest = { pendingTab = null },
         title = { Text("結束這次演練？") },
-        text = { Text("對話會保存在此裝置。離開後，下次將重新開始情境。" + if (state.fireState == null) "舊版情境決策計時仍在進行。" else "學習模式不限時。") },
+        text = {
+            Text(
+                "對話會保存在此裝置。離開後，下次將重新開始情境。" +
+                    if (state.fireState != null || state.scenarioStateV3 != null) "學習模式不限時。" else "舊版情境決策計時仍在進行。",
+            )
+        },
         confirmButton = { TextButton(onClick = {
             val target = pendingTab!!
             actions.stopScenario()
@@ -113,14 +127,21 @@ private fun HomeScreen(actions: PocketKbViewModel) {
             }
         }
         item {
-            ActionCard("開始情境演練", "${KnowledgeBase.scenarios.size} 個情境 · 從你的下一步開始", Icons.Default.PlayArrow, true) {
-                actions.selectCategory(null); actions.selectTab(AppTab.DRILL)
-            }
+            ActionCard(
+                title = "開始情境演練",
+                subtitle = "${actions.scenarios.size} 個情境 · 從你的下一步開始",
+                icon = Icons.Default.PlayArrow,
+                onClick = { actions.selectCategory(null); actions.selectTab(AppTab.DRILL) },
+                prominent = true,
+            )
         }
         item {
-            ActionCard("我現在需要指引", "直接查看應變步驟 · 無須網路", Icons.Default.Report) {
-                actions.selectTab(AppTab.EMERGENCY)
-            }
+            ActionCard(
+                title = "我現在需要指引",
+                subtitle = "直接查看應變步驟 · 無須網路",
+                icon = Icons.Default.Report,
+                onClick = { actions.selectTab(AppTab.EMERGENCY) },
+            )
         }
         item {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -138,14 +159,21 @@ private fun HomeScreen(actions: PocketKbViewModel) {
 }
 
 @Composable
-private fun ActionCard(title: String, subtitle: String, icon: ImageVector, prominent: Boolean = false, onClick: () -> Unit) {
+private fun ActionCard(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    prominent: Boolean = false,
+) {
     val ink = if (prominent) PocketColors.AppBg else Color.White
-    Card(onClick = onClick, modifier = Modifier.fillMaxWidth(), shape = cardShape,
+    Card(onClick = onClick, modifier = modifier.fillMaxWidth(), shape = cardShape,
         colors = CardDefaults.cardColors(containerColor = if (prominent) PocketColors.SafetyOrange else PocketColors.Surface)) {
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Icon(icon, null, tint = ink, modifier = Modifier.size(28.dp))
-                Icon(Icons.Default.ArrowForward, null, tint = ink)
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = ink)
             }
             Text(title, color = ink, fontSize = 23.sp, fontWeight = FontWeight.Bold)
             Text(subtitle, color = if (prominent) ink else PocketColors.MidGray, lineHeight = 24.sp)
@@ -163,36 +191,99 @@ private fun Metric(value: String, label: String, modifier: Modifier = Modifier) 
 
 @Composable
 private fun ScenarioPickerScreen(state: PocketKbUiState, actions: PocketKbViewModel) {
-    val filtered = actions.scenarios.sortedBy { if (it.id == "drill_fire_dorm") 0 else 1 }.filter { state.selectedCategory == null || it.category == state.selectedCategory }
+    val orderedScenarios = remember(actions.scenarios) {
+        actions.scenarios.sortedWith(
+            compareBy<DrillScenario> {
+                professorDemoScenarioIds.indexOf(it.id).takeIf { index -> index >= 0 } ?: Int.MAX_VALUE
+            }.thenBy { it.category.ordinal }.thenBy { it.title },
+        )
+    }
+    val categories = remember(actions.scenarios) { actions.scenarios.map { it.category }.distinct() }
+    val filtered = remember(orderedScenarios, state.selectedCategory) {
+        orderedScenarios.filter { state.selectedCategory == null || it.category == state.selectedCategory }
+    }
     var candidate by remember { mutableStateOf<DrillScenario?>(null) }
     candidate?.let { scenario ->
+        val runtimeV3 = actions.scenarioRuntimeV3(scenario.id)
+        val goals = runtimeV3?.learningObjectives()?.joinToString("\n") { "• $it" }.orEmpty()
         AlertDialog(onDismissRequest = { candidate = null },
             title = { Text(scenario.title) },
-            text = { Text("${scenario.openingLine}\n\n" + if (scenario.id == "drill_fire_dorm") "學習模式不限時。這是教學模擬，不會真的撥打電話。" else "舊版情境：尚未套用新版核心，每個決策有30秒。") },
+            text = { Text("${scenario.openingLine}\n\n" + when {
+                runtimeV3 != null -> "這次要練習：\n$goals\n\n新版因果情境，不限時。可能撤離、待救或失敗；完成演練不代表一定獲救。"
+                scenario.id == "drill_fire_dorm" -> "學習模式不限時。這是教學模擬，不會真的撥打電話。"
+                else -> "舊版情境：尚未套用新版核心，每個決策有30秒。"
+            }) },
             confirmButton = { TextButton(onClick = { candidate = null; actions.startScenario(scenario) }) { Text("準備好了，開始") } },
             dismissButton = { TextButton(onClick = { candidate = null }) { Text("再看看") } })
     }
     LazyColumn(contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item { PageHeading("練習面對未知", "選一個情境，試著說出你的下一步行動。") }
         item {
+            Card(colors = CardDefaults.cardColors(containerColor = PocketColors.Surface)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("GPT 線上演練", fontWeight = FontWeight.Bold)
+                        Switch(checked = state.onlineEnabled, onCheckedChange = actions::setOnlineMode)
+                    }
+                    Text(state.onlineStatus, color = PocketColors.Info)
+                    Text("線上模式會將對話傳送至 OpenAI，請勿輸入個人資料。支援火災與五個新版因果劇本；其他舊版情境使用離線規則。", color = PocketColors.MidGray, lineHeight = 23.sp)
+                }
+            }
+        }
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = PocketColors.MutedSurface),
+                border = BorderStroke(1.dp, PocketColors.Info),
+                shape = cardShape,
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Icon(Icons.Default.Star, contentDescription = null, tint = PocketColors.AccentYellow)
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("教授示範路線", color = PocketColors.Info, fontWeight = FontWeight.Bold)
+                        Text(
+                            "宿舍火災待救、住家地震受困、堰塞湖撤離窗口。三條路線包含完成、待救與危急失敗。",
+                            color = PocketColors.MidGray,
+                            lineHeight = 23.sp,
+                        )
+                    }
+                }
+            }
+        }
+        item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 item { CategoryChip("全部", state.selectedCategory == null) { actions.selectCategory(null) } }
-                items(KnowledgeBase.scenarios.map { it.category }.distinct()) { category ->
+                items(categories, key = { it.name }) { category ->
                     CategoryChip(category.label, state.selectedCategory == category) { actions.selectCategory(category) }
                 }
             }
         }
         items(filtered, key = { it.id }) { scenario ->
+            val featured = scenario.id in professorDemoScenarioIds
             Card(onClick = { candidate = scenario }, shape = cardShape, modifier = Modifier.fillMaxWidth(),
+                border = if (featured) BorderStroke(1.dp, PocketColors.AccentYellow) else null,
                 colors = CardDefaults.cardColors(containerColor = PocketColors.Surface)) {
                 Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(scenario.category.label, color = PocketColors.SafetyOrange, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(scenario.category.label, color = PocketColors.SafetyOrange, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        if (featured) ScenarioTag("示範路線", PocketColors.AccentYellow)
+                    }
                     Text(scenario.title, fontSize = 22.sp, lineHeight = 30.sp, fontWeight = FontWeight.Bold)
-                    Text(scenario.location, color = PocketColors.MidGray)
-                    Text(if (scenario.id == "drill_fire_dorm") "新版示範 · 學習模式" else "舊版情境 · 待修訂", color = PocketColors.Info)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = PocketColors.MidGray, modifier = Modifier.size(18.dp))
+                        Text(scenario.location, color = PocketColors.MidGray, modifier = Modifier.weight(1f))
+                    }
+                    Text(scenarioOutcomeSummary(scenario.id, actions), color = PocketColors.Info, lineHeight = 23.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("進入情境", color = PocketColors.Info, modifier = Modifier.weight(1f))
-                        Icon(Icons.Default.ArrowForward, null, tint = PocketColors.Info)
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = PocketColors.Info)
                     }
                 }
             }
@@ -201,9 +292,42 @@ private fun ScenarioPickerScreen(state: PocketKbUiState, actions: PocketKbViewMo
 }
 
 @Composable
+private fun ScenarioTag(
+    label: String,
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        color = color.copy(alpha = 0.14f),
+        shape = RoundedCornerShape(999.dp),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.55f)),
+    ) {
+        Text(
+            label,
+            color = color,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+        )
+    }
+}
+
+private fun scenarioOutcomeSummary(scenarioId: String, actions: PocketKbViewModel): String = when (scenarioId) {
+    "drill_fire_dorm" -> "學習模式 · 完成待救決策／危急失敗"
+    "earthquake_home_trapped" -> "因果情境 v3 · 穩定待救／危急失敗"
+    "barrier_lake_downstream" -> "因果情境 v3 · 完成撤離／穩定待救／危急失敗"
+    else -> when {
+        actions.scenarioRuntimeV3(scenarioId) != null -> "因果情境 v3 · 結果取決於你的行動"
+        else -> "舊版情境 · 待升級新版核心"
+    }
+}
+
+@Composable
 private fun DrillChatScreen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave: () -> Unit) {
     val scenario = state.selectedScenario ?: return
     if (state.fireState != null) { FireChatScreen(state, actions, onLeave); return }
+    if (state.scenarioStateV3 != null) { ScenarioV3Screen(state, actions, onLeave); return }
     var input by rememberSaveable(state.activeSessionId) { mutableStateOf("") }
     val scroll = rememberLazyListState()
     val ongoing = state.drillStep.outcome == DrillOutcome.CONTINUE
@@ -269,7 +393,7 @@ private fun DrillChatScreen(state: PocketKbUiState, actions: PocketKbViewModel, 
             OutlinedTextField(value = input, onValueChange = { input = it }, label = { Text("你接下來會怎麼做？") },
                 modifier = Modifier.weight(1f), maxLines = 3, enabled = !state.isGenerating, shape = RoundedCornerShape(18.dp))
             IconButton(onClick = { actions.sendUserAction(input); input = "" }, enabled = input.isNotBlank() && !state.isGenerating) {
-                Icon(Icons.Default.Send, "送出行動", tint = PocketColors.SafetyOrange)
+                Icon(Icons.AutoMirrored.Filled.Send, "送出行動", tint = PocketColors.SafetyOrange)
             }
         }
     }
@@ -356,7 +480,7 @@ private fun SourceLink(source: KnowledgeSource) {
     Text("來源：${source.agency}《${source.title}》", color = PocketColors.MidGray, fontSize = 14.sp, lineHeight = 22.sp)
     if (source.note.isNotBlank()) Text(source.note, color = PocketColors.MidGray, fontSize = 14.sp)
     TextButton(onClick = { failed = runCatching { uri.openUri(source.url) }.isFailure }) {
-        Text("查看原文（需要網路）"); Spacer(Modifier.width(8.dp)); Icon(Icons.Default.OpenInNew, null, modifier = Modifier.size(18.dp))
+        Text("查看原文（需要網路）"); Spacer(Modifier.width(8.dp)); Icon(Icons.AutoMirrored.Filled.OpenInNew, null, modifier = Modifier.size(18.dp))
     }
     if (failed) Text("無法開啟瀏覽器，請稍後再試。", color = PocketColors.EmergencyRed)
 }
@@ -405,6 +529,10 @@ private fun tabIcon(tab: AppTab): ImageVector = when (tab) {
 }
 private fun outcomeLabel(value: String): String = when (value) {
     "SUCCESS" -> "演練完成"
+    "EVACUATED" -> "已完成撤離"
+    "WAITING_RESCUE" -> "穩定待救・尚未獲救"
+    "SHELTERED" -> "已完成就地掩蔽"
+    "RESCUED" -> "已由救援人員接觸"
     "FAILED" -> "需要再練習"
     "TIMEOUT" -> "決策逾時"
     else -> "尚未完成"

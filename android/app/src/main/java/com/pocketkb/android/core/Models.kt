@@ -5,6 +5,9 @@ import java.util.UUID
 enum class DisasterCategory(val label: String, val icon: String) {
     EARTHQUAKE("地震", "震"),
     TYPHOON("颱風豪雨", "風"),
+    FLOOD("淹水洪水", "水"),
+    LANDSLIDE("土石流崩塌", "崩"),
+    BARRIER_LAKE("堰塞湖", "湖"),
     FIRE("火災", "火"),
     MANMADE("人為災害", "人"),
     COMPOUND("複合災害", "複"),
@@ -99,6 +102,10 @@ enum class SafetyLevel(val label: String) {
 enum class DrillOutcome {
     CONTINUE,
     SUCCESS,
+    EVACUATED,
+    WAITING_RESCUE,
+    SHELTERED,
+    RESCUED,
     FAILED,
     TIMEOUT,
 }

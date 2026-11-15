@@ -588,6 +588,7 @@ function render() {
           </section>
 
           <aside class="side-panel">
+            <details><summary>使用說明與安裝</summary>
             <h2 class="section-title">準備，從一次練習開始</h2>
             <p class="section-note">觀察情況、做出決定、回顧下一步。每次練習都是一次準備。</p>
             <div class="mode-list">
@@ -604,6 +605,7 @@ function render() {
               <button class="ghost" id="installHintBtn" type="button">＋ 安裝提示</button>
             </div>
             <p class="tiny" id="secureNotice"></p>
+            </details>
           </aside>
         </div>
       </div>
@@ -612,7 +614,20 @@ function render() {
 
   bindEvents();
   renderSecureNotice();
-  scrollChat();
+}
+
+// Keep the current exchange visible; the full transcript remains available on demand.
+function renderConversation() {
+  const messages = state.messages.length ? state.messages : [{ role: 'system', text: '請先選擇情境並按下開始。' }];
+  const recentStart = messages.at(-2)?.role === 'user' ? messages.length - 2 : messages.length - 1;
+  const markup = items => items.map(message => `<div class="message ${message.role}">${escapeHtml(message.text)}</div>`).join('');
+  return `<div class="chat-log" id="chatLog" aria-label="最新演練對話">${markup(messages.slice(recentStart))}</div>`;
+}
+
+function renderConversationHistory() {
+  const recentStart = state.fireSession && state.lastResult ? state.messages.length : state.messages.at(-2)?.role === 'user' ? state.messages.length - 2 : state.messages.length - 1;
+  if (recentStart <= 0) return '';
+  return `<details class="conversation-history"><summary>查看對話紀錄（${recentStart} 則）</summary><div class="chat-log">${state.messages.slice(0, recentStart).map(message => `<div class="message ${message.role}">${escapeHtml(message.text)}</div>`).join('')}</div></details>`;
 }
 
 function tabButton(id, label) {
@@ -630,9 +645,9 @@ function renderDrillView() {
     <div class="view ${state.tab === "drill" ? "active" : ""}" id="view-drill">
       <h2 class="section-title">把準備，變成你的直覺。</h2>
       <p class="section-note">選一個情境，試著說出你的下一步行動。</p>
-      <div class="scenario-grid">
+      ${state.activeScenario ? '<details><summary>切換演練情境</summary>' : ''}<div class="scenario-grid">
         ${scenarios.map(renderScenarioCard).join("")}
-      </div>
+      </div>${state.activeScenario ? '</details>' : ''}
       <div class="button-row">
         <button class="primary" id="startBtn" type="button">▶ 開始 / 重來</button>
       </div>
@@ -652,11 +667,7 @@ function renderDrillView() {
           <h3>${escapeHtml(step.title)}</h3>
           <p>${escapeHtml(state.activeScenario ? step.situation : scenario.openingLine)}</p>
         </div>
-        <div class="chat-log" id="chatLog">
-          ${(state.messages.length ? state.messages : [{ role: "system", text: "請先選擇情境並按下開始。" }])
-            .map((message) => `<div class="message ${message.role}">${escapeHtml(message.text)}</div>`)
-            .join("")}
-        </div>
+        ${renderConversation()}
         <div class="input-area">
           <label for="actionInput">你的下一步行動
           <textarea id="actionInput" name="action" autocomplete="off" placeholder="例如：我不進地下道，先停下並避開積水入口…" ${!state.activeScenario || isTerminal() ? "disabled" : ""}></textarea></label>
@@ -664,6 +675,7 @@ function renderDrillView() {
         </div>
       </div>
       ${state.lastResult ? renderJudgeBox(state.lastResult) : ""}
+      ${renderConversationHistory()}
     </div>
   `;
 }
@@ -689,28 +701,31 @@ function renderFireView(scenario) {
   const active = session && !isTerminal();
   const done = session?.completed.length || 0;
   return `<section class="view ${state.tab === 'drill' ? 'active' : ''}" id="view-drill">
-    <div class="fire-heading"><div><span class="badge">示範劇本 v${escapeHtml(fireSpec.version)}</span><h2 class="section-title">先看清楚，再做決定。</h2></div><span class="status-pill">學習模式・不限時</span></div>
-    <p class="section-note">這次練習：走廊濃煙阻斷時，如何留在房內待救。</p>
+    <div class="fire-heading"><h2 class="section-title">${session ? escapeHtml(fireSpec.title) : '先看清楚，再做決定。'}</h2><span class="status-pill">學習模式・不限時</span></div>
+    ${!session ? '<p class="section-note">這次練習：走廊濃煙阻斷時，如何留在房內待救。</p>' : ''}
     ${!session ? `<div class="task-box"><h3>${escapeHtml(fireSpec.title)}</h3><p>${escapeHtml(fireSpec.opening)}</p><button class="primary" id="startBtn" type="button">開始練習</button></div>` : `
-    <div class="fire-progress" aria-label="已完成 ${done} 個階段，共 ${fireSpec.nodes.length} 個">${fireSpec.nodes.map((n,i)=>`<span class="${i < done ? 'done' : i === session.node ? 'current' : ''}">${i+1} ${escapeHtml(n.title)}</span>`).join('')}</div>
+    <p class="stage-summary">${active ? `階段 ${session.node + 1} / ${fireSpec.nodes.length} · ${escapeHtml(node.title)}` : `演練結束 · 已完成 ${done} / ${fireSpec.nodes.length} 階段`}</p>
     <div class="task-box"><p class="meta">現場發生什麼</p><p>${escapeHtml(node.situation)}</p><h3>目前要決定什麼</h3><p>${active ? escapeHtml(node.task) : '本次已結束，請查看回顧。'}</p>
     ${active ? `<p class="tiny">本階段已完成：${session.accepted.map(id=>escapeHtml(fireSpec.actions.find(a=>a.id===id).label)).join('、') || '尚無；可以分次回答'}</p>` : ''}</div>
-    <div class="chat-log" id="chatLog" aria-label="演練對話">${state.messages.map(m=>`<div class="message ${m.role}">${escapeHtml(m.text)}</div>`).join('')}</div>
-    ${state.lastResult ? renderJudgeBox(state.lastResult) : ''}
+    ${state.lastResult ? renderJudgeBox(state.lastResult, true) : renderConversation()}
     ${active ? `<div class="fire-controls"><div class="button-row"><button class="ghost" id="observeBtn" type="button">觀察環境</button><button class="ghost" id="hintBtn" type="button">${session.hints.filter(h=>h.node===node.id).length < node.hints.length ? '給我下一層提示' : '重看提示'}</button></div>
       <fieldset class="intent-picker"><legend>你的輸入是</legend>${[['action','採取行動'],['question','詢問']].map(([id,label])=>`<label><input type="radio" name="intent" value="${id}" ${state.inputIntent===id?'checked':''}>${label}</label>`).join('')}</fieldset>
       <div class="input-area"><label for="actionInput">${state.inputIntent==='question'?'你的問題（目前提供階段說明）':'你的行動'}<textarea id="actionInput" placeholder="可以分次說明，不必一次寫完所有步驟。">${escapeHtml(state.draft)}</textarea></label><button class="primary" id="submitBtn" type="button">${state.inputIntent==='question'?'送出問題':'確認行動'}</button></div>
       <details><summary>不知道怎麼表達？使用引導選項</summary><p class="tiny">選項不一定安全。點選只會填入，確認後才執行。</p><div class="guided-choices">${node.choices.map((c,i)=>`<button class="ghost" data-fire-choice="${i}" type="button">${escapeHtml(c)}</button>`).join('')}</div></details></div>` : `<div class="fire-review"><h3>這次練習的回顧</h3><p>${escapeHtml(FireDrill.review(fireSpec,session))}</p><button class="primary" id="startBtn" type="button">另開一次練習</button></div>`}`}
+    ${renderConversationHistory()}
+    ${session ? `<details><summary>查看全部演練階段</summary><ol>${fireSpec.nodes.map(n=>`<li>${escapeHtml(n.title)}</li>`).join('')}</ol></details>` : ''}
     <details class="fire-sources"><summary>適用範圍與參考依據</summary><p>${escapeHtml(fireSpec.notice)}</p>${node.sources.concat('safety').map(id=>fireSpec.sources.find(s=>s.id===id)).map(s=>`<p><a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.title)}</a> · 核對 ${s.checked}</p>`).join('')}</details>
     <details><summary>其他舊版情境（尚未套用本次新核心）</summary><div class="scenario-grid">${scenarios.filter(s=>s.id!=='drill_fire_dorm').map(renderScenarioCard).join('')}</div></details>
     </section>`;
 }
 
-function renderJudgeBox(result) {
+function renderJudgeBox(result, includeEffects = false) {
   const className = result.safety.toLowerCase();
   return `
     <div class="judge-box ${className}" role="status" aria-live="polite">
       <h3>裁判結果：${escapeHtml(result.verdictLabel || result.safety)}</h3>
+      ${includeEffects ? `<p class="tiny">你的輸入：${escapeHtml(state.messages.findLast(message=>message.role==='user')?.text || '')}</p>` : ''}
+      ${includeEffects ? (result.effects || []).map(effect=>`<p>${escapeHtml(effect)}</p>`).join('') : ''}
       <p>${escapeHtml(result.reason)}</p>
     </div>
   `;
@@ -774,12 +789,13 @@ function renderRecordItem(record) {
 function renderOnlineView() {
   return `
     <div class="view ${state.tab === "online" ? "active" : ""}" id="view-online">
-      <h2 class="section-title">線上 AI 教練</h2>
-      <p class="section-note">這一層預留給有網路時使用，不放進離線安全判定。</p>
+      <h2 class="section-title">GPT 線上情境演練</h2>
+      <p class="section-note">用自由對話練習決策；教練會參考目前現場與前文回應，需要連上電腦的線上教練服務。</p>
       <div class="tool-panel" style="padding:14px;">
-        <h3 class="guide-title">規劃中的用途</h3>
-        <p>整理使用者演練紀錄、產生反思報告、改寫更自然的情境回饋、比較不同災害情境的表現。</p>
-        <p class="tiny">目前版本刻意不呼叫雲端 API，方便先做 iPhone 實測與研究流程驗證。</p>
+        <h3 class="guide-title">練習你的下一個決定</h3>
+        <p>支援火災、地震受困、學校地震、淹水、土石流與堰塞湖。對話將傳送至 OpenAI，請勿輸入個人資料。</p>
+        <a class="primary online-link" href="./online.html">開始 GPT 演練</a>
+        <p class="tiny">電腦端需先啟動線上教練並設定 API 金鑰。未連線時可繼續使用離線演練與應急資料。</p>
       </div>
     </div>
   `;
@@ -847,11 +863,6 @@ function renderSecureNotice() {
   notice.textContent = canUseServiceWorker
     ? "目前環境支援 PWA 離線快取。"
     : "目前環境可測流程；iPhone 離線快取需要 HTTPS 網址。";
-}
-
-function scrollChat() {
-  const log = document.querySelector("#chatLog");
-  if (log) log.scrollTop = log.scrollHeight;
 }
 
 function escapeHtml(value) {

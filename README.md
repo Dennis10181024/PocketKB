@@ -1,15 +1,17 @@
 # 口袋知識庫（PocketKB）
 
-## 目前可安裝版本：Android 宿舍火災示範版
+## 目前可安裝版本｜Android 情境演練組員試用版
 
-更新日期：2026-09-12。優先開發 Android；iOS 目前仍為原型，不提供可安裝的 iPhone App。
+更新日期為 2026 年 11 月 15 日。Android 為目前的可安裝版本。
 
-- [下載 Android 測試版 APK](https://github.com/Dennis10181024/PocketKB/releases/tag/demo-2026-09-12-fire-v2)
-- [手機安裝與測試說明](ANDROID_INSTALL.md)
-- [本次進度、架構與限制](FIRE_DRILL_IMPLEMENTATION.md)
+- [下載 Android APK 與電腦離線展示包](https://github.com/Dennis10181024/PocketKB/releases/tag/demo-2026-11-15-scenario-v3)
+- [本次更新、試用方式與計畫書差異](RELEASE_NOTES_2026-11-15.md)
 - [介面設計說明](DESIGN.md)
 
-宿舍火災已接上新版分階段判定、分次作答累積、觀察／詢問／提示、不限時學習模式、結束鎖定與回顧紀錄。Android 與網頁共用版本化劇本和38回合案例。其他災種仍是舊版；LLM自由對話尚未啟用，安裝此版不需要下載模型。
+Android 可離線試玩宿舍火災、學校地震、住家地震受困、低窪住宅淹水、山區道路土石流與堰塞湖下游。可比較完成撤離、穩定待救與危急失敗的結局。另提供可選的 GPT 線上演練原型，需啟動本機後端。 [線上教練設定](online-coach/README.md)
+
+- [v3 情境核心實作進度](SCENARIO_V3_IMPLEMENTATION.md)
+- [災種與地點完整規劃](SCENARIO_LOCATION_RESEARCH.md)
 
 儲存庫若為私人，下載 Release 需要具有權限的 GitHub 帳號；亦可請專案持有人直接轉傳 APK。不要為安裝而公開整個儲存庫。
 

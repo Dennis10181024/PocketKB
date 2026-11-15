@@ -7,6 +7,11 @@ import com.pocketkb.android.ai.DevelopmentLlmEngine
 import com.pocketkb.android.ai.LlamaCppEngine
 import com.pocketkb.android.ai.LocalLlmEngine
 import com.pocketkb.android.ai.ModelRuntimePolicy
+import com.pocketkb.android.ai.OnlineCoachClient
+import com.pocketkb.android.ai.OnlineCoachState
+import com.pocketkb.android.core.FireResult
+import com.pocketkb.android.core.ScenarioResultV3
+import kotlinx.coroutines.CancellationException
 import com.pocketkb.android.core.AppTab
 import com.pocketkb.android.core.ChatMessage
 import com.pocketkb.android.core.ChatRole
@@ -18,6 +23,9 @@ import com.pocketkb.android.core.DrillStepState
 import com.pocketkb.android.core.KnowledgeBase
 import com.pocketkb.android.core.RagEngine
 import com.pocketkb.android.core.RetrievalResult
+import com.pocketkb.android.core.ScenarioRuntimeV3
+import com.pocketkb.android.core.ScenarioReviewV3
+import com.pocketkb.android.core.ScenarioStateV3
 import com.pocketkb.android.data.DrillHistoryRepository
 import com.pocketkb.android.data.DrillSessionEntity
 import com.pocketkb.android.data.PocketKbDatabase
@@ -50,6 +58,12 @@ data class PocketKbUiState(
     val modelStatus: String = "正在初始化本地模型環境...",
     val lastReport: String = "",
     val fireState: FireState? = null,
+    val scenarioStateV3: ScenarioStateV3? = null,
+    val scenarioReviewV3: ScenarioReviewV3? = null,
+    val onlineEnabled: Boolean = false,
+    val onlineStatus: String = "離線規則模式",
+    val onlineError: String = "",
+    val onlineRevision: Int = 0,
 )
 
 class PocketKbViewModel(
@@ -63,7 +77,19 @@ class PocketKbViewModel(
     private val rag = RagEngine()
     private val judge = DrillJudge()
     val fireDrill = FireDrill(JSONObject(application.assets.open("fire-dorm.json").bufferedReader(Charsets.UTF_8).use { it.readText() }))
-    val scenarios = KnowledgeBase.scenarios.map { if (it.id == "drill_fire_dorm") fireDrill.scenario() else it }
+    private val scenarioV3Files = listOf(
+        "earthquake-school.json",
+        "earthquake-home-trapped.json",
+        "flood-low-home.json",
+        "landslide-mountain-road.json",
+        "barrier-lake-downstream.json",
+    )
+    private val scenarioRuntimesV3 = scenarioV3Files.associate { file ->
+        val runtime = ScenarioRuntimeV3(JSONObject(application.assets.open("v3/$file").bufferedReader(Charsets.UTF_8).use { it.readText() }))
+        runtime.spec.getString("id") to runtime
+    }
+    val scenarios = scenarioRuntimesV3.values.map { it.scenario() } +
+        KnowledgeBase.scenarios.map { if (it.id == "drill_fire_dorm") fireDrill.scenario() else it }
     private val historyRepository = DrillHistoryRepository(
         PocketKbDatabase.get(application).drillHistoryDao(),
     )
@@ -76,6 +102,61 @@ class PocketKbViewModel(
     val uiState: StateFlow<PocketKbUiState> = _uiState.asStateFlow()
 
     private var countdownJob: Job? = null
+    private val onlineCoach = OnlineCoachClient()
+    private var remoteSession: JSONObject? = null
+    private var pendingOnline: JSONObject? = null
+    private var onlineJob: Job? = null
+
+    fun setOnlineMode(enabled: Boolean) {
+        if (_uiState.value.selectedScenario != null) return
+        _uiState.update { it.copy(onlineEnabled = enabled, onlineError = "", onlineStatus = if (enabled) "正在確認線上教練…" else "離線規則模式") }
+        if (enabled) viewModelScope.launch {
+            try {
+                val health = onlineCoach.health()
+                if (_uiState.value.onlineEnabled) _uiState.update { it.copy(onlineStatus = if (health.getBoolean("ready")) "GPT 線上教練已就緒" else "電腦尚未設定 GPT 金鑰") }
+            } catch (error: CancellationException) { throw error }
+            catch (_: Exception) { if (_uiState.value.onlineEnabled) _uiState.update { it.copy(onlineStatus = "尚未連上電腦的線上教練") } }
+        }
+    }
+
+    private fun sendOnlineInteraction(text: String, intent: String) {
+        val before = _uiState.value
+        val localId = before.activeSessionId ?: return
+        val scenario = before.selectedScenario ?: return
+        if (before.isGenerating) return
+        val pending = pendingOnline
+        if (pending != null && (pending.getString("text") != text || pending.getString("intent") != intent)) {
+            _uiState.update { it.copy(onlineError = "上一筆回答尚未確認，請先以相同內容重試，或另開一次演練。") }
+            return
+        }
+        _uiState.update { it.copy(isGenerating = true, onlineError = "", onlineStatus = "教練正在理解你的回答…") }
+        onlineJob = viewModelScope.launch {
+            try {
+                val remote = remoteSession ?: onlineCoach.create(scenario.id).also {
+                    if (_uiState.value.activeSessionId == localId) remoteSession = it
+                }
+                if (_uiState.value.activeSessionId != localId) return@launch
+                val request = pendingOnline ?: JSONObject().put("requestId", UUID.randomUUID().toString())
+                    .put("revision", remote.getInt("revision")).put("text", text).put("intent", intent).also { pendingOnline = it }
+                val value = onlineCoach.turn(remote.getString("sessionId"), request)
+                if (_uiState.value.activeSessionId != localId) return@launch
+                check(value.getString("scenarioId") == scenario.id) { "線上劇本與目前場次不一致。" }
+                check(value.getString("version") == (before.fireState?.version ?: before.scenarioStateV3?.version)) { "線上劇本版本不同，請更新電腦與 App。" }
+                val fireResult = if (before.fireState != null) OnlineCoachState.fire(value) else null
+                val v3Result = if (before.scenarioStateV3 != null) OnlineCoachState.v3(value) else null
+                remoteSession = value; pendingOnline = null
+                _uiState.update { it.copy(isGenerating = false,
+                    onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1,
+                    onlineStatus = "GPT 線上教練", onlineError = "") }
+                if (fireResult != null) sendFireInteraction(text, intent, fireResult)
+                if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
+            } catch (error: CancellationException) { throw error }
+            catch (error: Exception) {
+                if (_uiState.value.activeSessionId == localId) _uiState.update { it.copy(isGenerating = false,
+                    onlineStatus = "線上教練暫時未完成回覆", onlineError = (error.message ?: "請確認電腦服務已啟動。") + " 請保留原內容重試；同筆不會重複執行。") }
+            }
+        }
+    }
     private var persistenceJob: Job? = null
     private val finishedSessions = mutableSetOf<String>()
 
@@ -99,14 +180,21 @@ class PocketKbViewModel(
     }
 
     suspend fun savedMessages(id: String) = historyRepository.messagesForSession(id)
+    fun scenarioRuntimeV3(id: String): ScenarioRuntimeV3? = scenarioRuntimesV3[id]
 
     fun startScenario(requestedScenario: DrillScenario) {
+        onlineJob?.cancel(); remoteSession = null; pendingOnline = null
         val scenario = if (requestedScenario.id == "drill_fire_dorm") fireDrill.scenario() else requestedScenario
         countdownJob?.cancel()
         val sessionId = UUID.randomUUID().toString()
         val fireState = if (scenario.id == "drill_fire_dorm") fireDrill.create() else null
+        val scenarioStateV3 = scenarioRuntimesV3[scenario.id]?.create()
         val opening = ChatMessage(role = ChatRole.ASSISTANT, content = scenario.openingLine +
-            if (fireState != null) "\n劇本 v${fireState.version} · 學習模式 · 不限時" else "")
+            when {
+                fireState != null -> "\n劇本 v${fireState.version} · 學習模式 · 不限時"
+                scenarioStateV3 != null -> "\n劇本 v${scenarioStateV3.version} · 因果情境模式 · 不限時\n完成演練不等於一定逃生或獲救。"
+                else -> ""
+            })
         val initialStep = DrillStepState(totalSteps = scenario.steps.size.takeIf { it > 0 } ?: DrillStepState().totalSteps)
         _uiState.value = PocketKbUiState(
             selectedTab = AppTab.DRILL,
@@ -116,7 +204,10 @@ class PocketKbViewModel(
             drillStep = initialStep,
             activeSessionId = sessionId,
             modelStatus = _uiState.value.modelStatus,
+            onlineEnabled = _uiState.value.onlineEnabled && (fireState != null || scenarioStateV3 != null),
+            onlineStatus = _uiState.value.onlineStatus,
             fireState = fireState,
+            scenarioStateV3 = scenarioStateV3,
         )
         persist {
             historyRepository.startSession(
@@ -132,15 +223,20 @@ class PocketKbViewModel(
     }
 
     fun stopScenario() {
+        onlineJob?.cancel(); remoteSession = null; pendingOnline = null
         val state = _uiState.value
         countdownJob?.cancel()
         val sessionId = state.activeSessionId
         if (sessionId != null && state.selectedScenario != null && finishedSessions.add(sessionId)) {
             persist {
                 state.fireState?.let { historyRepository.appendMessage(sessionId, ChatMessage(role = ChatRole.SYSTEM, content = fireDrill.review(it))) }
+                state.scenarioStateV3?.let { scenarioRuntimesV3[state.selectedScenario.id]?.review(it) }
+                    ?.let { historyRepository.appendMessage(sessionId, ChatMessage(role = ChatRole.SYSTEM, content = it)) }
                 historyRepository.finishSession(
                     sessionId = sessionId,
-                    finalStep = state.fireState?.completed?.size ?: state.drillStep.currentStep,
+                    finalStep = state.fireState?.completed?.size
+                        ?: state.scenarioStateV3?.let { scenarioRuntimesV3[state.selectedScenario.id]?.nodeIndex(it)?.plus(1) }
+                        ?: state.drillStep.currentStep,
                     totalSteps = state.drillStep.totalSteps,
                     finalSafety = state.drillStep.safetyLevel,
                     outcome = state.drillStep.outcome,
@@ -158,6 +254,8 @@ class PocketKbViewModel(
                 lastReport = "",
                 isGenerating = false,
                 fireState = null,
+                scenarioStateV3 = null,
+                scenarioReviewV3 = null,
             )
         }
     }
@@ -167,6 +265,7 @@ class PocketKbViewModel(
         val scenario = _uiState.value.selectedScenario ?: return
         if (trimmed.isEmpty() || _uiState.value.isGenerating || _uiState.value.drillStep.outcome != DrillOutcome.CONTINUE) return
         if (_uiState.value.fireState != null) { sendFireInteraction(trimmed); return }
+        if (_uiState.value.scenarioStateV3 != null) { sendScenarioV3Interaction(trimmed); return }
         countdownJob?.cancel()
 
         val beforeState = _uiState.value
@@ -261,11 +360,12 @@ class PocketKbViewModel(
         }
     }
 
-    fun sendFireInteraction(text: String = "", intent: String = "action") {
+    fun sendFireInteraction(text: String = "", intent: String = "action", onlineResult: FireResult? = null) {
         val before = _uiState.value
         val fire = before.fireState ?: return
         if (fire.outcome != DrillOutcome.CONTINUE || before.isGenerating) return
-        val result = fireDrill.step(fire, text, intent)
+        if (before.onlineEnabled && onlineResult == null) { sendOnlineInteraction(text, intent); return }
+        val result = onlineResult ?: fireDrill.step(fire, text, intent)
         val title = when (intent) { "observe" -> "觀察環境"; "hint" -> "查看提示"; "question" -> "詢問"; else -> "採取行動" }
         val user = ChatMessage(role = ChatRole.USER, content = "$title：${text.ifBlank { title }}")
         val next = if (result.delta > 0 && result.state.outcome == DrillOutcome.CONTINUE)
@@ -278,6 +378,74 @@ class PocketKbViewModel(
             drillStep = it.drillStep.copy(currentStep = result.state.node + 1, outcome = result.state.outcome, safetyLevel = result.judge().safety),
             messages = it.messages + user + reply + extra, lastReport = report) }
         persistMessages(user, reply, *extra.toTypedArray())
+        if (terminal) finishActiveSession()
+    }
+
+    fun sendScenarioV3Interaction(text: String = "", intent: String = "action", onlineResult: ScenarioResultV3? = null) {
+        val before = _uiState.value
+        val scenario = before.selectedScenario ?: return
+        val previous = before.scenarioStateV3 ?: return
+        val runtime = scenarioRuntimesV3[scenario.id] ?: return
+        if (previous.sessionStatus != "ACTIVE" || before.isGenerating) return
+        if (before.onlineEnabled && onlineResult == null) { sendOnlineInteraction(text, intent); return }
+        val result = onlineResult ?: runtime.step(previous, text, intent)
+        val interactionLabel = when (intent) {
+            "observe" -> "觀察環境"
+            "question" -> "詢問"
+            else -> "採取行動"
+        }
+        val user = ChatMessage(
+            role = ChatRole.USER,
+            content = "$interactionLabel：${text.ifBlank { interactionLabel }}",
+        )
+        val terminal = result.state.sessionStatus != "ACTIVE"
+        val outcome = when {
+            result.state.sessionStatus == "FAILED" -> DrillOutcome.FAILED
+            result.state.physicalStatus == "EVACUATED" -> DrillOutcome.EVACUATED
+            result.state.physicalStatus == "WAITING_RESCUE" -> DrillOutcome.WAITING_RESCUE
+            result.state.physicalStatus == "RESCUED" -> DrillOutcome.RESCUED
+            result.state.physicalStatus == "SHELTERED" && terminal -> DrillOutcome.SHELTERED
+            else -> DrillOutcome.CONTINUE
+        }
+        val safety = when {
+            outcome == DrillOutcome.FAILED -> com.pocketkb.android.core.SafetyLevel.FAILED
+            result.kind == "risk" || result.kind == "blocked" -> com.pocketkb.android.core.SafetyLevel.LOW
+            terminal -> com.pocketkb.android.core.SafetyLevel.HIGH
+            else -> com.pocketkb.android.core.SafetyLevel.MEDIUM
+        }
+        val metadata = com.pocketkb.android.core.DrillJudgeResult(
+            safety = safety,
+            progressDelta = runtime.nodeIndex(result.state) - runtime.nodeIndex(previous),
+            outcome = outcome,
+            reason = result.message,
+            shouldAskAgain = result.kind in setOf("clarify", "question", "blocked"),
+        )
+        val environment = if (!terminal && result.state.node != previous.node) {
+            "\n\n現場變化：${runtime.currentSituation(result.state)}\n現在要決定：${runtime.currentTask(result.state)}"
+        } else ""
+        val assistant = ChatMessage(
+            role = ChatRole.ASSISTANT,
+            content = result.message + environment,
+            judgeMetadata = metadata,
+        )
+        val structuredReview = if (terminal) runtime.reviewData(result.state) else null
+        val report = structuredReview?.let { runtime.review(result.state) }.orEmpty()
+        val reviewMessage = if (terminal) listOf(ChatMessage(role = ChatRole.SYSTEM, content = report)) else emptyList()
+        _uiState.update {
+            it.copy(
+                scenarioStateV3 = result.state,
+                scenarioReviewV3 = structuredReview,
+                messages = it.messages + user + assistant + reviewMessage,
+                drillStep = it.drillStep.copy(
+                    currentStep = runtime.nodeIndex(result.state) + 1,
+                    totalSteps = scenario.steps.size,
+                    outcome = outcome,
+                    safetyLevel = safety,
+                ),
+                lastReport = report,
+            )
+        }
+        persistMessages(user, assistant, *reviewMessage.toTypedArray())
         if (terminal) finishActiveSession()
     }
 
@@ -338,7 +506,7 @@ class PocketKbViewModel(
 
     private fun startDecisionTimer() {
         countdownJob?.cancel()
-        if (_uiState.value.fireState != null) return // Learning mode has no deadline.
+        if (_uiState.value.fireState != null || _uiState.value.scenarioStateV3 != null) return // Learning mode has no deadline.
         countdownJob = viewModelScope.launch {
             while (_uiState.value.selectedScenario != null &&
                 _uiState.value.drillStep.outcome == DrillOutcome.CONTINUE
@@ -395,7 +563,11 @@ class PocketKbViewModel(
         persist {
             historyRepository.finishSession(
                 sessionId = sessionId,
-                finalStep = state.fireState?.completed?.size ?: state.drillStep.currentStep,
+                finalStep = state.fireState?.completed?.size
+                    ?: state.scenarioStateV3?.let { v3State ->
+                        state.selectedScenario?.id?.let { id -> scenarioRuntimesV3[id]?.nodeIndex(v3State)?.plus(1) }
+                    }
+                    ?: state.drillStep.currentStep,
                 totalSteps = state.drillStep.totalSteps,
                 finalSafety = state.drillStep.safetyLevel,
                 outcome = state.drillStep.outcome,
@@ -415,6 +587,10 @@ class PocketKbViewModel(
         )
         val outcomeText = when (analytics.outcome) {
             DrillOutcome.SUCCESS -> "演練完成"
+            DrillOutcome.EVACUATED -> "已完成撤離"
+            DrillOutcome.WAITING_RESCUE -> "穩定待救（尚未獲救）"
+            DrillOutcome.SHELTERED -> "已完成就地掩蔽"
+            DrillOutcome.RESCUED -> "已由救援人員接觸"
             DrillOutcome.FAILED -> "演練失敗"
             DrillOutcome.TIMEOUT -> "逾時中止"
             DrillOutcome.CONTINUE -> "未完成"

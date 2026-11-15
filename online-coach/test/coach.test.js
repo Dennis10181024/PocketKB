@@ -1,0 +1,161 @@
+'use strict';
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const { ConversationCoach, createOpenAIProvider, specs } = require('../coach');
+const { createServer } = require('../server');
+const Fire = require('../../web-pwa/fire-engine');
+const V3 = require('../../web-pwa/scenario-engine-v3');
+const input = (text, actions = [], intent = 'action', extra = {}) => ({ intent, understanding: text, question: '', needsClarification: false, actions: actions.map(id => ({ id, evidence: text })), ...extra });
+const request = (text, revision = 0, intent = 'action', requestId = `test-${Math.random()}`) => ({ text, revision, intent, requestId });
+function fakeProvider(interpret, narrate = () => ({ reply: '測試替身回覆，非實際 GPT 回覆。', sourceIds: [] })) {
+  const calls = [];
+  return { ready: true, model: 'test-double', calls,
+    async generate(stage, payload) {
+      calls.push({ stage, payload: structuredClone(payload) });
+      return { value: await (stage === 'interpret' ? interpret(payload) : narrate(payload)), usage: {} };
+    },
+  };
+}
+
+test('semantic synonym executes an ID without requiring literal keyword matches', async () => {
+  const provider = fakeProvider(p => input(p.text, ['close']));
+  const coach = new ConversationCoach(provider); const s = coach.create('drill_fire_dorm');
+  const result = await coach.turn(s.sessionId, request('我把房門帶上，先不往走廊走'));
+  assert.equal(result.state.node, 1); assert.equal(result.revision, 1);
+  assert.equal(provider.calls[1].payload.after.state.node, 1);
+});
+for (const kind of ['question','emotion','off_topic','unclear','clarify']) test(`${kind}: no fabricated action or state change; history reaches the next turn`, async () => {
+  const provider = fakeProvider(p => input(p.text, [], kind));
+  const coach = new ConversationCoach(provider); const s = coach.create('drill_fire_dorm');
+  const one = await coach.turn(s.sessionId, request('第一句'));
+  assert.deepEqual(one.state, s.state); assert.equal(one.terminal, false);
+  await coach.turn(s.sessionId, request('第二句', 1));
+  assert.equal(provider.calls[2].payload.history.length, 2);
+});
+test('explicit question mode cannot execute proposed action', async () => {
+  const coach = new ConversationCoach(fakeProvider(p => input(p.text, ['elevator'])));
+  const s = coach.create('drill_fire_dorm');
+  const result = await coach.turn(s.sessionId, request('我要搭電梯',0,'question'));
+  assert.deepEqual(result.state, s.state);
+});
+test('uncertain interpretation cannot execute actions', async () => {
+  const coach = new ConversationCoach(fakeProvider(p => input(p.text, ['close'], 'action', { needsClarification:true })));
+  const s = coach.create('drill_fire_dorm');
+  assert.deepEqual((await coach.turn(s.sessionId, request('關門又開門'))).state, s.state);
+});
+test('explicit negation and questions remain unexecuted even if model proposes a positive action', async () => {
+  for (const [text,id] of [['我不關門','close'],['我能不能搭電梯嗎','elevator'],['我關門又不關門','close']]) {
+    const coach=new ConversationCoach(fakeProvider(p=>input(p.text,[id])));const s=coach.create('drill_fire_dorm');
+    const result=await coach.turn(s.sessionId,request(text));assert.deepEqual(result.state,s.state);assert.equal(result.kind,'clarify');
+  }
+});
+test('unknown actions and fabricated evidence are rejected before narration/commit', async () => {
+  for (const interpretation of [input('關門',['invented']), input('這不是原文',['close'])]) {
+    const provider = fakeProvider(()=>interpretation); const coach = new ConversationCoach(provider); const s=coach.create('drill_fire_dorm');
+    await assert.rejects(coach.turn(s.sessionId,request('我關門')), { code:'MODEL_EVIDENCE' });
+    assert.equal(coach.snapshot(coach.sessions.get(s.sessionId)).revision,0);
+    assert.equal(provider.calls.length,1);
+  }
+});
+test('known fatal intent locks the session and cannot become successful via another reply', async () => {
+  const coach=new ConversationCoach(fakeProvider(p=>input(p.text,['elevator']))); const s=coach.create('drill_fire_dorm');
+  const result=await coach.turn(s.sessionId,request('電梯應該比較快，我要搭'));
+  assert.equal(result.state.outcome,'FAILED'); assert.equal(result.terminal,true);
+  assert.equal(result.scene.physicalStatus,'CRITICAL');
+  await assert.rejects(coach.turn(s.sessionId,request('我關門',1)),{code:'SESSION_LOCKED'});
+});
+test('literal hazard catches a model omission on an action turn', async () => {
+  const coach=new ConversationCoach(fakeProvider(p=>input(p.text,['close'])));const s=coach.create('drill_fire_dorm');
+  const result=await coach.turn(s.sessionId,request('我關門，然後搭電梯'));
+  assert.equal(result.state.outcome,'FAILED');
+});
+test('narration failure does not commit or lose history; same request can retry', async () => {
+  let fail=true;
+  const provider=fakeProvider(p=>input(p.text,['close']),()=>{if(fail)throw new Error('test timeout');return {reply:'測試回覆',sourceIds:[]};});
+  const coach=new ConversationCoach(provider);const s=coach.create('drill_fire_dorm');const body=request('我關門');
+  await assert.rejects(coach.turn(s.sessionId,body));
+  assert.equal(coach.sessions.get(s.sessionId).state.node,0);assert.equal(coach.sessions.get(s.sessionId).history.length,0);
+  fail=false;const result=await coach.turn(s.sessionId,body);assert.equal(result.state.node,1);
+});
+test('unknown citation does not commit', async () => {
+  const coach=new ConversationCoach(fakeProvider(p=>input(p.text,['close']),()=>({reply:'測試',sourceIds:['fabricated']})));
+  const s=coach.create('drill_fire_dorm');await assert.rejects(coach.turn(s.sessionId,request('我關門')),{code:'MODEL_INVALID'});
+  assert.equal(coach.sessions.get(s.sessionId).revision,0);
+});
+test('retry is idempotent and request ID cannot be reused for different content', async () => {
+  const provider=fakeProvider(p=>input(p.text,['close']));const coach=new ConversationCoach(provider);const s=coach.create('drill_fire_dorm');const body=request('我關門');
+  const [a,b]=await Promise.all([coach.turn(s.sessionId,body),coach.turn(s.sessionId,body)]);
+  assert.deepEqual(a,b);assert.equal(provider.calls.length,2);
+  assert.deepEqual(await coach.turn(s.sessionId,body),a);assert.equal(provider.calls.length,2);
+  await assert.rejects(coach.turn(s.sessionId,{...body,text:'不同內容'}),{code:'REQUEST_CONFLICT'});
+  await assert.rejects(coach.turn(s.sessionId,request('下一句',0)),{code:'STALE_TURN'});
+});
+test('concurrent different requests cannot overtake each other', async () => {
+  let resume;const wait=new Promise(resolve=>{resume=resolve;});
+  const provider=fakeProvider(async p=>{await wait;return input(p.text,[],'question');});
+  const coach=new ConversationCoach(provider);const s=coach.create('drill_fire_dorm');const first=coach.turn(s.sessionId,request('第一句'));
+  await assert.rejects(coach.turn(s.sessionId,request('第二句')),{code:'STALE_TURN'});
+  resume();await first;
+});
+test('waiting rescue remains distinct from evacuated or rescued with semantic IDs', async () => {
+  const spec=specs.get('earthquake_home_trapped');let state=V3.create(spec);
+  for(const id of ['assess_injury','avoid_forcing_exit','send_location','conserve_phone','make_signal','conserve_supplies']) {
+    state=V3.step(spec,state,'口語行動','action',{actionIds:[id]}).state;
+  }
+  assert.equal(state.physicalStatus,'WAITING_RESCUE');assert.notEqual(state.sessionStatus,'ACTIVE');
+});
+test('closing a route and waiting branch retain real causal effects', () => {
+  const spec=specs.get('barrier_lake_downstream');let state=V3.create(spec);
+  state=V3.step(spec,state,'我還要整理','action',{actionIds:['pack_more']}).state;
+  assert.equal(state.node,'cutoff');
+  for(const id of ['vertical_refuge','send_location','conserve'])state=V3.step(spec,state,'口語行動','action',{actionIds:[id]}).state;
+  assert.equal(state.physicalStatus,'WAITING_RESCUE');
+});
+test('unsupported and future actions do not invent state transitions', () => {
+  const spec=specs.get('earthquake_home_trapped');const initial=V3.create(spec);
+  for(const actionIds of [['invented_exit'],['conserve_supplies']])assert.deepEqual(V3.step(spec,initial,'試試','action',{actionIds}).state,initial);
+  const fire=specs.get('drill_fire_dorm');assert.deepEqual(Fire.step(fire,Fire.create(fire),'試試','action',{actionIds:['invented_exit']}).state,Fire.create(fire));
+});
+test('missing key does not call a fake coach or move the scenario', async () => {
+  const coach=new ConversationCoach(createOpenAIProvider({apiKey:''}));const s=coach.create('drill_fire_dorm');
+  await assert.rejects(coach.turn(s.sessionId,request('為什麼')),{code:'NOT_CONFIGURED'});
+  assert.equal(coach.calls,0);assert.equal(coach.sessions.get(s.sessionId).revision,0);
+});
+test('call limit also guards second-stage calls and leaves state uncommitted', async () => {
+  const coach=new ConversationCoach(fakeProvider(p=>input(p.text,['close'])),{maxCalls:1});const s=coach.create('drill_fire_dorm');
+  await assert.rejects(coach.turn(s.sessionId,request('我關門')),{code:'CALL_LIMIT'});
+  assert.equal(coach.sessions.get(s.sessionId).revision,0);
+});
+test('OpenAI adapter uses real Responses schema, store:false and validates completion', async () => {
+  let captured;
+  const provider=createOpenAIProvider({apiKey:'test-secret',fetchImpl:async(url,options)=>{
+    captured={url,options};return {ok:true,json:async()=>({status:'completed',output:[{type:'message',content:[{type:'output_text',text:'{"reply":"測試"}'}]}]})};
+  }});
+  const result=await provider.generate('narrate',{text:'測試'},{type:'object'});
+  assert.equal(result.value.reply,'測試');assert.equal(captured.url,'https://api.openai.com/v1/responses');
+  const body=JSON.parse(captured.options.body);assert.equal(body.store,false);assert.equal(body.text.format.strict,true);assert.equal(body.model,'gpt-6.1-terra');
+  const incomplete=createOpenAIProvider({apiKey:'x',fetchImpl:async()=>({ok:true,json:async()=>({status:'incomplete'})})});
+  await assert.rejects(incomplete.generate('interpret',{},{}),{code:'MODEL_INCOMPLETE'});
+});
+test('HTTP adapter serves UI, rejects foreign origin and malformed JSON, exposes no key', async () => {
+  const coach=new ConversationCoach(createOpenAIProvider({apiKey:'test-only-secret'}));const server=createServer(coach);
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${server.address().port}`;
+  try {
+    assert.equal((await fetch(base+'/online.html')).status,200);
+    const health=await (await fetch(base+'/api/health')).text();assert.ok(!health.includes('test-only-secret'));
+    assert.equal((await fetch(base+'/api/sessions',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://unrelated.example'},body:'{}'})).status,403);
+    assert.equal((await fetch(base+'/api/sessions',{method:'POST',headers:{'Content-Type':'application/json'},body:'null'})).status,400);
+    assert.equal((await fetch(base+'/api/sessions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenarioId:'invented'})})).status,400);
+  } finally { await new Promise(resolve=>server.close(resolve)); }
+});
+test('local setup stores credentials only in provider memory and never returns the key', async () => {
+  const coach=new ConversationCoach(createOpenAIProvider({apiKey:''}));const server=createServer(coach);
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${server.address().port}`;
+  try {
+    const response=await fetch(base+'/api/configure',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:'sk-test-only-not-a-real-key-123456'})});
+    assert.equal(response.status,200);assert.ok(!(await response.text()).includes('sk-test'));
+    assert.equal(coach.provider.ready,true);assert.equal(coach.calls,0);
+    const again=await fetch(base+'/api/configure',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:'sk-another-test-only-123456'})});
+    assert.equal(again.status,409);
+  } finally { await new Promise(resolve=>server.close(resolve)); }
+});

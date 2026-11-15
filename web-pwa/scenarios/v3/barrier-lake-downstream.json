@@ -1,0 +1,108 @@
+{
+  "id": "barrier_lake_downstream",
+  "version": "3.0.0",
+  "title": "堰塞湖警戒：下游聚落",
+  "hazard": "barrier_lake",
+  "locationProfile": "downstream_valley_settlement",
+  "opening": "地方政府發布堰塞湖下游撤離命令，指定往社區東側高地集合。西側道路靠近河道，禁止通行。此刻東側撤離路線仍可使用，但情況可能快速改變。",
+  "notice": "演練使用明示的虛構警報。系統不預測真實堰塞湖潰決時間、安全距離或解除時機。",
+  "learningObjectives": [
+    "接獲個案撤離命令後，不自行推算潰決時間並立即行動",
+    "理解拖延可能讓原本可用的撤離路線中斷",
+    "無法水平撤離時改採公告的就近避難、定位與保存資源"
+  ],
+  "commonMisconceptions": ["堰塞湖看起來平靜就還有時間收拾", "到河邊觀察能幫助判斷", "模型可以自行算出哪條路一定安全"],
+  "reflectionQuestions": ["哪些資訊只能由權責機關提供，不能由個人或模型推測？", "撤離窗口關閉後，行動目標為什麼必須改變？"],
+  "questionPattern": "[?？]|是否|是不是|能不能|可不可以|怎麼|如何|為什麼|嗎|要不要|如果|假如|假設",
+  "negationPattern": "(?:不想|不打算|不會|不要|不能|不可|沒有|沒|不|別|勿|避免)[^，。；、!?！？]{0,5}$",
+  "splitPattern": "[，。；、,;!！\\n]|然後|接著|但是|但|而且|並且|也|再來",
+  "initialNode": "warning",
+  "initialState": {
+    "physicalStatus": "EXPOSED",
+    "resources": {"battery": 65, "water": 2, "energy": 90},
+    "facts": {"eastRouteOpen": true, "officialEvacuationOrdered": true, "rescueArrived": false}
+  },
+  "conflicts": [
+    ["evacuate_east", "pack_more"],
+    ["vertical_refuge", "cross_flood"]
+  ],
+  "actions": [
+    {"id": "confirm_official", "label": "確認官方撤離命令與指定路線", "pattern": "確認.*(?:官方|政府|撤離命令|指定路線)|查看.*(?:官方警報|撤離通知)"},
+    {"id": "evacuate_east", "label": "立即沿東側指定路線撤往高地", "pattern": "(?:立即|現在|馬上).*(?:東側|指定路線).*(?:撤離|高地)|沿.*東側.*前往.*高地"},
+    {"id": "pack_more", "label": "繼續收拾非必要物品", "pattern": "(?:繼續|先).*(?:收拾|整理|拿).*(?:行李|財物|東西)|等我.*收拾"},
+    {"id": "watch_river", "label": "到河邊或橋上觀看", "pattern": "(?:河邊|河岸|橋上).*(?:看|拍|觀察)|去看.*堰塞湖"},
+    {"id": "vertical_refuge", "label": "前往公告的就近垂直避難點", "pattern": "(?:前往|進入|移動到).*(?:公告|指定|就近).*(?:垂直避難|高樓|避難點)|到.*指定.*高處"},
+    {"id": "send_location", "label": "回報目前位置與受困人數", "pattern": "(?:回報|傳送|告知).*(?:位置|受困人數|人數)|聯絡.*(?:119|救援)"},
+    {"id": "conserve", "label": "留在避難點並控制物資與電量", "pattern": "(?:留在|待在).*(?:避難點|高處).*(?:等待|待救)|(?:控制|節省|保留).*(?:物資|飲水|電量|體力)"},
+    {"id": "cross_flood", "label": "穿越已進水的道路", "pattern": "(?:穿越|涉水|開車通過|硬闖).*(?:積水|洪水|進水道路|封鎖)"}
+  ],
+  "nodes": [
+    {
+      "id": "warning",
+      "title": "撤離窗口仍然存在",
+      "situation": "官方已下令撤離，東側指定路線目前可用；下游河道與西側道路均不可接近。",
+      "task": "確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+      "required": ["confirm_official", "evacuate_east"],
+      "optional": [],
+      "available": ["confirm_official", "evacuate_east", "pack_more", "watch_river"],
+      "hazards": {
+        "watch_river": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你進入河道警戒區停留觀看，錯過撤離並暴露於突發洪水風險。本次演練失敗。"
+        }
+      },
+      "effects": {
+        "pack_more": {
+          "kind": "risk",
+          "message": "非必要收拾正在消耗有限撤離時間；堰塞湖狀態不能由個人推算。"
+        }
+      },
+      "timedEvents": [
+        {
+          "atTurn": 1,
+          "triggerActions": ["pack_more"],
+          "unlessAccepted": ["evacuate_east"],
+          "to": "cutoff",
+          "physicalStatus": "EXPOSED",
+          "setFacts": {"eastRouteOpen": false},
+          "message": "演練事件：東側道路已因落石與積水中斷，原本的撤離窗口關閉。現在不能再沿原路離開。"
+        }
+      ],
+      "terminal": {
+        "sessionStatus": "COMPLETED",
+        "physicalStatus": "EVACUATED",
+        "completionKind": "SAFE_AREA_REACHED",
+        "message": "你在路線仍開放時依命令抵達指定高地。本次演練以『完成撤離』結束。"
+      }
+    },
+    {
+      "id": "cutoff",
+      "title": "撤離路線中斷",
+      "situation": "原指定道路已中斷，外面出現快速水流。此時沒有可安全到達原集合點的水平撤離路線。公告指定的鋼筋混凝土垂直避難點仍可到達。",
+      "task": "停止嘗試穿越水流，改以就近避難、定位與保存資源提高存活機會。",
+      "required": ["vertical_refuge", "send_location", "conserve"],
+      "optional": [],
+      "available": ["vertical_refuge", "send_location", "conserve", "cross_flood"],
+      "hazards": {
+        "cross_flood": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你嘗試穿越快速水流並失去穩定立足點。本次演練以危急失敗結束。"
+        }
+      },
+      "terminal": {
+        "sessionStatus": "COMPLETED",
+        "physicalStatus": "WAITING_RESCUE",
+        "completionKind": "SURVIVAL_STABILIZED",
+        "message": "你已到達公告的就近避難點並回報位置，但尚未離開警戒區，也不能假設救援已抵達。演練以『穩定等待救援』結束。"
+      }
+    }
+  ],
+  "reflection": "相同警報下，立即行動可能完成撤離；拖延後路線可能消失，此時目標必須改成避免穿越危險區、提高存活率並等待救援。",
+  "sources": [
+    {"agency": "農業部林業及自然保育署", "title": "堰塞湖警戒、監測及撤離資料", "url": "https://www.forest.gov.tw/file/66794"}
+  ]
+}

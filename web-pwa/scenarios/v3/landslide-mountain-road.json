@@ -1,0 +1,41 @@
+{
+  "id": "landslide_mountain_road",
+  "version": "3.0.0",
+  "title": "土石流警戒：山區道路",
+  "hazard": "landslide_debris_flow",
+  "locationProfile": "mountain_road_vehicle",
+  "opening": "豪雨期間，你在山區道路收到土石流紅色警戒與前方道路封閉通知。後方安全迴轉點仍可使用，官方公告替代路線通往避難處所。",
+  "notice": "演練使用虛構道路狀態；真實路況、警戒區與避難路線只採官方資料。",
+  "learningObjectives": [
+    "收到土石流警戒與封路資訊時立即停止前進",
+    "在安全迴轉點仍可使用時提早折返",
+    "只採用官方公告的替代路線與避難處所"
+  ],
+  "commonMisconceptions": ["車輛性能好就能穿越封閉路段", "溪谷捷徑可以避開塞車", "看到前車通過就代表路線安全"],
+  "reflectionQuestions": ["為什麼土石流警戒階段的提早撤離比災害發生後逃跑重要？", "替代路線資訊應從哪裡取得？"],
+  "questionPattern": "[?？]|是否|是不是|能不能|可不可以|怎麼|如何|為什麼|嗎|要不要|如果|假如|假設",
+  "negationPattern": "(?:不想|不打算|不會|不要|不能|不可|沒有|沒|不|別|勿|避免)[^，。；、!?！？]{0,5}$",
+  "splitPattern": "[，。；、,;!！\\n]|然後|接著|但是|但|而且|並且|也|再來",
+  "initialNode": "warning", "initialState": {"physicalStatus": "EXPOSED", "resources": {"battery": 70, "water": 2, "energy": 90}, "facts": {"turnaroundOpen": true, "forwardRoadClosed": true}},
+  "actions": [
+    {"id": "confirm_warning", "label": "確認官方警戒與封路資訊", "pattern": "確認.*(?:官方|土石流警戒|道路封閉)|查看.*(?:官方|警戒|封路)"},
+    {"id": "turn_back", "label": "在安全點立即迴轉", "pattern": "(?:立即|立刻|現在|馬上).*(?:安全地點|安全點).*(?:迴轉|折返)|迴轉.*不穿越.*警戒區"},
+    {"id": "cross_closed", "label": "穿越封閉警戒區", "pattern": "(?:穿越|硬闖|開過|通過).*(?:封閉|警戒區|土石流潛勢溪流)"},
+    {"id": "alternate_route", "label": "採用官方替代路線前往避難處所", "pattern": "(?:改走|採用|沿著).*(?:官方|公告).*(?:替代路線|避難路線).*(?:避難處所|撤離)|官方.*替代路線.*避難"},
+    {"id": "shortcut", "label": "自行走溪谷捷徑", "pattern": "(?:溪谷|河床|溪床).*(?:捷徑|穿越|走)"}
+  ],
+  "nodes": [
+    {"id": "warning", "title": "不要進入封閉道路", "situation": "前方已封閉，後方迴轉點仍可使用。", "task": "確認警戒並立即折返。",
+      "required": ["confirm_warning", "turn_back"], "optional": [], "available": ["confirm_warning", "turn_back", "cross_closed"],
+      "hazards": {"cross_closed": {"terminal": true, "sessionStatus": "FAILED", "physicalStatus": "CRITICAL", "message": "你闖入封閉的土石流警戒區，遭遇落石與土砂。本次演練失敗。"}},
+      "onComplete": {"to": "reroute", "physicalStatus": "SHELTERED", "message": "你在迴轉點仍可用時離開封閉路段。接下來要選擇經官方確認的避難路線。"}
+    },
+    {"id": "reroute", "title": "前往避難處所", "situation": "官方替代路線仍開放，溪谷捷徑未經確認且可能位於土石流路徑。", "task": "沿官方公告路線前往避難處所。",
+      "required": ["alternate_route"], "optional": [], "available": ["alternate_route", "shortcut"],
+      "hazards": {"shortcut": {"terminal": true, "sessionStatus": "FAILED", "physicalStatus": "CRITICAL", "message": "你自行進入溪谷捷徑，進入土石流可能通過的低地。本次演練失敗。"}},
+      "terminal": {"sessionStatus": "COMPLETED", "physicalStatus": "EVACUATED", "completionKind": "SAFE_AREA_REACHED", "message": "你依官方替代路線抵達避難處所。本次演練以『完成撤離』結束。"}
+    }
+  ],
+  "reflection": "土石流防災重點是接收警戒、提早撤離、遵守封路與使用官方避難路線，而不是靠車輛冒險穿越。",
+  "sources": [{"agency": "農業部農村發展及水土保持署", "title": "土石流及大規模崩塌防災資訊網", "url": "https://246.ardswc.gov.tw/"}]
+}

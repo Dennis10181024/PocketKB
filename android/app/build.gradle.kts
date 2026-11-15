@@ -16,6 +16,10 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+        val coachUrl = providers.gradleProperty("pocketkbCoachUrl").getOrElse("http://127.0.0.1:5175")
+        require(Regex("https://[^\\s\"\\\\]+|http://127\\.0\\.0\\.1:5175").matches(coachUrl)) { "Coach URL must be HTTPS or the local demo endpoint" }
+        buildConfigField("String", "COACH_URL", "\"$coachUrl\"")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             abiFilters += listOf("arm64-v8a")
@@ -50,6 +54,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     // One versioned scenario source, served directly by the PWA and bundled offline in APK.
@@ -84,6 +89,9 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
