@@ -21,6 +21,8 @@ data class ScenarioStateV3(
     val resources: Map<String, Int> = emptyMap(),
     val facts: Map<String, String> = emptyMap(),
     val events: List<ScenarioEventV3> = emptyList(),
+    val elapsed: Int = 0,
+    val consecutiveQuestions: Int = 0,
 )
 
 data class ScenarioResultV3(
@@ -202,6 +204,17 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
     }
 
     fun step(before: ScenarioStateV3, text: String, intent: String = "action"): ScenarioResultV3 {
+        val result = rawStep(before, text, intent)
+        val state = result.state
+        val clock = DrillLanguage.advance(spec, result.kind, text, state.elapsed, state.consecutiveQuestions) ?: return result
+        val event = clock.event
+        val message = event?.getString("message")
+        val next = (event?.let { patch(state,it) } ?: state).copy(elapsed = clock.elapsed, consecutiveQuestions = clock.questions,
+            events = if (message == null) state.events else state.events + ScenarioEventV3(state.node, kind = "environment_change", message = message))
+        return result.copy(state = next, message = if (message == null) result.message else "${result.message} $message")
+    }
+
+    private fun rawStep(before: ScenarioStateV3, text: String, intent: String): ScenarioResultV3 {
         var state = before.copy(
             accepted = before.accepted.toList(),
             resources = before.resources.toMap(),
@@ -215,14 +228,20 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         if (intent == "observe") return result("observe", node.getString("situation"))
         val input = text.trim()
         if (input.isEmpty()) return result("clarify", "請描述你現在實際要採取的行動。")
-        if (intent == "question" || Regex(spec.getString("questionPattern")).containsMatchIn(input)) {
-            return result("question", "這句被視為詢問，尚未執行任何行動。")
-        }
+        DrillLanguage.nonAction(spec, input, intent, node)?.let { (kind, message) -> return result(kind, message) }
 
         val availableIds = node.strings("available")
         val available = matches(input).filter { it.getString("id") in availableIds }
-        if (available.isEmpty()) return result("clarify", "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。")
+        if (available.isEmpty()) return result("clarify", DrillLanguage.unclear(input, node.getString("task")))
         val matchedIds = available.map { it.getString("id") }
+        val clauses = input.replace(Regex("\\s"), "").split(Regex(spec.getString("splitPattern")))
+        val negative = Regex(spec.getString("negationPattern"))
+        if (available.any { action ->
+                val pattern = Regex(action.getString("pattern"))
+                clauses.any { clause -> pattern.findAll(clause).any { negative.containsMatchIn(clause.substring(0, it.range.first)) } }
+            }) {
+            return result("clarify", "這次回答包含否定或互相衝突的決定。請確認你最後真正要採取的行動。")
+        }
         spec.optJSONArray("conflicts")?.let { conflicts ->
             for (index in 0 until conflicts.length()) {
                 val group = conflicts.getJSONArray(index)
@@ -236,8 +255,9 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         available.firstNotNullOfOrNull { action ->
             unmetRequirement(state, action)?.let { action to it }
         }?.let { (action, reason) ->
-            state = state.copy(events = state.events + ScenarioEventV3(node.getString("id"), action.getString("id"), "blocked"))
-            return result("blocked", "$reason，因此沒有執行。請改用目前仍可行的方法。")
+            val dangerous = action.optBoolean("unsafeWhenBlocked")
+            state = state.copy(events = state.events + ScenarioEventV3(node.getString("id"), action.getString("id"), if (dangerous) "hazard" else "blocked"))
+            return result(if (dangerous) "risk" else "blocked", action.optString("blockedMessage", "$reason，因此沒有執行。請改用目前仍可行的方法。"))
         }
 
         available.forEach { action ->
@@ -250,9 +270,9 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
                         sessionStatus = hazard.optString("sessionStatus", "FAILED"),
                         completionKind = hazard.optString("completionKind", "CRITICAL_FAILURE"),
                     )
-                    return result("failed", hazard.getString("message"))
+                    return result("failed", listOf(hazard.getString("message"), action.optString("teaching")).filter(String::isNotBlank).joinToString(" "))
                 }
-                return result("risk", hazard.getString("message"))
+                return result("risk", listOf(hazard.getString("message"), action.optString("teaching")).filter(String::isNotBlank).joinToString(" "))
             }
         }
 
@@ -270,9 +290,11 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
             state = changed
             return result("environment_change", event.getString("message"))
         }
-        fresh.mapNotNull { node.optJSONObject("effects")?.optJSONObject(it.getString("id")) }
-            .firstOrNull { it.optString("kind") == "risk" }?.let { effect ->
-                return result("risk", effect.getString("message"))
+        fresh.firstNotNullOfOrNull { action ->
+            node.optJSONObject("effects")?.optJSONObject(action.getString("id"))
+                ?.takeIf { it.optString("kind") == "risk" }?.let { action to it }
+        }?.let { (action, effect) ->
+                return result("risk", listOf(effect.getString("message"), action.optString("teaching")).filter(String::isNotBlank).joinToString(" "))
             }
 
         val missing = node.strings("required").filterNot { it in state.accepted }

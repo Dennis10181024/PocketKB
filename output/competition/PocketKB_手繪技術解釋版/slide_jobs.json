@@ -1,0 +1,483 @@
+{
+  "run_status": "slides_recorded",
+  "deck_name": "PocketKB_手繪技術解釋版",
+  "selected_backend": "built-in image tool",
+  "sample_generation_method": {
+    "backend_used": "built-in image tool",
+    "tool_name": "image_gen",
+    "mode": "edit",
+    "model_config": "built-in default",
+    "prompt_source": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\prompts\\slide_07.sample.json",
+    "size": "16:9 landscape",
+    "quality": "built-in default",
+    "approved_sample_path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+    "input_context_preparation": "Load the approved sample with view_image, then pass it to image_gen through referenced_image_paths as a style-only reference.",
+    "handoff_rule": "Use the same built-in image_gen edit path with the approved sample as style-only reference; return a blocker if unavailable."
+  },
+  "max_concurrent_slides": 3,
+  "slides": [
+    {
+      "slide_id": "slide_01",
+      "number": 1,
+      "title": "PocketKB Edge",
+      "job": "prompts/slide_01.json",
+      "out": "origin_image/slide_01.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_01",
+        "agent_nickname": "slide_01",
+        "prompt": "prompts/slide_01.json",
+        "prompt_sha256": "9c6359318494696aa95a6a8f1ef2301ed2d6386d70bfcf7a638e7b091475c115",
+        "dispatched_at": "2026-10-01T14:07:30Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_01",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7ca-851f-7402-9906-52e5df32685d\\exec-079f06c4-7b84-439f-b5d8-2cdb2ca6400a.png",
+        "selected_source_sha256": "842f7241d300ca36a3856284b380fed38569011547701eb986ef8f900ea749a9",
+        "final_image": "origin_image/slide_01.png",
+        "final_image_sha256": "842f7241d300ca36a3856284b380fed38569011547701eb986ef8f900ea749a9",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "繁體中文清晰；封面內容完整；手繪風格一致；無裁切、重疊或頁碼。",
+        "recorded_at": "2026-10-01T14:09:27Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_02",
+      "number": 2,
+      "title": "防災真正的缺口在災前到災時",
+      "job": "prompts/slide_02.json",
+      "out": "origin_image/slide_02.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_02",
+        "agent_nickname": "slide_02",
+        "prompt": "prompts/slide_02.json",
+        "prompt_sha256": "6386ff5bbd62b9366585ff931dff3d25d7ed6f8f6f8732f5b192b438835f9851",
+        "dispatched_at": "2026-10-01T14:07:58Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_02",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7ca-d792-7d61-b9b3-99bc3ecfd224\\exec-cd8247b9-ba69-4d17-bd88-1a5da230688a.png",
+        "selected_source_sha256": "c6e5094904a537d66787ef6080476332b5a848623d0ee08150b967fc6bfa31f8",
+        "final_image": "origin_image/slide_02.png",
+        "final_image_sha256": "c6e5094904a537d66787ef6080476332b5a848623d0ee08150b967fc6bfa31f8",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "三個問題與全部說明均完整可讀；繁體中文、圖像方向與手繪風格正確。",
+        "recorded_at": "2026-10-01T14:11:07Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_03",
+      "number": 3,
+      "title": "聚焦於安全任務",
+      "job": "prompts/slide_03.json",
+      "out": "origin_image/slide_03.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_03",
+        "agent_nickname": "slide_03",
+        "prompt": "prompts/slide_03.json",
+        "prompt_sha256": "94c8e46f1e9e34a5ae61f09a2d990a2590ee6e47f244161653a3853f066960f5",
+        "dispatched_at": "2026-10-01T14:08:20Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_03",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7cb-4b4f-7371-b2b3-c2fbc3d741c8\\exec-fd2b01f2-fe3c-4753-9cc1-8936097fbcdb.png",
+        "selected_source_sha256": "eec32daa07f5e2cf427c25770d03a487c2442deb6f4470e24d3255568b13b4b2",
+        "final_image": "origin_image/slide_03.png",
+        "final_image_sha256": "eec32daa07f5e2cf427c25770d03a487c2442deb6f4470e24d3255568b13b4b2",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "三段安全任務與說明完整；繁體中文清楚；人工接管分支與手繪風格正確。",
+        "recorded_at": "2026-10-01T14:10:23Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_04",
+      "number": 4,
+      "title": "核心創新：從提醒工具變成自主代理",
+      "job": "prompts/slide_04.json",
+      "out": "origin_image/slide_04.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_01",
+        "agent_nickname": "slide_01",
+        "prompt": "prompts/slide_04.json",
+        "prompt_sha256": "69f7b474db5f28473babccc7f3e57397c3270b0c75d4e2445711a058fa4b5dc2",
+        "dispatched_at": "2026-10-01T14:09:49Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_01",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7ca-851f-7402-9906-52e5df32685d\\exec-8a799aa9-4d84-4235-b438-1e75e4d2c594.png",
+        "selected_source_sha256": "46577d2bf526eb6ecb0c32fd8eb2d7d17739e6316eaab73f315de9ddf2f52e76",
+        "final_image": "origin_image/slide_04.png",
+        "final_image_sha256": "46577d2bf526eb6ecb0c32fd8eb2d7d17739e6316eaab73f315de9ddf2f52e76",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "完整5欄5列表格、標籤、副標與底部說明均清楚正確，風格一致。",
+        "recorded_at": "2026-10-01T14:11:59Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_05",
+      "number": 5,
+      "title": "自主應變流程：Observe → Plan → Act → Verify",
+      "job": "prompts/slide_05.json",
+      "out": "origin_image/slide_05.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_03",
+        "agent_nickname": "slide_03",
+        "prompt": "prompts/slide_05.json",
+        "prompt_sha256": "ed6190183600e1dfce1ed5f59ddd33646c72f4fc4290397507926d370c37aed7",
+        "dispatched_at": "2026-10-01T14:10:44Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_03",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7cb-4b4f-7371-b2b3-c2fbc3d741c8\\exec-463e453c-1eec-4e72-b1b6-2e6aaefffde6.png",
+        "selected_source_sha256": "c90b642261c8d7f1d0e982afd8e4af2574c8a1a61f38fa37d4af3aceb7d6e503",
+        "final_image": "origin_image/slide_05.png",
+        "final_image_sha256": "c90b642261c8d7f1d0e982afd8e4af2574c8a1a61f38fa37d4af3aceb7d6e503",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "完整流程表、回到Plan與人工接管分支均清楚，治理說明與中英文用語正確。",
+        "recorded_at": "2026-10-01T14:12:44Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_06",
+      "number": 6,
+      "title": "平時情境：只檢查災時真的會用到的項目",
+      "job": "prompts/slide_06.json",
+      "out": "origin_image/slide_06.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_02",
+        "agent_nickname": "slide_02",
+        "prompt": "prompts/slide_06.json",
+        "prompt_sha256": "16ee08d5932d223a3037f21d75a08ed2d079bd6931554406752d9b427c8f93be",
+        "dispatched_at": "2026-10-01T14:11:31Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_02",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7ca-d792-7d61-b9b3-99bc3ecfd224\\exec-6e86cec8-3a14-4807-b34f-5ebed90f7799.png",
+        "selected_source_sha256": "814d5138a011f193503dac11e673f1c3c15315102b21d823b1a8ea5b4f0486a0",
+        "final_image": "origin_image/slide_06.png",
+        "final_image_sha256": "814d5138a011f193503dac11e673f1c3c15315102b21d823b1a8ea5b4f0486a0",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "完整巡檢表、30天、18%、設備異常與食品安全限制均清楚正確。",
+        "recorded_at": "2026-10-01T14:13:33Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_07",
+      "number": 7,
+      "title": "災時情境：黑暗、濃煙與台語求救",
+      "job": "prompts/slide_07.json",
+      "out": "origin_image/slide_07.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "accepted",
+      "dispatch": null,
+      "result": {
+        "final_image": "origin_image/slide_07.png",
+        "accepted_sample": true
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_08",
+      "number": 8,
+      "title": "企業採用：安全營運而不只是一個App",
+      "job": "prompts/slide_08.json",
+      "out": "origin_image/slide_08.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_01",
+        "agent_nickname": "slide_01",
+        "prompt": "prompts/slide_08.json",
+        "prompt_sha256": "bb8d510f99c5d9918782ef5eef43face1decd656adb338429e38844c3be5ebf1",
+        "dispatched_at": "2026-10-01T14:12:22Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_01",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7ca-851f-7402-9906-52e5df32685d\\exec-d50387f1-6a36-45f3-8849-b611dbab1714.png",
+        "selected_source_sha256": "dd1a448c71c498f889f57a78d850600b06ee8a338818b4e1d5dfbdc7970f5632",
+        "final_image": "origin_image/slide_08.png",
+        "final_image_sha256": "dd1a448c71c498f889f57a78d850600b06ee8a338818b4e1d5dfbdc7970f5632",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "四種角色、工作流程與決賽量測完整可讀；WAN與語音指標正確。",
+        "recorded_at": "2026-10-01T14:14:23Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_09",
+      "number": 9,
+      "title": "可部署的 NVIDIA 技術組態",
+      "job": "prompts/slide_09.json",
+      "out": "origin_image/slide_09.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_03",
+        "agent_nickname": "slide_03",
+        "prompt": "prompts/slide_09.json",
+        "prompt_sha256": "a60cb3f4a25ad8b44aea826a37ed983afc09c5251b09700f7b6cbdc919c0f391",
+        "dispatched_at": "2026-10-01T14:13:07Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_03",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7cb-4b4f-7371-b2b3-c2fbc3d741c8\\exec-c31bb684-6980-4f35-8558-561f441c2c54.png",
+        "selected_source_sha256": "9ddee2d134594fac16bf362c09dfad5441df9488448db605c053311ede3c1fa2",
+        "final_image": "origin_image/slide_09.png",
+        "final_image_sha256": "9ddee2d134594fac16bf362c09dfad5441df9488448db605c053311ede3c1fa2",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "NVIDIA四層組態、完整表格、產品名稱與底部限制說明均清楚正確。",
+        "recorded_at": "2026-10-01T14:15:49Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_10",
+      "number": 10,
+      "title": "平時與災時共用一個Agent Core",
+      "job": "prompts/slide_10.json",
+      "out": "origin_image/slide_10.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_02",
+        "agent_nickname": "slide_02",
+        "prompt": "prompts/slide_10.json",
+        "prompt_sha256": "c8cb3b3cd5da8590fa911df1c142c2f4eedb873e1ac62d814d2d133aed4527ff",
+        "dispatched_at": "2026-10-01T14:13:59Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_02",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7ca-d792-7d61-b9b3-99bc3ecfd224\\exec-b8818704-0f39-4c69-aeeb-eb8b84f1d32a.png",
+        "selected_source_sha256": "5b30c81949c2f01ccb469eec8be5819083219e0b787423853d672c4b0fc990aa",
+        "final_image": "origin_image/slide_10.png",
+        "final_image_sha256": "5b30c81949c2f01ccb469eec8be5819083219e0b787423853d672c4b0fc990aa",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "上下兩層完整架構、節點、箭頭與離線服務說明均清楚，技術名詞正確。",
+        "recorded_at": "2026-10-01T14:16:55Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_11",
+      "number": 11,
+      "title": "最小可行範圍與決賽驗收",
+      "job": "prompts/slide_11.json",
+      "out": "origin_image/slide_11.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_01",
+        "agent_nickname": "slide_01",
+        "prompt": "prompts/slide_11.json",
+        "prompt_sha256": "4558a35bae29b497b60b12290b3c3fe42efb024403edb4f297ee6be83d1c7e76",
+        "dispatched_at": "2026-10-01T14:14:55Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_01",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7ca-851f-7402-9906-52e5df32685d\\exec-79f59d04-c0fd-4822-8612-e563fc3e4a05.png",
+        "selected_source_sha256": "bdcdeeff97e88e844d92e7a3f4b4098bd95f0c73ddce0a9fa8ef0ea702118105",
+        "final_image": "origin_image/slide_11.png",
+        "final_image_sha256": "bdcdeeff97e88e844d92e7a3f4b4098bd95f0c73ddce0a9fa8ef0ea702118105",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "完整驗收表與全部數字、英文指標均正確可讀，無裁切或重疊。",
+        "recorded_at": "2026-10-01T14:16:55Z"
+      },
+      "blocker": null
+    },
+    {
+      "slide_id": "slide_12",
+      "number": 12,
+      "title": "決賽展示",
+      "job": "prompts/slide_12.json",
+      "out": "origin_image/slide_12.png",
+      "input_images": [
+        {
+          "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+          "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+          "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+        }
+      ],
+      "requires_context_images": true,
+      "status": "recorded",
+      "dispatch": {
+        "agent_id": "/root/slide_03",
+        "agent_nickname": "slide_03",
+        "prompt": "prompts/slide_12.json",
+        "prompt_sha256": "ebd3b3f81a9fdaf43d4bf30483de47877b7ffd53133ed40cb1391ba983cf6ded",
+        "dispatched_at": "2026-10-01T14:16:15Z"
+      },
+      "result": {
+        "agent_id": "/root/slide_03",
+        "backend_used": "built-in image tool",
+        "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0f7cb-4b4f-7371-b2b3-c2fbc3d741c8\\exec-c01d1455-dab1-42f2-b031-62cd7b6df45e.png",
+        "selected_source_sha256": "e3b19d7165e0abf8e21d71c9b9143277567edadb44753ec199499fc304a314f7",
+        "final_image": "origin_image/slide_12.png",
+        "final_image_sha256": "e3b19d7165e0abf8e21d71c9b9143277567edadb44753ec199499fc304a314f7",
+        "expected_backend": "built-in image tool",
+        "expected_backend_labels": [
+          "built-in image tool",
+          "image_gen"
+        ],
+        "sample_generation_method_matched": true,
+        "qa_note": "四步Demo與四項評審可見證據完整可讀，繁體中文、編號與版面均正確。",
+        "recorded_at": "2026-10-01T14:18:12Z"
+      },
+      "blocker": null
+    }
+  ],
+  "updated_at": "2026-10-01T14:18:12Z"
+}

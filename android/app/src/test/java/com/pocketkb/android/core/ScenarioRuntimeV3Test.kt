@@ -79,10 +79,10 @@ class ScenarioRuntimeV3Test {
         val initial = engine.create()
         val nonsense = engine.step(initial, "我今天晚餐想吃拉麵")
         assertEquals("clarify", nonsense.kind)
-        assertEquals(initial, nonsense.state)
+        assertEquals(initial.copy(elapsed = 1), nonsense.state)
         val conflict = engine.step(initial, "我立即沿東側指定路線撤離，但我先繼續收拾行李")
         assertEquals("clarify", conflict.kind)
-        assertEquals(initial, conflict.state)
+        assertEquals(initial.copy(elapsed = 1), conflict.state)
     }
 
     @Test fun displayedGuidedLabelsAreExecutable() {

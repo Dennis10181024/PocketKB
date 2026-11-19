@@ -1,0 +1,31 @@
+{
+  "slide": 12,
+  "revision": 2,
+  "backend_used": "built-in image tool",
+  "tool_name": "image_gen",
+  "mode": "edit",
+  "edit_target": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\drafts\\slide_12_before_sequence_revision.png",
+  "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0e8fd-85b2-7322-81e6-6e16bc1f346c\\exec-01ab8c48-1ae1-401e-b920-1d90410de602.png",
+  "final_output": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_12.png",
+  "left_sequence": [
+    [
+      "01 主動巡檢與派工",
+      "自動發現即期物資、低電量與設備異常，建立處理任務並確認完成。"
+    ],
+    [
+      "02 台語語音求助",
+      "火警發生時，長者以台語求助；Agent辨識位置與狀況，立即建立疏散任務。"
+    ],
+    [
+      "03 判斷風險並改道",
+      "發現原路線遭煙霧阻斷後，重新規劃替代路線並啟動模擬導引照明。"
+    ],
+    [
+      "04 確認執行與後續處理",
+      "確認語音指引、通報與設備動作皆已完成，並建立災後補貨與維修任務。"
+    ]
+  ],
+  "right_statement_3": "長者不必操作手機或打字，也能以台語求助，並透過語音確認下一步。",
+  "right_statement_4": "每項自動行動都會記錄風險等級、判斷依據與執行結果；必要時立即交由人員接管。",
+  "invariants": "All other text, illustrations, colors, spacing and layout remain unchanged."
+}

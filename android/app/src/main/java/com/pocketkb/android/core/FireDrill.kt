@@ -11,6 +11,7 @@ data class FireState(
     val version: String, val node: Int = 0, val completed: List<String> = emptyList(),
     val accepted: List<String> = emptyList(), val hints: List<FireHint> = emptyList(),
     val events: List<FireEvent> = emptyList(), val outcome: DrillOutcome = DrillOutcome.CONTINUE,
+    val elapsed: Int = 0, val consecutiveQuestions: Int = 0,
 )
 data class FireResult(val state: FireState, val kind: String, val message: String, val effects: List<String> = emptyList(), val delta: Int = 0) {
     fun judge() = DrillJudgeResult(
@@ -48,6 +49,16 @@ class FireDrill(val spec: JSONObject) {
         return signs
     }
     fun step(before: FireState, input: String, intent: String = "action"): FireResult {
+        val result = rawStep(before, input, intent)
+        val state = result.state
+        val clock = DrillLanguage.advance(spec, result.kind, input, state.elapsed, state.consecutiveQuestions) ?: return result
+        val message = clock.event?.getString("message")
+        val events = if (message == null) state.events else state.events + FireEvent(nodes[state.node].getString("id"), "environment_change", listOf(message))
+        return result.copy(state = state.copy(elapsed = clock.elapsed, consecutiveQuestions = clock.questions, events = events),
+            message = if (message == null) result.message else "${result.message} $message")
+    }
+
+    private fun rawStep(before: FireState, input: String, intent: String): FireResult {
         var state = before
         val node = nodes[state.node]
         val nodeId = node.getString("id")
@@ -63,8 +74,7 @@ class FireDrill(val spec: JSONObject) {
             if (used < hints.size) state = state.copy(hints = state.hints + FireHint(nodeId, used + 1))
             return result("hint", hints[used.coerceAtMost(hints.lastIndex)])
         }
-        if (intent == "question" || Regex(spec.getString("questionPattern")).containsMatchIn(text))
-            return result("question", "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：${node.getString("answer")}")
+        DrillLanguage.nonAction(spec, text, intent, node)?.let { (kind, message) -> return result(kind, message) }
         if (Regex(spec.getString("uncertainPattern")).containsMatchIn(text))
             return result("clarify", "這句包含假設或不確定語意。請確認你現在實際決定做什麼；也可以選擇引導行動。")
         val actionSigns = actions.map { it to mentions(text, it.getString("pattern")) }
@@ -80,6 +90,8 @@ class FireDrill(val spec: JSONObject) {
             val labels = dangers.map { it.getString("label") }
             state = state.copy(outcome = if (fatal) DrillOutcome.FAILED else state.outcome,
                 events = state.events + FireEvent(nodeId, if (fatal) "failed" else "risk", labels))
+            if (dangers.all { it.has("consequence") && it.has("teaching") })
+                return result(if (fatal) "failed" else "risk", dangers.joinToString(" ") { it.getString("consequence") + " " + it.getString("teaching") })
             return result(if (fatal) "failed" else "risk", "${labels.joinToString("、")}不適合目前濃煙阻斷的設定。" +
                 if (fatal) "本次模擬停止，可回顧後重新練習。" else "尚未執行此危險選擇；請重新決定，已完成的安全行動仍保留。")
         }
@@ -96,7 +108,7 @@ class FireDrill(val spec: JSONObject) {
             return result(if (state.outcome == DrillOutcome.SUCCESS) "success" else "advance", node.getString("completion") +
                 if (deferred) " 本回合只確認目前階段，其他行動請在下一階段確認。" else "", fresh.map { it.getString("effect") })
         }
-        if (fresh.isEmpty()) return result("clarify", "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。")
+        if (fresh.isEmpty()) return result("clarify", DrillLanguage.unclear(text, node.getString("task")))
         return result("partial", "已記住：${fresh.joinToString("、") { it.getString("label") }}。尚待完成：${missing.joinToString("、", transform = ::label)}。", fresh.map { it.getString("effect") })
     }
     fun review(state: FireState): String {

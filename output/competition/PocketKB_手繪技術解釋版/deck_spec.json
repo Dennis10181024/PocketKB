@@ -1,0 +1,694 @@
+{
+  "deck_name": "PocketKB_手繪技術解釋版",
+  "language": "Traditional Chinese (Taiwan)",
+  "goal": "為2026 Agentic AI on the Edge Hackathon製作12頁競賽企劃，讓評審快速看懂PocketKB Edge如何在災前維持必要準備、在災時以在地語音自主規劃與執行安全任務，並以NVIDIA邊緣技術落地與驗收。",
+  "deck_context": {
+    "source_summary": "PocketKB Edge是一個場域內運行的防災邊緣代理。它由時間、感測器、庫存與台灣華語／台語語音事件主動啟動，依Observe、Plan、Act、Verify流程呼叫受限制工具，必要時重規劃或交由人員接管。",
+    "core_claim": "競爭力來自一個可完成、可驗證、可受控的安全任務流程，而不是技術數量；平時維持關鍵物資設備，災時協助長者在黑暗與濃煙中以語音獲得可執行的下一步。",
+    "canonical_terms": [
+      "PocketKB Edge",
+      "Agent",
+      "Observe",
+      "Plan",
+      "Act",
+      "Verify",
+      "台灣華語",
+      "台語",
+      "DGX Spark",
+      "NeMo Speech",
+      "Nemotron",
+      "NeMo Agent Toolkit",
+      "NemoClaw",
+      "OpenShell"
+    ],
+    "safety_position": "真實控制需經白名單、風險分級、工具回傳與人工接管；決賽使用模擬感測器、建物圖與設備閘道重播。",
+    "content_preservation": "原始12頁投影片的表格、欄位、指標、數字與說明句均需保留；視覺重製不得省略內容。"
+  },
+  "selected_image_backend": "built-in image tool",
+  "max_concurrent_slides": 3,
+  "sample_generation_method": {
+    "backend_used": "built-in image tool",
+    "tool_name": "image_gen",
+    "mode": "edit",
+    "model_config": "built-in default",
+    "prompt_source": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\prompts\\slide_07.sample.json",
+    "size": "16:9 landscape",
+    "quality": "built-in default",
+    "approved_sample_path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+    "input_context_preparation": "Load the approved sample with view_image, then pass it to image_gen through referenced_image_paths as a style-only reference.",
+    "handoff_rule": "Use the same built-in image_gen edit path with the approved sample as style-only reference; return a blocker if unavailable."
+  },
+  "style": {
+    "name": "手繪技術解釋風",
+    "visual_direction": "近白紙張上的精準手繪技術圖解；石墨線稿搭配淡藍、鼠尾草綠、淺橘與少量淡紫；冷靜可信、具有人味；避免制式AI卡片、3D光澤、科技霓虹與過度裝飾。",
+    "color_palette": "paper white #FCFBF7, dark navy ink, graphite gray, pale blue, sage green, soft peach, pale lavender; red only for danger and blocked states",
+    "typography": "清楚的繁體中文手寫標題與工整圖說；標題深藍粗筆，內文較細；所有表格文字必須可讀，不用英文假字或亂碼",
+    "texture_and_finish": "subtle paper texture, pencil hatching, flat marker highlights, airy whitespace",
+    "deck_consistency": "match the approved slide 7 sample in line weight, color, typography mood, density and calm technical tone; vary composition by slide role"
+  },
+  "approved_style_reference": {
+    "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+    "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+    "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+  },
+  "slides": [
+    {
+      "number": 1,
+      "title": "PocketKB Edge",
+      "role": "cover",
+      "intent": "用一張安靜、有記憶點的封面，直接說清楚災前準備與災時行動的同一個核心。",
+      "key_points": [
+        "2026 競賽企劃",
+        "災前確保準備充足，災中冷靜判斷應對",
+        "平時確保關鍵設備與物資可用；火警時依現況自主判斷規劃逃生方式。",
+        "2026 Agentic AI on the Edge Hackathon 競賽企劃"
+      ],
+      "local_context": {
+        "required_exact_text": [
+          "2026 競賽企劃",
+          "PocketKB Edge",
+          "災前確保準備充足，災中冷靜判斷應對",
+          "平時確保關鍵設備與物資可用；火警時依現況自主判斷規劃逃生方式。",
+          "2026 Agentic AI on the Edge Hackathon 競賽企劃"
+        ]
+      },
+      "layout": {
+        "composition": "左側大標題與兩行副標；右側為簡潔宿舍剖面，三個節點以細線連接：感知、判斷、行動。底部保留競賽名稱。",
+        "content_zones": "left title 55%, right visual 45%, small footer",
+        "spacing": "大量留白，畫面只有一個主要圖解"
+      },
+      "visual_elements": {
+        "main_visual": "宿舍剖面、防災櫃、感測器、語音波形與安全出口的手繪組合；用淡藍到鼠尾草綠表示從平時到災時",
+        "supporting_elements": "細線標註 感知 → 判斷 → 行動"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 2,
+      "title": "防災真正的缺口在災前到災時",
+      "role": "problem framing",
+      "intent": "讓評審快速看到三個彼此連動的缺口，而不是堆疊功能。",
+      "key_points": [
+        "物資、設備與人員狀態彼此分離，等到災害發生才發現已經太晚",
+        "平時準備缺乏自動追蹤機制",
+        "災時資訊快速改變",
+        "恐慌讓介面失效",
+        "災前準備可能失效，災時人又可能無法操作；Agent要把自行判斷不同環節該如何應對。"
+      ],
+      "local_context": {
+        "required_exact_text": {
+          "subtitle": "物資、設備與人員狀態彼此分離，等到災害發生才發現已經太晚",
+          "columns": [
+            {
+              "heading": "平時準備缺乏自動追蹤機制",
+              "body": "防災包、電池、照明與感測器多靠人工定期檢查。\n發現即期、缺漏或設備離線後，也不一定有人追蹤到完成。"
+            },
+            {
+              "heading": "災時資訊快速改變",
+              "body": "煙霧、停電、出口與人員位置會持續變動，靜態逃生圖無法重規劃。\n管理者還要同時處理大量回報與設備狀態。"
+            },
+            {
+              "heading": "恐慌讓介面失效",
+              "body": "驚慌、注意力不集中或大腦空白會降低判斷。\n長者、濃煙中或手上抱著物品的人，可能無法打字與正常操作手機。"
+            }
+          ],
+          "bottom_statement": "災前準備可能失效，災時人又可能無法操作；Agent要把自行判斷不同環節該如何應對。"
+        }
+      },
+      "layout": {
+        "composition": "橫向三段手繪時間軸：平時準備、災時變動、人因失效。每段包含一個小圖與完整兩段說明，底部以手繪底線強調結論。",
+        "content_zones": "title/subtitle top, three equal narrative columns middle, conclusion bottom",
+        "spacing": "欄間用細鉛筆線分隔，文字左對齊且行距寬鬆"
+      },
+      "visual_elements": {
+        "main_visual": "防災櫃與感測器、濃煙與變動路線、長者與無法打字的手機三組小圖",
+        "supporting_elements": "淡橘危險標記與淡藍流程線"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 3,
+      "title": "聚焦於安全任務",
+      "role": "scope",
+      "intent": "用三段接力說清楚專案收斂後只做什麼，以及完成的判準。",
+      "key_points": [
+        "平時維持災時會用到的東西，火警時把住戶帶到安全避難場所",
+        "平時只確認關鍵準備",
+        "災時完成一套應變流程",
+        "只用證據判定完成"
+      ],
+      "local_context": {
+        "required_exact_text": {
+          "subtitle": "平時維持災時會用到的東西，火警時把住戶帶到安全避難場所",
+          "columns": [
+            {
+              "heading": "平時只確認關鍵準備",
+              "body": "監看煙霧感測與停電／照明狀態。\n巡檢食品、飲水期限和手電筒電量；發現異常就建立任務，重新掃描或讀值後才結案。"
+            },
+            {
+              "heading": "災時完成一套應變流程",
+              "body": "火警或台語求救觸發Agent，取得位置與煙霧狀態。\n原路線不可用就改走替代路線，再執行語音、模擬照明與校內通報。"
+            },
+            {
+              "heading": "只用證據判定完成",
+              "body": "路線須通過規則，照明須有工具回傳，指令須有語音回讀。\n任何一步失敗就重試、改計畫或交由人員接管。"
+            }
+          ]
+        }
+      },
+      "layout": {
+        "composition": "三段接力路徑，由左到右是準備、應變、驗證；每段用一個大標、小圖與完整說明，箭頭只連接階段。",
+        "content_zones": "title/subtitle top, three stages middle, small human takeover branch at far right",
+        "spacing": "文字區塊寬度一致，避免制式卡片陰影"
+      },
+      "visual_elements": {
+        "main_visual": "防災櫃與感測器 → 台語語音與逃生路線 → 回傳勾選與人工接管",
+        "supporting_elements": "淡藍流程箭頭、鼠尾草綠完成印記、淺橘風險分岔"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 4,
+      "title": "核心創新：從提醒工具變成自主代理",
+      "role": "comparison",
+      "intent": "以一張完整比較表證明創新點是自主完成多步任務，而不是增加更多技術名詞。",
+      "key_points": [
+        "比較重點是能否主動完成多步任務，並根據結果改變下一步",
+        "Agent維護任務狀態並自行選工具；規則否決危險決策；權限閘道限制動作；工具回傳決定是否結案、重試或升級。"
+      ],
+      "local_context": {
+        "required_exact_table": [
+          [
+            "方法",
+            "主動觸發",
+            "跨來源規劃",
+            "工具執行",
+            "驗證／重規劃"
+          ],
+          [
+            "紙本清單／行事曆",
+            "有限",
+            "否",
+            "否",
+            "否"
+          ],
+          [
+            "IoT監控儀表板",
+            "是",
+            "有限",
+            "有限",
+            "有限"
+          ],
+          [
+            "一般雲端聊天模型",
+            "否",
+            "是",
+            "有限",
+            "有限"
+          ],
+          [
+            "PocketKB Edge",
+            "是",
+            "是",
+            "是",
+            "是"
+          ]
+        ],
+        "subtitle": "比較重點是能否主動完成多步任務，並根據結果改變下一步",
+        "bottom_statement": "Agent維護任務狀態並自行選工具；規則否決危險決策；權限閘道限制動作；工具回傳決定是否結案、重試或升級。"
+      },
+      "layout": {
+        "composition": "上方標題與副標；中央為5欄5列完整手繪比較表。PocketKB Edge整列以淡綠色標記，其餘列交替近白與淡藍。底部保留完整說明句。",
+        "content_zones": "title 18%, exact table 62%, conclusion 20%",
+        "spacing": "表格欄線清楚、文字置中，方法欄左對齊，所有列均完整顯示"
+      },
+      "visual_elements": {
+        "main_visual": "完整比較矩陣，不改成能力卡；PocketKB Edge列有連續四個清楚勾選",
+        "supporting_elements": "小型鉛筆能力階梯沿表格右側上升"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 5,
+      "title": "自主應變流程：Observe → Plan → Act → Verify",
+      "role": "process",
+      "intent": "保留完整三欄流程表，同時讓重試、改計畫與人工接管的流向一眼可懂。",
+      "key_points": [
+        "每個事件都要自主執行到已驗證完成，或明確交由人員接管",
+        "自主不等於無限制：Agent可以主動推進，但每個工具都受規則、角色權限、參數白名單與完整稽核約束。"
+      ],
+      "local_context": {
+        "required_exact_table": [
+          [
+            "處理階段",
+            "Agent自主行為與工具",
+            "完成／轉向條件"
+          ],
+          [
+            "1 Observe／主動觀察",
+            "接收感測、庫存期限、警報、台灣華語／台語ASR及人員回報。",
+            "標示來源、時間與信心；衝突時建立確認任務。"
+          ],
+          [
+            "2 Plan／拆解與規劃",
+            "把事件拆成巡檢、更換、疏散、待協助、通報與設備子任務。",
+            "每項任務都有負責人、時限、風險與完成條件。"
+          ],
+          [
+            "3 Act／選擇與執行",
+            "自主呼叫物資、圖資、路線、通知、TTS及核准的輔助照明工具。",
+            "低風險自動執行；中風險核准；高風險拒絕並升級。"
+          ],
+          [
+            "4 Verify／驗證與重規劃",
+            "檢查新物品掃描、感測恢復、設備回傳、訊息收訖與語音回讀。",
+            "未達目標就換工具或改計畫；超過上限由人員接管。"
+          ]
+        ],
+        "subtitle": "每個事件都要自主執行到已驗證完成，或明確交由人員接管",
+        "bottom_statement": "自主不等於無限制：Agent可以主動推進，但每個工具都受規則、角色權限、參數白名單與完整稽核約束。"
+      },
+      "layout": {
+        "composition": "中央為3欄5列完整流程表。第一欄四階段各有手繪編號與不同淡色標記；右側細箭頭由Verify回到Plan，並分岔到人工接管。底部放完整治理說明。",
+        "content_zones": "title/subtitle top, exact table center, safety statement bottom",
+        "spacing": "第二欄最寬，第三欄次寬；文字左對齊且保持行距"
+      },
+      "visual_elements": {
+        "main_visual": "Observe、Plan、Act、Verify完整表格與回饋箭頭",
+        "supporting_elements": "小型盾牌代表規則與權限；人手圖示代表接管"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 6,
+      "title": "平時情境：只檢查災時真的會用到的項目",
+      "role": "case study",
+      "intent": "用完整巡檢表呈現Agent如何發現、處理、驗證，而不是只發送提醒。",
+      "key_points": [
+        "Agent不只提醒到期，而是主動建立任務並驗證場域恢復就緒",
+        "食品有效日期成立的前提是符合保存條件；Agent只能標記風險與建立人工檢查，不能自行宣告食品仍可安全食用。"
+      ],
+      "local_context": {
+        "required_exact_table": [
+          [
+            "Agent發現",
+            "自主處理",
+            "驗證與留下的證據"
+          ],
+          [
+            "飲水與食品30天內到期；儲存櫃曾出現溫濕度異常。",
+            "交叉比對條碼／OCR、期限與環境紀錄，產生輪替與人工檢查清單。",
+            "品項、批號、期限、儲存條件與判斷原因。"
+          ],
+          [
+            "手電筒電量18%，不足以支援預定演練時間。",
+            "建立更換電池任務並通知管理者，不擴充到其他物資種類。",
+            "電量門檻、負責人、完成期限與更換紀錄。"
+          ],
+          [
+            "煙霧感測器失聯，停電模式下輔助照明回報異常。",
+            "先重試與交叉查詢，再建立維修任務；未恢復就升級給設施單位。",
+            "感測心跳、照明回傳、重試與升級紀錄。"
+          ],
+          [
+            "管理者更換物資並完成維修。",
+            "重新掃描新品、讀取感測器與照明狀態；全部達標才關閉任務。",
+            "更換前後差異、完成者、時間與下一次巡檢日。"
+          ]
+        ],
+        "subtitle": "Agent不只提醒到期，而是主動建立任務並驗證場域恢復就緒",
+        "bottom_statement": "食品有效日期成立的前提是符合保存條件；Agent只能標記風險與建立人工檢查，不能自行宣告食品仍可安全食用。"
+      },
+      "layout": {
+        "composition": "左側窄欄畫防災櫃剖面，標出30天、18%與離線感測器；右側寬區保留3欄5列完整表格。底部放食品安全限制說明。",
+        "content_zones": "title/subtitle top, visual 22% left, exact table 72% right, caveat bottom",
+        "spacing": "表格文字左對齊，不使用過多圖示；數字30天與18%以淡橘圈註"
+      },
+      "visual_elements": {
+        "main_visual": "防災櫃線稿搭配完整巡檢表",
+        "supporting_elements": "條碼、電池、感測心跳、完成勾選的小型圖示"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 7,
+      "title": "災時情境：黑暗、濃煙與台語求救",
+      "role": "approved sample / disaster scenario",
+      "intent": "沿用已確認的代表性樣張；垂直樓層定位與5F平面動線分開呈現。",
+      "sample_approved": true,
+      "key_points": [
+        "長者說：我佇五樓，南邊攏是煙。",
+        "辨識位置與煙霧、安撫並確認、改走北側路線、啟動照明並通報。",
+        "無法打字，也能用台語求救。"
+      ],
+      "local_context": {
+        "speaker_note_retains_original_table": [
+          [
+            "現場變化",
+            "Agent自主調整",
+            "可查證的安全證據"
+          ],
+          [
+            "火警、停電；長者喊『我佇五樓，南邊攏是煙』。",
+            "台語ASR辨識樓層與煙霧，建立事件並封鎖南側候選路線。",
+            "語言、ASR信心、事件來源與路線節點。"
+          ],
+          [
+            "長者重複『我毋知欲按怎』。",
+            "TTS說『毋免驚，先毋通行南邊』，再慢速詢問是否看得到北側綠燈。",
+            "短句版本、重複播放、回讀與首響時間。"
+          ],
+          [
+            "北側可用，但走廊照明不足。",
+            "提出北側逃生步驟，經白名單閘道啟動輔助導引照明並驗證回傳。",
+            "路線規則、權限、設備狀態與替代方案。"
+          ],
+          [
+            "外網中斷；另有人回報行動不便。",
+            "留在本地推論，通知校內應變人員並持續確認疏散與協助兩項任務。",
+            "本地軌跡、通知收訖、任務狀態與人工接管。"
+          ]
+        ],
+        "bottom_statement": "決賽以模擬感測器、建物圖與設備閘道重播；未經消防與場域驗證的指令不會用於真實災害。"
+      },
+      "layout": {
+        "composition": "Reuse approved image exactly; do not regenerate."
+      },
+      "visual_elements": {
+        "main_visual": "approved sample"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 8,
+      "title": "企業採用：安全營運而不只是一個App",
+      "role": "enterprise leverage",
+      "intent": "保留角色、工作流程與決賽量測的完整對應，讓評審看見企業導入路徑。",
+      "key_points": [
+        "同一套平台同時降低人工巡檢負擔，並縮短災時形成可用行動的時間"
+      ],
+      "local_context": {
+        "required_exact_table": [
+          [
+            "角色",
+            "可採用的工作流程",
+            "決賽量測"
+          ],
+          [
+            "防火管理／應變中心",
+            "監看備災就緒度、Agent任務、例外與待核准動作；可暫停或接管。",
+            "首個可用行動時間、介入率、接管成功率。"
+          ],
+          [
+            "設施與物資管理",
+            "維護感測器、照明、防災包、控制白名單及巡檢工單。",
+            "巡檢工時、逾期任務、工具成功率。"
+          ],
+          [
+            "校內資訊單位",
+            "管理本地部署、角色權限、保存期限、版本與故障回復。",
+            "WAN中斷服務率、可重播事件比例。"
+          ],
+          [
+            "師生、長者與訪客",
+            "以台灣華語或台語免手持求助，接收可重複的短句語音指引。",
+            "分語言召回、指令理解率、回讀成功率。"
+          ]
+        ],
+        "subtitle": "同一套平台同時降低人工巡檢負擔，並縮短災時形成可用行動的時間"
+      },
+      "layout": {
+        "composition": "中央為3欄5列完整表格；第一欄每個角色配小型線稿圖示，第二欄最寬，第三欄用淡藍量測標籤。背景隱約畫同一個校園安全中樞，但不可干擾文字。",
+        "content_zones": "title/subtitle top, exact enterprise table filling main canvas",
+        "spacing": "每列高度足以容納完整句子，第三欄換行清楚"
+      },
+      "visual_elements": {
+        "main_visual": "角色—流程—量測完整對照表",
+        "supporting_elements": "防火管理、工具箱、伺服器、語音四個小圖示"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 9,
+      "title": "可部署的 NVIDIA 技術組態",
+      "role": "technology stack",
+      "intent": "避免技術堆疊感，清楚說明每層只解決一項必要問題並如何驗收。",
+      "key_points": [
+        "四層各自只解決一項必要問題；NeMo workflow與NemoClaw runtime不宣稱原生直連，實際橋接在工作坊鎖定。"
+      ],
+      "local_context": {
+        "required_exact_table": [
+          [
+            "項目",
+            "預定設定",
+            "驗收重點"
+          ],
+          [
+            "Edge Hardware",
+            "DGX Spark承載全部本地推論與事件狀態。",
+            "GB10 peak／steady記憶體與p95延遲。"
+          ],
+          [
+            "Speech Perception",
+            "NeMo Speech處理台灣華語／台語ASR與短句TTS。",
+            "分語言WER、求救詞召回與首響。"
+          ],
+          [
+            "Reasoning＋Workflow",
+            "Nemotron產生候選tool call；NeMo Agent Toolkit管理任務、重試與evaluation。",
+            "任務成功、重規劃及完整工具軌跡。"
+          ],
+          [
+            "Restricted Runtime",
+            "NemoClaw管理生命週期；OpenShell限制工具、網路與本地推論路由。",
+            "越權阻擋、白名單與斷網服務。"
+          ]
+        ],
+        "bottom_statement": "四層各自只解決一項必要問題；NeMo workflow與NemoClaw runtime不宣稱原生直連，實際橋接在工作坊鎖定。"
+      },
+      "layout": {
+        "composition": "左側畫四層手繪技術堆疊，右側保留3欄5列完整表格；四層與四列以相同淡色對應。底部保留完整限制說明。",
+        "content_zones": "title top, stack 24% left, exact table 70% right, caveat bottom",
+        "spacing": "NVIDIA產品名稱拼字必須正確；不用官方Logo，以純文字標籤呈現"
+      },
+      "visual_elements": {
+        "main_visual": "DGX Spark、NeMo Speech、Nemotron＋NeMo Agent Toolkit、NemoClaw＋OpenShell四層堆疊與驗收表",
+        "supporting_elements": "每層附一個量測尺圖示"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 10,
+      "title": "平時與災時共用一個Agent Core",
+      "role": "architecture",
+      "intent": "用雙層架構清楚區分自主工作流與受限制的執行／推論平面。",
+      "key_points": [
+        "事件來源不同，但任務規劃、安全工具、驗證與稽核使用同一套核心",
+        "事件資料、個資與模型留在場域；外網中斷且區網正常時維持完整服務，主機失聯才退回裝置端固定規則。"
+      ],
+      "local_context": {
+        "required_exact_architecture": {
+          "workflow_heading": "自主工作流｜平時巡檢＋災時應變",
+          "workflow_nodes": [
+            "時間／感測／語音事件\n環境／物資／台語ASR",
+            "Task Planner\nNeMo Agent Toolkit",
+            "確定性工具\n環境／物資／路線／通報",
+            "Act → Verify → Replan\n照明／TTS／工單／稽核"
+          ],
+          "runtime_heading": "執行與推論平面｜限制Agent能看、能做、能連到哪裡",
+          "runtime_nodes": [
+            "NemoClaw\n配置與生命週期",
+            "OpenShell\nsandbox／policy／白名單",
+            "inference.local\n受控推論路由",
+            "本地vLLM／Nemotron\nDGX Spark"
+          ],
+          "bottom_statement": "事件資料、個資與模型留在場域；外網中斷且區網正常時維持完整服務，主機失聯才退回裝置端固定規則。"
+        }
+      },
+      "layout": {
+        "composition": "兩條水平手繪架構帶。上層四節點由左至右，表示自主工作流；下層四節點由左至右，表示受限執行與推論。兩層以垂直虛線對應，底部是完整離線說明。",
+        "content_zones": "title/subtitle top, workflow band upper middle, runtime band lower middle, conclusion bottom",
+        "spacing": "節點採寬版標籤而不是卡片牆；箭頭方向清楚且只表示資料與控制流"
+      },
+      "visual_elements": {
+        "main_visual": "雙入口、單核心、受限執行平面的完整架構圖",
+        "supporting_elements": "左上以太陽表示平時、警鈴表示災時，兩者匯入同一核心；盾牌表示OpenShell限制"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 11,
+      "title": "最小可行範圍與決賽驗收",
+      "role": "validation plan",
+      "intent": "完整保留五個面向、入選前成果與決賽證據，證明範圍可做且可量。",
+      "key_points": [
+        "Safety、Agent Autonomy、Local Speech、Edge System、Resilience"
+      ],
+      "local_context": {
+        "required_exact_table": [
+          [
+            "面向",
+            "入選前可完成",
+            "DGX Spark決賽證據"
+          ],
+          [
+            "Safety",
+            "80則封存情境、工具白名單、模擬照明閘道與人工接管。",
+            "危險路線誤放行0次；未授權工具執行0次。"
+          ],
+          [
+            "Agent Autonomy",
+            "20個平時／災時多步任務，以mock endpoint驗證重試、重規劃與結案。",
+            "任務成功率、工具步數、重規劃成功率、介入率。"
+          ],
+          [
+            "Local Speech",
+            "40則經同意的台灣華語／台語語音，包含長者與警報噪音。",
+            "分語言WER、求救詞召回、首響與回讀成功率。"
+          ],
+          [
+            "Edge System",
+            "OpenAI-compatible adapter、context／併發設定與量測腳本。",
+            "GB10記憶體、TTFT、tokens/sec、1／4人p50／p95。"
+          ],
+          [
+            "Resilience",
+            "模擬WAN、LAN、模型、感測器與工具逾時。",
+            "本地持續服務、狀態保留、退回與接管成功率。"
+          ]
+        ]
+      },
+      "layout": {
+        "composition": "中央為3欄6列完整驗收表。第一欄五面向用手繪索引標籤；第二欄淡藍、第三欄淡綠。所有數字與英文指標完整保留並加鉛筆圈註。",
+        "content_zones": "title top, exact validation table filling remaining canvas",
+        "spacing": "第二與第三欄等寬，數字不拆散，表格不超出安全邊界"
+      },
+      "visual_elements": {
+        "main_visual": "完整MVP與決賽驗收表",
+        "supporting_elements": "80、0次、20、40、p50／p95等重點用淡色底線"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    },
+    {
+      "number": 12,
+      "title": "決賽展示",
+      "role": "demo summary",
+      "intent": "以四步Demo故事板收束，並明確列出評審能看見的證據。",
+      "key_points": [
+        "平時維持防災物資與設備就緒，火警時引導住戶前往安全地點"
+      ],
+      "local_context": {
+        "required_exact_text": {
+          "left_heading": "現場展示順序",
+          "steps": [
+            [
+              "01 主動巡檢與派工",
+              "自動發現即期物資、低電量與設備異常，建立處理任務並確認完成。"
+            ],
+            [
+              "02 台語語音求助",
+              "火警發生時，長者以台語求助；Agent辨識位置與狀況，立即建立疏散任務。"
+            ],
+            [
+              "03 判斷風險並改道",
+              "發現原路線遭煙霧阻斷後，重新規劃替代路線並啟動模擬導引照明。"
+            ],
+            [
+              "04 確認執行與後續處理",
+              "確認語音指引、通報與設備動作皆已完成，並建立災後補貨與維修任務。"
+            ]
+          ],
+          "right_heading": "評審可以看到",
+          "right_body": [
+            "Agent不是等人提問，而是由時間、感測器或語音事件主動啟動。",
+            "它能跨越環境、物資、圖資、語音與設備工具，根據結果重規劃。",
+            "長者不必操作手機或打字，也能以台語求助，並透過語音確認下一步。",
+            "每項自動行動都會記錄風險等級、判斷依據與執行結果；必要時立即交由人員接管。"
+          ]
+        }
+      },
+      "layout": {
+        "composition": "左側約55%為四格縱向小型故事板，逐格顯示01至04與完整說明；右側約40%為評審證據清單，四段完整文字搭配四個小型勾選。",
+        "content_zones": "title/subtitle top, demo sequence left, judge evidence right",
+        "spacing": "四個步驟有明確先後但不擁擠，右側每段保留足夠行距"
+      },
+      "visual_elements": {
+        "main_visual": "巡檢、台語求救、改道照明、驗證復原四格故事板",
+        "supporting_elements": "時間、感測器、語音三種主動觸發符號；結尾以手繪勾選收束"
+      },
+      "constraints": [
+        "使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。",
+        "保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。",
+        "文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。",
+        "延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。",
+        "不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。"
+      ]
+    }
+  ]
+}

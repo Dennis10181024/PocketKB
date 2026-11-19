@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1423"><title>PocketKB 本機教練設定</title><link rel="stylesheet" href="./styles.css"></head>
+<body><main class="app-shell"><div class="app-frame online-frame"><h1>啟用這台電腦的 GPT 教練</h1>
+<p>輸入你自己的 OpenAI API 金鑰。金鑰只傳送到本機後端，暫存在記憶體；關閉服務後即失效。對話開始後會使用你的 API 額度。</p>
+<p>預設模型 GPT-6.1 Terra。每輪通常有兩次模型請求，本次啟動最多100次；這是請求次數限制，不是金額上限。</p>
+<form id="setupForm"><label for="apiKey">OpenAI API 金鑰</label><input id="apiKey" name="apiKey" type="password" autocomplete="off" spellcheck="false" required maxlength="1000" placeholder="sk-…"><div class="button-row"><button type="submit" class="primary">啟用本機 GPT 教練</button></div></form>
+<p id="setupStatus" role="status" aria-live="polite"></p><a class="online-link ghost" href="./online.html">進入情境演練</a>
+<p class="tiny">這是開發者的本機設定頁，請勿提供真實帳號密碼。此服務目前只監聽 127.0.0.1，尚未部署公開後端。</p>
+</div></main><script type="module" src="./setup.js"></script></body></html>

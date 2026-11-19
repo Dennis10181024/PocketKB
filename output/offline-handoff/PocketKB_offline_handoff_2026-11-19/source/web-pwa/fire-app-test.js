@@ -1,0 +1,62 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const path = require('node:path');
+const engine = require('./fire-engine');
+const spec = require('./scenarios/fire-dorm.json');
+const nodes = new Map();
+const storage = new Map();
+const getNode = id => {
+  if (!nodes.has(id)) nodes.set(id, { innerHTML:'', value:'', textContent:'', addEventListener(){}, focus(){}, scrollTop:0, scrollHeight:0 });
+  return nodes.get(id);
+};
+const context = { console, FireDrill:engine, POCKETKB_FIRE_SPEC:spec,
+  localStorage: {getItem:k=>storage.get(k)||null, setItem:(k,v)=>storage.set(k,v), removeItem:k=>storage.delete(k)},
+  document:{querySelector:getNode, querySelectorAll:()=>[]}, navigator:{}, window:{}, confirm:()=>true, alert(){} };
+vm.createContext(context);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'app.js'),'utf8')+'\nglobalThis.test={state,startScenario,submitAction,fireInteract,renderFireView,saveRecord,scenarios,evaluateUserAction};',context);
+const t=context.test;
+function send(text) { getNode('#actionInput').value=text; t.submitAction(); }
+t.startScenario(spec.id);
+assert.match(getNode('#app').innerHTML,/學習模式・不限時/);
+send('我不關門，不塞門縫，也不打119');
+assert.equal(t.state.currentStep,1);
+send('我搭電梯');
+assert.equal(t.state.records.length,1);
+const failedId=t.state.sessionId;
+const frozen=JSON.stringify(t.state.messages);
+send('我關門');
+assert.equal(JSON.stringify(t.state.messages),frozen);
+assert.equal(t.state.records.length,1);
+assert.doesNotMatch(t.renderFireView(t.state.activeScenario),/id="submitBtn"/);
+t.startScenario(spec.id);
+assert.notEqual(t.state.sessionId,failedId);
+t.fireInteract('','hint');
+t.fireInteract('','hint');
+t.fireInteract('','hint');
+assert.equal(t.state.fireSession.hints.length,2);
+send('我關門');
+send('我撥119');
+send('我告知地址A棟宿舍');
+send('我回報五樓503室');
+send('我等待救援');
+send('我保持通訊並依消防人員指示');
+assert.equal(t.state.lastResult.outcome,'SUCCESS');
+assert.equal(t.state.records.length,2);
+assert.equal(t.state.records[0].completedSteps,3);
+assert.equal(t.state.records[0].hints.length,2);
+assert.ok(t.state.records[0].messages.length>10);
+send('我跳窗');
+assert.equal(t.state.records.length,2);
+assert.equal(JSON.parse(storage.get('pocketkb-records')).length,2);
+t.startScenario(spec.id);
+assert.equal(t.state.fireSession.accepted.length,0);
+send('我關門');
+t.startScenario(spec.id); // active restart saves once and starts clean
+assert.equal(t.state.records.length,3);
+assert.equal(t.state.records[0].completedSteps,1);
+assert.equal(t.state.fireSession.node,0);
+const underpass=t.scenarios.find(s=>s.id==='drill_typhoon_underpass');
+t.startScenario(underpass.id);
+assert.equal(t.evaluateUserAction(underpass,'我不進地下道，先停下並避開積水入口').progressDelta,1);
+console.log('PASS actual app submit: negation, failure lock, restart IDs, hints, multiturn success, saved-once, transcript, unfinished restart, legacy underpass');

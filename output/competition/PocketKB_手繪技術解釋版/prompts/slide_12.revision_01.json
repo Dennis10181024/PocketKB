@@ -1,0 +1,15 @@
+{
+  "slide": 12,
+  "backend_used": "built-in image tool",
+  "tool_name": "image_gen",
+  "mode": "edit",
+  "edit_target": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\drafts\\slide_12_before_wording_revision.png",
+  "selected_source": "C:\\Users\\Denni\\.codex\\generated_images\\01a0e8fd-85b2-7322-81e6-6e16bc1f346c\\exec-0fc41054-916c-4620-a6e1-7375e8c46d8b.png",
+  "final_output": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_12.png",
+  "changes": {
+    "subtitle": "平時維持防災物資與設備就緒，火警時引導住戶前往安全地點",
+    "step_04_heading": "04 確認結果與後續處理",
+    "step_04_description": "確認語音回讀、通報送達與設備執行結果，並建立補貨與維修任務。"
+  },
+  "invariants": "All other text, illustrations, colors, spacing and layout remain unchanged."
+}

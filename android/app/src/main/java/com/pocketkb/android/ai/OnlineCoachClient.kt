@@ -3,10 +3,21 @@ package com.pocketkb.android.ai
 import com.pocketkb.android.BuildConfig
 import com.pocketkb.android.core.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+
+internal suspend fun coachTurnOrFallback(remote: suspend () -> Unit, offline: () -> Unit) {
+    try {
+        remote()
+    } catch (error: CancellationException) {
+        throw error
+    } catch (_: Exception) {
+        offline()
+    }
+}
 
 /** Talks only to our coach backend. OpenAI credentials never enter the APK. */
 class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
@@ -17,8 +28,8 @@ class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
     private suspend fun request(path: String, body: JSONObject? = null): JSONObject = withContext(Dispatchers.IO) {
         val connection = URL(baseUrl.trimEnd('/') + path).openConnection() as HttpURLConnection
         try {
-            connection.connectTimeout = 5_000
-            connection.readTimeout = 100_000
+            connection.connectTimeout = 2_000
+            connection.readTimeout = if (path.endsWith("/turn")) 8_500 else 4_000
             connection.requestMethod = if (body == null) "GET" else "POST"
             if (body != null) {
                 connection.doOutput = true
@@ -36,6 +47,11 @@ class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
 
 /** Decodes backend state; local UI/review rendering continues to use the shared spec. */
 object OnlineCoachState {
+    private fun reply(value: JSONObject): String {
+        val sources = value.objects("citations").joinToString("\n") { "${it.getString("title")} · ${it.getString("url")}" }
+        return value.getString("reply") + if (sources.isEmpty()) "" else "\n\n來源\n$sources"
+    }
+
     fun fire(value: JSONObject): FireResult {
         val state = value.getJSONObject("state")
         val fire = FireState(
@@ -44,8 +60,9 @@ object OnlineCoachState {
             hints = state.objects("hints").map { FireHint(it.getString("node"), it.getInt("level")) },
             events = state.objects("events").map { FireEvent(it.getString("node"), it.getString("kind"), it.strings("labels")) },
             outcome = DrillOutcome.valueOf(state.getString("outcome")),
+            elapsed = state.optInt("elapsed"), consecutiveQuestions = state.optInt("consecutiveQuestions"),
         )
-        return FireResult(fire, value.getString("kind"), value.getString("reply"), delta = value.getJSONObject("result").optInt("progressDelta", 0))
+        return FireResult(fire, value.getString("kind"), reply(value), delta = value.getJSONObject("result").optInt("progressDelta", 0))
     }
     fun v3(value: JSONObject): ScenarioResultV3 {
         val state = value.getJSONObject("state")
@@ -56,6 +73,7 @@ object OnlineCoachState {
             sessionStatus = state.getString("sessionStatus"), physicalStatus = state.getString("physicalStatus"),
             completionKind = if (state.isNull("completionKind")) null else state.getString("completionKind"),
             nodeTurn = state.getInt("nodeTurn"), accepted = state.strings("accepted"),
+            elapsed = state.optInt("elapsed"), consecutiveQuestions = state.optInt("consecutiveQuestions"),
             resources = resources.keys().asSequence().associateWith { resources.getInt(it) },
             facts = facts.keys().asSequence().associateWith { facts.get(it).toString() },
             events = state.objects("events").map { event -> ScenarioEventV3(
@@ -63,6 +81,6 @@ object OnlineCoachState {
                 kind = event.getString("kind"), message = event.optString("message").takeIf { it.isNotBlank() && it != "null" },
             ) },
         )
-        return ScenarioResultV3(session, value.getString("kind"), value.getString("reply"))
+        return ScenarioResultV3(session, value.getString("kind"), reply(value))
     }
 }

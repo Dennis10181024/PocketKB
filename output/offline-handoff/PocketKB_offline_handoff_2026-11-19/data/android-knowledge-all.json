@@ -1,0 +1,379 @@
+{
+  "schemaVersion": "handoff-1",
+  "origin": "Android KnowledgeBase.kt current working tree",
+  "status": "EXPORT_ONLY_NOT_EXPERT_VALIDATED",
+  "contentWasRewritten": false,
+  "chunks": [
+    {
+      "id": "eq_001",
+      "title": "地震當下 DCH",
+      "content": "地震強烈搖晃時以 Drop, Cover, Hold On：趴下、掩護、穩住為第一反應。保護頭頸，躲到堅固桌下或牆角，避開窗戶、吊燈、櫃子與可能掉落物；不要相信黃金三角，也不要急著衝出教室或樓梯間。",
+      "category": "EARTHQUAKE",
+      "tags": [
+        "趴下",
+        "掩護",
+        "穩住",
+        "桌下",
+        "窗戶"
+      ],
+      "sourceId": "sourceNfaEarthquake",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "eq_002",
+      "title": "地震後撤離",
+      "content": "搖晃停止後先確認自身傷勢與出口安全，再檢查瓦斯、電源與水閥。若聞到瓦斯味，輕開窗、不要開關電器並撤離。撤離時走樓梯，不搭電梯，遠離玻璃、磁磚、招牌、受損建築與邊坡，並持續注意餘震。",
+      "category": "EARTHQUAKE",
+      "tags": [
+        "餘震",
+        "撤離",
+        "不要搭電梯",
+        "關火"
+      ],
+      "sourceId": "sourceNfaAftershock",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "eq_003",
+      "title": "受困求救",
+      "content": "若受困，節省體力，使用哨子、敲擊管線或傳訊息求救。避免大量喊叫造成缺氧，並保護口鼻避免粉塵吸入。",
+      "category": "EARTHQUAKE",
+      "tags": [
+        "受困",
+        "求救",
+        "粉塵",
+        "哨子"
+      ],
+      "sourceId": "sourceNfaAftershock",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "ty_001",
+      "title": "颱風前準備",
+      "content": "颱風前固定門窗與陽台物品，準備飲水、食物、手電筒、行動電源與常備藥。確認避難路線與警戒資訊。",
+      "category": "TYPHOON",
+      "tags": [
+        "門窗",
+        "物資",
+        "避難",
+        "警戒"
+      ],
+      "sourceId": "sourceNfaTyphoon",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "ty_002",
+      "title": "豪雨積淹水避險",
+      "content": "中央氣象署定義大雨為 24 小時 80 毫米以上或 1 小時 40 毫米以上；豪雨為 24 小時 200 毫米以上或 3 小時 100 毫米以上。強降雨可能造成積淹水、溪水暴漲、山崩落石與土石流；不要進入地下道、溪床、河堤、邊坡或水深不明道路。",
+      "category": "TYPHOON",
+      "tags": [
+        "地下道",
+        "涉水",
+        "邊坡",
+        "淹水"
+      ],
+      "sourceId": "sourceCwaRain",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "ty_003",
+      "title": "土石流與撤離",
+      "content": "豪雨期間山區坍方、落石與土石流風險會升高，低窪地區要慎防積淹水。若收到土石流、淹水或撤離警戒，要提早往高處或官方避難所移動，不要等到夜間雨勢變大才撤離。",
+      "category": "TYPHOON",
+      "tags": [
+        "土石流",
+        "高處",
+        "避難所",
+        "撤離"
+      ],
+      "sourceId": "sourceCwaRain",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "fi_001",
+      "title": "滅火器 PASS",
+      "content": "初期小火可用滅火器 PASS：拉開安全插銷、瞄準火源底部、壓握把、左右掃射。若火勢變大或有濃煙，先逃生再報案。",
+      "category": "FIRE",
+      "tags": [
+        "PASS",
+        "滅火器",
+        "火源底部",
+        "逃生"
+      ],
+      "sourceId": "sourceExtinguisher",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "fi_002",
+      "title": "濃煙逃生",
+      "content": "火災時以保命為第一目標，不收拾財物、不搭電梯、不躲浴室，也不要浪費時間找濕毛巾。若逃生路線無濃煙，立刻往下往外逃；若門把燙手或開門看見濃煙，立即關門阻煙、塞門縫，往反方向找第二出口，無法逃生時靠窗打 119 等待救援。",
+      "category": "FIRE",
+      "tags": [
+        "低姿勢",
+        "摸門把",
+        "關門阻煙",
+        "不搭電梯",
+        "119"
+      ],
+      "sourceId": "sourceTaipeiFireEscape",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "fi_003",
+      "title": "廚房油鍋起火",
+      "content": "油鍋起火不可潑水。先關火，蓋上鍋蓋或使用滅火毯隔絕氧氣；若火勢擴大，立即離開並關門。",
+      "category": "FIRE",
+      "tags": [
+        "油鍋",
+        "不可潑水",
+        "關火",
+        "鍋蓋",
+        "滅火毯"
+      ],
+      "sourceId": "sourceCookingFire",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "ma_001",
+      "title": "人潮推擠",
+      "content": "人潮壓迫時保持手臂在胸前形成呼吸空間，順著人流斜向離開，不逆向硬擠。跌倒時蜷縮護頭並盡快起身。",
+      "category": "MANMADE",
+      "tags": [
+        "人潮",
+        "胸前",
+        "呼吸空間",
+        "斜向離開"
+      ],
+      "sourceId": "sourceCrowd",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "ma_002",
+      "title": "可疑物品",
+      "content": "發現可疑包裹或異常物品，不觸碰、不移動、不拍近距離照片，保持距離並通知現場人員或 110。",
+      "category": "MANMADE",
+      "tags": [
+        "可疑物",
+        "不觸碰",
+        "距離",
+        "110"
+      ],
+      "sourceId": "sourcePolice110",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "co_001",
+      "title": "地震後火災",
+      "content": "地震後若聞到瓦斯味，使用「禁、關、推、離」：禁止開關任何電器或火源、關閉瓦斯總開關或瓦斯桶開關閥、輕推窗戶通風、離開現場到戶外並撥打 119。",
+      "category": "COMPOUND",
+      "tags": [
+        "瓦斯",
+        "不開電器",
+        "關閉瓦斯",
+        "撤離"
+      ],
+      "sourceId": "sourceGasLeak",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "co_002",
+      "title": "豪雨停電",
+      "content": "豪雨停電時使用手電筒，不使用明火照明。避免接觸泡水插座與電器，必要時切斷總電源並撤到高處。",
+      "category": "COMPOUND",
+      "tags": [
+        "停電",
+        "手電筒",
+        "泡水插座",
+        "高處"
+      ],
+      "sourceId": "sourceCwaRain",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "fa_001",
+      "title": "CPR 與 AED",
+      "content": "民眾版 CPR 口訣是「叫、叫、壓、電」。確認環境安全後叫喚拍肩並看胸部起伏；無反應且無正常呼吸時，請人打 119、拿 AED，立即胸外按壓。按壓速度每分鐘 100 到 120 下、深度約 5 到 6 公分，盡量不中斷。",
+      "category": "FIRST_AID",
+      "tags": [
+        "CPR",
+        "AED",
+        "119",
+        "胸外按壓"
+      ],
+      "sourceId": "sourceCpr",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "fa_002",
+      "title": "大量出血",
+      "content": "大量出血時直接加壓止血，抬高傷肢，使用乾淨紗布或布料。不要反覆掀開檢查，以免破壞凝血。",
+      "category": "FIRST_AID",
+      "tags": [
+        "出血",
+        "加壓",
+        "止血",
+        "紗布"
+      ],
+      "sourceId": "sourceCpr",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "pfa_001",
+      "title": "心理急救 PFA",
+      "content": "心理急救不是心理治療，而是在危機後提供人道、支持與實際協助。依 Look, Listen and Link：先看現場安全與急迫需求，再傾聽需求、協助穩定情緒，最後連結家人、服務、資訊與實際資源；不要逼迫對方詳細回憶創傷。",
+      "category": "FIRST_AID",
+      "tags": [
+        "心理急救",
+        "安全",
+        "傾聽",
+        "資源"
+      ],
+      "sourceId": "sourcePfa",
+      "localMaterialReference": false,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_001",
+      "title": "防災士理念：自助、互助、協作",
+      "content": "防災士的貢獻重點在自助與互助。第一原則是先保護自身性命；平時透過訓練、知識更新與家庭整備，讓自己成為能幫助他人的人。災害規模越大，政府越難即時抵達，親友、鄰里、學校、企業與社區組織的互助就越重要。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "防災士",
+        "自助",
+        "互助",
+        "協作",
+        "社區"
+      ],
+      "sourceId": "sourceBousaishiBasic",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_002",
+      "title": "防災士任務：資訊與人際網絡",
+      "content": "防災士不是被動等待指令的人，而是政府與民眾之間的橋樑。平時要主動蒐集防災資訊、提升知識與行動力，從自家做起並協助社區防災；災時則協助正確資訊傳達、資源連結、疏散與收容安置。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "防災士",
+        "資訊",
+        "網絡",
+        "疏散",
+        "收容"
+      ],
+      "sourceId": "sourceBousaishiBasic",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_003",
+      "title": "災害管理四階段",
+      "content": "災害防救工作可分為減災、整備、應變、復原重建四階段。減災重在掌握災害潛勢與降低風險；整備重在通訊、物資、避難收容與演練；應變重在保命、通報、疏散與資源調度；復原重建重在協助居民回復生活並把經驗轉回下一輪減災。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "減災",
+        "整備",
+        "應變",
+        "復原",
+        "災害管理"
+      ],
+      "sourceId": "sourceBousaishiBasic",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_004",
+      "title": "官方資訊與謠言辨識",
+      "content": "災害後常出現未經證實的預言、災情流言與二次災害謠言，會造成恐慌與錯誤行動。有疑慮時應查中央氣象署、內政部消防署、土石流及大規模崩塌防災資訊網、地方政府或派出所、公所等官方管道；不要轉傳未證實訊息，也不要佔用救災優先通信線路。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "官方資訊",
+        "謠言",
+        "氣象署",
+        "消防署",
+        "查證"
+      ],
+      "sourceId": "sourceBousaishiBasic",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_005",
+      "title": "居家防震整備",
+      "content": "平時要減少生活空間雜物，確保房門、走廊與避難路線暢通；大型家具應固定，重物不要放在高處，床邊避免放置可能翻倒的大型家具，窗戶可貼防爆膜並在床邊備妥容易穿上的便鞋，以降低玻璃與掉落物傷害。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "家具固定",
+        "逃生路線",
+        "寢室安全",
+        "防爆膜",
+        "便鞋"
+      ],
+      "sourceId": "sourceBousaishiBasic",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_006",
+      "title": "防災包與滾動儲備",
+      "content": "防災物資與緊急避難包要用平時消耗、用完補足的方式滾動更新。可先準備至少 3 日份糧食與飲水，再依家庭狀況增加常備藥、急救用品、雨衣、照明、行動電源、衛生用品、嬰幼兒或長者用品與寵物用品；防災包應放在容易取得且能背著走的位置，至少每半年檢查一次。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "防災包",
+        "緊急避難包",
+        "飲水",
+        "常備藥",
+        "滾動儲備"
+      ],
+      "sourceId": "sourceBousaishiBasic",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_007",
+      "title": "社區防災與 DIG 圖上訓練",
+      "content": "社區防災要先了解環境特性、居民屬性與災害類型，再透過踏查找出易致災點與資源點，討論對策、建立組織、研擬計畫、訓練演習並持續評估。DIG 圖上訓練強調在地圖上標示危險場所、防災資源、弱勢民眾、地下道、邊坡、土石流潛勢溪流與避難收容處所，訓練資訊處理與決策能力。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "社區防災",
+        "DIG",
+        "防災地圖",
+        "踏查",
+        "演練"
+      ],
+      "sourceId": "sourceBousaishiSlides",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "bs_008",
+      "title": "避難收容場所運作",
+      "content": "避難收容場所不是短暫躲避點，而是災民在特定期間生活的場所。運作應以避難者自治為主，設置避難者管理、資訊、物資等小隊，協助物資收發、資訊發布、垃圾與衛生管理、意見彙整。空間配置要考量家庭、弱勢族群、孕婦、嬰幼兒、長者、隱私與醫務需求，並在平時完成計畫與入住訓練。",
+      "category": "PREPAREDNESS",
+      "tags": [
+        "避難收容",
+        "自治組織",
+        "物資",
+        "弱勢族群",
+        "衛生"
+      ],
+      "sourceId": "sourceBousaishiBasic",
+      "localMaterialReference": true,
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import com.pocketkb.android.ai.LlamaCppEngine
 import com.pocketkb.android.ai.LocalLlmEngine
 import com.pocketkb.android.ai.ModelRuntimePolicy
 import com.pocketkb.android.ai.OnlineCoachClient
+import com.pocketkb.android.ai.coachTurnOrFallback
 import com.pocketkb.android.ai.OnlineCoachState
 import com.pocketkb.android.core.FireResult
 import com.pocketkb.android.core.ScenarioResultV3
@@ -64,6 +65,7 @@ data class PocketKbUiState(
     val onlineStatus: String = "離線規則模式",
     val onlineError: String = "",
     val onlineRevision: Int = 0,
+    val onlineLocalOnly: Boolean = false,
 )
 
 class PocketKbViewModel(
@@ -124,6 +126,10 @@ class PocketKbViewModel(
         val localId = before.activeSessionId ?: return
         val scenario = before.selectedScenario ?: return
         if (before.isGenerating) return
+        if (before.onlineLocalOnly) {
+            applyOfflineTurn(before, text, intent)
+            return
+        }
         val pending = pendingOnline
         if (pending != null && (pending.getString("text") != text || pending.getString("intent") != intent)) {
             _uiState.update { it.copy(onlineError = "上一筆回答尚未確認，請先以相同內容重試，或另開一次演練。") }
@@ -131,15 +137,15 @@ class PocketKbViewModel(
         }
         _uiState.update { it.copy(isGenerating = true, onlineError = "", onlineStatus = "教練正在理解你的回答…") }
         onlineJob = viewModelScope.launch {
-            try {
+            coachTurnOrFallback(remote = remote@{
                 val remote = remoteSession ?: onlineCoach.create(scenario.id).also {
                     if (_uiState.value.activeSessionId == localId) remoteSession = it
                 }
-                if (_uiState.value.activeSessionId != localId) return@launch
+                if (_uiState.value.activeSessionId != localId) return@remote
                 val request = pendingOnline ?: JSONObject().put("requestId", UUID.randomUUID().toString())
                     .put("revision", remote.getInt("revision")).put("text", text).put("intent", intent).also { pendingOnline = it }
                 val value = onlineCoach.turn(remote.getString("sessionId"), request)
-                if (_uiState.value.activeSessionId != localId) return@launch
+                if (_uiState.value.activeSessionId != localId) return@remote
                 check(value.getString("scenarioId") == scenario.id) { "線上劇本與目前場次不一致。" }
                 check(value.getString("version") == (before.fireState?.version ?: before.scenarioStateV3?.version)) { "線上劇本版本不同，請更新電腦與 App。" }
                 val fireResult = if (before.fireState != null) OnlineCoachState.fire(value) else null
@@ -147,15 +153,28 @@ class PocketKbViewModel(
                 remoteSession = value; pendingOnline = null
                 _uiState.update { it.copy(isGenerating = false,
                     onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1,
-                    onlineStatus = "GPT 線上教練", onlineError = "") }
+                    onlineStatus = if (value.optBoolean("offline")) "目前使用離線判讀" else "GPT 線上教練", onlineError = "") }
                 if (fireResult != null) sendFireInteraction(text, intent, fireResult)
                 if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
-            } catch (error: CancellationException) { throw error }
-            catch (error: Exception) {
-                if (_uiState.value.activeSessionId == localId) _uiState.update { it.copy(isGenerating = false,
-                    onlineStatus = "線上教練暫時未完成回覆", onlineError = (error.message ?: "請確認電腦服務已啟動。") + " 請保留原內容重試；同筆不會重複執行。") }
-            }
+            }, offline = {
+                if (_uiState.value.activeSessionId == localId) {
+                    remoteSession = null
+                    pendingOnline = null
+                    applyOfflineTurn(before, text, intent)
+                }
+            })
         }
+    }
+
+    private fun applyOfflineTurn(before: PocketKbUiState, text: String, intent: String) {
+        val scenario = before.selectedScenario ?: return
+        val fireResult = before.fireState?.let { fireDrill.step(it, text, intent) }
+        val v3Result = before.scenarioStateV3?.let { scenarioRuntimesV3[scenario.id]?.step(it, text, intent) }
+        _uiState.update { it.copy(isGenerating = false, onlineLocalOnly = true, onlineError = "",
+            onlineStatus = "目前使用離線判讀",
+            onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1) }
+        if (fireResult != null) sendFireInteraction(text, intent, fireResult)
+        if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
     }
     private var persistenceJob: Job? = null
     private val finishedSessions = mutableSetOf<String>()

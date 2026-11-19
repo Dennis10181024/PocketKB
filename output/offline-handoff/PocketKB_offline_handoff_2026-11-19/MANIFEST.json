@@ -1,0 +1,550 @@
+{
+  "name": "PocketKB_offline_handoff_2026-11-19",
+  "createdAt": "2026-11-19T12:23:11.921836+00:00",
+  "gitHead": "a2c43d2789630026dfa22c23cd852f6aac36afd2",
+  "snapshot": "current-working-tree-not-HEAD; manifest excludes itself",
+  "counts": {
+    "androidKnowledge": 24,
+    "publicReferenceKnowledge": 16,
+    "localMaterialKnowledge": 8,
+    "androidGuides": 5,
+    "androidSources": 15
+  },
+  "files": [
+    {
+      "path": "CONTENT_REVIEW.md",
+      "bytes": 2018,
+      "sha256": "31d05511cbf801cb957da924e119f5349360448ab846b77ad8994eff80664cf0"
+    },
+    {
+      "path": "data/android-emergency-guides.json",
+      "bytes": 3251,
+      "sha256": "7890d79dc420f6db976e5b4a91d9060835e004bb10248eb05392c43e2c0b9c6f"
+    },
+    {
+      "path": "data/android-knowledge-all.json",
+      "bytes": 15125,
+      "sha256": "8bef96a511950e00d234fe7d49d601fac4178bb1d63030f03669c55c479e5cde"
+    },
+    {
+      "path": "data/android-knowledge-public-reference.json",
+      "bytes": 9320,
+      "sha256": "c9c682bd53c3f848bf31ec3d1e5221da8b6117563b31add2820eb33dee676ab6"
+    },
+    {
+      "path": "data/android-sources.json",
+      "bytes": 6571,
+      "sha256": "cf35d3b0c4da250dcaa70dcd3c465e673614478f2731b2251f6e34b360b95ba9"
+    },
+    {
+      "path": "examples/query.cjs",
+      "bytes": 2707,
+      "sha256": "f33390bb253f8214970d8d343b20aa4dc0c807a0c2158c8cbdf33ab7ed7a4086"
+    },
+    {
+      "path": "HANDOFF.md",
+      "bytes": 4399,
+      "sha256": "fa943d5442732f2432933e4af29f669b81b566e74dd9a101c51f5fb4b31ea2f4"
+    },
+    {
+      "path": "README_先讀我.md",
+      "bytes": 2627,
+      "sha256": "9c4a8f65dc32130179f4771837b55e190d206951c8ba24c20fcf9ef183c169a2"
+    },
+    {
+      "path": "SHARED_QUERY_CONTRACT.md",
+      "bytes": 2664,
+      "sha256": "f89012eae47808bea8067933e934d490216f10891c8a92f3c8b073a0c2f71656"
+    },
+    {
+      "path": "source/android/app/build.gradle.kts",
+      "bytes": 3774,
+      "sha256": "c777f7a63d3e47aa736dde2e9086c9cf0ba436c4ddd9df2fb8d902b7789949ca"
+    },
+    {
+      "path": "source/android/app/src/main/AndroidManifest.xml",
+      "bytes": 701,
+      "sha256": "8ec2a1fbe4e6bf3dc561165008208ed0311830e53980c61bee0ec92c3fa327fd"
+    },
+    {
+      "path": "source/android/app/src/main/cpp/CMakeLists.txt",
+      "bytes": 1182,
+      "sha256": "0bf6c6e5e7604aef39fa04c199a781e577f1609d05eeb37c840083d3d3060d44"
+    },
+    {
+      "path": "source/android/app/src/main/cpp/logging.h",
+      "bytes": 1408,
+      "sha256": "9377f8896d7939e813f1c95798dc0bc50f04a5df26a644360bd676520abb0af9"
+    },
+    {
+      "path": "source/android/app/src/main/cpp/pocketkb_llama.cpp",
+      "bytes": 7039,
+      "sha256": "aa422380df3f38d0a21bd42ed4d67046a40620b0cceb3c4061da7aad86cfacec"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ai/LocalLlmEngine.kt",
+      "bytes": 3621,
+      "sha256": "023420e9666061ef7a3811757c2ba72d9844ba4807df8803fb0d5b9b36f8cb59"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ai/ModelRuntimePolicy.kt",
+      "bytes": 6586,
+      "sha256": "6312d17276c3f950ad40f68c8df67c367613b55359723bd42fbd6b35f17f3224"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ai/NativeLlamaBridge.kt",
+      "bytes": 1474,
+      "sha256": "a11cb52bdde65ba3d9edc2bc66d479dedff915da1f2d3acd52579dbed44ae6d5"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ai/OnlineCoachClient.kt",
+      "bytes": 4822,
+      "sha256": "4c80fb357fc48f04e4bc5c680dbd26288e58ad346a760d2fa7df826b992a36cc"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/core/DrillJudge.kt",
+      "bytes": 15606,
+      "sha256": "779ff196e0c5ac8460b92d4c7ca91381c7884a0eef06ee901dd88a8f5b05a289"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/core/DrillLanguage.kt",
+      "bytes": 3458,
+      "sha256": "639f7b3efe68d41f348266d5d63e7b64647f4c909f55b58f0e425157914b6439"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/core/FireDrill.kt",
+      "bytes": 9565,
+      "sha256": "5d237d9eaf7b88de2cf56c67467fb25bfa95988dcc3a4e464f86ba8c62f561a5"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/core/KnowledgeBase.kt",
+      "bytes": 34321,
+      "sha256": "74bbbce1a3a2192d011fce5de4b5612d0871bd34534c054fcd9999a396b3f76b"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/core/Models.kt",
+      "bytes": 3798,
+      "sha256": "5ec18a9dd415accb9d9fc810d9e9aab26eee6102eb70154580a27d090097d8a9"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/core/RagEngine.kt",
+      "bytes": 4748,
+      "sha256": "f1bcffc1654f2a3ee1cfff23f9a7fe29114e24a237434b2d74e2b076f48747ee"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/core/ScenarioRuntimeV3.kt",
+      "bytes": 19559,
+      "sha256": "7cd4a7da0b606f0d830aeeb1a274a01a830b9392444a3eeaf831ea5406f23448"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/data/DrillHistory.kt",
+      "bytes": 6758,
+      "sha256": "72278865e32b65a55891e9d5962f7f79f1efd46a712eb0cabc6e0fec2b50c5bc"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/MainActivity.kt",
+      "bytes": 1068,
+      "sha256": "aebd71c296848ace0b28b320df8cb43d10ebd882b58e38eff2139234db19bc80"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/PocketKbViewModel.kt",
+      "bytes": 30985,
+      "sha256": "2ca30a1f77db1a0e5d359ec4cff5692e4303afdf5d0c4da0abc35933d385a269"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ui/AppScreens.kt",
+      "bytes": 30090,
+      "sha256": "60c5400426f57ccfc42694daf01d8b77846ecb14681e3bc7b3e1ba272bdb6aa9"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ui/FireChatScreen.kt",
+      "bytes": 9827,
+      "sha256": "93d50d9667e4963dff08199bb7e6eee050c7f4c914a213256c367886bb4ce12d"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ui/ScenarioV3Screen.kt",
+      "bytes": 23923,
+      "sha256": "a703923bf6aa1fb391794ed33cd55dbaab775fbe22fe67aebe83af035ceb7e1e"
+    },
+    {
+      "path": "source/android/app/src/main/java/com/pocketkb/android/ui/Theme.kt",
+      "bytes": 1406,
+      "sha256": "dec0f00bbe7cfe1a4d466a916ddd2cc63d86b16220272bce16cf07fe2b41bf6d"
+    },
+    {
+      "path": "source/android/app/src/main/res/drawable/ic_launcher.xml",
+      "bytes": 731,
+      "sha256": "63c9b419f7f7378c364426741985019597bf2e1d4f4b000347bbbf396a61b5af"
+    },
+    {
+      "path": "source/android/app/src/main/res/values/styles.xml",
+      "bytes": 453,
+      "sha256": "3988c42a7d47f336b3d4da064e005c84ea8d88144a666a9e14a9454c09e3eb15"
+    },
+    {
+      "path": "source/android/app/src/test/java/com/pocketkb/android/core/DiagnosisRegressionTest.kt",
+      "bytes": 4199,
+      "sha256": "bf80fd9dba1af251a57808de38749deafdd99e9568a41d25c7484cf0157bbfbb"
+    },
+    {
+      "path": "source/android/app/src/test/java/com/pocketkb/android/core/DrillJudgeTest.kt",
+      "bytes": 5429,
+      "sha256": "bc99be4714d4b160c981cd10a5008b40f60704a74f19e01e1fbb2ec2909459fc"
+    },
+    {
+      "path": "source/android/app/src/test/java/com/pocketkb/android/core/FireDrillTest.kt",
+      "bytes": 1647,
+      "sha256": "0cb5123cf5a217f4c0dc8942a4aace919b889a6409903d8ab5f416b0996a1b8e"
+    },
+    {
+      "path": "source/android/app/src/test/java/com/pocketkb/android/core/KnowledgeSearchTest.kt",
+      "bytes": 677,
+      "sha256": "c731645b9141e40631ad56a2e779bc2a8f2a5d40f97e2fdcf8417183526d305d"
+    },
+    {
+      "path": "source/android/app/src/test/java/com/pocketkb/android/core/OnlineCoachStateTest.kt",
+      "bytes": 1861,
+      "sha256": "d78fbbf5f3b6588ccf7d73cac17ee266f3d06f8975c58140ae50c303955a40b9"
+    },
+    {
+      "path": "source/android/app/src/test/java/com/pocketkb/android/core/ProfessorDemoPathTest.kt",
+      "bytes": 3533,
+      "sha256": "bb23f120984af35072ed51ab443b4cabd9c9994ce29d3e4a150ab3f231243a5f"
+    },
+    {
+      "path": "source/android/app/src/test/java/com/pocketkb/android/core/ScenarioRuntimeV3Test.kt",
+      "bytes": 5381,
+      "sha256": "b26b05ff4a482beb57bfb232d3ec5e7447a5a01a500f98c5aa601897f9d208a6"
+    },
+    {
+      "path": "source/android/build-local.ps1",
+      "bytes": 560,
+      "sha256": "30b50214021c7bbd8f672da0f02e980d8cecb6393692323a36aae2b14cf92498"
+    },
+    {
+      "path": "source/android/build.gradle.kts",
+      "bytes": 287,
+      "sha256": "de024d292ef7012f2d9c86ab0628ce38dcde06d39a992ac3df3d514324ba508d"
+    },
+    {
+      "path": "source/android/gradle.properties",
+      "bytes": 136,
+      "sha256": "6bcbd98e03927d9cc94cd8557abc9b18cf2f82812ec4da18f8ca6223c56e2967"
+    },
+    {
+      "path": "source/android/README.md",
+      "bytes": 8874,
+      "sha256": "3dbc791d573e6e6fb3a9ae9d98ae4d57503befe2e949a4825ef8d237373ea3d1"
+    },
+    {
+      "path": "source/android/settings.gradle.kts",
+      "bytes": 335,
+      "sha256": "88f9eb2c5a437d001ecf88539f28ab1cda421219c41a22ec01351e6ab789a329"
+    },
+    {
+      "path": "source/DESIGN.md",
+      "bytes": 5675,
+      "sha256": "1cd24bede4ce9236b10cb1da5deab7eb86a1dbf97e77d76432616dafa4fbdf2d"
+    },
+    {
+      "path": "source/DesignTokens.swift",
+      "bytes": 2580,
+      "sha256": "1759cf874935d2042a97a1b0c78b313d430edeee82e932edac8743e22f04d41d"
+    },
+    {
+      "path": "source/docs/EXPERIENCE_SPEC.md",
+      "bytes": 23597,
+      "sha256": "014110b5967d69fb3659e7dde002eef89d1bfe81a1c690b51c5607aa372bf8ba"
+    },
+    {
+      "path": "source/FIRE_DRILL_IMPLEMENTATION.md",
+      "bytes": 5844,
+      "sha256": "5be3a4e543820640fb96659a93ef8af7a4c4558f344a1c62270bbd730b12d05e"
+    },
+    {
+      "path": "source/Models/AppState.swift",
+      "bytes": 21831,
+      "sha256": "4a1f33d5e3329860e41590409631c397034e554f292fdc1e31caf5ff2f2ee992"
+    },
+    {
+      "path": "source/Models/HybridRAGEngine.swift",
+      "bytes": 21994,
+      "sha256": "d0253f14d983d247e5dca0a314889593b90582d8bfd61c07ead8d8aac1e1b944"
+    },
+    {
+      "path": "source/Models/KnowledgeBase.swift",
+      "bytes": 33134,
+      "sha256": "a93ed667180754c04b2ca08ab7606afe6b5d6c13e3796bd5338a3282617a62c2"
+    },
+    {
+      "path": "source/Models/LlamaInference.swift",
+      "bytes": 6296,
+      "sha256": "75d7071a38da97704b968c73112903951f3d16e68a55ced109dd69378be89f02"
+    },
+    {
+      "path": "source/Models/NetworkService.swift",
+      "bytes": 5900,
+      "sha256": "70324c87db0857a67b29aa5703a763b0933b16cbbfb7f267f2fc78f6146ab544"
+    },
+    {
+      "path": "source/Models/VectorStore.swift",
+      "bytes": 6979,
+      "sha256": "92cdef3219c549195806bbfea1a26e89da251d665de1e0c2bc3f1b43c25453f2"
+    },
+    {
+      "path": "source/Models/VoiceService.swift",
+      "bytes": 3788,
+      "sha256": "9a3f6e7159bac29ef664195787295b030581c633f3db8567b1747d131ff31047"
+    },
+    {
+      "path": "source/online-coach/coach.js",
+      "bytes": 21778,
+      "sha256": "2df834b0e369b8328f01dce3e2f8a07ba361f73027f2bf40902316d98b994767"
+    },
+    {
+      "path": "source/online-coach/package.json",
+      "bytes": 197,
+      "sha256": "cf5848203cb3021f9ec7b85eab746d6d9fee006d4bc9b15d40ff24569c40d919"
+    },
+    {
+      "path": "source/online-coach/README.md",
+      "bytes": 6345,
+      "sha256": "72eb03d5ec2d4015e6ad8d9abecfa8693b10ae41ddd1215e732c52dc87086b4e"
+    },
+    {
+      "path": "source/online-coach/server.js",
+      "bytes": 4680,
+      "sha256": "806d44af5ddf1868706c1dd3912db2412f33d51b6036203094b2e7c9546b90de"
+    },
+    {
+      "path": "source/online-coach/start-online.ps1",
+      "bytes": 1107,
+      "sha256": "5291ad9b2f849f070f0410b7b8a4ba852c1f0e9f01ed9fa52f6061afd14c9136"
+    },
+    {
+      "path": "source/PocketKBApp.swift",
+      "bytes": 5947,
+      "sha256": "1443cd872913aa7bc8c188a7138be4ec0d2f71afb4acaa2ba32cfe1ac83c4453"
+    },
+    {
+      "path": "source/README.md",
+      "bytes": 6827,
+      "sha256": "2fd6c33678dc03efc0c52abfe62d97add5aaa5f96d9ffbd9e796f2fd2909c84a"
+    },
+    {
+      "path": "source/SCENARIO_AUTHORING_STANDARD.md",
+      "bytes": 3224,
+      "sha256": "d0d7f20666cb910435045e1d1b06ea3a0031cf886fd41f58cef04e28c1e7b650"
+    },
+    {
+      "path": "source/SCENARIO_CONVERSATION_DESIGN.md",
+      "bytes": 7356,
+      "sha256": "d0222cae0dfbb711fa5970cbca965eb38409e40966e28d6ec58667ac362436f1"
+    },
+    {
+      "path": "source/SCENARIO_LOCATION_RESEARCH.md",
+      "bytes": 22425,
+      "sha256": "2f224312224231dce10e7c3996b0a8c1123462285b918e239bd08c32b40bf384"
+    },
+    {
+      "path": "source/SCENARIO_TRAINING_EDUCATION_RESEARCH.md",
+      "bytes": 23293,
+      "sha256": "50ad10fb4e7393270bc57260ffdc62f1780b89338841baba989950ad86d16173"
+    },
+    {
+      "path": "source/SCENARIO_V3_IMPLEMENTATION.md",
+      "bytes": 4382,
+      "sha256": "f6e68e567517249db684d7b340c9f833cd97ffc8c5809d663cb6d421a46ef656"
+    },
+    {
+      "path": "source/Views/DrillView.swift",
+      "bytes": 18505,
+      "sha256": "238b5b5d87f9923b0f47abad6f456fdc8e693c17a8ac02161345eb9e453a3162"
+    },
+    {
+      "path": "source/Views/EmergencyGuideView.swift",
+      "bytes": 20612,
+      "sha256": "ec7e057ec9b18d0de6d6b26496388f959185bc7c78f745f9f6ae3e5c67983bda"
+    },
+    {
+      "path": "source/Views/GuideView.swift",
+      "bytes": 13066,
+      "sha256": "6af2354560109e844a2e796545726a5983a04c8ad46b1cfe020e6b0279559794"
+    },
+    {
+      "path": "source/Views/InferenceModeSettingsView.swift",
+      "bytes": 18293,
+      "sha256": "20b9758514e77e61134c651614cb0f41d73db681c521901603567d579e4c578b"
+    },
+    {
+      "path": "source/Views/MainDashboardView.swift",
+      "bytes": 14711,
+      "sha256": "62c4e290f69230ac2aa0b8cc96ec22a6348a047e4cd400be03bbd88a7357c44b"
+    },
+    {
+      "path": "source/Views/PDFImportView.swift",
+      "bytes": 20606,
+      "sha256": "70c09cb76e43ee49aaa0cb24328de260107aaca7bff592d2f8b81803b185eab4"
+    },
+    {
+      "path": "source/web-pwa/app.js",
+      "bytes": 45455,
+      "sha256": "9f62edf5941c251f4c3743f0d56cd038a8d80ef77ab0ee44d0cefe016bb21736"
+    },
+    {
+      "path": "source/web-pwa/drill-events.js",
+      "bytes": 2483,
+      "sha256": "c63a36da1fcc5273674d832765227e34f52316b81009debf1364fcbc8d077d90"
+    },
+    {
+      "path": "source/web-pwa/drill-language.js",
+      "bytes": 2268,
+      "sha256": "a6a60564cfe8fe556c3f66a49b5f16f77be224942c9196fd81e6c8205b320104"
+    },
+    {
+      "path": "source/web-pwa/fire-app-test.js",
+      "bytes": 3072,
+      "sha256": "dbb1ab66dd25d699b6da18244052ac007fc66c32e10fbe4ffa9724dc9ed6b262"
+    },
+    {
+      "path": "source/web-pwa/fire-browser-test.js",
+      "bytes": 4627,
+      "sha256": "c90fcdd0130bd12a51b7329d6ecd40ef5d583672119ea29c2d5c31d9c9bae248"
+    },
+    {
+      "path": "source/web-pwa/fire-engine-test.js",
+      "bytes": 1447,
+      "sha256": "da40c9c205f32196d102a478d9213582cf5e51cf3a093685e75dc11d9f58c02d"
+    },
+    {
+      "path": "source/web-pwa/fire-engine.js",
+      "bytes": 6894,
+      "sha256": "5a1e51b2a4fc2bb047dc62fe975a415e8e5ae80f2c38a97f79ee195e1ada43d1"
+    },
+    {
+      "path": "source/web-pwa/icon.svg",
+      "bytes": 419,
+      "sha256": "4a13561b893b553868b646790d268f89b5d6e734b74534bfe74c377f1e77f7cb"
+    },
+    {
+      "path": "source/web-pwa/index.html",
+      "bytes": 703,
+      "sha256": "14b75ce6ffd756424689db22911d95141c162409804b31cbf32eabb693e1656d"
+    },
+    {
+      "path": "source/web-pwa/judge-smoke-test.js",
+      "bytes": 1357,
+      "sha256": "cb9b7d440c0c865fc07af64b925bb5803dc1bfffc7d821ef6c831fc76301c1bf"
+    },
+    {
+      "path": "source/web-pwa/manifest.webmanifest",
+      "bytes": 453,
+      "sha256": "d67f62eda60b2c291188302e2ce71cca468f6058ab5068b9201e8c3d5820ab2a"
+    },
+    {
+      "path": "source/web-pwa/online-browser-test.js",
+      "bytes": 5460,
+      "sha256": "ee71c4cb38b6bdb2ea87e3c4f8188357e579a3e6587f4f60bfeb6d93be65719c"
+    },
+    {
+      "path": "source/web-pwa/online-coach.js",
+      "bytes": 10598,
+      "sha256": "413cc097b8049a0c454ba485469e682f8e132b9681bdb22842a2e0016f4c474b"
+    },
+    {
+      "path": "source/web-pwa/online.html",
+      "bytes": 382,
+      "sha256": "f8706bd8cad6b9fc83c43bbf6be244feb4996ec0687cf06df8497f25d7245ae0"
+    },
+    {
+      "path": "source/web-pwa/README.md",
+      "bytes": 1742,
+      "sha256": "157711aae3657505270405f4559e4c92135ffe8ee05995d8e7ca8bdbb6db91e6"
+    },
+    {
+      "path": "source/web-pwa/scenario-engine-v3-test.js",
+      "bytes": 5849,
+      "sha256": "7dbbc0c1f75a5a3c86e25b317be150306c0c30295349dff167bc6480bb41e1c8"
+    },
+    {
+      "path": "source/web-pwa/scenario-engine-v3.js",
+      "bytes": 9815,
+      "sha256": "b1d29df7e826f134cd1a04faf533faa62c4f360ab3e5a09083da79625c8ddecf"
+    },
+    {
+      "path": "source/web-pwa/scenario-v3-contract-test.js",
+      "bytes": 2065,
+      "sha256": "de689d8d93fd06342a531facd42b6f7ffac2d363243a0ce48c5b15f8bd272cea"
+    },
+    {
+      "path": "source/web-pwa/scenarios/fire-cases.json",
+      "bytes": 3012,
+      "sha256": "ce15e6d2a05bd843ce010f042e09d356af94521c5b037eac9b131b2a9379f772"
+    },
+    {
+      "path": "source/web-pwa/scenarios/fire-dorm.json",
+      "bytes": 12294,
+      "sha256": "d80e861c091c4e3eee3d255cf3bd8700c4c3e50ecbae3bdd50a452ee33c8ea61"
+    },
+    {
+      "path": "source/web-pwa/scenarios/v3/barrier-lake-downstream.json",
+      "bytes": 9856,
+      "sha256": "2775cb1bbf98bcef8b038ffa00e9d94abeffb07de5671e84aaf16eeb28e9da94"
+    },
+    {
+      "path": "source/web-pwa/scenarios/v3/earthquake-home-trapped.json",
+      "bytes": 10936,
+      "sha256": "976115942cad20d68fbbfcabb7db019554ad23938a058bc99c5de4afefef1c3f"
+    },
+    {
+      "path": "source/web-pwa/scenarios/v3/earthquake-school.json",
+      "bytes": 7292,
+      "sha256": "b8be7959b4d36cfb3aa28da5e42ac90bf9e18ef4e76e54b0b73a178280e92916"
+    },
+    {
+      "path": "source/web-pwa/scenarios/v3/flood-low-home.json",
+      "bytes": 9491,
+      "sha256": "233212104eef4c28a3501c8a4848d6d7707a1c86c953afbc71e7d60573529dce"
+    },
+    {
+      "path": "source/web-pwa/scenarios/v3/landslide-mountain-road.json",
+      "bytes": 6869,
+      "sha256": "e2f18727db695436c833003d6477b0068bc5ce45be7296057763a177d5106a26"
+    },
+    {
+      "path": "source/web-pwa/setup.html",
+      "bytes": 1365,
+      "sha256": "b80415bbf0e717adc370a392f8e882a9715809ccc7977953dd474c5258127015"
+    },
+    {
+      "path": "source/web-pwa/setup.js",
+      "bytes": 1097,
+      "sha256": "ac213236d4e9bb272c3c8c6cc27a2d9bd33c3b48bf66591a83f8c16472601076"
+    },
+    {
+      "path": "source/web-pwa/styles.css",
+      "bytes": 9388,
+      "sha256": "8d0cbf28f051482cd8d9883c57114e6b3297cabeb50b3dde47e4bcf31a877f3f"
+    },
+    {
+      "path": "source/web-pwa/sw.js",
+      "bytes": 1116,
+      "sha256": "b541fe08541f095d923a0b7e60dab800be14609d23a2f6ce8c2395efe44e3c1c"
+    },
+    {
+      "path": "tools/build_offline_handoff.py",
+      "bytes": 21571,
+      "sha256": "7fb182c93432d42c62e95d772e0424e44b208fc4b5236b5bdafcda5085008d61"
+    },
+    {
+      "path": "tools/offline_handoff_query.cjs",
+      "bytes": 2707,
+      "sha256": "f33390bb253f8214970d8d343b20aa4dc0c807a0c2158c8cbdf33ab7ed7a4086"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 1428,
+      "sha256": "4b6c7d185137eee0995a075127614a4078abff633a26e8008b6f94df200989ab"
+    }
+  ]
+}

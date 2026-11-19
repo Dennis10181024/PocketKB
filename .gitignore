@@ -5,6 +5,9 @@ Thumbs.db
 .vscode/
 
 # Local machine config
+.env
+*.env
+online-coach/*.secret
 local.properties
 *.keystore
 

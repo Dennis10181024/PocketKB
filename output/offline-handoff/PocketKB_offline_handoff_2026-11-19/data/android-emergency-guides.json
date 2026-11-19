@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "handoff-1",
+  "origin": "Android KnowledgeBase.kt current working tree",
+  "status": "EXPORT_ONLY_NOT_EXPERT_VALIDATED",
+  "contentWasRewritten": false,
+  "guides": [
+    {
+      "id": "android-guide-earthquake",
+      "category": "EARTHQUAKE",
+      "headline": "地震當下",
+      "callout": "先保護自己，不要急著衝出去。",
+      "sourceId": "sourceNfaEarthquake",
+      "steps": [
+        {
+          "order": 1,
+          "text": "趴下、掩護、穩住。"
+        },
+        {
+          "order": 2,
+          "text": "遠離窗戶、櫃子與吊掛物。"
+        },
+        {
+          "order": 3,
+          "text": "搖晃停止後再檢查傷勢並撤離。"
+        }
+      ],
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "android-guide-fire",
+      "category": "FIRE",
+      "headline": "火災濃煙",
+      "callout": "煙比火更快致命。",
+      "sourceId": "sourceFireEscape",
+      "steps": [
+        {
+          "order": 1,
+          "text": "摸門把確認熱度。"
+        },
+        {
+          "order": 2,
+          "text": "不穿越濃煙，受阻就關門阻煙。"
+        },
+        {
+          "order": 3,
+          "text": "不要搭電梯，安全後撥 119。"
+        }
+      ],
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "android-guide-typhoon",
+      "category": "TYPHOON",
+      "headline": "豪雨淹水",
+      "callout": "水深不明就不要通過。",
+      "sourceId": "sourceCwaRain",
+      "steps": [
+        {
+          "order": 1,
+          "text": "遠離地下道、河道、邊坡。"
+        },
+        {
+          "order": 2,
+          "text": "移往高處或官方避難所。"
+        },
+        {
+          "order": 3,
+          "text": "通報危險路段並等待救援。"
+        }
+      ],
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "android-guide-preparedness",
+      "category": "PREPAREDNESS",
+      "headline": "防災士整備",
+      "callout": "平時準備，災時才有選擇。",
+      "sourceId": "sourceBousaishiBasic",
+      "steps": [
+        {
+          "order": 1,
+          "text": "確認家庭防災卡、避難路線與集合點。"
+        },
+        {
+          "order": 2,
+          "text": "固定家具，檢查防災包與 3 日份物資。"
+        },
+        {
+          "order": 3,
+          "text": "只依官方資訊行動，不轉傳未證實災害訊息。"
+        }
+      ],
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "android-guide-first_aid",
+      "category": "FIRST_AID",
+      "headline": "CPR/AED",
+      "callout": "確認環境安全再急救。",
+      "sourceId": "sourceCpr",
+      "steps": [
+        {
+          "order": 1,
+          "text": "叫喚拍肩確認反應。"
+        },
+        {
+          "order": 2,
+          "text": "請人打 119 並拿 AED。"
+        },
+        {
+          "order": 3,
+          "text": "開始胸外按壓，每分鐘 100 到 120 下。"
+        }
+      ],
+      "reviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    }
+  ]
+}

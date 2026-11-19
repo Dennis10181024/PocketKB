@@ -1,0 +1,19 @@
+{
+  "name": "Pocket Knowledge Base 防災演練",
+  "short_name": "PocketKB",
+  "description": "離線應急核心與情境式防災演練 PWA",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1423",
+  "theme_color": "#0b1423",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

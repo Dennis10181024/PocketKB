@@ -1,10 +1,15 @@
+import './drill-language.js';
+import './drill-events.js';
+import './fire-engine.js';
+import './scenario-engine-v3.js';
+
 // Browser adapter: no API key or cloud credentials are stored in this client.
 const app = document.querySelector('#app');
 const online = { catalog: [], session: null, messages: [], draft: '', mode: 'action', busy: false, error: '', pending: null, selected: 'drill_fire_dorm', saved: new Set() };
 const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[c]));
 const physicalLabel = status => ({ EXPOSED:'仍在風險中', EVACUATED:'已撤離至相對安全處', WAITING_RESCUE:'穩定待救・尚未獲救', SHELTERED:'暫時掩蔽', RESCUED:'已由救援人員接觸', CRITICAL:'危急失敗' }[status] || '請依目前現場判斷');
 async function api(route, body) {
-  const response = await fetch(route, { method: body ? 'POST' : 'GET', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(100000) });
+  const response = await fetch(route, { method: body ? 'POST' : 'GET', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(route.endsWith('/turn') ? 8500 : 4000) });
   const value = await response.json();
   if (!response.ok) throw new Error(value.error || '連線未完成，請確認電腦的線上教練已啟動。');
   return value;
@@ -28,9 +33,11 @@ function render() {
     <label for="onlineScenario">選擇情境</label><select id="onlineScenario" ${online.busy ? 'disabled' : ''}>${online.catalog.map(row=>`<option value="${esc(row.id)}" ${online.selected===row.id?'selected':''}>${esc(row.title)}</option>`).join('')}</select>
     <div class="button-row"><button class="primary" id="onlineStart" ${online.busy || !online.catalog.length?'disabled':''}>開始線上練習</button></div>` : `
     <h2>${esc(s.scene.title)}</h2><p class="stage-summary">${s.terminal ? '演練已結束' : esc(node.title)} · ${esc(physicalLabel(s.scene.physicalStatus))}</p>
+    ${s.offline ? '<p class="tiny" role="status">目前使用離線判讀</p>' : ''}
     <section class="task-box"><h3>現場發生什麼</h3><p>${esc(node.situation)}</p>${!s.terminal?`<h3>目前要決定什麼</h3><p>${esc(node.task)}</p>`:''}</section>
     ${online.pending && online.pending.intent!=='observe' ? `<p class="tiny">待確認內容：${esc(online.pending.text)}</p>`:''}
     ${online.messages.length ? `<section class="judge-box ${s.state.sessionStatus==='FAILED'||s.state.outcome==='FAILED'?'failed':''}" aria-live="polite"><p class="tiny">你的輸入：${esc(online.messages.at(-2)?.text)}</p><p class="online-reply">${esc(online.messages.at(-1)?.text)}</p></section>` : ''}
+    ${(s.citations || []).map(source=>`<p class="tiny"><a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a></p>`).join('')}
     ${!s.terminal ? `<div class="button-row"><button class="ghost" id="onlineObserve" ${online.busy?'disabled':''}>觀察環境</button></div>
     <fieldset class="intent-picker"><legend>你的輸入</legend>${[['action','想法或行動'],['question','只詢問，不執行']].map(([value,label])=>`<label><input type="radio" name="onlineIntent" value="${value}" ${online.mode===value?'checked':''} ${online.busy?'disabled':''}>${label}</label>`).join('')}</fieldset>
     <label for="onlineInput">你想做什麼，或想確認什麼？</label><textarea id="onlineInput" maxlength="2000" rows="3" ${online.busy?'disabled':''}>${esc(online.draft)}</textarea>
@@ -57,12 +64,31 @@ function readRecords() { try { return JSON.parse(localStorage.getItem('pocketkb-
 async function start() {
   online.busy=true; online.error=''; render();
   try {
-    const health=await api('/api/health');
-    if (!health.ready) throw new Error('電腦尚未設定 GPT 金鑰。請執行 online-coach/start-online.ps1 後重試；目前沒有發送模型請求。');
-    online.session=await api('/api/sessions',{scenarioId:online.selected});
+    try {
+      online.session=await api('/api/sessions',{scenarioId:online.selected});
+    } catch {
+      const spec = online.catalog.find(row => row.id === online.selected).spec;
+      online.session=localResult({sessionId:crypto.randomUUID(), scenarioId:spec.id, revision:-1}, null);
+    }
     online.messages=[]; online.pending=null; online.draft='';
   } catch(e) { online.error=e.message; }
   finally { online.busy=false; render(); }
+}
+function localResult(session, request) {
+  const spec = online.catalog.find(row => row.id === session.scenarioId).spec;
+  const fire = spec.id === 'drill_fire_dorm';
+  const engine = fire ? globalThis.FireDrill : globalThis.ScenarioEngineV3;
+  const result = request ? engine.step(spec, session.state, request.text, request.intent) : {state:engine.create(spec), message:''};
+  const {state} = result;
+  const terminal = fire ? state.outcome !== 'CONTINUE' : state.sessionStatus !== 'ACTIVE';
+  const physicalStatus = fire ? ({FAILED:'CRITICAL',SUCCESS:'WAITING_RESCUE'}[state.outcome] || 'EXPOSED') : state.physicalStatus;
+  const node = fire ? spec.nodes[state.node] : spec.nodes.find(item => item.id === state.node);
+  const citations = request ? globalThis.DrillEvents.citations(spec,session.state,result) : [];
+  const reply = request && !citations.length && !['observe','hint'].includes(request.intent)
+    ? `我收到你說的「${request.text.slice(0,120)}」。你是在描述現場、詢問，還是在說自己現在決定採取的行動？` : result.message;
+  return {...session, revision:session.revision+1, state, terminal, offline:true, localOnly:true, reply,
+    citations,
+    review:terminal ? engine.review(spec,state) : '', scene:{title:spec.title, notice:spec.notice, sources:spec.sources, node, physicalStatus}};
 }
 async function send(text, intent) {
   if (online.busy || !online.session || (intent!=='observe' && !text.trim())) return;
@@ -73,7 +99,14 @@ async function send(text, intent) {
   const request=online.pending; const sessionId=online.session.sessionId;
   online.busy=true; online.error=''; render();
   try {
-    const result=await api(`/api/sessions/${sessionId}/turn`,request);
+    const snapshot=online.session;
+    let result;
+    try {
+      result=snapshot.localOnly ? localResult(snapshot,request) : await api(`/api/sessions/${sessionId}/turn`,request);
+    } catch {
+      // Abandon the remote session after an ambiguous transport failure.
+      result=localResult(snapshot,request);
+    }
     if (online.session?.sessionId!==sessionId) return;
     online.session=result; online.messages.push({role:'user',text:text || '觀察環境'},{role:'assistant',text:result.reply});
     online.pending=null; if(intent!=='observe') online.draft=''; saveReview(result);

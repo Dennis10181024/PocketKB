@@ -1,0 +1,3484 @@
+{
+  "utc": "2026-11-17T02:43:04.918Z",
+  "results": [
+    {
+      "id": "drill_fire_dorm",
+      "title": "宿舍濃煙：關門待救",
+      "unique": 12,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我跳窗逃生",
+          "reply": "跳窗或翻出窗外不適合目前濃煙阻斷的設定。本次模擬停止，可回顧後重新練習。",
+          "kind": "failed",
+          "elapsedMs": 4.862700000000004,
+          "changed": true,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [
+              {
+                "node": "isolate",
+                "kind": "failed",
+                "labels": [
+                  "跳窗或翻出窗外"
+                ]
+              }
+            ],
+            "outcome": "FAILED"
+          }
+        },
+        {
+          "category": "a",
+          "input": "我搭電梯離開",
+          "reply": "搭電梯不適合目前濃煙阻斷的設定。本次模擬停止，可回顧後重新練習。",
+          "kind": "failed",
+          "elapsedMs": 0.47860000000000014,
+          "changed": true,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [
+              {
+                "node": "isolate",
+                "kind": "failed",
+                "labels": [
+                  "搭電梯"
+                ]
+              }
+            ],
+            "outcome": "FAILED"
+          }
+        },
+        {
+          "category": "a",
+          "input": "我開門衝出去",
+          "reply": "再開房門或衝入走廊不適合目前濃煙阻斷的設定。尚未執行此危險選擇；請重新決定，已完成的安全行動仍保留。",
+          "kind": "risk",
+          "elapsedMs": 0.11169999999999902,
+          "changed": true,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [
+              {
+                "node": "isolate",
+                "kind": "risk",
+                "labels": [
+                  "再開房門或衝入走廊"
+                ]
+              }
+            ],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "a",
+          "input": "我倒立走出去",
+          "reply": "「我倒立走出去」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.4492000000000047,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "「我變成超人」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.1372,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "「我用魔法讓災害消失」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.19300000000000495,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "「我瞬移到火星」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.08510000000000417,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "「我讓時間倒流」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.0818000000000012,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "「我要吃雞排」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.06269999999999953,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "「哈哈哈」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.05679999999999552,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "「香蕉火箭123」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.056800000000002626,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "「請幫我寫一首情歌」無法確認為本情境的行動。現在的任務是：先處理眼前的房門；可以分次描述你的行動。",
+          "kind": "clarify",
+          "elapsedMs": 0.03810000000000002,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "barrier_lake_downstream",
+      "title": "堰塞湖警戒：下游聚落",
+      "unique": 11,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我到河邊觀看",
+          "reply": "你進入河道警戒區停留觀看，錯過撤離並暴露於突發洪水風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.9147000000000034,
+          "changed": true,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "watch_river",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我先繼續收拾行李和財物",
+          "reply": "演練事件：東側道路已因落石與積水中斷，原本的撤離窗口關閉。現在不能再沿原路離開。",
+          "kind": "environment_change",
+          "elapsedMs": 0.6158000000000001,
+          "changed": true,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "cutoff",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": false,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "pack_more",
+                "kind": "action"
+              },
+              {
+                "node": "warning",
+                "kind": "environment_change",
+                "message": "演練事件：東側道路已因落石與積水中斷，原本的撤離窗口關閉。現在不能再沿原路離開。"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我跳進河裡",
+          "reply": "「我跳進河裡」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.030700000000003058,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我在橋上拍照",
+          "reply": "你進入河道警戒區停留觀看，錯過撤離並暴露於突發洪水風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.03370000000000317,
+          "changed": true,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "watch_river",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "「我變成超人」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.016199999999997772,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "「我用魔法讓災害消失」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.012700000000002376,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "「我瞬移到火星」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.01670000000000016,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "「我讓時間倒流」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.014800000000001035,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "「我要吃雞排」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.017000000000003013,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "「哈哈哈」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.02009999999999934,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "「香蕉火箭123」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.01630000000000109,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "「請幫我寫一首情歌」無法確認為本情境的行動。現在的任務是：確認命令並立即依指定路線撤離，不自行推算還有多少時間。",
+          "kind": "clarify",
+          "elapsedMs": 0.014099999999999113,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "earthquake_home_trapped",
+      "title": "地震後受困住家",
+      "unique": 11,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我強行搬動倒塌物逃生",
+          "reply": "你強行移動不穩定的倒塌物，引發二次坍落。本次演練以危急失敗結束。",
+          "kind": "failed",
+          "elapsedMs": 0.27530000000000143,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "force_exit",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我一直直播等救援",
+          "reply": "「我一直直播等救援」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.155300000000004,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我從倒塌物上爬出去",
+          "reply": "你強行移動不穩定的倒塌物，引發二次坍落。本次演練以危急失敗結束。",
+          "kind": "failed",
+          "elapsedMs": 0.16250000000000142,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "force_exit",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我在原地做伏地挺身",
+          "reply": "「我在原地做伏地挺身」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.019800000000003593,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "「我變成超人」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.014699999999997715,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "「我用魔法讓災害消失」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.013300000000000978,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "「我瞬移到火星」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.14180000000000348,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "「我讓時間倒流」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.05239999999999867,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "「我要吃雞排」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.01729999999999876,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "「哈哈哈」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.016999999999995907,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "「香蕉火箭123」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.012700000000002376,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "「請幫我寫一首情歌」無法確認為本情境的行動。現在的任務是：確認自身狀況，並決定是否強行突破出口。",
+          "kind": "clarify",
+          "elapsedMs": 0.8453999999999979,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "earthquake_school",
+      "title": "地震：學校教室",
+      "unique": 11,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我衝去搭電梯",
+          "reply": "你在強烈搖晃時奔跑並嘗試搭電梯，暴露於掉落、跌倒與受困風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.24450000000000216,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": [
+              {
+                "node": "shaking",
+                "action": "run_elevator",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我從窗戶跳下去",
+          "reply": "「我從窗戶跳下去」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.10859999999999559,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我在搖晃時跑到外面",
+          "reply": "你在強烈搖晃時奔跑並嘗試搭電梯，暴露於掉落、跌倒與受困風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.026799999999994384,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": [
+              {
+                "node": "shaking",
+                "action": "run_elevator",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我原地跳舞",
+          "reply": "「我原地跳舞」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.01190000000000424,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "「我變成超人」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.010599999999996612,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "「我用魔法讓災害消失」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.010199999999997544,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "「我瞬移到火星」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.010500000000000398,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "「我讓時間倒流」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.011000000000002785,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "「我要吃雞排」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.010199999999997544,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "「哈哈哈」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.010199999999997544,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "「香蕉火箭123」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.010699999999999932,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "「請幫我寫一首情歌」無法確認為本情境的行動。現在的任務是：先保護頭頸並等待主要搖晃停止。",
+          "kind": "clarify",
+          "elapsedMs": 0.010400000000004184,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "flood_low_home",
+      "title": "淹水：低窪住宅撤離已中斷",
+      "unique": 11,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我游出去",
+          "reply": "你嘗試穿越快速積水離開社區，失去穩定立足點。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.38870000000000005,
+          "changed": true,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "wade_out",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我進地下室救車",
+          "reply": "你進入正在進水的地下空間搶救車輛，遭遇快速上升水位與電氣風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.3819000000000017,
+          "changed": true,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "basement",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我開車通過積水",
+          "reply": "你嘗試穿越快速積水離開社區，失去穩定立足點。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.049799999999997624,
+          "changed": true,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "wade_out",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我坐在漂浮的門板上唱歌",
+          "reply": "「我坐在漂浮的門板上唱歌」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.017000000000003013,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "「我變成超人」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.36469999999999914,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "「我用魔法讓災害消失」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.028800000000003934,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "「我瞬移到火星」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.015799999999998704,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "「我讓時間倒流」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.014199999999995327,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "「我要吃雞排」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.015000000000000568,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "「哈哈哈」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.013999999999995794,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "「香蕉火箭123」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.015000000000000568,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "「請幫我寫一首情歌」無法確認為本情境的行動。現在的任務是：先避免進入地下空間與電氣危險。",
+          "kind": "clarify",
+          "elapsedMs": 0.015299999999996317,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false,
+              "standingDry": true,
+              "handsDry": true,
+              "panelSafelyReachable": true
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "landslide_mountain_road",
+      "title": "土石流警戒：山區道路",
+      "unique": 11,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我硬闖封閉警戒區",
+          "reply": "你闖入封閉的土石流警戒區，遭遇落石與土砂。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.244800000000005,
+          "changed": true,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "cross_closed",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我走溪谷捷徑",
+          "reply": "「我走溪谷捷徑」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.10289999999999822,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我開過封閉路段",
+          "reply": "你闖入封閉的土石流警戒區，遭遇落石與土砂。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.02090000000000458,
+          "changed": true,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "cross_closed",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我下車跳舞",
+          "reply": "「我下車跳舞」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.009799999999998477,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "「我變成超人」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.00929999999999609,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "「我用魔法讓災害消失」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.009399999999999409,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "「我瞬移到火星」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.009399999999999409,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "「我讓時間倒流」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.009399999999999409,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "「我要吃雞排」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.009199999999999875,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "「哈哈哈」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.013300000000000978,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "「香蕉火箭123」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.010399999999997078,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "「請幫我寫一首情歌」無法確認為本情境的行動。現在的任務是：確認警戒並立即折返。",
+          "kind": "clarify",
+          "elapsedMs": 0.022499999999993747,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        }
+      ]
+    }
+  ]
+}

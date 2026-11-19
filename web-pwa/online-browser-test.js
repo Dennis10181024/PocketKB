@@ -8,9 +8,9 @@ const { createServer } = require('../online-coach/server');
 (async()=>{
   let failOnce = true;
   const provider = { ready:true, model:'test-double', async generate(stage,payload) {
+    if(stage==='interpret'&&payload.text==='暫時故障'&&failOnce){failOnce=false;throw new Error('test-only failure');}
     if(stage==='interpret') return {value:{intent:payload.text.includes('嗎')?'question':'action',understanding:payload.text,question:'',needsClarification:false,
       actions:payload.text==='我把房門帶上'?[{id:'close',evidence:payload.text}]:payload.text==='我搭電梯'?[{id:'elevator',evidence:payload.text}]:[]}};
-    if(payload.text==='暫時故障'&&failOnce){failOnce=false;throw new Error('test-only failure');}
     return {value:{reply:`測試替身回覆：${payload.text}。此文字只測接線，不代表 GPT 品質。`,sourceIds:[]}};
   }};
   const coach=new ConversationCoach(provider); const server=createServer(coach);
@@ -26,9 +26,9 @@ const { createServer } = require('../online-coach/server');
     const send=async(text)=>{await page.locator('#onlineInput').fill(text);await page.locator('#onlineSend').click();await page.locator('#onlineSend:not([disabled])').waitFor();};
     await send('可以解釋嗎');assert.match(await page.locator('.judge-box').innerText(),/可以解釋嗎/);
     assert.equal(await page.locator('#onlineInput').inputValue(),'');
-    await send('暫時故障');assert.equal(await page.locator('#onlineInput').inputValue(),'暫時故障');
-    assert.match(await page.locator('#onlineError').innerText(),/草稿仍保留/);
-    await page.locator('#onlineSend').click();await page.locator('#onlineSend:not([disabled])').waitFor();
+    await send('暫時故障');
+    assert.match(await page.locator('.online-reply').first().innerText(),/我收到你說的/);
+    await page.getByText('目前使用離線判讀',{exact:true}).waitFor();
     assert.equal(await page.locator('#onlineInput').inputValue(),'');
     await send('我把房門帶上');assert.match(await page.locator('.task-box').innerText(),/119/);
     const session=[...coach.sessions.values()][0];assert.equal(session.state.node,1);assert.equal(session.history.length,6);
@@ -45,12 +45,26 @@ const { createServer } = require('../online-coach/server');
     await page.locator('#onlineStart').click();await page.locator('#onlineInput').waitFor();
     await page.locator('#onlineInput').fill('我搭電梯');await page.locator('#onlineSend').click();
     await page.locator('.fire-review').waitFor();assert.equal(await page.locator('#onlineInput').count(),0);
+    assert.ok(await page.getByRole('link',{name:/火災發生時之逃生狀況及方法/}).first().isVisible());
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('pocketkb-online-records')).length),1);
     assert.deepEqual(errors,[]);
-    const unconfiguredPage=await browser.newPage();
-    await unconfiguredPage.goto('http://127.0.0.1:5175/online.html');await unconfiguredPage.locator('#onlineStart:not([disabled])').waitFor();
-    await unconfiguredPage.locator('#onlineStart').click();await unconfiguredPage.getByText(/電腦尚未設定 GPT 金鑰/).waitFor();
-    assert.equal(await unconfiguredPage.locator('#onlineInput').count(),0);
-    console.log('PASS online browser: six scenarios, async turn, failure/draft/retry, semantic result wiring, 3 widths, large text, terminal lock, unique records, missing-key state. Provider is TEST DOUBLE, not real GPT.');
+    await page.locator('#onlineRestart').click();
+    await page.locator('#onlineStart').click();
+    const transportFault = route => route.abort('internetdisconnected');
+    await page.route('**/turn',transportFault);
+    await send('我把房門關好');
+    await page.getByText('目前使用離線判讀',{exact:true}).waitFor();
+    assert.match(await page.locator('.task-box').innerText(),/119/);
+    await page.unroute('**/turn',transportFault);
+    await send('我撥119求救');
+    assert.match(await page.locator('.judge-box').innerText(),/已記住/);
+    assert.equal([...coach.sessions.values()].at(-1).revision,0);
+    await page.locator('#onlineRestart').click();
+    coach.provider={ready:false,model:'unconfigured'};
+    await page.locator('#onlineStart').click();
+    await send('我把房門關好');
+    await page.getByText('目前使用離線判讀',{exact:true}).waitFor();
+    assert.match(await page.locator('.task-box').innerText(),/119/);
+    console.log('PASS online browser: six scenarios, upstream failure, local transport fallback and next turn, semantic wiring, responsive layouts, terminal lock, unique record, missing-key rules. Model provider is a test double.');
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});

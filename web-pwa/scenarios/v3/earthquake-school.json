@@ -11,35 +11,216 @@
     "主要搖晃停止後，依教師與校方確認的路線疏散",
     "抵達集合點接受點名，不搭電梯也不返回拿物品"
   ],
-  "commonMisconceptions": ["地震一來就立刻往外跑", "搭電梯可以更快離開", "疏散後可以回教室拿手機或書包"],
-  "reflectionQuestions": ["如果指定樓梯受損，你應該依靠誰提供替代路線？", "為什麼抵達集合點後不能自行離隊？"],
+  "commonMisconceptions": [
+    "地震一來就立刻往外跑",
+    "搭電梯可以更快離開",
+    "疏散後可以回教室拿手機或書包"
+  ],
+  "reflectionQuestions": [
+    "如果指定樓梯受損，你應該依靠誰提供替代路線？",
+    "為什麼抵達集合點後不能自行離隊？"
+  ],
   "questionPattern": "[?？]|是否|是不是|能不能|可不可以|怎麼|如何|為什麼|嗎|要不要|如果|假如|假設",
   "negationPattern": "(?:不想|不打算|不會|不要|不能|不可|沒有|沒|不|別|勿|避免)[^，。；、!?！？]{0,5}$",
   "splitPattern": "[，。；、,;!！\\n]|然後|接著|但是|但|而且|並且|也|再來",
   "initialNode": "shaking",
-  "initialState": {"physicalStatus": "EXPOSED", "resources": {"battery": 80, "water": 1, "energy": 100}, "facts": {"shaking": true, "stairsChecked": false}},
+  "initialState": {
+    "physicalStatus": "EXPOSED",
+    "resources": {
+      "battery": 80,
+      "water": 1,
+      "energy": 100
+    },
+    "facts": {
+      "shaking": true,
+      "stairsChecked": false
+    }
+  },
   "actions": [
-    {"id": "drop_cover_hold", "label": "趴下、掩護、穩住", "pattern": "趴下.*(?:桌下|掩護).*(?:頭頸|頭部|抓穩|穩住)|躲到桌下.*保護.*(?:頭|頸)"},
-    {"id": "wait_stop", "label": "等待主要搖晃停止", "pattern": "等待.*(?:搖晃|地震).*(?:停止|結束)|搖晃停止.*再"},
-    {"id": "run_elevator", "label": "搖晃時衝向電梯", "pattern": "(?:搖晃|地震).*(?:衝|跑).*(?:電梯|外面)|衝去搭電梯"},
-    {"id": "follow_stairs", "label": "依教師指示走安全樓梯疏散", "pattern": "(?:聽從|依照|跟隨).*(?:老師|教師|校方).*(?:樓梯|疏散)|走樓梯.*疏散"},
-    {"id": "assembly", "label": "至集合點點名且不返回", "pattern": "(?:到|前往).*(?:集合點|操場).*(?:點名|清點)|集合點.*不返回"},
-    {"id": "return_bag", "label": "返回教室拿物品", "pattern": "返回.*教室.*(?:拿|找).*(?:手機|書包|東西)"}
+    {
+      "id": "drop_cover_hold",
+      "label": "趴下、掩護、穩住",
+      "pattern": "趴下.*(?:桌下|掩護).*(?:頭頸|頭部|抓穩|穩住)|躲到桌下.*保護.*(?:頭|頸)",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "wait_stop",
+      "label": "等待主要搖晃停止",
+      "pattern": "等待.*(?:搖晃|地震).*(?:停止|結束)|搖晃停止.*再",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "run_elevator",
+      "label": "搖晃時衝向電梯",
+      "pattern": "衝去搭電梯|(?:跑|衝|奔).*(?:升降機|電梯)",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。",
+      "teaching": "正在搖晃時先保護頭頸並依老師指示，等主要搖晃停止。",
+      "examples": [
+        "我衝去搭電梯"
+      ]
+    },
+    {
+      "id": "run_outside",
+      "label": "搖晃中跑到戶外",
+      "pattern": "(?:搖晃|地震).*(?:衝|跑).*(?:外面|戶外)|(?:地在晃|還在搖).*(?:跑出|衝出)",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "你在搖晃仍持續時跑向戶外。演練因移動時的掉落物與跌倒風險結束。",
+      "teaching": "主要搖晃停止前先就地保護頭頸，之後依老師指示疏散。",
+      "examples": [
+        "我在搖晃時跑到外面"
+      ]
+    },
+    {
+      "id": "follow_stairs",
+      "label": "依教師指示走安全樓梯疏散",
+      "pattern": "(?:聽從|依照|跟隨).*(?:老師|教師|校方).*(?:樓梯|疏散)|走樓梯.*疏散",
+      "requires": {
+        "facts": {
+          "shaking": false,
+          "stairsChecked": true
+        }
+      },
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "assembly",
+      "label": "至集合點點名且不返回",
+      "pattern": "(?:到|前往).*(?:集合點|操場).*(?:點名|清點)|集合點.*不返回",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "return_bag",
+      "label": "返回教室拿物品",
+      "pattern": "返回.*教室.*(?:拿|找).*(?:手機|書包|東西)",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "jump_window",
+      "label": "從高樓窗戶跳下",
+      "pattern": "(?:從|自).*(?:窗戶|窗子).*(?:跳|翻)|跳窗|跳樓",
+      "sourceIds": [
+        "source-0"
+      ]
+    }
   ],
   "nodes": [
     {
-      "id": "shaking", "title": "強震當下", "situation": "搖晃仍在持續，立刻移動會暴露於掉落物與跌倒風險。", "task": "先保護頭頸並等待主要搖晃停止。",
-      "required": ["drop_cover_hold", "wait_stop"], "optional": [], "available": ["drop_cover_hold", "wait_stop", "run_elevator"],
-      "hazards": {"run_elevator": {"terminal": true, "sessionStatus": "FAILED", "physicalStatus": "CRITICAL", "message": "你在強烈搖晃時奔跑並嘗試搭電梯，暴露於掉落、跌倒與受困風險。本次演練失敗。"}},
-      "onComplete": {"to": "evacuate", "setFacts": {"shaking": false, "stairsChecked": true}, "physicalStatus": "SHELTERED", "message": "主要搖晃停止，教師確認指定樓梯可用並開始帶隊疏散。"}
+      "id": "shaking",
+      "title": "強震當下",
+      "situation": "搖晃仍在持續，立刻移動會暴露於掉落物與跌倒風險。",
+      "task": "先保護頭頸並等待主要搖晃停止。",
+      "required": [
+        "drop_cover_hold",
+        "wait_stop"
+      ],
+      "optional": [],
+      "available": [
+        "drop_cover_hold",
+        "wait_stop",
+        "run_elevator",
+        "run_outside",
+        "jump_window"
+      ],
+      "hazards": {
+        "run_elevator": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。"
+        },
+        "jump_window": {
+          "message": "三樓窗戶不是疏散路線。跳下會暴露於高處墜落風險。",
+          "terminal": true,
+          "physicalStatus": "CRITICAL"
+        },
+        "run_outside": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你在搖晃仍持續時跑向戶外。演練因移動時的掉落物與跌倒風險結束。"
+        }
+      },
+      "onComplete": {
+        "to": "evacuate",
+        "setFacts": {
+          "shaking": false,
+          "stairsChecked": true
+        },
+        "physicalStatus": "SHELTERED",
+        "message": "主要搖晃停止，教師確認指定樓梯可用並開始帶隊疏散。"
+      }
     },
     {
-      "id": "evacuate", "title": "震後集體疏散", "situation": "指定樓梯可用，校方要求依序前往集合點。餘震仍可能發生。", "task": "依指示疏散、完成點名，不返回拿取物品。",
-      "required": ["follow_stairs", "assembly"], "optional": [], "available": ["follow_stairs", "assembly", "return_bag"],
-      "hazards": {"return_bag": {"terminal": true, "sessionStatus": "FAILED", "physicalStatus": "CRITICAL", "message": "你在未解除風險前返回受損教室拿物品，遭遇餘震與掉落物。本次演練失敗。"}},
-      "terminal": {"sessionStatus": "COMPLETED", "physicalStatus": "EVACUATED", "completionKind": "SAFE_AREA_REACHED", "message": "你依指示抵達集合點並完成點名。本次演練以『完成撤離』結束。"}
+      "id": "evacuate",
+      "title": "震後集體疏散",
+      "situation": "指定樓梯可用，校方要求依序前往集合點。餘震仍可能發生。",
+      "task": "依指示疏散、完成點名，不返回拿取物品。",
+      "required": [
+        "follow_stairs",
+        "assembly"
+      ],
+      "optional": [],
+      "available": [
+        "follow_stairs",
+        "assembly",
+        "return_bag"
+      ],
+      "hazards": {
+        "return_bag": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你在未解除風險前返回受損教室拿物品，遭遇餘震與掉落物。本次演練失敗。"
+        }
+      },
+      "terminal": {
+        "sessionStatus": "COMPLETED",
+        "physicalStatus": "EVACUATED",
+        "completionKind": "SAFE_AREA_REACHED",
+        "message": "你依指示抵達集合點並完成點名。本次演練以『完成撤離』結束。"
+      }
     }
   ],
   "reflection": "地震當下先就地保護，主要搖晃停止後才依校方確認的路線集體疏散。",
-  "sources": [{"agency": "內政部消防署", "title": "地震防災須知", "url": "https://www.nfa.gov.tw/pro/index.php?act=article&article_id=587&code=print&ids=113"}]
+  "sources": [
+    {
+      "agency": "內政部消防署",
+      "title": "地震防災須知",
+      "url": "https://www.nfa.gov.tw/pro/index.php?act=article&article_id=587&code=print&ids=113",
+      "id": "source-0"
+    }
+  ],
+  "deterioration": [
+    {
+      "id": "elapsed-1",
+      "at": 2,
+      "message": "燈具繼續晃動，廣播提醒學生依教師指示。",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "elapsed-2",
+      "at": 4,
+      "message": "廣播更新，仍需由校方確認指定動線。",
+      "sourceIds": [
+        "source-0"
+      ]
+    }
+  ]
 }

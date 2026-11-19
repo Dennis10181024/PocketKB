@@ -1,0 +1,3412 @@
+{
+  "utc": "2026-11-17T02:41:08.638Z",
+  "results": [
+    {
+      "id": "drill_fire_dorm",
+      "title": "宿舍濃煙：關門待救",
+      "unique": 4,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我跳窗逃生",
+          "reply": "跳窗或翻出窗外不適合目前濃煙阻斷的設定。本次模擬停止，可回顧後重新練習。",
+          "kind": "failed",
+          "elapsedMs": 1.2042999999999893,
+          "changed": true,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [
+              {
+                "node": "isolate",
+                "kind": "failed",
+                "labels": [
+                  "跳窗或翻出窗外"
+                ]
+              }
+            ],
+            "outcome": "FAILED"
+          }
+        },
+        {
+          "category": "a",
+          "input": "我搭電梯離開",
+          "reply": "搭電梯不適合目前濃煙阻斷的設定。本次模擬停止，可回顧後重新練習。",
+          "kind": "failed",
+          "elapsedMs": 0.3380999999999972,
+          "changed": true,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [
+              {
+                "node": "isolate",
+                "kind": "failed",
+                "labels": [
+                  "搭電梯"
+                ]
+              }
+            ],
+            "outcome": "FAILED"
+          }
+        },
+        {
+          "category": "a",
+          "input": "我開門衝出去",
+          "reply": "再開房門或衝入走廊不適合目前濃煙阻斷的設定。尚未執行此危險選擇；請重新決定，已完成的安全行動仍保留。",
+          "kind": "risk",
+          "elapsedMs": 0.09909999999999286,
+          "changed": true,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [
+              {
+                "node": "isolate",
+                "kind": "risk",
+                "labels": [
+                  "再開房門或衝入走廊"
+                ]
+              }
+            ],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "a",
+          "input": "我倒立走出去",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.05760000000000787,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.03690000000000282,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.032199999999988904,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.03440000000000509,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.03779999999997585,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.039199999999993906,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.04079999999999018,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.041600000000016735,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "kind": "clarify",
+          "elapsedMs": 0.03319999999999368,
+          "changed": false,
+          "before": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          },
+          "after": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "barrier_lake_downstream",
+      "title": "堰塞湖警戒：下游聚落",
+      "unique": 3,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我到河邊觀看",
+          "reply": "你進入河道警戒區停留觀看，錯過撤離並暴露於突發洪水風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.5797000000000025,
+          "changed": true,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "watch_river",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我先繼續收拾行李和財物",
+          "reply": "演練事件：東側道路已因落石與積水中斷，原本的撤離窗口關閉。現在不能再沿原路離開。",
+          "kind": "environment_change",
+          "elapsedMs": 0.23909999999997922,
+          "changed": true,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "cutoff",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": false,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "pack_more",
+                "kind": "action"
+              },
+              {
+                "node": "warning",
+                "kind": "environment_change",
+                "message": "演練事件：東側道路已因落石與積水中斷，原本的撤離窗口關閉。現在不能再沿原路離開。"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我跳進河裡",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.020600000000001728,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我在橋上拍照",
+          "reply": "你進入河道警戒區停留觀看，錯過撤離並暴露於突發洪水風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.01859999999999218,
+          "changed": true,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "watch_river",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.00929999999999609,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008100000000013097,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007899999999978036,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007899999999978036,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.009399999999999409,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.012199999999978672,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008700000000004593,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007900000000006457,
+          "changed": false,
+          "before": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "earthquake_home_trapped",
+      "title": "地震後受困住家",
+      "unique": 2,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我強行搬動倒塌物逃生",
+          "reply": "你強行移動不穩定的倒塌物，引發二次坍落。本次演練以危急失敗結束。",
+          "kind": "failed",
+          "elapsedMs": 0.987199999999973,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "force_exit",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我一直直播等救援",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.19900000000001228,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我從倒塌物上爬出去",
+          "reply": "你強行移動不穩定的倒塌物，引發二次坍落。本次演練以危急失敗結束。",
+          "kind": "failed",
+          "elapsedMs": 0.036100000000033106,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "force_exit",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我在原地做伏地挺身",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.010299999999972442,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.00909999999998945,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008500000000026375,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008199999999987995,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007900000000006457,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.009200000000021191,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.011700000000018917,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008600000000001273,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007199999999954798,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "earthquake_school",
+      "title": "地震：學校教室",
+      "unique": 2,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我衝去搭電梯",
+          "reply": "你在強烈搖晃時奔跑並嘗試搭電梯，暴露於掉落、跌倒與受困風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.8640999999999508,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": [
+              {
+                "node": "shaking",
+                "action": "run_elevator",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我從窗戶跳下去",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.19180000000000064,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我在搖晃時跑到外面",
+          "reply": "你在強烈搖晃時奔跑並嘗試搭電梯，暴露於掉落、跌倒與受困風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.043299999999987904,
+          "changed": true,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": [
+              {
+                "node": "shaking",
+                "action": "run_elevator",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我原地跳舞",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.01710000000002765,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.010400000000004184,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007499999999993179,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.0072000000000116415,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.01890000000003056,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.020800000000008367,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.02199999999999136,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.021099999999989905,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.015199999999992997,
+          "changed": false,
+          "before": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "flood_low_home",
+      "title": "淹水：低窪住宅撤離已中斷",
+      "unique": 3,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我游出去",
+          "reply": "你嘗試穿越快速積水離開社區，失去穩定立足點。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.5221000000000231,
+          "changed": true,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "wade_out",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我進地下室救車",
+          "reply": "你進入正在進水的地下空間搶救車輛，遭遇快速上升水位與電氣風險。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.1933999999999969,
+          "changed": true,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "basement",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我開車通過積水",
+          "reply": "你嘗試穿越快速積水離開社區，失去穩定立足點。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.02400000000000091,
+          "changed": true,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "wade_out",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我坐在漂浮的門板上唱歌",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.009999999999990905,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008499999999969532,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.00760000000002492,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007699999999999818,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007900000000006457,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.00909999999998945,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.012000000000000455,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008399999999994634,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.007400000000018281,
+          "changed": false,
+          "before": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "landslide_mountain_road",
+      "title": "土石流警戒：山區道路",
+      "unique": 2,
+      "cases": [
+        {
+          "category": "a",
+          "input": "我硬闖封閉警戒區",
+          "reply": "你闖入封閉的土石流警戒區，遭遇落石與土砂。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.7409999999999854,
+          "changed": true,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "cross_closed",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我走溪谷捷徑",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.19909999999993033,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "a",
+          "input": "我開過封閉路段",
+          "reply": "你闖入封閉的土石流警戒區，遭遇落石與土砂。本次演練失敗。",
+          "kind": "failed",
+          "elapsedMs": 0.051000000000044565,
+          "changed": true,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "cross_closed",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "category": "a",
+          "input": "我下車跳舞",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.01310000000000855,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我變成超人",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.008100000000013097,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我用魔法讓災害消失",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.00760000000002492,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我瞬移到火星",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.0072999999999865395,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "b",
+          "input": "我讓時間倒流",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.00760000000002492,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "我要吃雞排",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.018000000000029104,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "哈哈哈",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.024200000000064392,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "香蕉火箭123",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.015800000000012915,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        },
+        {
+          "category": "c",
+          "input": "請幫我寫一首情歌",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "kind": "clarify",
+          "elapsedMs": 0.01789999999994052,
+          "changed": false,
+          "before": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          },
+          "after": {
+            "scenarioId": "landslide_mountain_road",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 70,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "turnaroundOpen": true,
+              "forwardRoadClosed": true
+            },
+            "events": []
+          }
+        }
+      ]
+    }
+  ]
+}

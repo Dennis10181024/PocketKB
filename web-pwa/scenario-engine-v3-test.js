@@ -37,10 +37,10 @@ assert.equal(blockedContact.state.accepted.includes('send_location'), false);
 const untouched = engine.create(barrierLake);
 const nonsense = engine.step(barrierLake, untouched, '我今天晚餐想吃拉麵');
 assert.equal(nonsense.kind, 'clarify');
-assert.deepEqual(nonsense.state, untouched);
+assert.deepEqual(nonsense.state, {...untouched,elapsed:1,consecutiveQuestions:0});
 const conflict = engine.step(barrierLake, untouched, '我立即沿東側指定路線撤離，但我先繼續收拾行李');
 assert.equal(conflict.kind, 'clarify');
-assert.deepEqual(conflict.state, untouched);
+assert.deepEqual(conflict.state, {...untouched,elapsed:1,consecutiveQuestions:0});
 
 let delayed = engine.create(barrierLake);
 const delayResult = engine.step(barrierLake, delayed, '我先繼續收拾行李和財物');

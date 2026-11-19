@@ -1,0 +1,277 @@
+{
+  "id": "flood_low_home",
+  "version": "3.0.0",
+  "title": "淹水：低窪住宅撤離已中斷",
+  "hazard": "flood",
+  "locationProfile": "low_lying_home",
+  "opening": "豪雨持續，住宅外道路已有快速積水，地方通知目前不要涉水外出。你位於一樓，樓梯可通往二樓，地下停車場已開始進水。此時沒有可安全步行離開社區的路線。",
+  "notice": "本情境設定為撤離窗口已關閉；實際災時依地方政府警報與現場狀況行動。",
+  "learningObjectives": [
+    "撤離窗口關閉後不涉水、不進地下空間搶救財物",
+    "在安全可及時處理電源並移往較高樓層",
+    "回報位置、保存飲水電量與體力等待救援"
+  ],
+  "commonMisconceptions": [
+    "車子比人命重要，應先到地下室移車",
+    "積水看起來不深就可以涉水",
+    "到二樓就代表已經完全安全"
+  ],
+  "reflectionQuestions": [
+    "為什麼淹水時地下停車場特別危險？",
+    "如果總電源位置已被水包圍，是否還應靠近操作？"
+  ],
+  "questionPattern": "[?？]|是否|是不是|能不能|可不可以|怎麼|如何|為什麼|嗎|要不要|如果|假如|假設",
+  "negationPattern": "(?:不想|不打算|不會|不要|不能|不可|沒有|沒|不|別|勿|避免)[^，。；、!?！？]{0,5}$",
+  "splitPattern": "[，。；、,;!！\\n]|然後|接著|但是|但|而且|並且|也|再來",
+  "initialNode": "isolate",
+  "initialState": {
+    "physicalStatus": "EXPOSED",
+    "resources": {
+      "battery": 55,
+      "water": 3,
+      "energy": 80
+    },
+    "facts": {
+      "outsideRouteOpen": false,
+      "upperFloorReachable": true,
+      "rescueArrived": false,
+      "standingDry": true,
+      "handsDry": true,
+      "panelSafelyReachable": true
+    }
+  },
+  "actions": [
+    {
+      "id": "avoid_basement",
+      "label": "不進入地下室或搶救車輛",
+      "pattern": "不.*(?:進|去|下).*(?:地下室|地下停車場)|不.*(?:搶救|開走|拿回).*(?:車|財物)",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "power_off",
+      "label": "安全可及時關閉總電源",
+      "pattern": "在.*安全.*(?:關閉|切斷).*(?:總電源|電源)|關閉總電源",
+      "requires": {
+        "facts": {
+          "standingDry": true,
+          "handsDry": true,
+          "panelSafelyReachable": true
+        }
+      },
+      "unsafeWhenBlocked": true,
+      "blockedMessage": "有觸電風險，未執行關電。只有腳下乾燥、手部乾燥且配電箱能安全抵達，才允許操作。",
+      "sourceIds": [
+        "cdc-electrical"
+      ]
+    },
+    {
+      "id": "basement",
+      "label": "進地下室搶救車輛",
+      "pattern": "(?:進|下).*(?:地下室|地下停車場).*(?:救|開|拿).*(?:車|財物)",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "wade_out",
+      "label": "徒步涉水離開",
+      "pattern": "(?:涉水|走進積水|趟水|蹚水|踩著水).*(?:離開|出去|通過|過去)",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "你試圖徒步涉水，模擬中失去立足點，演練危急失敗。",
+      "teaching": "道路積水使行走不安全；依劇本留在可達的高處。",
+      "examples": [
+        "我涉水離開"
+      ]
+    },
+    {
+      "id": "swim_out",
+      "label": "游泳穿越積水",
+      "pattern": "(?:游|泅水|用游的).*(?:出去|離開|過去|通過)",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "你試圖游泳穿過快速積水，暴露於水流危險，演練危急失敗。",
+      "teaching": "積水道路沒有已知安全路線；依劇本考慮垂直避難。",
+      "examples": [
+        "我游出去"
+      ]
+    },
+    {
+      "id": "drive_flood",
+      "label": "駕車穿越積水",
+      "pattern": "(?:開車|駕車).*(?:積水|水路|水淹)|(?:開車|駕車).*(?:離開|出去|通過)",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "你試圖駕車穿越積水，車輛進入不安全的淹水路段，演練危急失敗。",
+      "teaching": "道路深度及通行條件未知；不要駕車闖入積水路段。",
+      "examples": [
+        "我開車通過積水"
+      ]
+    },
+    {
+      "id": "upper_floor",
+      "label": "移動到較高樓層垂直避難",
+      "pattern": "(?:移動|前往|上).*(?:二樓|較高樓層|高處).*(?:避難|等待)|垂直避難",
+      "requires": {
+        "facts": {
+          "upperFloorReachable": true
+        }
+      },
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "send_location",
+      "label": "回報地址與受困位置",
+      "pattern": "(?:回報|傳送|告知).*(?:地址|位置|受困)|聯絡.*(?:119|救援)",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "conserve",
+      "label": "節省飲水、電量與體力",
+      "pattern": "(?:節省|控制|保留).*(?:飲水|水|電量|體力)|減少.*(?:活動|消耗)",
+      "sourceIds": [
+        "source-0"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "isolate",
+      "title": "停止進入淹水地下空間",
+      "situation": "地下停車場進水，外面道路也不可安全通行。你站在乾燥的一樓室內，雙手乾燥，配電箱就在乾燥的牆面，無須涉水即可到達。",
+      "task": "先避免進入地下空間與電氣危險。",
+      "required": [
+        "avoid_basement",
+        "power_off"
+      ],
+      "optional": [],
+      "available": [
+        "avoid_basement",
+        "power_off",
+        "basement",
+        "wade_out",
+        "swim_out",
+        "drive_flood"
+      ],
+      "hazards": {
+        "basement": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你進入正在進水的地下空間搶救車輛，遭遇快速上升水位與電氣風險。本次演練失敗。"
+        },
+        "wade_out": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖徒步涉水，模擬中失去立足點，演練危急失敗。"
+        },
+        "swim_out": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖游泳穿過快速積水，暴露於水流危險，演練危急失敗。"
+        },
+        "drive_flood": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖駕車穿越積水，車輛進入不安全的淹水路段，演練危急失敗。"
+        }
+      },
+      "onComplete": {
+        "to": "wait",
+        "physicalStatus": "SHELTERED",
+        "message": "你停止進入地下空間，並在安全可及的情況下處理電源；外部路線仍不可通行。"
+      }
+    },
+    {
+      "id": "wait",
+      "title": "垂直避難與待救",
+      "situation": "二樓以上仍可到達，外部積水沒有退去。",
+      "task": "移至高處、回報位置並保存資源。",
+      "required": [
+        "upper_floor",
+        "send_location",
+        "conserve"
+      ],
+      "optional": [],
+      "available": [
+        "upper_floor",
+        "send_location",
+        "conserve",
+        "wade_out",
+        "swim_out",
+        "drive_flood"
+      ],
+      "hazards": {
+        "wade_out": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖徒步涉水，模擬中失去立足點，演練危急失敗。"
+        },
+        "swim_out": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖游泳穿過快速積水，暴露於水流危險，演練危急失敗。"
+        },
+        "drive_flood": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖駕車穿越積水，車輛進入不安全的淹水路段，演練危急失敗。"
+        }
+      },
+      "terminal": {
+        "sessionStatus": "COMPLETED",
+        "physicalStatus": "WAITING_RESCUE",
+        "completionKind": "SURVIVAL_STABILIZED",
+        "message": "你已轉移到高處並回報位置，但仍受困於淹水區。演練以『穩定等待救援』結束。"
+      }
+    }
+  ],
+  "reflection": "撤離太晚時不一定還能安全離開；停止進入地下空間、垂直避難、回報位置與保存資源可能是較可行的生存策略。",
+  "sources": [
+    {
+      "agency": "教育部",
+      "title": "校園防災知識卡－淹水避難",
+      "url": "https://disaster.moe.edu.tw/",
+      "id": "source-0"
+    },
+    {
+      "id": "cdc-electrical",
+      "agency": "美國 CDC",
+      "title": "What to Do to Protect Yourself From Electrical Hazards",
+      "url": "https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html"
+    }
+  ],
+  "deterioration": [
+    {
+      "id": "elapsed-1",
+      "at": 2,
+      "message": "室外積水上升，地下停車場入口的水更深。",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "elapsed-2",
+      "at": 4,
+      "message": "外部水位繼續上升，原步行路線仍關閉。",
+      "sourceIds": [
+        "source-0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3871 @@
+{
+  "utc": "2026-11-17T02:27:02.118Z",
+  "runtime": "v20.19.0",
+  "runs": [
+    {
+      "id": 1,
+      "name": "fire-dorm",
+      "title": "宿舍濃煙：關門待救",
+      "version": "2.0.0",
+      "persona": "新手",
+      "elapsedMs": 6.318100000000001,
+      "correct": 6,
+      "free": 6,
+      "switches": 0,
+      "terminal": "SUCCESS",
+      "review": "劇本 v2.0.0 · 學習模式\n完成 3/3 階段\n已練習：關好房門、撥119求救、告知地址與棟別、告知樓層與房號、留在房內等待救援、保持通訊並依消防指示\n待補強：本劇本必要決策皆已完成\n需回顧的選擇：無已辨識風險選擇\n提示使用：0 層\n回想：為什麼不能把『已求救』當成『已安全』？下次你會先確認哪些位置資訊？",
+      "turns": [
+        {
+          "input": "我把房門關好",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 0,
+          "after": 1,
+          "kind": "advance",
+          "reply": "房門已關好。你仍受困五樓，下一步要讓外界知道你在哪裡。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "kind": "action",
+              "labels": [
+                "關好房門"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 4.172499999999999
+        },
+        {
+          "input": "我撥119求救",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 1,
+          "kind": "partial",
+          "reply": "已記住：撥119求救。尚待完成：告知地址與棟別、告知樓層與房號。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "撥119求救"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.6326999999999998
+        },
+        {
+          "input": "我告知地址是安學路100號A棟宿舍",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 1,
+          "kind": "partial",
+          "reply": "已記住：告知地址與棟別。尚待完成：告知樓層與房號。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "告知地址與棟別"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.12290000000000134
+        },
+        {
+          "input": "我回報五樓503室有人受困",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 2,
+          "kind": "advance",
+          "reply": "模擬接線員已取得求救與定位資訊，請你保持聯絡。這不表示消防隊已到達。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "告知樓層與房號"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.19180000000000064
+        },
+        {
+          "input": "我留在房內等待救援",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 2,
+          "after": 2,
+          "kind": "partial",
+          "reply": "已記住：留在房內等待救援。尚待完成：保持通訊並依消防指示。",
+          "accepted": [
+            {
+              "node": "wait",
+              "kind": "action",
+              "labels": [
+                "留在房內等待救援"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.08310000000000173
+        },
+        {
+          "input": "我保持通訊並依消防人員指示",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 2,
+          "after": 2,
+          "kind": "success",
+          "reply": "你完成本次待救決策練習；模擬到此結束，不代表真實救援已完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "kind": "action",
+              "labels": [
+                "保持通訊並依消防指示"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.20359999999999445
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 249.55330000000004,
+        "reviewVisible": true,
+        "repliesMatched": 6,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 2,
+      "name": "fire-dorm",
+      "title": "宿舍濃煙：關門待救",
+      "version": "2.0.0",
+      "persona": "口語",
+      "elapsedMs": 1.1901999999999973,
+      "correct": 6,
+      "free": 7,
+      "switches": 1,
+      "terminal": "SUCCESS",
+      "review": "劇本 v2.0.0 · 學習模式\n完成 3/3 階段\n已練習：關好房門、撥119求救、告知地址與棟別、告知樓層與房號、留在房內等待救援、保持通訊並依消防指示\n待補強：本劇本必要決策皆已完成\n需回顧的選擇：無已辨識風險選擇\n提示使用：0 層\n回想：為什麼不能把『已求救』當成『已安全』？下次你會先確認哪些位置資訊？",
+      "turns": [
+        {
+          "input": "我把房門帶上",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 0,
+          "after": 0,
+          "kind": "clarify",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.08149999999999835
+        },
+        {
+          "input": "香蕉火箭123",
+          "expected": "unchanged",
+          "via": "free",
+          "intent": "action",
+          "before": 0,
+          "after": 0,
+          "kind": "clarify",
+          "reply": "沒有新增已確認的行動。否定、重複或無法理解的描述不會算完成；請換句話說，或使用引導選項。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.06360000000000099
+        },
+        {
+          "input": "我把房門關好",
+          "expected": "advance",
+          "via": "guided-label",
+          "intent": "action",
+          "before": 0,
+          "after": 1,
+          "kind": "advance",
+          "reply": "房門已關好。你仍受困五樓，下一步要讓外界知道你在哪裡。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "kind": "action",
+              "labels": [
+                "關好房門"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.10419999999999874
+        },
+        {
+          "input": "我撥119求救",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 1,
+          "kind": "partial",
+          "reply": "已記住：撥119求救。尚待完成：告知地址與棟別、告知樓層與房號。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "撥119求救"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.12640000000000384
+        },
+        {
+          "input": "我告知地址是安學路100號A棟宿舍",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 1,
+          "kind": "partial",
+          "reply": "已記住：告知地址與棟別。尚待完成：告知樓層與房號。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "告知地址與棟別"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.13989999999999725
+        },
+        {
+          "input": "我回報五樓503室有人受困",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 2,
+          "kind": "advance",
+          "reply": "模擬接線員已取得求救與定位資訊，請你保持聯絡。這不表示消防隊已到達。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "告知樓層與房號"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.0654000000000039
+        },
+        {
+          "input": "我留在房內等待救援",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 2,
+          "after": 2,
+          "kind": "partial",
+          "reply": "已記住：留在房內等待救援。尚待完成：保持通訊並依消防指示。",
+          "accepted": [
+            {
+              "node": "wait",
+              "kind": "action",
+              "labels": [
+                "留在房內等待救援"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.2890999999999977
+        },
+        {
+          "input": "我保持通訊並依消防人員指示",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 2,
+          "after": 2,
+          "kind": "success",
+          "reply": "你完成本次待救決策練習；模擬到此結束，不代表真實救援已完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "kind": "action",
+              "labels": [
+                "保持通訊並依消防指示"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.16440000000000055
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 271.64339999999993,
+        "reviewVisible": true,
+        "repliesMatched": 8,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 3,
+      "name": "fire-dorm",
+      "title": "宿舍濃煙：關門待救",
+      "version": "2.0.0",
+      "persona": "一直問",
+      "elapsedMs": 0.7986000000000004,
+      "correct": 12,
+      "free": 12,
+      "switches": 0,
+      "terminal": "SUCCESS",
+      "review": "劇本 v2.0.0 · 學習模式\n完成 3/3 階段\n已練習：關好房門、撥119求救、告知地址與棟別、告知樓層與房號、留在房內等待救援、保持通訊並依消防指示\n待補強：本劇本必要決策皆已完成\n需回顧的選擇：無已辨識風險選擇\n提示使用：0 層\n回想：為什麼不能把『已求救』當成『已安全』？下次你會先確認哪些位置資訊？",
+      "turns": [
+        {
+          "input": "為什麼不能搭電梯？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": 0,
+          "after": 0,
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：這個設定的逃生路線已被濃煙阻斷。重點是隔開火煙並及早讓消防人員知道位置，不是鑽入濃煙或尋找濕毛巾。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.0251000000000019
+        },
+        {
+          "input": "窗外有陽台嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": 0,
+          "after": 0,
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：這個設定的逃生路線已被濃煙阻斷。重點是隔開火煙並及早讓消防人員知道位置，不是鑽入濃煙或尋找濕毛巾。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.01180000000000092
+        },
+        {
+          "input": "我把房門關好",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 0,
+          "after": 1,
+          "kind": "advance",
+          "reply": "房門已關好。你仍受困五樓，下一步要讓外界知道你在哪裡。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "kind": "action",
+              "labels": [
+                "關好房門"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.06869999999999976
+        },
+        {
+          "input": "為什麼不能搭電梯？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": 1,
+          "after": 1,
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：只說『救命』不足以定位。求救需要能找到建築物與受困房間的資訊；不要為找物品而延誤聯絡。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.045899999999996055
+        },
+        {
+          "input": "窗外有陽台嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": 1,
+          "after": 1,
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：只說『救命』不足以定位。求救需要能找到建築物與受困房間的資訊；不要為找物品而延誤聯絡。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.2119999999999962
+        },
+        {
+          "input": "我撥119求救",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 1,
+          "kind": "partial",
+          "reply": "已記住：撥119求救。尚待完成：告知地址與棟別、告知樓層與房號。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "撥119求救"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.07970000000000255
+        },
+        {
+          "input": "我告知地址是安學路100號A棟宿舍",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 1,
+          "kind": "partial",
+          "reply": "已記住：告知地址與棟別。尚待完成：告知樓層與房號。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "告知地址與棟別"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.04719999999999658
+        },
+        {
+          "input": "我回報五樓503室有人受困",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 1,
+          "after": 2,
+          "kind": "advance",
+          "reply": "模擬接線員已取得求救與定位資訊，請你保持聯絡。這不表示消防隊已到達。",
+          "accepted": [
+            {
+              "node": "report",
+              "kind": "action",
+              "labels": [
+                "告知樓層與房號"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.040399999999998215
+        },
+        {
+          "input": "為什麼不能搭電梯？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": 2,
+          "after": 2,
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：保持可定位與可通訊，並回報情況變化。不要擅自再進入走廊，也不要跳窗。實際行動依現場消防人員指示。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.022600000000004172
+        },
+        {
+          "input": "窗外有陽台嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": 2,
+          "after": 2,
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：保持可定位與可通訊，並回報情況變化。不要擅自再進入走廊，也不要跳窗。實際行動依現場消防人員指示。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.027499999999996305
+        },
+        {
+          "input": "我留在房內等待救援",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 2,
+          "after": 2,
+          "kind": "partial",
+          "reply": "已記住：留在房內等待救援。尚待完成：保持通訊並依消防指示。",
+          "accepted": [
+            {
+              "node": "wait",
+              "kind": "action",
+              "labels": [
+                "留在房內等待救援"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.047699999999998965
+        },
+        {
+          "input": "我保持通訊並依消防人員指示",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": 2,
+          "after": 2,
+          "kind": "success",
+          "reply": "你完成本次待救決策練習；模擬到此結束，不代表真實救援已完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "kind": "action",
+              "labels": [
+                "保持通訊並依消防指示"
+              ]
+            }
+          ],
+          "ok": true,
+          "ms": 0.03730000000000189
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 463.65229999999974,
+        "reviewVisible": true,
+        "repliesMatched": 12,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 4,
+      "name": "earthquake-school",
+      "title": "地震：學校教室",
+      "version": "3.0.0",
+      "persona": "新手",
+      "elapsedMs": 2.554299999999998,
+      "correct": 4,
+      "free": 4,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "EVACUATED",
+      "review": "劇本 v3.0.0\n結果：已撤離至相對安全地點\n學習目標：\n- 強烈搖晃時先趴下、掩護、穩住，不急著往外跑\n- 主要搖晃停止後，依教師與校方確認的路線疏散\n- 抵達集合點接受點名，不搭電梯也不返回拿物品\n做對的決策：\n- 趴下、掩護、穩住\n- 等待主要搖晃停止\n- 依教師指示走安全樓梯疏散\n- 至集合點點名且不返回\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 80%、飲水 1、體力 100%\n常見錯誤觀念：\n- 地震一來就立刻往外跑\n- 搭電梯可以更快離開\n- 疏散後可以回教室拿手機或書包\n反思問題：\n- 如果指定樓梯受損，你應該依靠誰提供替代路線？\n- 為什麼抵達集合點後不能自行離隊？",
+      "turns": [
+        {
+          "input": "趴下、掩護、穩住",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "shaking",
+          "after": "shaking",
+          "kind": "partial",
+          "reply": "已記住：趴下、掩護、穩住。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "shaking",
+              "action": "drop_cover_hold",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 1.5498000000000047,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": true,
+            "stairsChecked": false
+          }
+        },
+        {
+          "input": "等待主要搖晃停止",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "shaking",
+          "after": "evacuate",
+          "kind": "transition",
+          "reply": "主要搖晃停止，教師確認指定樓梯可用並開始帶隊疏散。",
+          "accepted": [
+            {
+              "node": "shaking",
+              "action": "wait_stop",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.1150999999999982,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        },
+        {
+          "input": "依教師指示走安全樓梯疏散",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "evacuate",
+          "after": "evacuate",
+          "kind": "partial",
+          "reply": "已記住：依教師指示走安全樓梯疏散。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "evacuate",
+              "action": "follow_stairs",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.09510000000000218,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        },
+        {
+          "input": "至集合點點名且不返回",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "evacuate",
+          "after": "evacuate",
+          "kind": "completed",
+          "reply": "你依指示抵達集合點並完成點名。本次演練以『完成撤離』結束。",
+          "accepted": [
+            {
+              "node": "evacuate",
+              "action": "assembly",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.027700000000002944,
+          "physical": "EVACUATED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 154.14879999999994,
+        "reviewVisible": true,
+        "repliesMatched": 4,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 5,
+      "name": "earthquake-school",
+      "title": "地震：學校教室",
+      "version": "3.0.0",
+      "persona": "口語",
+      "elapsedMs": 0.3072000000000088,
+      "correct": 0,
+      "free": 2,
+      "switches": 0,
+      "terminal": "FAILED",
+      "physical": "CRITICAL",
+      "review": "劇本 v3.0.0\n結果：危急失敗\n學習目標：\n- 強烈搖晃時先趴下、掩護、穩住，不急著往外跑\n- 主要搖晃停止後，依教師與校方確認的路線疏散\n- 抵達集合點接受點名，不搭電梯也不返回拿物品\n做對的決策：\n- 無\n危險決策：\n- 搖晃時衝向電梯\n需要補強：\n- 趴下、掩護、穩住\n- 等待主要搖晃停止\n- 依教師指示走安全樓梯疏散\n- 至集合點點名且不返回\n剩餘資源：手機 80%、飲水 1、體力 100%\n常見錯誤觀念：\n- 地震一來就立刻往外跑\n- 搭電梯可以更快離開\n- 疏散後可以回教室拿手機或書包\n反思問題：\n- 如果指定樓梯受損，你應該依靠誰提供替代路線？\n- 為什麼抵達集合點後不能自行離隊？",
+      "turns": [
+        {
+          "input": "我縮到桌底抱住頭",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "shaking",
+          "after": "shaking",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.05910000000000082,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": true,
+            "stairsChecked": false
+          }
+        },
+        {
+          "input": "我不要衝去搭電梯，但我衝去搭電梯",
+          "expected": "unchanged",
+          "via": "free",
+          "intent": "action",
+          "before": "shaking",
+          "after": "shaking",
+          "kind": "failed",
+          "reply": "你在強烈搖晃時奔跑並嘗試搭電梯，暴露於掉落、跌倒與受困風險。本次演練失敗。",
+          "accepted": [
+            {
+              "node": "shaking",
+              "action": "run_elevator",
+              "kind": "hazard"
+            }
+          ],
+          "ok": false,
+          "ms": 0.10370000000000346,
+          "physical": "CRITICAL",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": true,
+            "stairsChecked": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 92.64799999999968,
+        "reviewVisible": true,
+        "repliesMatched": 2,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 6,
+      "name": "earthquake-school",
+      "title": "地震：學校教室",
+      "version": "3.0.0",
+      "persona": "一直問",
+      "elapsedMs": 0.8663999999999987,
+      "correct": 8,
+      "free": 8,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "EVACUATED",
+      "review": "劇本 v3.0.0\n結果：已撤離至相對安全地點\n學習目標：\n- 強烈搖晃時先趴下、掩護、穩住，不急著往外跑\n- 主要搖晃停止後，依教師與校方確認的路線疏散\n- 抵達集合點接受點名，不搭電梯也不返回拿物品\n做對的決策：\n- 趴下、掩護、穩住\n- 等待主要搖晃停止\n- 依教師指示走安全樓梯疏散\n- 至集合點點名且不返回\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 80%、飲水 1、體力 100%\n常見錯誤觀念：\n- 地震一來就立刻往外跑\n- 搭電梯可以更快離開\n- 疏散後可以回教室拿手機或書包\n反思問題：\n- 如果指定樓梯受損，你應該依靠誰提供替代路線？\n- 為什麼抵達集合點後不能自行離隊？",
+      "turns": [
+        {
+          "input": "桌下沒位置怎麼辦？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "shaking",
+          "after": "shaking",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.02380000000000848,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": true,
+            "stairsChecked": false
+          }
+        },
+        {
+          "input": "可以現在跑出去嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "shaking",
+          "after": "shaking",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.017499999999998295,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": true,
+            "stairsChecked": false
+          }
+        },
+        {
+          "input": "趴下、掩護、穩住",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "shaking",
+          "after": "shaking",
+          "kind": "partial",
+          "reply": "已記住：趴下、掩護、穩住。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "shaking",
+              "action": "drop_cover_hold",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.11410000000000764,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": true,
+            "stairsChecked": false
+          }
+        },
+        {
+          "input": "等待主要搖晃停止",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "shaking",
+          "after": "evacuate",
+          "kind": "transition",
+          "reply": "主要搖晃停止，教師確認指定樓梯可用並開始帶隊疏散。",
+          "accepted": [
+            {
+              "node": "shaking",
+              "action": "wait_stop",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.16030000000000655,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        },
+        {
+          "input": "桌下沒位置怎麼辦？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "evacuate",
+          "after": "evacuate",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.02939999999999543,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        },
+        {
+          "input": "可以現在跑出去嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "evacuate",
+          "after": "evacuate",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.07909999999999684,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        },
+        {
+          "input": "依教師指示走安全樓梯疏散",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "evacuate",
+          "after": "evacuate",
+          "kind": "partial",
+          "reply": "已記住：依教師指示走安全樓梯疏散。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "evacuate",
+              "action": "follow_stairs",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.1238000000000028,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        },
+        {
+          "input": "至集合點點名且不返回",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "evacuate",
+          "after": "evacuate",
+          "kind": "completed",
+          "reply": "你依指示抵達集合點並完成點名。本次演練以『完成撤離』結束。",
+          "accepted": [
+            {
+              "node": "evacuate",
+              "action": "assembly",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.08209999999999695,
+          "physical": "EVACUATED",
+          "resources": {
+            "battery": 80,
+            "water": 1,
+            "energy": 100
+          },
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 316.11829999999964,
+        "reviewVisible": true,
+        "repliesMatched": 8,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 7,
+      "name": "earthquake-home-trapped",
+      "title": "地震後受困住家",
+      "version": "3.0.0",
+      "persona": "新手",
+      "elapsedMs": 0.9159999999999968,
+      "correct": 6,
+      "free": 6,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "WAITING_RESCUE",
+      "review": "劇本 v3.0.0\n結果：已穩定待救，但尚未脫離災區\n學習目標：\n- 辨識沒有安全出口時，不強行移動不穩定倒塌物\n- 優先傳送位置與受困資訊，保留手機後續通訊能力\n- 控制飲水、體力與電量並維持可被發現的訊號\n做對的決策：\n- 確認傷勢與周遭危險\n- 不強行搬動大型倒塌物\n- 傳送位置與受困資訊\n- 節省手機電量並定時查看訊息\n- 製造容易被救援人員辨識的訊號\n- 控制飲水與體力消耗\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 35%、飲水 1、體力 70%\n常見錯誤觀念：\n- 只要用力搬開碎石就一定能出去\n- 持續直播能增加獲救機會\n- 完成待救步驟就代表救援已抵達\n反思問題：\n- 哪些資源應該優先保留給後續求救？\n- 什麼情況下移動倒塌物反而會增加危險？",
+      "turns": [
+        {
+          "input": "確認傷勢與周遭危險",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "assess",
+          "after": "assess",
+          "kind": "partial",
+          "reply": "已記住：確認傷勢與周遭危險。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "assess",
+              "action": "assess_injury",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.24399999999999977,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "不強行搬動大型倒塌物",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "assess",
+          "after": "contact",
+          "kind": "transition",
+          "reply": "你沒有冒險穿越不穩定倒塌物，先降低二次受傷風險。",
+          "accepted": [
+            {
+              "node": "assess",
+              "action": "avoid_forcing_exit",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.16750000000000398,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "傳送位置與受困資訊",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "contact",
+          "after": "contact",
+          "kind": "partial",
+          "reply": "已記住：傳送位置與受困資訊。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "contact",
+              "action": "send_location",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.06780000000000541,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "節省手機電量並定時查看訊息",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "contact",
+          "after": "survive",
+          "kind": "transition",
+          "reply": "必要位置資訊已傳出，但這不代表救援隊已經抵達。",
+          "accepted": [
+            {
+              "node": "contact",
+              "action": "conserve_phone",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.030299999999996885,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "製造容易被救援人員辨識的訊號",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "survive",
+          "after": "survive",
+          "kind": "partial",
+          "reply": "已記住：製造容易被救援人員辨識的訊號。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "survive",
+              "action": "make_signal",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.02209999999999468,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "控制飲水與體力消耗",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "survive",
+          "after": "survive",
+          "kind": "completed",
+          "reply": "你已採取可行的待救措施，但仍未脫離災區，也不能假設救援已抵達。演練以『穩定等待救援』結束。",
+          "accepted": [
+            {
+              "node": "survive",
+              "action": "conserve_supplies",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.12630000000000052,
+          "physical": "WAITING_RESCUE",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 232.93070000000034,
+        "reviewVisible": true,
+        "repliesMatched": 6,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 8,
+      "name": "earthquake-home-trapped",
+      "title": "地震後受困住家",
+      "version": "3.0.0",
+      "persona": "口語",
+      "elapsedMs": 0.9771999999999963,
+      "correct": 6,
+      "free": 7,
+      "switches": 1,
+      "terminal": "COMPLETED",
+      "physical": "WAITING_RESCUE",
+      "review": "劇本 v3.0.0\n結果：已穩定待救，但尚未脫離災區\n學習目標：\n- 辨識沒有安全出口時，不強行移動不穩定倒塌物\n- 優先傳送位置與受困資訊，保留手機後續通訊能力\n- 控制飲水、體力與電量並維持可被發現的訊號\n做對的決策：\n- 確認傷勢與周遭危險\n- 不強行搬動大型倒塌物\n- 傳送位置與受困資訊\n- 節省手機電量並定時查看訊息\n- 製造容易被救援人員辨識的訊號\n- 控制飲水與體力消耗\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 35%、飲水 1、體力 70%\n常見錯誤觀念：\n- 只要用力搬開碎石就一定能出去\n- 持續直播能增加獲救機會\n- 完成待救步驟就代表救援已抵達\n反思問題：\n- 哪些資源應該優先保留給後續求救？\n- 什麼情況下移動倒塌物反而會增加危險？",
+      "turns": [
+        {
+          "input": "我摸摸手腳看有沒有流血",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "assess",
+          "after": "assess",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.07639999999999247,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "我手機快沒電了",
+          "expected": "unchanged",
+          "via": "free",
+          "intent": "action",
+          "before": "assess",
+          "after": "assess",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.020799999999994156,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "確認傷勢與周遭危險",
+          "expected": "advance",
+          "via": "guided-label",
+          "intent": "action",
+          "before": "assess",
+          "after": "assess",
+          "kind": "partial",
+          "reply": "已記住：確認傷勢與周遭危險。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "assess",
+              "action": "assess_injury",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.17669999999999675,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "不強行搬動大型倒塌物",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "assess",
+          "after": "contact",
+          "kind": "transition",
+          "reply": "你沒有冒險穿越不穩定倒塌物，先降低二次受傷風險。",
+          "accepted": [
+            {
+              "node": "assess",
+              "action": "avoid_forcing_exit",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.14879999999999427,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "傳送位置與受困資訊",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "contact",
+          "after": "contact",
+          "kind": "partial",
+          "reply": "已記住：傳送位置與受困資訊。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "contact",
+              "action": "send_location",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.033799999999999386,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "節省手機電量並定時查看訊息",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "contact",
+          "after": "survive",
+          "kind": "transition",
+          "reply": "必要位置資訊已傳出，但這不代表救援隊已經抵達。",
+          "accepted": [
+            {
+              "node": "contact",
+              "action": "conserve_phone",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.13580000000000325,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "製造容易被救援人員辨識的訊號",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "survive",
+          "after": "survive",
+          "kind": "partial",
+          "reply": "已記住：製造容易被救援人員辨識的訊號。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "survive",
+              "action": "make_signal",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.11109999999999332,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "控制飲水與體力消耗",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "survive",
+          "after": "survive",
+          "kind": "completed",
+          "reply": "你已採取可行的待救措施，但仍未脫離災區，也不能假設救援已抵達。演練以『穩定等待救援』結束。",
+          "accepted": [
+            {
+              "node": "survive",
+              "action": "conserve_supplies",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.024799999999999045,
+          "physical": "WAITING_RESCUE",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 251.04480000000012,
+        "reviewVisible": true,
+        "repliesMatched": 8,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 9,
+      "name": "earthquake-home-trapped",
+      "title": "地震後受困住家",
+      "version": "3.0.0",
+      "persona": "一直問",
+      "elapsedMs": 0.30400000000000205,
+      "correct": 12,
+      "free": 12,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "WAITING_RESCUE",
+      "review": "劇本 v3.0.0\n結果：已穩定待救，但尚未脫離災區\n學習目標：\n- 辨識沒有安全出口時，不強行移動不穩定倒塌物\n- 優先傳送位置與受困資訊，保留手機後續通訊能力\n- 控制飲水、體力與電量並維持可被發現的訊號\n做對的決策：\n- 確認傷勢與周遭危險\n- 不強行搬動大型倒塌物\n- 傳送位置與受困資訊\n- 節省手機電量並定時查看訊息\n- 製造容易被救援人員辨識的訊號\n- 控制飲水與體力消耗\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 35%、飲水 1、體力 70%\n常見錯誤觀念：\n- 只要用力搬開碎石就一定能出去\n- 持續直播能增加獲救機會\n- 完成待救步驟就代表救援已抵達\n反思問題：\n- 哪些資源應該優先保留給後續求救？\n- 什麼情況下移動倒塌物反而會增加危險？",
+      "turns": [
+        {
+          "input": "門打不開怎麼辦？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "assess",
+          "after": "assess",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.011600000000001387,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "要保留多少電量？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "assess",
+          "after": "assess",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.008499999999997954,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "確認傷勢與周遭危險",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "assess",
+          "after": "assess",
+          "kind": "partial",
+          "reply": "已記住：確認傷勢與周遭危險。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "assess",
+              "action": "assess_injury",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.017000000000010118,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "不強行搬動大型倒塌物",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "assess",
+          "after": "contact",
+          "kind": "transition",
+          "reply": "你沒有冒險穿越不穩定倒塌物，先降低二次受傷風險。",
+          "accepted": [
+            {
+              "node": "assess",
+              "action": "avoid_forcing_exit",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.014499999999998181,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "門打不開怎麼辦？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "contact",
+          "after": "contact",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.014799999999993929,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "要保留多少電量？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "contact",
+          "after": "contact",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.012299999999996203,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "傳送位置與受困資訊",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "contact",
+          "after": "contact",
+          "kind": "partial",
+          "reply": "已記住：傳送位置與受困資訊。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "contact",
+              "action": "send_location",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.023199999999988563,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "節省手機電量並定時查看訊息",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "contact",
+          "after": "survive",
+          "kind": "transition",
+          "reply": "必要位置資訊已傳出，但這不代表救援隊已經抵達。",
+          "accepted": [
+            {
+              "node": "contact",
+              "action": "conserve_phone",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.023200000000002774,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "門打不開怎麼辦？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "survive",
+          "after": "survive",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.015799999999998704,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "要保留多少電量？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "survive",
+          "after": "survive",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.016199999999997772,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "製造容易被救援人員辨識的訊號",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "survive",
+          "after": "survive",
+          "kind": "partial",
+          "reply": "已記住：製造容易被救援人員辨識的訊號。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "survive",
+              "action": "make_signal",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.01670000000000016,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "控制飲水與體力消耗",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "survive",
+          "after": "survive",
+          "kind": "completed",
+          "reply": "你已採取可行的待救措施，但仍未脫離災區，也不能假設救援已抵達。演練以『穩定等待救援』結束。",
+          "accepted": [
+            {
+              "node": "survive",
+              "action": "conserve_supplies",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.017600000000001614,
+          "physical": "WAITING_RESCUE",
+          "resources": {
+            "battery": 35,
+            "water": 1,
+            "energy": 70
+          },
+          "facts": {
+            "exitBlocked": true,
+            "signalAvailable": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 363.78819999999996,
+        "reviewVisible": true,
+        "repliesMatched": 12,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 10,
+      "name": "flood-low-home",
+      "title": "淹水：低窪住宅撤離已中斷",
+      "version": "3.0.0",
+      "persona": "新手",
+      "elapsedMs": 0.5391999999999939,
+      "correct": 4,
+      "free": 6,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "WAITING_RESCUE",
+      "review": "劇本 v3.0.0\n結果：已穩定待救，但尚未脫離災區\n學習目標：\n- 撤離窗口關閉後不涉水、不進地下空間搶救財物\n- 在安全可及時處理電源並移往較高樓層\n- 回報位置、保存飲水電量與體力等待救援\n做對的決策：\n- 安全可及時關閉總電源\n- 不進入地下室或搶救車輛\n- 移動到較高樓層垂直避難\n- 回報地址與受困位置\n- 節省飲水、電量與體力\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 55%、飲水 3、體力 80%\n常見錯誤觀念：\n- 車子比人命重要，應先到地下室移車\n- 積水看起來不深就可以涉水\n- 到二樓就代表已經完全安全\n反思問題：\n- 為什麼淹水時地下停車場特別危險？\n- 如果總電源位置已被水包圍，是否還應靠近操作？",
+      "turns": [
+        {
+          "input": "我直接關閉總電源",
+          "expected": "unchanged",
+          "via": "free",
+          "intent": "action",
+          "before": "isolate",
+          "after": "isolate",
+          "kind": "partial",
+          "reply": "已記住：安全可及時關閉總電源。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "action": "power_off",
+              "kind": "action"
+            }
+          ],
+          "ok": false,
+          "ms": 0.21579999999998734,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "不進入地下室或搶救車輛",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "isolate",
+          "after": "wait",
+          "kind": "transition",
+          "reply": "你停止進入地下空間，並在安全可及的情況下處理電源；外部路線仍不可通行。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "action": "avoid_basement",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.1132999999999953,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "安全可及時關閉總電源",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.045200000000008345,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "移動到較高樓層垂直避難",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "partial",
+          "reply": "已記住：移動到較高樓層垂直避難。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "upper_floor",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.022500000000007958,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "回報地址與受困位置",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "partial",
+          "reply": "已記住：回報地址與受困位置。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "send_location",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.017799999999994043,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "節省飲水、電量與體力",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "completed",
+          "reply": "你已轉移到高處並回報位置，但仍受困於淹水區。演練以『穩定等待救援』結束。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "conserve",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.021199999999993224,
+          "physical": "WAITING_RESCUE",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 205.39059999999972,
+        "reviewVisible": true,
+        "repliesMatched": 6,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 11,
+      "name": "flood-low-home",
+      "title": "淹水：低窪住宅撤離已中斷",
+      "version": "3.0.0",
+      "persona": "口語",
+      "elapsedMs": 0.29179999999999495,
+      "correct": 5,
+      "free": 6,
+      "switches": 1,
+      "terminal": "COMPLETED",
+      "physical": "WAITING_RESCUE",
+      "review": "劇本 v3.0.0\n結果：已穩定待救，但尚未脫離災區\n學習目標：\n- 撤離窗口關閉後不涉水、不進地下空間搶救財物\n- 在安全可及時處理電源並移往較高樓層\n- 回報位置、保存飲水電量與體力等待救援\n做對的決策：\n- 不進入地下室或搶救車輛\n- 安全可及時關閉總電源\n- 移動到較高樓層垂直避難\n- 回報地址與受困位置\n- 節省飲水、電量與體力\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 55%、飲水 3、體力 80%\n常見錯誤觀念：\n- 車子比人命重要，應先到地下室移車\n- 積水看起來不深就可以涉水\n- 到二樓就代表已經完全安全\n反思問題：\n- 為什麼淹水時地下停車場特別危險？\n- 如果總電源位置已被水包圍，是否還應靠近操作？",
+      "turns": [
+        {
+          "input": "車子就讓它泡著吧我留在樓上",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "isolate",
+          "after": "isolate",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.018799999999998818,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "我關閉總電源吧？",
+          "expected": "unchanged",
+          "via": "free",
+          "intent": "action",
+          "before": "isolate",
+          "after": "isolate",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.017899999999997362,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "不進入地下室或搶救車輛",
+          "expected": "advance",
+          "via": "guided-label",
+          "intent": "action",
+          "before": "isolate",
+          "after": "isolate",
+          "kind": "partial",
+          "reply": "已記住：不進入地下室或搶救車輛。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "action": "avoid_basement",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.032200000000003115,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "安全可及時關閉總電源",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "isolate",
+          "after": "wait",
+          "kind": "transition",
+          "reply": "你停止進入地下空間，並在安全可及的情況下處理電源；外部路線仍不可通行。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "action": "power_off",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.0893000000000086,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "移動到較高樓層垂直避難",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "partial",
+          "reply": "已記住：移動到較高樓層垂直避難。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "upper_floor",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.024299999999996658,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "回報地址與受困位置",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "partial",
+          "reply": "已記住：回報地址與受困位置。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "send_location",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.014500000000012392,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "節省飲水、電量與體力",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "completed",
+          "reply": "你已轉移到高處並回報位置，但仍受困於淹水區。演練以『穩定等待救援』結束。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "conserve",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.016000000000005343,
+          "physical": "WAITING_RESCUE",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 208.51469999999972,
+        "reviewVisible": true,
+        "repliesMatched": 7,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 12,
+      "name": "flood-low-home",
+      "title": "淹水：低窪住宅撤離已中斷",
+      "version": "3.0.0",
+      "persona": "一直問",
+      "elapsedMs": 0.23579999999999757,
+      "correct": 9,
+      "free": 9,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "WAITING_RESCUE",
+      "review": "劇本 v3.0.0\n結果：已穩定待救，但尚未脫離災區\n學習目標：\n- 撤離窗口關閉後不涉水、不進地下空間搶救財物\n- 在安全可及時處理電源並移往較高樓層\n- 回報位置、保存飲水電量與體力等待救援\n做對的決策：\n- 不進入地下室或搶救車輛\n- 安全可及時關閉總電源\n- 移動到較高樓層垂直避難\n- 回報地址與受困位置\n- 節省飲水、電量與體力\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 55%、飲水 3、體力 80%\n常見錯誤觀念：\n- 車子比人命重要，應先到地下室移車\n- 積水看起來不深就可以涉水\n- 到二樓就代表已經完全安全\n反思問題：\n- 為什麼淹水時地下停車場特別危險？\n- 如果總電源位置已被水包圍，是否還應靠近操作？",
+      "turns": [
+        {
+          "input": "總電源在哪？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "isolate",
+          "after": "isolate",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.010699999999999932,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "電箱附近有水還可以碰嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "isolate",
+          "after": "isolate",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.008300000000005525,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "不進入地下室或搶救車輛",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "isolate",
+          "after": "isolate",
+          "kind": "partial",
+          "reply": "已記住：不進入地下室或搶救車輛。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "action": "avoid_basement",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.019100000000008777,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "安全可及時關閉總電源",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "isolate",
+          "after": "wait",
+          "kind": "transition",
+          "reply": "你停止進入地下空間，並在安全可及的情況下處理電源；外部路線仍不可通行。",
+          "accepted": [
+            {
+              "node": "isolate",
+              "action": "power_off",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.01310000000000855,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "總電源在哪？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "wait",
+          "after": "wait",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.015199999999992997,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "電箱附近有水還可以碰嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "wait",
+          "after": "wait",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.012700000000009481,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "移動到較高樓層垂直避難",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "partial",
+          "reply": "已記住：移動到較高樓層垂直避難。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "upper_floor",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.01269999999999527,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "回報地址與受困位置",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "partial",
+          "reply": "已記住：回報地址與受困位置。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "send_location",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.01300000000000523,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "節省飲水、電量與體力",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "wait",
+          "after": "wait",
+          "kind": "completed",
+          "reply": "你已轉移到高處並回報位置，但仍受困於淹水區。演練以『穩定等待救援』結束。",
+          "accepted": [
+            {
+              "node": "wait",
+              "action": "conserve",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.025000000000005684,
+          "physical": "WAITING_RESCUE",
+          "resources": {
+            "battery": 55,
+            "water": 3,
+            "energy": 80
+          },
+          "facts": {
+            "outsideRouteOpen": false,
+            "upperFloorReachable": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 281.09470000000056,
+        "reviewVisible": true,
+        "repliesMatched": 9,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 13,
+      "name": "landslide-mountain-road",
+      "title": "土石流警戒：山區道路",
+      "version": "3.0.0",
+      "persona": "新手",
+      "elapsedMs": 1.109099999999998,
+      "correct": 3,
+      "free": 3,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "EVACUATED",
+      "review": "劇本 v3.0.0\n結果：已撤離至相對安全地點\n學習目標：\n- 收到土石流警戒與封路資訊時立即停止前進\n- 在安全迴轉點仍可使用時提早折返\n- 只採用官方公告的替代路線與避難處所\n做對的決策：\n- 確認官方警戒與封路資訊\n- 在安全點立即迴轉\n- 採用官方替代路線前往避難處所\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 70%、飲水 2、體力 90%\n常見錯誤觀念：\n- 車輛性能好就能穿越封閉路段\n- 溪谷捷徑可以避開塞車\n- 看到前車通過就代表路線安全\n反思問題：\n- 為什麼土石流警戒階段的提早撤離比災害發生後逃跑重要？\n- 替代路線資訊應從哪裡取得？",
+      "turns": [
+        {
+          "input": "確認官方警戒與封路資訊",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "partial",
+          "reply": "已記住：確認官方警戒與封路資訊。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "confirm_warning",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.16610000000000014,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "在安全點立即迴轉",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "reroute",
+          "kind": "transition",
+          "reply": "你在迴轉點仍可用時離開封閉路段。接下來要選擇經官方確認的避難路線。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "turn_back",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.09359999999999502,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "採用官方替代路線前往避難處所",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "reroute",
+          "after": "reroute",
+          "kind": "completed",
+          "reply": "你依官方替代路線抵達避難處所。本次演練以『完成撤離』結束。",
+          "accepted": [
+            {
+              "node": "reroute",
+              "action": "alternate_route",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.7574000000000041,
+          "physical": "EVACUATED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 118.51519999999982,
+        "reviewVisible": true,
+        "repliesMatched": 3,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 14,
+      "name": "landslide-mountain-road",
+      "title": "土石流警戒：山區道路",
+      "version": "3.0.0",
+      "persona": "口語",
+      "elapsedMs": 0.15630000000000166,
+      "correct": 3,
+      "free": 4,
+      "switches": 1,
+      "terminal": "COMPLETED",
+      "physical": "EVACUATED",
+      "review": "劇本 v3.0.0\n結果：已撤離至相對安全地點\n學習目標：\n- 收到土石流警戒與封路資訊時立即停止前進\n- 在安全迴轉點仍可使用時提早折返\n- 只採用官方公告的替代路線與避難處所\n做對的決策：\n- 確認官方警戒與封路資訊\n- 在安全點立即迴轉\n- 採用官方替代路線前往避難處所\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 70%、飲水 2、體力 90%\n常見錯誤觀念：\n- 車輛性能好就能穿越封閉路段\n- 溪谷捷徑可以避開塞車\n- 看到前車通過就代表路線安全\n反思問題：\n- 為什麼土石流警戒階段的提早撤離比災害發生後逃跑重要？\n- 替代路線資訊應從哪裡取得？",
+      "turns": [
+        {
+          "input": "我掉頭原路走",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.025100000000009004,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "我猜繼續下去沒差吧",
+          "expected": "unchanged",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.0146000000000015,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "確認官方警戒與封路資訊",
+          "expected": "advance",
+          "via": "guided-label",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "partial",
+          "reply": "已記住：確認官方警戒與封路資訊。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "confirm_warning",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.015299999999996317,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "在安全點立即迴轉",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "reroute",
+          "kind": "transition",
+          "reply": "你在迴轉點仍可用時離開封閉路段。接下來要選擇經官方確認的避難路線。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "turn_back",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.014899999999997249,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "採用官方替代路線前往避難處所",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "reroute",
+          "after": "reroute",
+          "kind": "completed",
+          "reply": "你依官方替代路線抵達避難處所。本次演練以『完成撤離』結束。",
+          "accepted": [
+            {
+              "node": "reroute",
+              "action": "alternate_route",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.015299999999996317,
+          "physical": "EVACUATED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 152.60219999999936,
+        "reviewVisible": true,
+        "repliesMatched": 5,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 15,
+      "name": "landslide-mountain-road",
+      "title": "土石流警戒：山區道路",
+      "version": "3.0.0",
+      "persona": "一直問",
+      "elapsedMs": 0.13890000000000668,
+      "correct": 7,
+      "free": 7,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "EVACUATED",
+      "review": "劇本 v3.0.0\n結果：已撤離至相對安全地點\n學習目標：\n- 收到土石流警戒與封路資訊時立即停止前進\n- 在安全迴轉點仍可使用時提早折返\n- 只採用官方公告的替代路線與避難處所\n做對的決策：\n- 確認官方警戒與封路資訊\n- 在安全點立即迴轉\n- 採用官方替代路線前往避難處所\n危險決策：\n- 無\n需要補強：\n- 無\n剩餘資源：手機 70%、飲水 2、體力 90%\n常見錯誤觀念：\n- 車輛性能好就能穿越封閉路段\n- 溪谷捷徑可以避開塞車\n- 看到前車通過就代表路線安全\n反思問題：\n- 為什麼土石流警戒階段的提早撤離比災害發生後逃跑重要？\n- 替代路線資訊應從哪裡取得？",
+      "turns": [
+        {
+          "input": "前面還能過嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "warning",
+          "after": "warning",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.010499999999993292,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "哪裡有公告的路線？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "warning",
+          "after": "warning",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.0093000000000103,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "確認官方警戒與封路資訊",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "partial",
+          "reply": "已記住：確認官方警戒與封路資訊。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "confirm_warning",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.01290000000000191,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "在安全點立即迴轉",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "reroute",
+          "kind": "transition",
+          "reply": "你在迴轉點仍可用時離開封閉路段。接下來要選擇經官方確認的避難路線。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "turn_back",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.013900000000006685,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "前面還能過嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "reroute",
+          "after": "reroute",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.015100000000003888,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "哪裡有公告的路線？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "reroute",
+          "after": "reroute",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.012200000000007094,
+          "physical": "SHELTERED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        },
+        {
+          "input": "採用官方替代路線前往避難處所",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "reroute",
+          "after": "reroute",
+          "kind": "completed",
+          "reply": "你依官方替代路線抵達避難處所。本次演練以『完成撤離』結束。",
+          "accepted": [
+            {
+              "node": "reroute",
+              "action": "alternate_route",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.012399999999999523,
+          "physical": "EVACUATED",
+          "resources": {
+            "battery": 70,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "turnaroundOpen": true,
+            "forwardRoadClosed": true
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 228.9992999999995,
+        "reviewVisible": true,
+        "repliesMatched": 7,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 16,
+      "name": "barrier-lake-downstream",
+      "title": "堰塞湖警戒：下游聚落",
+      "version": "3.0.0",
+      "persona": "新手",
+      "elapsedMs": 0.5035000000000025,
+      "correct": 2,
+      "free": 2,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "EVACUATED",
+      "review": "劇本 v3.0.0\n結果：已撤離至相對安全地點\n學習目標：\n- 接獲個案撤離命令後，不自行推算潰決時間並立即行動\n- 理解拖延可能讓原本可用的撤離路線中斷\n- 無法水平撤離時改採公告的就近避難、定位與保存資源\n做對的決策：\n- 確認官方撤離命令與指定路線\n- 立即沿東側指定路線撤往高地\n危險決策：\n- 無\n需要補強：\n- 前往公告的就近垂直避難點\n- 回報目前位置與受困人數\n- 留在避難點並控制物資與電量\n剩餘資源：手機 65%、飲水 2、體力 90%\n常見錯誤觀念：\n- 堰塞湖看起來平靜就還有時間收拾\n- 到河邊觀察能幫助判斷\n- 模型可以自行算出哪條路一定安全\n反思問題：\n- 哪些資訊只能由權責機關提供，不能由個人或模型推測？\n- 撤離窗口關閉後，行動目標為什麼必須改變？",
+      "turns": [
+        {
+          "input": "確認官方撤離命令與指定路線",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "partial",
+          "reply": "已記住：確認官方撤離命令與指定路線。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "confirm_official",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.2779000000000025,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "立即沿東側指定路線撤往高地",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "completed",
+          "reply": "你在路線仍開放時依命令抵達指定高地。本次演練以『完成撤離』結束。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "evacuate_east",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.16159999999999286,
+          "physical": "EVACUATED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 88.79010000000017,
+        "reviewVisible": true,
+        "repliesMatched": 2,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 17,
+      "name": "barrier-lake-downstream",
+      "title": "堰塞湖警戒：下游聚落",
+      "version": "3.0.0",
+      "persona": "口語",
+      "elapsedMs": 0.5300000000000011,
+      "correct": 3,
+      "free": 4,
+      "switches": 1,
+      "terminal": "COMPLETED",
+      "physical": "WAITING_RESCUE",
+      "review": "劇本 v3.0.0\n結果：已穩定待救，但尚未脫離災區\n學習目標：\n- 接獲個案撤離命令後，不自行推算潰決時間並立即行動\n- 理解拖延可能讓原本可用的撤離路線中斷\n- 無法水平撤離時改採公告的就近避難、定位與保存資源\n做對的決策：\n- 繼續收拾非必要物品\n- 前往公告的就近垂直避難點\n- 回報目前位置與受困人數\n- 留在避難點並控制物資與電量\n危險決策：\n- 無\n需要補強：\n- 確認官方撤離命令與指定路線\n- 立即沿東側指定路線撤往高地\n剩餘資源：手機 65%、飲水 2、體力 90%\n常見錯誤觀念：\n- 堰塞湖看起來平靜就還有時間收拾\n- 到河邊觀察能幫助判斷\n- 模型可以自行算出哪條路一定安全\n反思問題：\n- 哪些資訊只能由權責機關提供，不能由個人或模型推測？\n- 撤離窗口關閉後，行動目標為什麼必須改變？",
+      "turns": [
+        {
+          "input": "我先拎完值錢的再走",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.057900000000003615,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "我先繼續收拾行李和財物",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "cutoff",
+          "kind": "environment_change",
+          "reply": "演練事件：東側道路已因落石與積水中斷，原本的撤離窗口關閉。現在不能再沿原路離開。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "pack_more",
+              "kind": "action"
+            },
+            {
+              "node": "warning",
+              "kind": "environment_change",
+              "message": "演練事件：東側道路已因落石與積水中斷，原本的撤離窗口關閉。現在不能再沿原路離開。"
+            }
+          ],
+          "ok": true,
+          "ms": 0.2372000000000014,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": false,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "前往公告的就近垂直避難點",
+          "expected": "advance",
+          "via": "guided-label",
+          "intent": "action",
+          "before": "cutoff",
+          "after": "cutoff",
+          "kind": "partial",
+          "reply": "已記住：前往公告的就近垂直避難點。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "cutoff",
+              "action": "vertical_refuge",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.055499999999995,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": false,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "回報目前位置與受困人數",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "cutoff",
+          "after": "cutoff",
+          "kind": "partial",
+          "reply": "已記住：回報目前位置與受困人數。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "cutoff",
+              "action": "send_location",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.03629999999999711,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": false,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "留在避難點並控制物資與電量",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "cutoff",
+          "after": "cutoff",
+          "kind": "completed",
+          "reply": "你已到達公告的就近避難點並回報位置，但尚未離開警戒區，也不能假設救援已抵達。演練以『穩定等待救援』結束。",
+          "accepted": [
+            {
+              "node": "cutoff",
+              "action": "conserve",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.041700000000005844,
+          "physical": "WAITING_RESCUE",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": false,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 174.77829999999994,
+        "reviewVisible": true,
+        "repliesMatched": 5,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    },
+    {
+      "id": 18,
+      "name": "barrier-lake-downstream",
+      "title": "堰塞湖警戒：下游聚落",
+      "version": "3.0.0",
+      "persona": "一直問",
+      "elapsedMs": 0.12779999999999347,
+      "correct": 4,
+      "free": 5,
+      "switches": 0,
+      "terminal": "COMPLETED",
+      "physical": "EVACUATED",
+      "review": "劇本 v3.0.0\n結果：已撤離至相對安全地點\n學習目標：\n- 接獲個案撤離命令後，不自行推算潰決時間並立即行動\n- 理解拖延可能讓原本可用的撤離路線中斷\n- 無法水平撤離時改採公告的就近避難、定位與保存資源\n做對的決策：\n- 確認官方撤離命令與指定路線\n- 立即沿東側指定路線撤往高地\n危險決策：\n- 無\n需要補強：\n- 前往公告的就近垂直避難點\n- 回報目前位置與受困人數\n- 留在避難點並控制物資與電量\n剩餘資源：手機 65%、飲水 2、體力 90%\n常見錯誤觀念：\n- 堰塞湖看起來平靜就還有時間收拾\n- 到河邊觀察能幫助判斷\n- 模型可以自行算出哪條路一定安全\n反思問題：\n- 哪些資訊只能由權責機關提供，不能由個人或模型推測？\n- 撤離窗口關閉後，行動目標為什麼必須改變？",
+      "turns": [
+        {
+          "input": "我確認官方撤離命令。下一步呢？",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": false,
+          "ms": 0.017399999999994975,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "可以去橋上看嗎？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "warning",
+          "after": "warning",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.010000000000005116,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "如果東側道路不通怎麼辦？",
+          "expected": "question",
+          "via": "free",
+          "intent": "question",
+          "before": "warning",
+          "after": "warning",
+          "kind": "question",
+          "reply": "這句被視為詢問，尚未執行任何行動。",
+          "accepted": [],
+          "ok": true,
+          "ms": 0.008300000000005525,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "確認官方撤離命令與指定路線",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "partial",
+          "reply": "已記住：確認官方撤離命令與指定路線。本階段仍有必要行動尚未完成。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "confirm_official",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.017600000000001614,
+          "physical": "EXPOSED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        },
+        {
+          "input": "立即沿東側指定路線撤往高地",
+          "expected": "advance",
+          "via": "free",
+          "intent": "action",
+          "before": "warning",
+          "after": "warning",
+          "kind": "completed",
+          "reply": "你在路線仍開放時依命令抵達指定高地。本次演練以『完成撤離』結束。",
+          "accepted": [
+            {
+              "node": "warning",
+              "action": "evacuate_east",
+              "kind": "action"
+            }
+          ],
+          "ok": true,
+          "ms": 0.01839999999999975,
+          "physical": "EVACUATED",
+          "resources": {
+            "battery": 65,
+            "water": 2,
+            "energy": 90
+          },
+          "facts": {
+            "eastRouteOpen": true,
+            "officialEvacuationOrdered": true,
+            "rescueArrived": false
+          }
+        }
+      ],
+      "browserReplay": {
+        "elapsedMs": 175.96669999999995,
+        "reviewVisible": true,
+        "repliesMatched": 5,
+        "mode": "real online UI with local rule engine injected for turn endpoint"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "name": "flood-low-home",
+      "turns": [
+        {
+          "input": "安全可及時關閉總電源",
+          "kind": "partial",
+          "reply": "已記住：安全可及時關閉總電源。本階段仍有必要行動尚未完成。",
+          "state": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "isolate",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 1,
+            "accepted": [
+              "power_off"
+            ],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "power_off",
+                "kind": "action"
+              }
+            ]
+          }
+        },
+        {
+          "input": "不進入地下室或搶救車輛",
+          "kind": "transition",
+          "reply": "你停止進入地下空間，並在安全可及的情況下處理電源；外部路線仍不可通行。",
+          "state": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "wait",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "SHELTERED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "power_off",
+                "kind": "action"
+              },
+              {
+                "node": "isolate",
+                "action": "avoid_basement",
+                "kind": "action"
+              }
+            ]
+          }
+        },
+        {
+          "input": "我就在這裡等一下",
+          "kind": "clarify",
+          "reply": "目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。",
+          "state": {
+            "scenarioId": "flood_low_home",
+            "version": "3.0.0",
+            "node": "wait",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "SHELTERED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 55,
+              "water": 3,
+              "energy": 80
+            },
+            "facts": {
+              "outsideRouteOpen": false,
+              "upperFloorReachable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "isolate",
+                "action": "power_off",
+                "kind": "action"
+              },
+              {
+                "node": "isolate",
+                "action": "avoid_basement",
+                "kind": "action"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "earthquake-home-trapped",
+      "turns": [
+        {
+          "input": "確認傷勢與周遭危險",
+          "kind": "partial",
+          "reply": "已記住：確認傷勢與周遭危險。本階段仍有必要行動尚未完成。",
+          "state": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "assess",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "EXPOSED",
+            "completionKind": null,
+            "nodeTurn": 1,
+            "accepted": [
+              "assess_injury"
+            ],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "assess_injury",
+                "kind": "action"
+              }
+            ]
+          }
+        },
+        {
+          "input": "不強行搬動大型倒塌物",
+          "kind": "transition",
+          "reply": "你沒有冒險穿越不穩定倒塌物，先降低二次受傷風險。",
+          "state": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "contact",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "SHELTERED",
+            "completionKind": null,
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 35,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "assess_injury",
+                "kind": "action"
+              },
+              {
+                "node": "assess",
+                "action": "avoid_forcing_exit",
+                "kind": "action"
+              }
+            ]
+          }
+        },
+        {
+          "input": "持續直播等待救援",
+          "kind": "risk",
+          "reply": "持續使用影音或手電筒會快速消耗有限電量，降低之後通訊與定位的機會。",
+          "state": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "contact",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "SHELTERED",
+            "completionKind": null,
+            "nodeTurn": 1,
+            "accepted": [
+              "stream_video"
+            ],
+            "resources": {
+              "battery": 5,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "assess_injury",
+                "kind": "action"
+              },
+              {
+                "node": "assess",
+                "action": "avoid_forcing_exit",
+                "kind": "action"
+              },
+              {
+                "node": "contact",
+                "action": "stream_video",
+                "kind": "action"
+              }
+            ]
+          }
+        },
+        {
+          "input": "傳送位置與受困資訊",
+          "kind": "blocked",
+          "reply": "傳送位置與受困資訊需要至少 10 的battery資源，目前只剩 5，因此沒有執行。請改用目前仍可行的方法。",
+          "state": {
+            "scenarioId": "earthquake_home_trapped",
+            "version": "3.0.0",
+            "node": "contact",
+            "sessionStatus": "ACTIVE",
+            "physicalStatus": "SHELTERED",
+            "completionKind": null,
+            "nodeTurn": 1,
+            "accepted": [
+              "stream_video"
+            ],
+            "resources": {
+              "battery": 5,
+              "water": 1,
+              "energy": 70
+            },
+            "facts": {
+              "exitBlocked": true,
+              "signalAvailable": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "assess",
+                "action": "assess_injury",
+                "kind": "action"
+              },
+              {
+                "node": "assess",
+                "action": "avoid_forcing_exit",
+                "kind": "action"
+              },
+              {
+                "node": "contact",
+                "action": "stream_video",
+                "kind": "action"
+              },
+              {
+                "node": "contact",
+                "action": "send_location",
+                "kind": "blocked"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "barrier-lake-downstream",
+      "turns": [
+        {
+          "input": "到河邊或橋上觀看",
+          "kind": "failed",
+          "reply": "你進入河道警戒區停留觀看，錯過撤離並暴露於突發洪水風險。本次演練失敗。",
+          "state": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "watch_river",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "input": "確認官方撤離命令與指定路線",
+          "kind": "locked",
+          "reply": "本次演練已結束，請另開新紀錄再練習。",
+          "state": {
+            "scenarioId": "barrier_lake_downstream",
+            "version": "3.0.0",
+            "node": "warning",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 65,
+              "water": 2,
+              "energy": 90
+            },
+            "facts": {
+              "eastRouteOpen": true,
+              "officialEvacuationOrdered": true,
+              "rescueArrived": false
+            },
+            "events": [
+              {
+                "node": "warning",
+                "action": "watch_river",
+                "kind": "hazard"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "earthquake-school",
+      "turns": [
+        {
+          "input": "我只是想像衝去搭電梯",
+          "kind": "failed",
+          "reply": "你在強烈搖晃時奔跑並嘗試搭電梯，暴露於掉落、跌倒與受困風險。本次演練失敗。",
+          "state": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": [
+              {
+                "node": "shaking",
+                "action": "run_elevator",
+                "kind": "hazard"
+              }
+            ]
+          }
+        },
+        {
+          "input": "趴下、掩護、穩住",
+          "kind": "locked",
+          "reply": "本次演練已結束，請另開新紀錄再練習。",
+          "state": {
+            "scenarioId": "earthquake_school",
+            "version": "3.0.0",
+            "node": "shaking",
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "completionKind": "CRITICAL_FAILURE",
+            "nodeTurn": 0,
+            "accepted": [],
+            "resources": {
+              "battery": 80,
+              "water": 1,
+              "energy": 100
+            },
+            "facts": {
+              "shaking": true,
+              "stairsChecked": false
+            },
+            "events": [
+              {
+                "node": "shaking",
+                "action": "run_elevator",
+                "kind": "hazard"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "fire-dorm",
+      "turns": [
+        {
+          "input": "我很害怕，不知道怎麼辦",
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：這個設定的逃生路線已被濃煙阻斷。重點是隔開火煙並及早讓消防人員知道位置，不是鑽入濃煙或尋找濕毛巾。",
+          "state": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "input": "為什麼不能搭電梯？",
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：這個設定的逃生路線已被濃煙阻斷。重點是隔開火煙並及早讓消防人員知道位置，不是鑽入濃煙或尋找濕毛巾。",
+          "state": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        },
+        {
+          "input": "窗外有陽台嗎？",
+          "kind": "question",
+          "reply": "我尚未把這句當成行動。以下是本階段的一般說明，不是自由問答：這個設定的逃生路線已被濃煙阻斷。重點是隔開火煙並及早讓消防人員知道位置，不是鑽入濃煙或尋找濕毛巾。",
+          "state": {
+            "version": "2.0.0",
+            "node": 0,
+            "completed": [],
+            "accepted": [],
+            "hints": [],
+            "events": [],
+            "outcome": "CONTINUE"
+          }
+        }
+      ]
+    }
+  ],
+  "browser": {
+    "missingKey": [
+      {
+        "scenario": "drill_fire_dorm",
+        "reply": "電腦尚未設定 GPT 金鑰。請執行 online-coach/start-online.ps1 後重試；目前沒有發送模型請求。",
+        "hasInput": false
+      },
+      {
+        "scenario": "barrier_lake_downstream",
+        "reply": "電腦尚未設定 GPT 金鑰。請執行 online-coach/start-online.ps1 後重試；目前沒有發送模型請求。",
+        "hasInput": false
+      },
+      {
+        "scenario": "earthquake_home_trapped",
+        "reply": "電腦尚未設定 GPT 金鑰。請執行 online-coach/start-online.ps1 後重試；目前沒有發送模型請求。",
+        "hasInput": false
+      },
+      {
+        "scenario": "earthquake_school",
+        "reply": "電腦尚未設定 GPT 金鑰。請執行 online-coach/start-online.ps1 後重試；目前沒有發送模型請求。",
+        "hasInput": false
+      },
+      {
+        "scenario": "flood_low_home",
+        "reply": "電腦尚未設定 GPT 金鑰。請執行 online-coach/start-online.ps1 後重試；目前沒有發送模型請求。",
+        "hasInput": false
+      },
+      {
+        "scenario": "landslide_mountain_road",
+        "reply": "電腦尚未設定 GPT 金鑰。請執行 online-coach/start-online.ps1 後重試；目前沒有發送模型請求。",
+        "hasInput": false
+      }
+    ],
+    "fault": [
+      {
+        "type": "network-abort",
+        "input": "我把房門關好",
+        "reply": "Failed to fetch 草稿仍保留；同筆重試不會重複執行行動。",
+        "scene": "先隔開走廊濃煙 · 仍在風險中",
+        "revision": 0
+      },
+      {
+        "type": "provider-error",
+        "input": "我把房門關好",
+        "reply": "本機教練暫時無法完成操作。 草稿仍保留；同筆重試不會重複執行行動。",
+        "scene": "先隔開走廊濃煙 · 仍在風險中",
+        "revision": 0
+      },
+      {
+        "type": "edit-pending",
+        "input": "我先觀察門外",
+        "reply": "上一筆回答尚未確認，請先重試原內容，或結束並另開一次練習。",
+        "scene": "先隔開走廊濃煙 · 仍在風險中",
+        "revision": 0
+      }
+    ]
+  }
+}

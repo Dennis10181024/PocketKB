@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "handoff-1",
+  "origin": "Android KnowledgeBase.kt current working tree",
+  "status": "EXPORT_ONLY_NOT_EXPERT_VALIDATED",
+  "contentWasRewritten": false,
+  "sources": [
+    {
+      "id": "sourceNfaEarthquake",
+      "agency": "內政部消防署",
+      "title": "錯誤的地震「黃金三角」或「生命三角」避難動作",
+      "url": "https://www.nfa.gov.tw/cht/index.php?article_id=3308&code=list&flag=detail&ids=26",
+      "note": "地震時以趴下、掩護、穩住為核心動作。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceNfaAftershock",
+      "agency": "內政部消防署",
+      "title": "Precautions for aftershocks",
+      "url": "https://www.nfa.gov.tw/eng/index.php?article_id=9007&code=list&flag=detail&ids=1371",
+      "note": "地震後餘震、瓦斯、電源、撤離動線與二次災害注意事項。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceCwaRain",
+      "agency": "交通部中央氣象署",
+      "title": "豪(大)雨特報",
+      "url": "https://www.cwa.gov.tw/V8/C/P/Warning/W26.html",
+      "note": "大雨、豪雨、大豪雨、超大豪雨定義與積淹水、土石流、溪水暴漲風險。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceNfaTyphoon",
+      "agency": "內政部消防署",
+      "title": "颱風來時應注意事項",
+      "url": "https://www.nfa.gov.tw/cht/index.php?codeID=26&ids=281",
+      "note": "颱風期間注意警戒、避開危險區域與配合撤離。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceFireEscape",
+      "agency": "內政部消防署消防防災館",
+      "title": "火災逃生避難原則",
+      "url": "https://www.tfdp.com.tw/cht/index.php?article_id=152&code=list&flag=detail&ids=55",
+      "note": "不可收拾財物、不可搭電梯、不可躲浴室、不可穿越濃煙。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceTaipeiFireEscape",
+      "agency": "臺北市政府消防局",
+      "title": "火災發生時之逃生狀況及方法",
+      "url": "https://www.119.gov.taipei/News_Content.aspx?n=6EEFD6ACA51B8E33&s=6FB1F286840AC217&sms=87415A8B9CE81B16",
+      "note": "逃生避難、室內待救、無法期待獲救三種狀況。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceExtinguisher",
+      "agency": "桃園防災教育館",
+      "title": "滅火器如何使用？「拉瞄壓掃」4步驟",
+      "url": "https://tydec.tyfd.gov.tw/Subject/Info/ch35",
+      "note": "乾粉滅火器拉、瞄、壓、掃操作。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceCookingFire",
+      "agency": "內政部消防署消防防災館",
+      "title": "常見的滅火迷思：油鍋起火快澆水滅火？",
+      "url": "https://www.tfdp.com.tw/cht/index.php?article_id=1005&code=list&flag=detail&ids=49",
+      "note": "油鍋起火不可澆水，應蓋鍋蓋並關閉爐火。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceGasLeak",
+      "agency": "內政部消防署消防防災館",
+      "title": "防範液化石油氣外洩及其處置方式",
+      "url": "https://www.tfdp.com.tw/cht/index.php?article_id=208&code=list&flag=detail&ids=67",
+      "note": "瓦斯外洩緊急處置要領：禁、關、推、離。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceCrowd",
+      "agency": "雲林縣政府",
+      "title": "機關安全維護宣導：身處擁擠場所如何自保？",
+      "url": "https://dl.yunlin.gov.tw/News_Content.aspx?n=11319&s=399484",
+      "note": "擁擠人潮中保持站立、控制呼吸、手環抱胸、順應人潮。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourcePolice110",
+      "agency": "內政部警政署",
+      "title": "110 Emergency Hotline",
+      "url": "https://www.npa.gov.tw/en/app/artwebsite/view?id=8033&module=artwebsite&serno=f74b8ff8-cfbd-4394-bc1c-82f95f8baca3",
+      "note": "發現影響公共安全的可疑事件可撥打 110。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceCpr",
+      "agency": "臺南市政府消防局",
+      "title": "民眾版心肺復甦術 (CPR) 操作步驟",
+      "url": "https://119.tainan.gov.tw/News_Content.aspx?n=25539&s=7694725&sms=21247",
+      "note": "確認安全、叫叫壓電、CPR 與 AED 操作重點。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourcePfa",
+      "agency": "World Health Organization",
+      "title": "Psychological first aid: Guide for field workers",
+      "url": "https://www.who.int/publications/i/item/9789241548205",
+      "note": "心理急救以人道、支持、實際協助為核心，包含 Look, Listen and Link。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceBousaishiBasic",
+      "agency": "臺灣防災士教育訓練",
+      "title": "臺灣防災士教育訓練基本教材（1130927 更新）",
+      "url": "本機教材：臺灣防災士教育訓練基本教材_1130927更新.pdf",
+      "note": "使用者提供之防災士官方教材；內容依章節摘要整理，非全文轉載。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    },
+    {
+      "id": "sourceBousaishiSlides",
+      "agency": "臺灣防災士教育訓練",
+      "title": "防災士課程簡報範本（112 年 12 月最新版）",
+      "url": "本機教材：防災士課程簡報範本(112年12月最新版).rar",
+      "note": "使用者提供之防災士官方課程簡報；用於補強課程架構與實作重點。",
+      "licenseStatus": "UNKNOWN",
+      "claimReviewStatus": "NOT_REVIEWED_FOR_HANDOFF"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "counts": {
+    "androidKnowledge": 24,
+    "publicReferenceKnowledge": 16,
+    "localMaterialKnowledge": 8,
+    "androidGuides": 5,
+    "androidSources": 15
+  },
+  "tests": [
+    {
+      "query": "門外有濃煙怎麼辦",
+      "hits": [
+        "fi_001",
+        "fi_002",
+        "ty_001"
+      ],
+      "status": "hits"
+    },
+    {
+      "query": "地震後怎麼撤離",
+      "hits": [
+        "co_001",
+        "eq_002",
+        "ty_003"
+      ],
+      "status": "hits"
+    },
+    {
+      "query": "豪雨地下道",
+      "hits": [
+        "ty_002",
+        "ty_003",
+        "co_002"
+      ],
+      "status": "hits"
+    },
+    {
+      "query": "zzzzunknownquery",
+      "hits": [],
+      "status": "no_match"
+    },
+    {
+      "query": "",
+      "hits": [],
+      "status": "no_match"
+    }
+  ],
+  "contentRoundtrip": "Every exported Android chunk/guide field is extracted from unchanged source snapshot; schema counts and source IDs checked.",
+  "notRun": [
+    "Android/iOS build or device run",
+    "browser UI/offline cold start",
+    "LLM inference",
+    "vector retrieval",
+    "Kotlin/JS retrieval parity",
+    "professional content or license review"
+  ],
+  "credentialScan": {
+    "status": "PASS",
+    "scope": "all packaged UTF-8 text",
+    "patterns": "API credential shape and private-key header; no matched secret values logged"
+  }
+}

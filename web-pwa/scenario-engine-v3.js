@@ -38,6 +38,13 @@
     }));
   }
 
+  function contradictsAction(spec, text, actions) {
+    const clauses = text.replace(/\s/g, '').split(new RegExp(spec.splitPattern));
+    const negative = new RegExp(spec.negationPattern);
+    return actions.some(action => clauses.some(clause =>
+      [...clause.matchAll(new RegExp(action.pattern, 'g'))].some(match => negative.test(clause.slice(0, match.index)))));
+  }
+
   function applyPatch(state, effect) {
     if (!effect) return;
     if (effect.physicalStatus) state.physicalStatus = effect.physicalStatus;
@@ -84,9 +91,9 @@
     if (intent === 'observe') return result('observe', node.situation);
     const input = String(text || '').trim();
     if (!input) return result('clarify', '請描述你現在實際要採取的行動。');
-    if (intent === 'question' || (!resolved && new RegExp(spec.questionPattern).test(input))) {
-      return result('question', '這句被視為詢問，尚未執行任何行動。');
-    }
+    const language = typeof module === 'undefined' ? root.DrillLanguage : require('./drill-language');
+    const nonAction = language.nonAction(spec, input, intent, node);
+    if (nonAction) return result(nonAction.kind, nonAction.message);
 
     if (resolved && (!Array.isArray(resolved.actionIds) || resolved.actionIds.some(id => !spec.actions.some(a => a.id === id))))
       return result('clarify', '這項行動不在本情境可驗證的範圍，尚未執行。');
@@ -94,28 +101,29 @@
     if (resolved && actions.some(action => !node.available.includes(action.id)))
       return result('clarify', '你提到的行動目前還不能在此階段確認；請先確認現場條件。');
     const available = actions.filter(action => node.available.includes(action.id));
-    if (!available.length) return result('clarify', '目前無法確認這項行動，情境狀態沒有改變。請重新描述或先觀察環境。');
+    if (!available.length) return result('clarify', language.unclear(input, node.task));
     const actionIds = available.map(action => action.id);
     const conflict = (spec.conflicts || []).find(group => group.every(id => actionIds.includes(id)));
-    if (conflict) return result('clarify', '這次回答同時包含互相衝突的決定。我先不改變情境；請確認你最後真正要採取的行動。');
+    if (conflict || contradictsAction(spec, input, available)) return result('clarify', '這次回答包含否定或互相衝突的決定。請確認你最後真正要採取的行動。');
 
     const blocked = available.map(action => ({ action, reason: unmetRequirement(state, action) })).find(item => item.reason);
     if (blocked) {
-      state.events.push({ node: node.id, action: blocked.action.id, kind: 'blocked' });
-      return result('blocked', `${blocked.reason}，因此沒有執行。請改用目前仍可行的方法。`);
+      const dangerous = blocked.action.unsafeWhenBlocked;
+      state.events.push({ node: node.id, action: blocked.action.id, kind: dangerous ? 'hazard' : 'blocked' });
+      return result(dangerous ? 'risk' : 'blocked', blocked.action.blockedMessage || `${blocked.reason}，因此沒有執行。請改用目前仍可行的方法。`);
     }
 
     for (const action of available) {
       const hazard = node.hazards?.[action.id];
       if (hazard) {
         applyPatch(state, hazard);
-        state.events.push({ node: node.id, action: action.id, kind: 'hazard' });
+        state.events.push({ node: node.id, action: action.id, kind: 'hazard', message:hazard.message });
         if (hazard.terminal) {
           state.sessionStatus = hazard.sessionStatus || 'FAILED';
           state.completionKind = hazard.completionKind || 'CRITICAL_FAILURE';
-          return result('failed', hazard.message);
+          return result('failed', hazard.message + (action.teaching ? ' '+action.teaching : ''));
         }
-        return result('risk', hazard.message);
+        return result('risk', hazard.message + (action.teaching ? ' '+action.teaching : ''));
       }
     }
 
@@ -130,7 +138,10 @@
     const timed = applyTimedEvent(state, node, fresh.map(action => action.id));
     if (timed) return result('environment_change', timed.message);
     const riskEffect = fresh.map(action => node.effects?.[action.id]).find(effect => effect?.kind === 'risk');
-    if (riskEffect) return result('risk', riskEffect.message);
+    if (riskEffect) {
+      const action = fresh.find(item=>node.effects?.[item.id]===riskEffect);
+      return result('risk', riskEffect.message + (action?.teaching ? ' '+action.teaching : ''));
+    }
 
     const missing = node.required.filter(id => !state.accepted.includes(id));
     if (missing.length) {
@@ -177,6 +188,7 @@
     ].join('\n');
   }
 
-  root.ScenarioEngineV3 = { create, step, review };
+  const events = () => typeof module === 'undefined' ? root.DrillEvents : require('./drill-events');
+  root.ScenarioEngineV3 = { create, rawStep:step, review, step:(spec,state,text,intent,resolved)=>events().advance(spec,step(spec,state,text,intent,resolved),text) };
   if (typeof module !== 'undefined') module.exports = root.ScenarioEngineV3;
 })(globalThis);

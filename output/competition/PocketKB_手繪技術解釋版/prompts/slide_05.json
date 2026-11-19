@@ -1,0 +1,43 @@
+{
+  "slide": 5,
+  "title": "自主應變流程：Observe → Plan → Act → Verify",
+  "prompt": "# Codex PPT Slide Image Prompt\n\n## Canvas\n{\n  \"type\": \"16:9 full-slide PowerPoint image\",\n  \"language\": \"Traditional Chinese (Taiwan)\",\n  \"slide_number\": 5,\n  \"render_slide_number\": false\n}\n\n## Deck Goal\n為2026 Agentic AI on the Edge Hackathon製作12頁競賽企劃，讓評審快速看懂PocketKB Edge如何在災前維持必要準備、在災時以在地語音自主規劃與執行安全任務，並以NVIDIA邊緣技術落地與驗收。\n\n## Required Background\n{\n  \"deck_context\": {\n    \"source_summary\": \"PocketKB Edge是一個場域內運行的防災邊緣代理。它由時間、感測器、庫存與台灣華語／台語語音事件主動啟動，依Observe、Plan、Act、Verify流程呼叫受限制工具，必要時重規劃或交由人員接管。\",\n    \"core_claim\": \"競爭力來自一個可完成、可驗證、可受控的安全任務流程，而不是技術數量；平時維持關鍵物資設備，災時協助長者在黑暗與濃煙中以語音獲得可執行的下一步。\",\n    \"canonical_terms\": [\n      \"PocketKB Edge\",\n      \"Agent\",\n      \"Observe\",\n      \"Plan\",\n      \"Act\",\n      \"Verify\",\n      \"台灣華語\",\n      \"台語\",\n      \"DGX Spark\",\n      \"NeMo Speech\",\n      \"Nemotron\",\n      \"NeMo Agent Toolkit\",\n      \"NemoClaw\",\n      \"OpenShell\"\n    ],\n    \"safety_position\": \"真實控制需經白名單、風險分級、工具回傳與人工接管；決賽使用模擬感測器、建物圖與設備閘道重播。\",\n    \"content_preservation\": \"原始12頁投影片的表格、欄位、指標、數字與說明句均需保留；視覺重製不得省略內容。\"\n  },\n  \"slide_local_context\": {\n    \"required_exact_table\": [\n      [\n        \"處理階段\",\n        \"Agent自主行為與工具\",\n        \"完成／轉向條件\"\n      ],\n      [\n        \"1 Observe／主動觀察\",\n        \"接收感測、庫存期限、警報、台灣華語／台語ASR及人員回報。\",\n        \"標示來源、時間與信心；衝突時建立確認任務。\"\n      ],\n      [\n        \"2 Plan／拆解與規劃\",\n        \"把事件拆成巡檢、更換、疏散、待協助、通報與設備子任務。\",\n        \"每項任務都有負責人、時限、風險與完成條件。\"\n      ],\n      [\n        \"3 Act／選擇與執行\",\n        \"自主呼叫物資、圖資、路線、通知、TTS及核准的輔助照明工具。\",\n        \"低風險自動執行；中風險核准；高風險拒絕並升級。\"\n      ],\n      [\n        \"4 Verify／驗證與重規劃\",\n        \"檢查新物品掃描、感測恢復、設備回傳、訊息收訖與語音回讀。\",\n        \"未達目標就換工具或改計畫；超過上限由人員接管。\"\n      ]\n    ],\n    \"subtitle\": \"每個事件都要自主執行到已驗證完成，或明確交由人員接管\",\n    \"bottom_statement\": \"自主不等於無限制：Agent可以主動推進，但每個工具都受規則、角色權限、參數白名單與完整稽核約束。\"\n  }\n}\n\n## Global Style\n{\n  \"name\": \"手繪技術解釋風\",\n  \"visual_direction\": \"近白紙張上的精準手繪技術圖解；石墨線稿搭配淡藍、鼠尾草綠、淺橘與少量淡紫；冷靜可信、具有人味；避免制式AI卡片、3D光澤、科技霓虹與過度裝飾。\",\n  \"color_palette\": \"paper white #FCFBF7, dark navy ink, graphite gray, pale blue, sage green, soft peach, pale lavender; red only for danger and blocked states\",\n  \"typography\": \"清楚的繁體中文手寫標題與工整圖說；標題深藍粗筆，內文較細；所有表格文字必須可讀，不用英文假字或亂碼\",\n  \"texture_and_finish\": \"subtle paper texture, pencil hatching, flat marker highlights, airy whitespace\",\n  \"deck_consistency\": \"match the approved slide 7 sample in line weight, color, typography mood, density and calm technical tone; vary composition by slide role\"\n}\n\n## Input Images\n\n- Image 1: C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png — approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality; style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides\n\n\n## Slide\n{\n  \"number\": 5,\n  \"title\": \"自主應變流程：Observe → Plan → Act → Verify\",\n  \"role\": \"process\",\n  \"intent\": \"保留完整三欄流程表，同時讓重試、改計畫與人工接管的流向一眼可懂。\"\n}\n\n## Text\n{\n  \"title\": \"自主應變流程：Observe → Plan → Act → Verify\",\n  \"key_points\": [\n    \"每個事件都要自主執行到已驗證完成，或明確交由人員接管\",\n    \"自主不等於無限制：Agent可以主動推進，但每個工具都受規則、角色權限、參數白名單與完整稽核約束。\"\n  ],\n  \"speaker_focus\": null\n}\n\n## Layout\n{\n  \"composition\": \"中央為3欄5列完整流程表。第一欄四階段各有手繪編號與不同淡色標記；右側細箭頭由Verify回到Plan，並分岔到人工接管。底部放完整治理說明。\",\n  \"content_zones\": \"title/subtitle top, exact table center, safety statement bottom\",\n  \"spacing\": \"第二欄最寬，第三欄次寬；文字左對齊且保持行距\"\n}\n\n## Visual Elements\n{\n  \"main_visual\": \"Observe、Plan、Act、Verify完整表格與回饋箭頭\",\n  \"supporting_elements\": \"小型盾牌代表規則與權限；人手圖示代表接管\"\n}\n\n## Constraints\n[\n  \"使用台灣繁體中文，逐字正確，不得出現簡體字、亂碼、假字或額外英文。\",\n  \"保留本頁所有指定表格欄位、列項、數字、指標與說明文字，不得自行刪減或改寫。\",\n  \"文字必須在16:9投影片中清楚可讀；表格使用整齊手繪線框與淡色分區，不要把文字塞進小卡片。\",\n  \"延續核准樣張的紙張、石墨線與淡色標記風格，但依本頁語意改變版面。\",\n  \"不顯示頁碼、浮水印、無關Logo、假UI、吉祥物或裝飾性人物。\"\n]\n\n## Style Reference Rule\nUse Image 1 as the approved sample-slide style reference. Match its palette, typography mood, density, texture, and overall visual identity. Do not copy its exact layout unless this slide's layout explicitly asks for it.\n\n## Input Image Handling Rules\nFor any input image marked as a strict input asset, include it visibly and preserve its content. Do not redraw, replace, relabel, or invent a similar figure. Scale and crop only as needed for composition while keeping the important labels, arrows, data, and relationships recognizable.\n\n## Universal Constraints\n- The final image itself must contain the title and key points.\n- Render Chinese text exactly and legibly; avoid garbled characters.\n- Keep the confirmed deck style consistent while varying layout by slide role.\n- No watermark, unrelated logo, or extra slide number.\n",
+  "out": "slide_05.png",
+  "input_images": [
+    {
+      "path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+      "role": "approved slide 7 style reference; match only paper texture, graphite line work, palette, typography mood and calm technical illustration quality",
+      "fidelity": "style only; do not copy the sample layout, building diagram, people, labels or disaster scene into unrelated slides"
+    }
+  ],
+  "requires_context_images": true,
+  "expected_backend": "built-in image tool",
+  "sample_generation_method": {
+    "backend_used": "built-in image tool",
+    "tool_name": "image_gen",
+    "mode": "edit",
+    "model_config": "built-in default",
+    "prompt_source": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\prompts\\slide_07.sample.json",
+    "size": "16:9 landscape",
+    "quality": "built-in default",
+    "approved_sample_path": "C:\\Users\\Denni\\Desktop\\PocketKB_final\\output\\competition\\PocketKB_手繪技術解釋版\\origin_image\\slide_07.png",
+    "input_context_preparation": "Load the approved sample with view_image, then pass it to image_gen through referenced_image_paths as a style-only reference.",
+    "handoff_rule": "Use the same built-in image_gen edit path with the approved sample as style-only reference; return a blocker if unavailable."
+  },
+  "generation_contract": {
+    "must_use_selected_image_backend": true,
+    "must_match_sample_generation_method": true,
+    "forbidden_final_image_methods": [
+      "local drawing/rendering scripts",
+      "Pillow-generated slides",
+      "SVG/HTML/CSS/canvas screenshots",
+      "python-pptx/PptxGenJS/native PPT layout screenshots",
+      "manually composited text/image overlays"
+    ],
+    "must_return": [
+      "backend_used",
+      "selected_source",
+      "qa_note"
+    ]
+  }
+}

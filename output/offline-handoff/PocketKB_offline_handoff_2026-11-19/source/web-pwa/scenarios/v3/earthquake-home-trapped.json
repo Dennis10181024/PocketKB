@@ -1,0 +1,321 @@
+{
+  "id": "earthquake_home_trapped",
+  "version": "3.0.0",
+  "title": "地震後受困住家",
+  "hazard": "earthquake",
+  "locationProfile": "low_rise_home",
+  "opening": "強震後，客廳部分天花板與櫃體倒塌。主要出入口被大型家具和碎石堵住，窗外一樓防火巷也有掉落物。你目前意識清楚、腿部輕微擦傷，手機剩下35%電量，身邊有一瓶水。這個情境沒有可安全自行逃離的路線。",
+  "notice": "這是教學模擬。完成演練不代表已獲救；救援時間不得由系統自行保證。",
+  "learningObjectives": [
+    "辨識沒有安全出口時，不強行移動不穩定倒塌物",
+    "優先傳送位置與受困資訊，保留手機後續通訊能力",
+    "控制飲水、體力與電量並維持可被發現的訊號"
+  ],
+  "commonMisconceptions": [
+    "只要用力搬開碎石就一定能出去",
+    "持續直播能增加獲救機會",
+    "完成待救步驟就代表救援已抵達"
+  ],
+  "reflectionQuestions": [
+    "哪些資源應該優先保留給後續求救？",
+    "什麼情況下移動倒塌物反而會增加危險？"
+  ],
+  "questionPattern": "[?？]|是否|是不是|能不能|可不可以|怎麼|如何|為什麼|嗎|要不要|如果|假如|假設",
+  "negationPattern": "(?:不想|不打算|不會|不要|不能|不可|沒有|沒|不|別|勿|避免)[^，。；、!?！？]{0,5}$",
+  "splitPattern": "[，。；、,;!！\\n]|然後|接著|但是|但|而且|並且|也|再來",
+  "initialNode": "assess",
+  "initialState": {
+    "physicalStatus": "EXPOSED",
+    "resources": {
+      "battery": 35,
+      "water": 1,
+      "energy": 70
+    },
+    "facts": {
+      "exitBlocked": true,
+      "signalAvailable": true,
+      "rescueArrived": false
+    }
+  },
+  "actions": [
+    {
+      "id": "assess_injury",
+      "label": "確認傷勢與周遭危險",
+      "pattern": "確認.*(?:傷勢|受傷|流血)|檢查.*(?:自己|身體|傷口|周遭|環境)",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "avoid_forcing_exit",
+      "label": "不強行搬動大型倒塌物",
+      "pattern": "不.*(?:硬搬|強行搬|推開).*(?:碎石|家具|倒塌物)|避免.*搬動.*(?:碎石|倒塌物)",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "force_exit",
+      "label": "強行搬動倒塌物逃生",
+      "pattern": "(?:硬搬|強行搬|推開|挪開|扳開|搬開).*(?:碎石|家具|倒塌物|倒塌的櫃子).*(?:逃|出去)",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "你試圖搬動倒塌物，模擬出現二次坍落，演練危急失敗。",
+      "teaching": "倒塌物穩定性未知；避免移動，依劇本確認傷勢並傳遞位置。",
+      "examples": [
+        "我強行搬動倒塌物逃生"
+      ]
+    },
+    {
+      "id": "climb_debris",
+      "label": "爬越倒塌物",
+      "pattern": "從.*倒塌物.*爬出去|(?:踩|爬|翻)過.*(?:碎石|倒塌物).*(?:逃|出去)|鑽過.*(?:碎石|家具|倒塌物).*(?:逃|出去)",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "你試圖爬越倒塌物，暴露於落物及二次坍落風險，演練危急失敗。",
+      "teaching": "出口未確認安全；不要爬過不穩定堆積物，先確認傷勢及受困位置。",
+      "examples": [
+        "我從倒塌物上爬出去"
+      ]
+    },
+    {
+      "id": "send_location",
+      "label": "傳送位置與受困資訊",
+      "pattern": "(?:傳送|傳出|回報|告知|發送).*(?:位置|定位|地址|受困)|(?:打|撥).*119",
+      "requires": {
+        "resources": {
+          "battery": {
+            "min": 10
+          }
+        }
+      },
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "conserve_phone",
+      "label": "節省手機電量並定時查看訊息",
+      "pattern": "(?:節省|保留|省下).*(?:手機)?電量|關閉.*(?:非必要|螢幕|程式)|定時.*查看.*訊息",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "make_signal",
+      "label": "製造容易被救援人員辨識的訊號",
+      "pattern": "(?:敲擊|敲打).*(?:牆|管線|物體)|使用.*(?:哨子|聲響)|發出.*求救訊號",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "conserve_supplies",
+      "label": "控制飲水與體力消耗",
+      "pattern": "(?:節省|控制|保存).*(?:飲水|水|物資|體力)|減少.*(?:活動|消耗)|留在.*安全.*位置",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "stream_video",
+      "label": "持續直播",
+      "pattern": "(?:持續|一直|不停).*直播",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "持續直播耗用了手機電量。",
+      "teaching": "有限電量優先用於必要通訊與定位。",
+      "examples": [
+        "我一直直播等救援"
+      ]
+    },
+    {
+      "id": "watch_video",
+      "label": "持續看影片",
+      "pattern": "(?:持續|一直|不停).*看影片",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "持續看影片耗用了手機電量。",
+      "teaching": "有限電量優先用於必要通訊與定位。",
+      "examples": [
+        "我一直看影片"
+      ]
+    },
+    {
+      "id": "keep_flashlight",
+      "label": "持續開手機手電筒",
+      "pattern": "(?:持續|一直|不停).*開手電筒",
+      "sourceIds": [
+        "source-0"
+      ],
+      "consequence": "持續開手機手電筒耗用了手機電量。",
+      "teaching": "情境中的有限電量需保留給必要照明、通訊及定位。",
+      "examples": [
+        "我持續開手電筒"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "assess",
+      "title": "先避免二次傷害",
+      "situation": "主要出口被堵住，餘震仍可能發生。大型倒塌物是否穩固無法判斷。",
+      "task": "確認自身狀況，並決定是否強行突破出口。",
+      "required": [
+        "assess_injury",
+        "avoid_forcing_exit"
+      ],
+      "optional": [],
+      "available": [
+        "assess_injury",
+        "avoid_forcing_exit",
+        "force_exit",
+        "climb_debris"
+      ],
+      "hazards": {
+        "force_exit": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖搬動倒塌物，模擬出現二次坍落，演練危急失敗。"
+        },
+        "climb_debris": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖爬越倒塌物，暴露於落物及二次坍落風險，演練危急失敗。"
+        }
+      },
+      "onComplete": {
+        "to": "contact",
+        "physicalStatus": "SHELTERED",
+        "message": "你沒有冒險穿越不穩定倒塌物，先降低二次受傷風險。"
+      }
+    },
+    {
+      "id": "contact",
+      "title": "讓外界知道你的位置",
+      "situation": "手機仍有訊號，但電量只有35%。救援何時抵達目前未知。",
+      "task": "傳出必要位置資訊，並保留後續聯絡所需電量。",
+      "required": [
+        "send_location",
+        "conserve_phone"
+      ],
+      "optional": [
+        "make_signal"
+      ],
+      "available": [
+        "send_location",
+        "conserve_phone",
+        "make_signal",
+        "stream_video",
+        "watch_video",
+        "keep_flashlight"
+      ],
+      "effects": {
+        "stream_video": {
+          "kind": "risk",
+          "adjust": {
+            "battery": -30
+          },
+          "message": "持續直播耗用了手機電量。"
+        },
+        "watch_video": {
+          "kind": "risk",
+          "adjust": {
+            "battery": -30
+          },
+          "message": "持續看影片耗用了手機電量。"
+        },
+        "keep_flashlight": {
+          "kind": "risk",
+          "adjust": {
+            "battery": -30
+          },
+          "message": "持續開手機手電筒耗用了手機電量。"
+        }
+      },
+      "onComplete": {
+        "to": "survive",
+        "message": "必要位置資訊已傳出，但這不代表救援隊已經抵達。"
+      }
+    },
+    {
+      "id": "survive",
+      "title": "維持可存活與可被發現的狀態",
+      "situation": "出口仍然被堵住，沒有安全自行逃離的方法。你需要控制物資與體力，並持續讓救援人員能定位你。",
+      "task": "在無法逃生的情況下，提高等待救援期間的生存機會。",
+      "required": [
+        "make_signal",
+        "conserve_supplies"
+      ],
+      "optional": [
+        "conserve_phone"
+      ],
+      "available": [
+        "make_signal",
+        "conserve_supplies",
+        "conserve_phone",
+        "force_exit",
+        "climb_debris"
+      ],
+      "hazards": {
+        "force_exit": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖搬動倒塌物，模擬出現二次坍落，演練危急失敗。"
+        },
+        "climb_debris": {
+          "terminal": true,
+          "sessionStatus": "FAILED",
+          "physicalStatus": "CRITICAL",
+          "message": "你試圖爬越倒塌物，暴露於落物及二次坍落風險，演練危急失敗。"
+        }
+      },
+      "terminal": {
+        "sessionStatus": "COMPLETED",
+        "physicalStatus": "WAITING_RESCUE",
+        "completionKind": "SURVIVAL_STABILIZED",
+        "message": "你已採取可行的待救措施，但仍未脫離災區，也不能假設救援已抵達。演練以『穩定等待救援』結束。"
+      }
+    }
+  ],
+  "reflection": "當沒有安全逃生路線時，正確目標可能不是立即離開，而是避免二次傷害、保持可定位、控制體力與物資，等待專業救援。",
+  "sources": [
+    {
+      "agency": "國家災害防救科技中心",
+      "title": "心障防災指引手冊－地震篇（含受困求救）",
+      "url": "https://easy2do.ncdr.nat.gov.tw/disability/static/download/%E8%87%BA%E5%8C%97%E5%B8%82%E6%94%BF%E5%BA%9C%E7%A4%BE%E6%9C%83%E5%B1%80%E5%BF%83%E6%99%BA%E9%9A%9C%E7%A4%99%E5%85%B1%E8%9E%8D%E9%98%B2%E7%81%BD%E6%8C%87%E5%BC%95%E6%89%8B%E5%86%8A_%E5%9C%B0%E9%9C%87.pdf",
+      "id": "source-0"
+    },
+    {
+      "agency": "中央氣象署",
+      "title": "地震後應注意事項－人員安全與求助",
+      "url": "https://scweb.cwa.gov.tw/zh-tw/guidance/faqdetail/111",
+      "id": "source-1"
+    }
+  ],
+  "deterioration": [
+    {
+      "id": "elapsed-1",
+      "at": 2,
+      "message": "餘震後，房內又落下少量碎屑，出口仍被堵住。",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "elapsed-2",
+      "at": 4,
+      "message": "房內灰塵增加，倒塌物仍未經確認穩固。",
+      "sourceIds": [
+        "source-0"
+      ]
+    }
+  ]
+}
