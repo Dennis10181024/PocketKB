@@ -98,6 +98,7 @@ test('emotion accepts verified evidence, preserves safety and records rule disag
   const coach = new ConversationCoach(provider(p=>({...noAction,emotion:'unsupportive',emotionEvidence:p.text})));
   let state = coach.create('drill_fire_dorm');
   state = await submit(coach,state,'我關好房門');
+  state = await submit(coach,state,'小岑，先別開門。');
   const physical = {...state.state,npc:undefined,events:undefined};
   state = await submit(coach,state,'我聽見你擔心同學我陪你留在這裡');
   assert.deepEqual(state.decision.disagreement.emotion,{rule:'supportive',model:null});
@@ -105,6 +106,7 @@ test('emotion accepts verified evidence, preserves safety and records rule disag
   assert.deepEqual({...state.state,npc:undefined,events:undefined},physical);
   const other = new ConversationCoach(provider(p=>({...noAction,emotion:'supportive',emotionEvidence:p.text})));
   let model = await submit(other,other.create('drill_fire_dorm'),'我關好房門');
+  model = await submit(other,model,'小岑，先別開門。');
   model = await submit(other,model,'小岑，我聽到你很怕，我在你旁邊。');
   assert.equal(model.decision.emotion.source,'model');
   assert.equal(model.state.npc.emotion,'supportive');
@@ -118,7 +120,8 @@ test('a hazardous refusal using the action label leaves flood state and the inva
   assert.deepEqual(refusal.state,initial.state);
   assert.equal(refusal.decision.validation,'RULE_REFUSAL');
   assert.deepEqual(refusal.suggestions,[]);
-  assert.match(refusal.reply,/排除「游泳穿越積水」/);
+  assert.match(refusal.reply,/拒絕的做法排除/);
+  assert.doesNotMatch(refusal.reply,/「游泳穿越積水」/);
 });
 
 test('an accepted engine rescue cannot be described as ongoing waiting',async()=>{

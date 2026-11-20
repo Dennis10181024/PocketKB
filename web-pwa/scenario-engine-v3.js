@@ -5,7 +5,7 @@
     return JSON.parse(JSON.stringify(value));
   }
 
-  function create(spec) {
+  function create(spec, {onlineExperience = false} = {}) {
     return {
       scenarioId: spec.id,
       version: spec.version,
@@ -26,6 +26,7 @@
       injuryWorsened: null,
       npc: spec.npc ? { position: spec.npc.position, proposal: spec.npc.proposal, handled: false, emotion: null } : null,
       hints: [],
+      ...(onlineExperience ? {onlineExperience:true} : {}),
     };
   }
 
@@ -205,7 +206,7 @@
       state.events.push({ node: node.id, action: action.id, kind: 'action' });
       applyPatch(state, node.effects?.[action.id]);
       injury = injuryEvent(spec,state,action.id) || injury;
-      if (action.id === spec.npc?.handleAction && !state.npc.handled) {
+      if (!state.onlineExperience && action.id === spec.npc?.handleAction && !state.npc.handled) {
         state.npc.handled = true;
         state.npc.proposal = null;
         state.events.push({ node: node.id, action: action.id, kind: 'npc_handled' });
@@ -250,7 +251,7 @@
   function step(spec, before, text, intent = 'action', resolved = null) {
     const result = resolveTurn(spec,before,text,intent,resolved);
     const proposal = spec.npc?.responsePattern;
-    if (intent === 'action' && before.npc && !before.npc.handled && result.kind === 'clarify' &&
+    if (!before.onlineExperience && intent === 'action' && before.npc && !before.npc.handled && result.kind === 'clarify' &&
         proposal && new RegExp(proposal).test(text.trim())) {
       result.state.npc.handled = true;
       result.state.npc.proposal = null;
@@ -265,11 +266,31 @@
     return {...result, state:applyEmotion(spec,result.state,emotion.emotion), message:emotion.label};
   }
 
+  function settleOnline(spec, before, result, text, intent) {
+    const state = result.state;
+    if (intent !== 'action' || ['observe','hint','locked','failed'].includes(result.kind) || !text) return result;
+    if (!state.npc?.handled && state.sessionStatus === 'ACTIVE' && result.kind !== 'risk' &&
+        recognizesNpcResponse(spec,text)) {
+      const npc = {...state.npc,handled:true,proposal:null};
+      const handled = {node:state.node,kind:'npc_handled',message:spec.npc.emotionResponses.handled};
+      const emotion = {node:state.node,kind:'npc_emotion_prompt',message:spec.npc.online.emotion};
+      return {...result,kind:['clarify','question'].includes(result.kind) ? 'safe' : result.kind,state:{...state,npc,events:[...state.events,handled,emotion]}};
+    }
+    return result;
+  }
+
   function applyEmotion(spec, before, category) {
     const emotion = category && spec.actions.find(action => action.emotion === category);
     if (!emotion || !before.npc?.handled || before.npc.emotion) return before;
     return {...before,npc:{...before.npc,emotion:category},events:[...before.events,
       {node:before.node,action:emotion.id,kind:'npc_emotion',message:emotion.label}]};
+  }
+
+  function recognizesNpcResponse(spec,text) {
+    const opening = /^(?:我)?(?:跟|對|請|勸|攔住|阻止|告訴|提醒)?/;
+    return text.replace(opening,'').startsWith(spec.npc.name) &&
+      !/如果|假設|假如|萬一|互相衝突|[?？]|可不可以|要不要|不要阻止|不要勸/.test(text) &&
+      new RegExp(spec.npc.online.response).test(text);
   }
 
   function review(spec, state) {
@@ -356,22 +377,33 @@ ${list(state.injuryCauses.map(c => `${c.node}／${actionById[c.action]} · ${c.e
   function replayDecisions(spec, decisions) {
     return decisions.reduce((state, decision) => {
       if (decision.noAdvance) return state;
+      const input = decision.controlInput || decision.npcInput || '';
+      const settle = (result,text) => {
+        if (!state.onlineExperience) return events().advance(spec,result,text).state;
+        const resolved = settleOnline(spec,state,result,input,decision.intent);
+        if (decision.emotion) return applyEmotion(spec,resolved.state,decision.emotion.category);
+        return events().advance(spec,resolved,text,state).state;
+      };
       if (decision.actionBatches?.length) {
         const result = decision.actionBatches.reduce((prior,batch) =>
           step(spec,prior.state,'已確認行動',decision.intent,{actionIds:batch.ids}),{state});
-        return applyEmotion(spec,events().advance(spec,result,'已確認行動').state,decision.emotion?.category);
+        return state.onlineExperience ? settle(result,'已確認行動') : applyEmotion(spec,events().advance(spec,result,'已確認行動').state,decision.emotion?.category);
       }
       const text = decision.actionIds.length ? '已確認行動' : decision.controlInput || '';
       const resolved = decision.actionIds.length ? {actionIds:decision.actionIds} : null;
       const result = step(spec,state,text,decision.intent,resolved);
+      if (state.onlineExperience) return settle(result,text);
       const updated = decision.emotion ? result.state : events().advance(spec,result,text).state;
       return applyEmotion(spec,updated,decision.emotion?.category);
-    }, create(spec));
+    }, create(spec,{onlineExperience:decisions.some(decision=>decision.onlineExperience)}));
   }
 
   root.ScenarioEngineV3 = {
-    create, rawStep:step, review, validateProposal, adoptedActionIds, replayDecisions, applyEmotion,
-    step:(spec,state,text,intent,resolved)=>events().advance(spec,step(spec,state,text,intent,resolved),text)
+    create, rawStep:step, review, validateProposal, adoptedActionIds, replayDecisions, applyEmotion, settleOnline, recognizesNpcResponse,
+    step:(spec,state,text,intent,resolved)=> {
+      const result = step(spec,state,text,intent,resolved);
+      return events().advance(spec,state.onlineExperience ? settleOnline(spec,state,result,text,intent || 'action') : result,text,state);
+    }
   };
   if (typeof module !== 'undefined') module.exports = root.ScenarioEngineV3;
 })(globalThis);

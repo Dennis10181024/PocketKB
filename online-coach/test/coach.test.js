@@ -6,7 +6,7 @@ const { createServer } = require('../server');
 const Fire = require('../../web-pwa/fire-engine');
 const V3 = require('../../web-pwa/scenario-engine-v3');
 const input = (text, actions = [], intent = 'action', extra = {}) => ({ intent, understanding: text, question: '', needsClarification: false, actions: actions.map(id => ({ id, evidence: text })), ...extra });
-const withoutClock = ({elapsed,consecutiveQuestions,...state}) => state;
+const withoutClock = ({elapsed,consecutiveQuestions,...state}) => ({...state,events:state.events.filter(event=>event.kind!=='npc_proposal')});
 const request = (text, revision = 0, intent = 'action', requestId = `test-${Math.random()}`) => ({ text, revision, intent, requestId });
 function fakeProvider(interpret, narrate = payload => {
   if (payload.evidence) return {quote:payload.evidence};
@@ -182,7 +182,7 @@ test('unsupported and future actions do not invent state transitions', () => {
 });
 test('missing key does not call a fake coach or move the scenario', async () => {
   const coach=new ConversationCoach(createOpenAIProvider({apiKey:''}));const s=coach.create('drill_fire_dorm');
-  const result=await coach.turn(s.sessionId,request('為什麼'));
+  const result=await coach.turn(s.sessionId,request('我想訂宵夜'));
   assert.equal(result.offline,true);assert.deepEqual(withoutClock(result.state),s.state);
   assert.equal(coach.calls,0);assert.equal(result.revision,1);
 });

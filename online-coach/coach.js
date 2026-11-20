@@ -21,11 +21,19 @@ function currentNode(spec, state) { return spec.nodes.find(n => n.id === state.n
 function terminal(spec, state) { return state.sessionStatus !== 'ACTIVE'; }
 function scene(spec, state) {
   const node = currentNode(spec, state);
-  return { title: spec.title, opening: spec.opening, notice: spec.notice, node, state,
+  const proposal = state.onlineExperience && state.sessionStatus==='ACTIVE' && !state.npc.handled && !state.elapsed ? spec.npc.online.proposal : '';
+  return { title: spec.title, opening: spec.opening, notice: spec.notice,
+    node:proposal ? {...node,situation:`${node.situation} ${proposal}`} : node, state,
     sources: spec.sources, misconceptions: spec.commonMisconceptions || [],
     actionRules: spec.actions.filter(a => (node.available || [...(node.required || []), ...(node.optional || [])]).includes(a.id)).map(a => ({ id:a.id, label:a.label, effect:a.effect })),
     hazardRules: spec.hazards || node.hazards || {},
     physicalStatus: ['SAFE_RESCUE','DELAYED_RESCUE'].includes(state.endingType) ? 'RESCUED' : state.physicalStatus };
+}
+
+function settle(spec,before,result,text,intent,audit) {
+  if (before.onlineExperience) result = V3.settleOnline(spec,before,result,text,intent);
+  if (!audit.emotion) result = Events.advance(spec,result,text,before);
+  return result;
 }
 const objSchema = properties => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
 const str = { type: 'string' };
@@ -166,7 +174,7 @@ const interpreterPrompt = `你是繁體中文防災教學模擬的語意理解�
 一句同時有明確行動和問題時，可 intent=action 並填 question，交給教練回覆。若只是報告以前做過的事情，不可自動重做。
 不決定成功、失敗、資源或路線；不生成新的出口或救援。亂答保留原意、不要執行。輸出 understanding 說明你理解到什麼，question 記下實際疑問。`;
 const narratorPrompt = `以台灣繁體中文寫沉浸現場。用玩家第一人稱寫 2–4 句，建議 40–70 字、上限 120 字。從 sensoryChoices 選一個未在上一回合出現的感官細節，把其完全文字放進 reply，填入 sensoryId。不要增加其他感官事實。
-自然承接這次輸入。只要 requiredChange 非空，就在 reply 完整放入這個狀態機確認的時間、環境或 NPC 變化；荒謬的行動保持未發生。refused 時承認拒絕的做法，注意力轉回眼前決定。stopped 時交代哪些行動已執行、後續未執行。
+自然承接這次輸入，禁止複述玩家原句或加上引用。只要 requiredChange 非空，逐字放入這段狀態機確認的變化；其中有引號是劇本台詞，照錄即可。缺少可選感官線索時，使用 supplied 變化中的現場線索。荒謬的行動保持未發生；stopped 時交代還有哪些事未做。禁止以「我還沒決定」「還要決定」「接下來怎麼做」「在這個抉擇前又停了一會兒」等固定句收尾。
 只寫現場和當前決定。若 verifiedResult.kind 是 completed，直接呈現 requiredChange 確定的結局，切勿寫成仍等待、尚未接手或演練未完。不要教學、暗示答案、提供建議或寫保證、倒數、未驗證災況、傷勢、救援或行為。如果要加引號，裡面只能逐字引用 text 的連續片段。禁止「我收到你說的」、「你是在描述現場」、「你試圖」、「暴露於⋯風險」、「演練危急失敗」。`;
 const quotePrompt = `只輸出 quote，原樣摘錄 text 中代表該危險動作的單一連續片段，優先選擇 evidence。不可添加標點、引號、描述或引言。`;
 
@@ -199,12 +207,13 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
 }
 
 class ConversationCoach {
-  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, random = Math.random } = {}) {
+  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, random = Math.random, onlineExperience = true } = {}) {
     if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
     this.provider = provider; this.sessions = new Map(); this.maxSessions = maxSessions;
     this.maxTurns = maxTurns; this.maxCalls = maxCalls; this.calls = 0; this.ttlMs = ttlMs;
     this.turnTimeoutMs = turnTimeoutMs;
     this.random = random;
+    this.onlineExperience = onlineExperience;
   }
   catalog() { return [...specs.values()].map(s => ({ id: s.id, title: s.title, opening: s.opening, version: s.version, spec: s })); }
   create(scenarioId) {
@@ -212,7 +221,7 @@ class ConversationCoach {
     if (!spec) throw apiError('UNKNOWN_SCENARIO', '此劇本尚未支援線上演練。');
     for (const [id, s] of this.sessions) if (Date.now() - s.updatedAt > this.ttlMs && !s.busy) this.sessions.delete(id);
     if (this.sessions.size >= this.maxSessions) throw apiError('SESSION_LIMIT', '本機教練場次已滿，請重新啟動服務。', 429);
-    const session = { id: randomUUID(), spec, state: engine(spec).create(spec), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, updatedAt: Date.now(), sensory:[], invalidStreak:0, hint:null };
+    const session = { id: randomUUID(), spec, state: engine(spec).create(spec,{onlineExperience:this.onlineExperience}), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, updatedAt: Date.now(), sensory:[], recentSensory:[], invalidStreak:0, hint:null };
     this.sessions.set(session.id, session);
     return this.snapshot(session);
   }
@@ -269,12 +278,18 @@ class ConversationCoach {
       if (!text) throw apiError('EMPTY_INPUT', '請先輸入想法或問題。');
       const literal = runtime.rawStep(spec,before,text,intent);
       const refused = Experience.refusal(spec,before,literal,text,intent);
+      if (before.onlineExperience && (intent==='question' ||
+          (literal.kind==='question' || Experience.questionText(text)) && !V3.recognizesNpcResponse(spec,text))) {
+        result = Experience.answerQuestion(spec,before,text);
+        reply = result.message;
+        Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
+      } else {
       const signal = AbortSignal.timeout(this.turnTimeoutMs);
       try {
         ({result, reply} = await this.modelTurn(session, text, intent, signal, audit, literal, refused));
       } catch (error) {
         const emotional = literal.state.npc?.emotion !== before.npc?.emotion;
-        result = refused ? {...literal,state:before} : emotional ? literal : Events.advance(spec,literal,text);
+        result = refused ? {...literal,state:before} : emotional ? literal : settle(spec,before,literal,text,intent,audit);
         audit.noAdvance = refused;
         audit.actionBatches = [];
         audit.source = 'rule';
@@ -283,6 +298,7 @@ class ConversationCoach {
         offline = true;
         fallbackReason = signal.aborted ? 'TURN_TIMEOUT' : error instanceof CoachError ? error.code : 'PROVIDER_ERROR';
         audit.validation = fallbackReason;
+      }
       }
     }
     const citations = Events.citations(spec,before,result);
@@ -307,16 +323,24 @@ class ConversationCoach {
     const decision = {turn:session.revision + 1, intent, actionIds:actionBatches.flatMap(batch=>batch.ids), actionBatches,
       source:audit.source, validation:audit.validation, actionValidation:audit.actionValidation || [], disagreement:audit.disagreement || null,
       narration_checks:audit.narrationChecks || [], narration:audit.narration || 'control', emotion:audit.emotion || null,
+      question_answer_id:audit.answerId || null,
       hint_shown:Boolean(priorHint), hint_shown_turn:visibleHint?.turn ?? null, hint_trigger:visibleHint?.trigger ?? null,
       hint_selected_index:hintSelectedIndex, hint_edited_before_submit:hintSelectedIndex !== null &&
         (hintEditedBeforeSubmit === true || text !== priorHint.options[hintSelectedIndex]),
       hint_seen_before_submit:Boolean(priorHint), hint_exposure:hintExposure,
       exposure:result.state.exposure, ending_type:result.state.endingType, injury_level:result.state.injuryLevel,
       injury_causes:result.state.injuryCauses, source_ids:citations.map(source=>source.id),
-      ...(audit.noAdvance ? {noAdvance:true} : {}), ...(!actionIds.length ? {controlInput:text} : {})};
+      ...(audit.noAdvance ? {noAdvance:true} : {}), ...(!actionIds.length ? {controlInput:text} : {}),
+      ...(before.onlineExperience ? {onlineExperience:true,...(actionIds.length && !before.npc.handled ? {npcInput:text} : {})} : {})};
     session.decisions.push(decision);
     session.state = result.state; session.revision++; session.updatedAt = Date.now();
-    session.sensory = audit.sensoryIds || [];
+    if (before.onlineExperience) {
+      if (result.kind !== 'question') {
+        const details = spec.nodes.flatMap(node=>node.experience.sensory);
+        session.recentSensory = [...session.recentSensory,Experience.sensoryIds(reply,details)].slice(-2);
+        session.sensory = [...new Set(session.recentSensory.flat())];
+      }
+    } else session.sensory = audit.sensoryIds || [];
     session.history.push({ role: 'user', content: text || intent }, { role: 'assistant', content: reply });
     session.history = session.history.slice(-24);
     return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, ...audit, decision, result: { ...result, message: reply, reason: reply, effects: [] } };
@@ -325,11 +349,11 @@ class ConversationCoach {
     audit.narration = 'template';
     if (result.kind === 'failed') return this.endingQuote(session,result,text,'' ,audit);
     const grounded = Experience.ground(session.spec,session.state,result);
-    if (refused) grounded.change = Experience.refusalFact(text);
+    if (refused) grounded.change = Experience.refusalFact(text,!grounded.strict);
     if (result.kind === 'risk' || (result.kind === 'clarify' && result.sourceIds?.length)) {
       const hazard = result.state.events.slice(session.state.events.length).findLast(event => event.kind === 'hazard' || event.kind === 'action');
       const action = session.spec.actions.find(action => action.id === hazard?.action);
-      grounded.change = action?.consequenceTemplate || (result.sourceIds?.length ? result.message : grounded.change);
+      grounded.change = action?.consequenceTemplate || action?.blockedMessage || (result.sourceIds?.length ? result.message : grounded.change);
     }
     const rendered = Experience.template(grounded,session.sensory,{stopped:audit.stopped,refused,terminal:terminal(session.spec,result.state),
       kind:result.kind,name:session.spec.npc?.name,finalMessage:result.message});
@@ -389,14 +413,18 @@ class ConversationCoach {
         audit.disagreement = {literal:literal.kind, modelIntent:understanding.intent, modelDanger, actionIds:proposedIds,literalIds};
       }
       let result;
-      if (refused) {
+      if (session.state.onlineExperience && understanding.intent==='question' && !literalDanger && !literalIds.length && !refused && !V3.recognizesNpcResponse(spec,text)) {
+        result = Experience.answerQuestion(spec,session.state,text);
+        Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
+        return {result,reply:result.message};
+      } else if (refused) {
         audit.noAdvance = true;
         audit.validation = 'RULE_REFUSAL';
         result = {...literal,state:session.state};
       } else {
         result = selectActions(spec,session.state,text,intent,literal,understanding,audit);
         result = judgeEmotion(spec,session.state,result,literal,text,intent,understanding,audit);
-        if (!audit.emotion) result = Events.advance(spec,result,text);
+        result = settle(spec,session.state,result,text,intent,audit);
       }
       audit.narrationChecks = [];
       if (result.kind === 'failed') {
@@ -415,11 +443,11 @@ class ConversationCoach {
         return {result,reply};
       }
       const grounded = Experience.ground(spec,session.state,result);
-      if (refused) grounded.change = Experience.refusalFact(text);
+      if (refused) grounded.change = Experience.refusalFact(text,!grounded.strict);
       if (result.kind === 'risk' || result.kind === 'clarify' && result.sourceIds?.length) {
         const hazard = result.state.events.slice(session.state.events.length).findLast(event=>event.kind==='hazard' || event.kind==='action');
         const action = spec.actions.find(action=>action.id===hazard?.action);
-        grounded.change = action?.consequenceTemplate || (result.sourceIds?.length ? result.message : grounded.change);
+        grounded.change = action?.consequenceTemplate || action?.blockedMessage || (result.sourceIds?.length ? result.message : grounded.change);
       }
       const after = scene(spec,result.state);
       const payload = {before:scene(spec,session.state), after, history, text, refused, stopped:Boolean(audit.stopped),
@@ -431,7 +459,8 @@ class ConversationCoach {
         for (let attempt=0;attempt<2;attempt++) {
           const correction = attempt ? audit.narrationChecks.at(-1).failures : undefined;
           const {value} = await generate('narrate',{...payload,correction},narrationSchema);
-          const checked = Experience.checkNarration(value,{text,details:grounded.details,previous:session.sensory,change:grounded.change,refused,
+          const checked = Experience.checkNarration(value,{text,details:grounded.strict ? payload.sensoryChoices : grounded.details,allDetails:grounded.allDetails,
+            previous:session.sensory,change:grounded.change,authored:[...(grounded.authored || []),grounded.change],strict:grounded.strict,refused,
             unsupported:reply=>{
               const original = grounded.change ? reply.replace(grounded.change,'') : reply;
               const disputedEnding = result.kind === 'completed'
@@ -439,7 +468,7 @@ class ConversationCoach {
                 : /(?:消防|救援)人員.{0,6}(?:到了|抵達|接手)|(?:我|我們)(?:已|成功)(?:獲救|撤離|脫困)/.test(original);
               return disputedEnding || unsupportedAdvice(original,[]) || unsupportedBehavior(original,text,spec,session.state,result);
             }});
-          audit.narrationChecks.push({stage:'narrate',length:checked.length,failures:checked.failures});
+          audit.narrationChecks.push({stage:'narrate',length:checked.length,failures:checked.failures,overlap:checked.overlap});
           if (!checked.failures.length) {
             audit.sensoryIds = checked.sensoryIds;
             audit.narration = attempt ? 'regenerated' : 'accepted';
