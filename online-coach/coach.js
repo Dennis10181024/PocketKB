@@ -2,13 +2,10 @@
 const { randomUUID } = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
-const Fire = require('../web-pwa/fire-engine');
 const V3 = require('../web-pwa/scenario-engine-v3');
 const Events = require('../web-pwa/drill-events');
-const Language = require('../web-pwa/drill-language');
 const directory = path.join(__dirname, '../web-pwa/scenarios');
-const fire = JSON.parse(fs.readFileSync(path.join(directory, 'fire-dorm.json'), 'utf8').replace(/^\uFEFF/, ''));
-const specs = new Map([[fire.id, fire]]);
+const specs = new Map();
 for (const file of fs.readdirSync(path.join(directory, 'v3')).filter(f => f.endsWith('.json'))) {
   const spec = JSON.parse(fs.readFileSync(path.join(directory, 'v3', file), 'utf8').replace(/^\uFEFF/, ''));
   specs.set(spec.id, spec);
@@ -18,39 +15,23 @@ class CoachError extends Error {
   constructor(code, message, status = 400) { super(message); this.code = code; this.status = status; }
 }
 function apiError(code, message, status) { return new CoachError(code, message, status); }
-function engine(spec) { return spec.id === fire.id ? Fire : V3; }
-// A narrow guard for explicit negation/questions. It is not a general language interpreter.
-function interpretationConflict(spec, text, actions) {
-  const clauses = text.replace(/\s/g, '').split(new RegExp(spec.splitPattern));
-  for (const selected of actions) {
-    const action = [...spec.actions, ...(spec.hazards || [])].find(a => a.id === selected.id);
-    const signs = new Set();
-    for (const clause of clauses) {
-      for (const match of clause.matchAll(new RegExp(action.pattern, 'g'))) {
-        if (new RegExp(spec.questionPattern).test(clause)) return `「${clause}」帶有詢問語氣，不能直接執行${action.label}。`;
-        signs.add(new RegExp(spec.negationPattern).test(clause.slice(0, match.index)) ? 'negative' : 'positive');
-      }
-    }
-    if (signs.has('negative')) return `原文對「${action.label}」包含否定或相反意思，請先確認最後的決定。`;
-  }
-  return null;
-}
-function currentNode(spec, state) { return spec.id === fire.id ? spec.nodes[state.node] : spec.nodes.find(n => n.id === state.node); }
-function terminal(spec, state) { return spec.id === fire.id ? state.outcome !== 'CONTINUE' : state.sessionStatus !== 'ACTIVE'; }
+function engine() { return V3; }
+function currentNode(spec, state) { return spec.nodes.find(n => n.id === state.node); }
+function terminal(spec, state) { return state.sessionStatus !== 'ACTIVE'; }
 function scene(spec, state) {
   const node = currentNode(spec, state);
   return { title: spec.title, opening: spec.opening, notice: spec.notice, node, state,
     sources: spec.sources, misconceptions: spec.commonMisconceptions || [],
     actionRules: spec.actions.filter(a => (node.available || [...(node.required || []), ...(node.optional || [])]).includes(a.id)).map(a => ({ id:a.id, label:a.label, effect:a.effect })),
     hazardRules: spec.hazards || node.hazards || {},
-    physicalStatus: spec.id === fire.id ? (state.outcome === 'FAILED' ? 'CRITICAL' : state.outcome === 'SUCCESS' ? 'WAITING_RESCUE' : 'EXPOSED') : state.physicalStatus };
+    physicalStatus: ['SAFE_RESCUE','DELAYED_RESCUE'].includes(state.endingType) ? 'RESCUED' : state.physicalStatus };
 }
 const objSchema = properties => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
 const str = { type: 'string' };
 function actionCatalog(spec, node) {
   const available = node.available || [...node.required,...node.optional];
   return [...spec.actions.filter(action=>available.includes(action.id)),...(spec.hazards || [])].map(action=>({
-    id:action.id,label:action.label,danger:Boolean(spec.hazards?.includes(action) || node.hazards?.[action.id] || action.unsafeWhenBlocked || node.effects?.[action.id]?.kind==='risk'),
+    id:action.id,label:action.label,danger:Boolean(spec.hazards?.includes(action) || node.hazards?.[action.id] || action.hazardMode || action.unsafeWhenBlocked || node.effects?.[action.id]?.kind==='risk'),
   }));
 }
 function interpretationSchema(catalog) {
@@ -143,14 +124,14 @@ class ConversationCoach {
     if (!spec) throw apiError('UNKNOWN_SCENARIO', '此劇本尚未支援線上演練。');
     for (const [id, s] of this.sessions) if (Date.now() - s.updatedAt > this.ttlMs && !s.busy) this.sessions.delete(id);
     if (this.sessions.size >= this.maxSessions) throw apiError('SESSION_LIMIT', '本機教練場次已滿，請重新啟動服務。', 429);
-    const session = { id: randomUUID(), spec, state: engine(spec).create(spec), revision: 0, history: [], requests: new Map(), busy: false, updatedAt: Date.now() };
+    const session = { id: randomUUID(), spec, state: engine(spec).create(spec), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, updatedAt: Date.now() };
     this.sessions.set(session.id, session);
     return this.snapshot(session);
   }
   snapshot(session) {
     const { spec, state } = session;
     return { sessionId: session.id, scenarioId: spec.id, version: spec.version, revision: session.revision,
-      state, scene: scene(spec, state), terminal: terminal(spec, state),
+      state, decisions: session.decisions.slice(), scene: scene(spec, state), terminal: terminal(spec, state),
       review: terminal(spec, state) ? engine(spec).review(spec, state) : '', model: this.provider.model };
   }
   async generate(stage, payload, schema, signal) {
@@ -181,9 +162,9 @@ class ConversationCoach {
   async execute(session, text, intent) {
     const { spec } = session; const runtime = engine(spec);
     let result, reply, offline = false, fallbackReason;
-    const audit = {};
+    const audit = { source: "rule", validation: "RULE_ONLY" };
     if (intent === 'observe' || intent === 'hint') {
-      result = runtime.step(spec, session.state, '', intent === 'hint' && spec.id !== fire.id ? 'observe' : intent);
+      result = runtime.step(spec, session.state, '', intent === 'hint' && !spec.fireCompatibility ? 'observe' : intent);
       reply = result.message;
     } else {
       if (!text) throw apiError('EMPTY_INPUT', '請先輸入想法或問題。');
@@ -195,14 +176,22 @@ class ConversationCoach {
         reply = result.message;
         offline = true;
         fallbackReason = signal.aborted ? 'TURN_TIMEOUT' : error instanceof CoachError ? error.code : 'PROVIDER_ERROR';
+        audit.validation = fallbackReason;
       }
     }
     const citations = Events.citations(spec,session.state,result);
-    if (!citations.length && !['observe','hint'].includes(intent)) reply = neutralQuestion(text);
+    if (!citations.length && !['observe','hint','failed','risk','completed','transition','safe'].includes(result.kind)) {
+      reply = neutralQuestion(text);
+      audit.narration ??= 'neutral_unsourced';
+    }
+    const actionIds = runtime.adoptedActionIds(session.state,result.state);
+    const decision = {turn:session.revision + 1, intent, actionIds, source:audit.source, validation:audit.validation,
+      ...(!actionIds.length ? {controlInput:text} : {})};
+    session.decisions.push(decision);
     session.state = result.state; session.revision++; session.updatedAt = Date.now();
     session.history.push({ role: 'user', content: text || intent }, { role: 'assistant', content: reply });
     session.history = session.history.slice(-24);
-    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, ...audit, result: { ...result, message: reply, reason: reply, effects: [] } };
+    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, ...audit, decision, result: { ...result, message: reply, reason: reply, effects: [] } };
   }
   async modelTurn(session, text, intent, signal, audit) {
       const {spec} = session;
@@ -226,36 +215,46 @@ class ConversationCoach {
       const actions = actionCatalog(spec,node);
       const literal = runtime.rawStep(spec,session.state,text,intent);
       const literalDanger = ['failed','risk'].includes(literal.kind);
-      const referenceOnly = Language.referencedAction(text);
       const interpreted = await generate('interpret', { scene: scene(spec, session.state), history, text, inputMode: intent,
         actionCatalog: actions }, interpretationSchema(actions));
       const understanding = interpreted.value;
       const validIntents = ['action','question','emotion','off_topic','unclear','clarify'];
       if (!understanding || !validIntents.includes(understanding.intent) || typeof understanding.needsClarification !== 'boolean' || typeof understanding.understanding !== 'string' || typeof understanding.question !== 'string' || !Array.isArray(understanding.actions))
         throw apiError('MODEL_INVALID', '無法確認 GPT 對這句話的理解，行動尚未執行，請重試。', 502);
-      const catalog = new Set(actions.map(a=>a.id));
-      if (understanding.actions.some(a => !catalog.has(a.id) || typeof a.evidence !== 'string' || !a.evidence.trim() || !text.includes(a.evidence)))
-        throw apiError('MODEL_EVIDENCE', 'GPT 的行動解讀缺少原文依據，行動尚未執行，請重試。', 502);
-      const shouldAct = intent !== 'question' && understanding.intent === 'action' && !understanding.needsClarification && understanding.actions.length > 0;
-      let result = { state: structuredClone(session.state), kind: understanding.intent, message: '未執行行動；請依理解與現場作答。' };
-      if (shouldAct) {
-        const ids = [...new Set(understanding.actions.map(a => a.id))];
-        const conflict = interpretationConflict(spec, text, understanding.actions);
-        result = conflict ? { state: structuredClone(session.state), kind: 'clarify', message: conflict }
-          : runtime.rawStep(spec, session.state, text, 'action', { actionIds: ids });
+      const proposedIds = understanding.actions.map(action => action?.id);
+      audit.interpretation = {intent:understanding.intent, needsClarification:understanding.needsClarification,
+        actionIds:proposedIds};
+      const modelDanger = proposedIds.some(id => actions.some(action => action.id === id && action.danger));
+      const literalIds = runtime.adoptedActionIds(session.state,literal.state);
+      const hasProposal = understanding.intent === 'action' && !understanding.needsClarification && proposedIds.length > 0;
+      const conflictingDangerIds = literalDanger &&
+        (literalIds.some(id => !proposedIds.includes(id)) || proposedIds.some(id => !literalIds.includes(id)));
+      if (literalDanger !== modelDanger || conflictingDangerIds || (literal.kind === 'clarify' && literal.sourceIds?.length)) {
+        audit.disagreement = {literal:literal.kind, modelIntent:understanding.intent, modelDanger,
+          actionIds:proposedIds, literalIds};
       }
-      const modelDanger = ['failed','risk'].includes(result.kind);
-      if (literalDanger !== modelDanger) audit.disagreement = {literal:literal.kind,modelIntent:understanding.intent,modelResult:result.kind,actionIds:understanding.actions.map(a=>a.id)};
-      const ambiguous = literalDanger && /(?:曾經|以前|上次|我開過|我有做過)/.test(text);
+
+      let selected = literal;
       if (literalDanger) {
-        if (ambiguous || understanding.intent === 'question') {
-          result = {state:session.state,kind:'clarify',message:'尚未執行。若確定要採取該行動，風險如下：'+literal.message.split('本次')[0],
-            sourceIds:Events.citations(spec,session.state,literal).map(source=>source.id)};
-        } else result = literal;
-      } else if (referenceOnly || literal.kind==='question' || (literal.kind==='clarify' && /尚未確認為行動|包含否定/.test(literal.message))) {
-        result = literal;
+        audit.validation = 'RULE_DANGER_OVERRIDE';
+      } else if (understanding.actions.some(action => !action || typeof action.evidence !== 'string' ||
+          !action.evidence.trim() || !text.includes(action.evidence))) {
+        throw apiError('MODEL_EVIDENCE', 'GPT 的行動解讀缺少原文依據，改用原文規則。', 502);
+      } else if (hasProposal) {
+        // Ground known literal actions as well, so a model cannot replace them with a different act.
+        const verdict = runtime.validateProposal(spec,session.state,text,intent,understanding.actions,literal);
+        if (verdict.error) throw apiError(verdict.error, '模型提議未通過動作驗證，改用原文規則。', 502);
+        if (literalIds.some(id => !proposedIds.includes(id))) {
+          audit.disagreement = {literal:literal.kind, modelIntent:understanding.intent, actionIds:proposedIds, literalIds};
+          throw apiError('MODEL_CONFLICTS_WITH_LITERAL', '模型提議與原文已辨識的動作不一致，改用原文規則。', 502);
+        }
+        selected = verdict.result;
+        audit.source = 'model';
+        audit.validation = 'ACCEPTED';
+      } else {
+        audit.validation = 'MODEL_NO_ACTION';
       }
-      result = Events.advance(spec,result,text);
+      const result = Events.advance(spec,selected,text);
       const after = scene(spec, result.state);
       const payload = {before:scene(spec,session.state),after,
         verifiedResult:{kind:result.kind,message:result.message,effects:result.effects || []},understanding,history,text};
@@ -272,7 +271,7 @@ class ConversationCoach {
           if (typeof value?.reply==='string' && value.reply.trim() && value.reply.length<=1600 && !unsupportedAdvice(value.reply,permitted)
             && !unsupportedBehavior(value.reply,text,spec,session.state,result)) {
             audit.narration = attempt ? 'regenerated' : 'accepted';
-            return {result,reply:['failed','risk'].includes(result.kind) ? result.message : literalDanger && result.kind==='clarify' ? result.message+'\n'+value.reply : value.reply};
+            return {result,reply:['failed','risk'].includes(result.kind) ? result.message : literal.kind==='clarify' && literal.sourceIds?.length ? result.message+'\n'+value.reply : value.reply};
           }
         }
       } catch(error) {

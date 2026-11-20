@@ -24,7 +24,7 @@ for (const file of files) {
   assert.ok(spec.nodes.some(node => node.terminal), `${file}: needs an explicit physical outcome`);
   const actionIds = new Set(spec.actions.map(action => action.id));
   for (const node of spec.nodes) {
-    for (const id of [...node.required, ...node.optional, ...node.available]) {
+    for (const id of [...node.required, ...(node.optional || []), ...node.available]) {
       assert.ok(actionIds.has(id), `${file}/${node.id}: unknown action ${id}`);
     }
     for (const hazardId of Object.keys(node.hazards || {})) {

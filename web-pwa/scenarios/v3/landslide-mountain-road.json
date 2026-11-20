@@ -1,6 +1,6 @@
 {
   "id": "landslide_mountain_road",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "title": "土石流警戒：山區道路",
   "hazard": "landslide_debris_flow",
   "locationProfile": "mountain_road_vehicle",
@@ -69,7 +69,9 @@
       "teaching": "遵守封路和警戒，使用官方公告的替代路線。",
       "examples": [
         "我硬闖封閉警戒區"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我走進封閉的警戒區。前方仍有落石和土砂，我可能被波及。"
     },
     {
       "id": "drive_closed",
@@ -82,7 +84,9 @@
       "teaching": "封路表示不應駕車繼續前進；在可用的安全點折返。",
       "examples": [
         "我開進封閉路段"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我開車進了封閉路段。前方仍有落石和土砂，車也可能被波及。"
     },
     {
       "id": "alternate_route",
@@ -98,7 +102,39 @@
       "pattern": "(?:溪谷|河床|溪床).*(?:捷徑|穿越|走)",
       "sourceIds": [
         "source-0"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我走進溪谷捷徑，來到低地。這裡可能是土石流經過的地方。"
+    },
+    {
+      "id": "emotion_supportive",
+      "label": "我聽見小安回了一聲，表示已聽見。",
+      "pattern": "^(?:我聽見你擔心家人找不到你你願意的話我陪你記下我們的位置|你擔心後路會斷我也聽到落石聲我可以先確認迴轉點|我不能保證前面通行你可以幫我核對官方替代路線)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "supportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_unsupportive",
+      "label": "我聽見小安說，還想確認接下來怎麼聯絡。",
+      "pattern": "^(?:放心我保證前方不會再落石|別吵你根本什麼都不懂|你先把剛才多害怕說一遍少一句都不行)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "unsupportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_neutral",
+      "label": "我聽見小安的聲音，情況仍未改變。",
+      "pattern": "^(?:前面有封路標誌|我聽到手機有通知)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "neutral",
+      "wholeInput": true
     }
   ],
   "nodes": [
@@ -117,7 +153,10 @@
         "turn_back",
         "cross_closed",
         "drive_closed",
-        "shortcut"
+        "shortcut",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "cross_closed": {
@@ -156,7 +195,10 @@
       "optional": [],
       "available": [
         "alternate_route",
-        "shortcut"
+        "shortcut",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "shortcut": {
@@ -200,5 +242,23 @@
         "source-0"
       ]
     }
-  ]
+  ],
+  "variantId": "base",
+  "injuryThresholds": {
+    "mild": 1,
+    "moderate": 3,
+    "severe": 5
+  },
+  "npc": {
+    "name": "小安",
+    "position": "車內",
+    "proposal": "想走溪谷捷徑",
+    "handleAction": "turn_back",
+    "responsePattern": "^(?:我)?(?:請|勸)小安(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+  },
+  "endingMessages": {
+    "SELF_EVACUATION": {
+      "NONE": "我聽見避難處的人回應我們的通報。我們從公告路線抵達，原路還封著。"
+    }
+  }
 }

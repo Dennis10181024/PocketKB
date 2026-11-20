@@ -1,0 +1,520 @@
+[
+  {
+    "file": "fire-dorm",
+    "best": [
+      "我關門",
+      "我撥119",
+      "我告知地址A棟宿舍",
+      "我回報五樓503室",
+      "我等待救援",
+      "我保持通訊並依消防人員指示"
+    ],
+    "endingType": "SAFE_RESCUE",
+    "injuryLevel": "NONE",
+    "danger": "我搭電梯",
+    "emotion": [
+      {
+        "category": "supportive",
+        "text": "我聽見你擔心同學，我陪你留在這裡。"
+      },
+      {
+        "category": "supportive",
+        "text": "你先念房號，我能負責模擬通報。"
+      },
+      {
+        "category": "supportive",
+        "text": "你擔心他們，我知道。我能代你回報我們的位置。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "放心，我保證大家都會沒事。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你怎麼這麼膽小，閉嘴。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你先把剛才每一聲拍門都講清楚，不准漏。"
+      },
+      {
+        "category": "neutral",
+        "text": "我聽到走廊有聲音。"
+      },
+      {
+        "category": "neutral",
+        "text": "我現在在房裡。"
+      }
+    ],
+    "exposure": {
+      "heat": 0,
+      "smoke": 0
+    },
+    "graded": [
+      {
+        "actions": [
+          "我徒手抓住熱門把",
+          "我關門",
+          "我撥119",
+          "我告知地址A棟宿舍",
+          "我回報五樓503室",
+          "我等待救援",
+          "我保持通訊並依消防人員指示"
+        ],
+        "endingType": "SAFE_RESCUE",
+        "injuryLevel": "MILD",
+        "exposure": {
+          "heat": 2,
+          "smoke": 0
+        }
+      },
+      {
+        "actions": [
+          "我先等一下",
+          "我關門",
+          "我撥119",
+          "我告知地址A棟宿舍",
+          "我回報五樓503室",
+          "我等待救援",
+          "我保持通訊並依消防人員指示"
+        ],
+        "endingType": "DELAYED_RESCUE",
+        "injuryLevel": "MODERATE",
+        "exposure": {
+          "heat": 0,
+          "smoke": 3
+        }
+      },
+      {
+        "actions": [
+          "我先等一下",
+          "再觀察門外",
+          "我關門",
+          "我撥119",
+          "我告知地址A棟宿舍",
+          "我回報五樓503室",
+          "我等待救援",
+          "我保持通訊並依消防人員指示"
+        ],
+        "endingType": "DELAYED_RESCUE",
+        "injuryLevel": "SEVERE",
+        "exposure": {
+          "heat": 0,
+          "smoke": 5
+        }
+      }
+    ],
+    "regressionDanger": [
+      {
+        "text": "我從窗戶跳下去",
+        "kind": "failed"
+      },
+      {
+        "text": "我搭升降機下樓",
+        "kind": "failed"
+      },
+      {
+        "text": "我穿進走廊，開始穿過濃煙",
+        "kind": "failed"
+      }
+    ],
+    "regressionSafe": [
+      "我不會搭電梯",
+      "我拒絕跳窗",
+      "房外有濃煙，所以我留在原地，不打算開門衝出去",
+      "我原先想搭電梯，但太危險，因此我停在原地。",
+      "我提醒室友不要開房門",
+      "我叫同學不要跳窗",
+      "我看到有人在搭電梯",
+      "我聽到室友說有人想開門衝出去"
+    ]
+  },
+  {
+    "file": "earthquake-school",
+    "best": [
+      "趴下、掩護、穩住",
+      "等待主要搖晃停止",
+      "依教師指示走安全樓梯疏散",
+      "至集合點點名且不返回"
+    ],
+    "endingType": "SELF_EVACUATION",
+    "injuryLevel": "NONE",
+    "danger": "我衝去搭電梯",
+    "emotion": [
+      {
+        "category": "supportive",
+        "text": "我聽到了，我在附近。我們先在各自的位置護住頭頸。"
+      },
+      {
+        "category": "supportive",
+        "text": "我知道你擔心家人。等老師確認動線後，我陪你聽指示。"
+      },
+      {
+        "category": "supportive",
+        "text": "我會用聲音回應你。到集合點後，我可以陪你向老師報到。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "不可能受傷，我保證。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "別哭了，大家都在看你。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你先把剛才怎麼被嚇到的經過全部說出來。"
+      },
+      {
+        "category": "neutral",
+        "text": "我聽見桌腳在響。"
+      },
+      {
+        "category": "neutral",
+        "text": "老師在教室裡。"
+      }
+    ],
+    "exposure": {
+      "trauma": 0
+    },
+    "graded": [
+      {
+        "actions": [
+          "我在搖晃時跑到外面",
+          "趴下、掩護、穩住",
+          "等待主要搖晃停止",
+          "依教師指示走安全樓梯疏散",
+          "至集合點點名且不返回"
+        ],
+        "endingType": "SELF_EVACUATION",
+        "injuryLevel": "MILD",
+        "exposure": {
+          "trauma": 2
+        }
+      },
+      {
+        "actions": [
+          "趴下、掩護、穩住",
+          "等待主要搖晃停止",
+          "返回教室拿物品",
+          "回報受傷位置並等待協助"
+        ],
+        "endingType": "DELAYED_RESCUE",
+        "injuryLevel": "MODERATE",
+        "exposure": {
+          "trauma": 3
+        }
+      }
+    ],
+    "regressionDanger": [
+      {
+        "text": "我在搖晃時跑到外面",
+        "kind": "risk"
+      },
+      {
+        "text": "地在晃我衝出去",
+        "kind": "risk"
+      },
+      {
+        "text": "我從窗戶跳下去",
+        "kind": "failed"
+      }
+    ],
+    "regressionSafe": [
+      "我不會衝去搭電梯",
+      "我拒絕在搖晃時跑到外面",
+      "外面還有掉落物，所以我留在原地，不打算從窗戶跳下去",
+      "我原先想衝去搭電梯，但太危險，因此我停在原地。",
+      "我提醒室友不要衝去搭電梯",
+      "我叫同學不要在搖晃時跑到外面",
+      "我看到有人在衝去搭電梯",
+      "我聽到室友說有人想從窗戶跳下去"
+    ]
+  },
+  {
+    "file": "earthquake-home-trapped",
+    "best": [
+      "確認傷勢與周遭危險",
+      "不強行搬動大型倒塌物",
+      "傳送位置與受困資訊",
+      "節省手機電量並定時查看訊息",
+      "製造容易被救援人員辨識的訊號",
+      "控制飲水與體力消耗"
+    ],
+    "endingType": "SAFE_RESCUE",
+    "injuryLevel": "MILD",
+    "danger": "我從倒塌物上爬出去",
+    "emotion": [
+      {
+        "category": "supportive",
+        "text": "阿哲，我聽得見你。我會留在這邊回你。"
+      },
+      {
+        "category": "supportive",
+        "text": "你可以先說現在的位置，我把我們的位置一起記下來。"
+      },
+      {
+        "category": "supportive",
+        "text": "不用說剛才的經過。你願意的話，我可以一起回報你的位置。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "我保證救援隊馬上就到。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你一定要從頭重講剛才發生的事。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你自己擔心你的，我以後都不會回你。"
+      },
+      {
+        "category": "neutral",
+        "text": "我看到門口的櫃子歪了。"
+      },
+      {
+        "category": "neutral",
+        "text": "我看一下手機還有幾格電。"
+      }
+    ],
+    "exposure": {
+      "trauma": 1
+    },
+    "regressionDanger": [
+      {
+        "text": "我從倒塌物上爬出去",
+        "kind": "failed"
+      },
+      {
+        "text": "我挪開倒塌的櫃子逃出去",
+        "kind": "failed"
+      },
+      {
+        "text": "我踩過碎石爬出去",
+        "kind": "failed"
+      }
+    ],
+    "regressionSafe": [
+      "我不會強行搬動倒塌物逃生",
+      "我拒絕從倒塌物上爬出去",
+      "出口前有倒塌物，所以我留在原地，不打算一直直播等救援",
+      "我原先想強行搬動倒塌物逃生，但太危險，因此我停在原地。",
+      "我提醒室友不要硬搬倒塌物逃出去",
+      "我叫同學不要從倒塌物上爬出去",
+      "我看到有人在強行搬動倒塌物逃生",
+      "我聽到室友說有人想一直直播等救援"
+    ]
+  },
+  {
+    "file": "flood-low-home",
+    "best": [
+      "不進入地下室或搶救車輛",
+      "安全可及時關閉總電源",
+      "移動到較高樓層垂直避難",
+      "回報地址與受困位置",
+      "節省飲水、電量與體力"
+    ],
+    "endingType": "SAFE_RESCUE",
+    "injuryLevel": "NONE",
+    "danger": "我游出去",
+    "emotion": [
+      {
+        "category": "supportive",
+        "text": "我聽見你很自責。我陪你留在這裡，等我們確認樓梯的狀況。"
+      },
+      {
+        "category": "supportive",
+        "text": "我聽得到你。告訴我你在哪，我可以一起回報位置。"
+      },
+      {
+        "category": "supportive",
+        "text": "東西的事可以先放一下，我可以陪你核對上樓的路。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "我保證樓下不會再淹了。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你自己處理，我不管你了。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "都是你害的，你早該把東西拿上來。"
+      },
+      {
+        "category": "neutral",
+        "text": "車道入口有水。"
+      },
+      {
+        "category": "neutral",
+        "text": "我看到一樓樓梯口。"
+      }
+    ],
+    "exposure": {},
+    "regressionDanger": [
+      {
+        "text": "我游出去",
+        "kind": "failed"
+      },
+      {
+        "text": "我開車通過積水",
+        "kind": "failed"
+      },
+      {
+        "text": "我用游的出去",
+        "kind": "failed"
+      }
+    ],
+    "regressionSafe": [
+      "我不會游出去",
+      "我拒絕開車通過積水",
+      "外面有積水，所以我留在原地，不打算進地下室救車",
+      "我原先想游出去，但太危險，因此我停在原地。",
+      "我提醒室友不要涉水離開",
+      "我叫同學不要開車通過積水",
+      "我看到有人在游出去",
+      "我聽到室友說有人想進地下室救車"
+    ]
+  },
+  {
+    "file": "landslide-mountain-road",
+    "best": [
+      "確認官方警戒與封路資訊",
+      "在安全點立即迴轉",
+      "採用官方替代路線前往避難處所"
+    ],
+    "endingType": "SELF_EVACUATION",
+    "injuryLevel": "NONE",
+    "danger": "我走溪谷捷徑",
+    "emotion": [
+      {
+        "category": "supportive",
+        "text": "我聽見你擔心家人找不到你。你願意的話，我陪你記下我們的位置。"
+      },
+      {
+        "category": "supportive",
+        "text": "你擔心後路會斷，我也聽到落石聲，我可以先確認迴轉點。"
+      },
+      {
+        "category": "supportive",
+        "text": "我不能保證前面通行。你可以幫我核對官方替代路線。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "放心，我保證前方不會再落石。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "別吵，你根本什麼都不懂。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你先把剛才多害怕說一遍，少一句都不行。"
+      },
+      {
+        "category": "neutral",
+        "text": "前面有封路標誌。"
+      },
+      {
+        "category": "neutral",
+        "text": "我聽到手機有通知。"
+      }
+    ],
+    "exposure": {},
+    "regressionDanger": [
+      {
+        "text": "我開進封閉路段",
+        "kind": "failed"
+      },
+      {
+        "text": "我闖過封鎖線",
+        "kind": "failed"
+      },
+      {
+        "text": "我走溪谷捷徑",
+        "kind": "failed"
+      }
+    ],
+    "regressionSafe": [
+      "我不會硬闖封閉警戒區",
+      "我拒絕開進封閉路段",
+      "外面有落石，所以我留在原地，不打算走溪谷捷徑",
+      "我原先想硬闖封閉警戒區，但太危險，因此我停在原地。",
+      "我提醒室友不要穿越封閉警戒區",
+      "我叫同學不要開進封閉路段",
+      "我看到有人在硬闖封閉警戒區",
+      "我聽到室友說有人想走溪谷捷徑"
+    ]
+  },
+  {
+    "file": "barrier-lake-downstream",
+    "best": [
+      "確認官方撤離命令與指定路線",
+      "立即沿東側指定路線撤往高地"
+    ],
+    "endingType": "SELF_EVACUATION",
+    "injuryLevel": "NONE",
+    "danger": "我跳進河裡",
+    "emotion": [
+      {
+        "category": "supportive",
+        "text": "我知道你擔心家人。東側路線確認開放時，我可以陪你去公告的集合點。"
+      },
+      {
+        "category": "supportive",
+        "text": "我可以幫你記下集合點名字，你願意的話我們把位置一起回報。"
+      },
+      {
+        "category": "supportive",
+        "text": "你可以先聽我念官方通知。到集合點後，我陪你詢問聯絡方式。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "我保證你家一定沒事。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你不走我就丟下你，之後也不幫你聯絡。"
+      },
+      {
+        "category": "unsupportive",
+        "text": "你早就該和家人講好，現在緊張有什麼用。"
+      },
+      {
+        "category": "neutral",
+        "text": "我聽見廣播。"
+      },
+      {
+        "category": "neutral",
+        "text": "我看到路口的指示牌。"
+      }
+    ],
+    "exposure": {},
+    "regressionDanger": [
+      {
+        "text": "我跳進河裡",
+        "kind": "failed"
+      },
+      {
+        "text": "我跑到溪邊看",
+        "kind": "failed"
+      },
+      {
+        "text": "我去橋上看",
+        "kind": "failed"
+      }
+    ],
+    "regressionSafe": [
+      "我不會跳進河裡",
+      "我拒絕到河邊觀看",
+      "河道水位在上升，所以我留在原地，不打算去橋上看",
+      "我原先想跳進河裡，但太危險，因此我停在原地。",
+      "我提醒室友不要到河邊拍照",
+      "我叫同學不要到河邊觀看",
+      "我看到有人在跳進河裡",
+      "我聽到室友說有人想去橋上看"
+    ]
+  }
+]

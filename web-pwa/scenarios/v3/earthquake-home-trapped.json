@@ -1,6 +1,6 @@
 {
   "id": "earthquake_home_trapped",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "title": "地震後受困住家",
   "hazard": "earthquake",
   "locationProfile": "low_rise_home",
@@ -35,6 +35,9 @@
       "exitBlocked": true,
       "signalAvailable": true,
       "rescueArrived": false
+    },
+    "exposure": {
+      "trauma": 1
     }
   },
   "actions": [
@@ -65,7 +68,9 @@
       "teaching": "倒塌物穩定性未知；避免移動，依劇本確認傷勢並傳遞位置。",
       "examples": [
         "我強行搬動倒塌物逃生"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我動手搬堵住出口的倒塌物。堆在一起的東西又塌落了一次。"
     },
     {
       "id": "climb_debris",
@@ -78,7 +83,9 @@
       "teaching": "出口未確認安全；不要爬過不穩定堆積物，先確認傷勢及受困位置。",
       "examples": [
         "我從倒塌物上爬出去"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我撐上歪斜的櫃緣，看見上方卡著碎屑。倒塌物是否穩固仍不明，落物或二次坍落都可能波及我。"
     },
     {
       "id": "send_location",
@@ -130,7 +137,8 @@
       "teaching": "有限電量優先用於必要通訊與定位。",
       "examples": [
         "我一直直播等救援"
-      ]
+      ],
+      "hazardMode": "EXPOSURE"
     },
     {
       "id": "watch_video",
@@ -143,7 +151,8 @@
       "teaching": "有限電量優先用於必要通訊與定位。",
       "examples": [
         "我一直看影片"
-      ]
+      ],
+      "hazardMode": "EXPOSURE"
     },
     {
       "id": "keep_flashlight",
@@ -156,7 +165,38 @@
       "teaching": "情境中的有限電量需保留給必要照明、通訊及定位。",
       "examples": [
         "我持續開手電筒"
-      ]
+      ],
+      "hazardMode": "EXPOSURE"
+    },
+    {
+      "id": "emotion_supportive",
+      "label": "我聽見阿哲回了一聲，表示已聽見。",
+      "pattern": "^(?:阿哲我聽得見你我會留在這邊回你|你可以先說現在的位置我把我們的位置一起記下來|不用說剛才的經過你願意的話我可以一起回報你的位置)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "supportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_unsupportive",
+      "label": "我聽見阿哲說，還想確認接下來怎麼聯絡。",
+      "pattern": "^(?:我保證救援隊馬上就到|你一定要從頭重講剛才發生的事|你自己擔心你的我以後都不會回你)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "unsupportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_neutral",
+      "label": "我聽見阿哲的聲音，情況仍未改變。",
+      "pattern": "^(?:我看到門口的櫃子歪了|我看一下手機還有幾格電)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "neutral",
+      "wholeInput": true
     }
   ],
   "nodes": [
@@ -174,7 +214,10 @@
         "assess_injury",
         "avoid_forcing_exit",
         "force_exit",
-        "climb_debris"
+        "climb_debris",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "force_exit": {
@@ -214,7 +257,10 @@
         "make_signal",
         "stream_video",
         "watch_video",
-        "keep_flashlight"
+        "keep_flashlight",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "effects": {
         "stream_video": {
@@ -261,7 +307,10 @@
         "conserve_supplies",
         "conserve_phone",
         "force_exit",
-        "climb_debris"
+        "climb_debris",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "force_exit": {
@@ -281,7 +330,8 @@
         "sessionStatus": "COMPLETED",
         "physicalStatus": "WAITING_RESCUE",
         "completionKind": "SURVIVAL_STABILIZED",
-        "message": "你已採取可行的待救措施，但仍未脫離災區，也不能假設救援已抵達。演練以『穩定等待救援』結束。"
+        "message": "你已採取可行的待救措施，但仍未脫離災區，也不能假設救援已抵達。演練以『穩定等待救援』結束。",
+        "rescueHandoff": true
       }
     }
   ],
@@ -317,5 +367,23 @@
         "source-0"
       ]
     }
-  ]
+  ],
+  "variantId": "base",
+  "injuryThresholds": {
+    "mild": 1,
+    "moderate": 3,
+    "severe": 5
+  },
+  "npc": {
+    "name": "阿哲",
+    "position": "隔牆",
+    "proposal": "想推櫃",
+    "handleAction": "avoid_forcing_exit",
+    "responsePattern": "^(?:我)?(?:請|勸)阿哲(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+  },
+  "endingMessages": {
+    "SAFE_RESCUE": {
+      "MILD": "我聽見救援人員回應我報的位置。等到他們接手，腿傷維持原先的情況。"
+    }
+  }
 }

@@ -31,7 +31,8 @@ const { createServer } = require('../online-coach/server');
     await page.getByText('目前使用離線判讀',{exact:true}).waitFor();
     assert.equal(await page.locator('#onlineInput').inputValue(),'');
     await send('我把房門帶上');assert.match(await page.locator('.task-box').innerText(),/119/);
-    const session=[...coach.sessions.values()][0];assert.equal(session.state.node,1);assert.equal(session.history.length,6);
+    assert.equal(await page.getByText('目前使用離線判讀',{exact:true}).count(),0);
+    const session=[...coach.sessions.values()][0];assert.equal(session.state.node,'report');assert.equal(session.history.length,6);
     for(const viewport of [{width:320,height:640},{width:812,height:375},{width:1280,height:900}]){
       await page.setViewportSize(viewport);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`horizontal overflow ${viewport.width}`);
     }

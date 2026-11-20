@@ -1,6 +1,5 @@
 import './drill-language.js';
 import './drill-events.js';
-import './fire-engine.js';
 import './scenario-engine-v3.js';
 
 // Browser adapter: no API key or cloud credentials are stored in this client.
@@ -19,7 +18,7 @@ function saveReview(result) {
   const key = 'pocketkb-online-records';
   const rows = JSON.parse(localStorage.getItem(key) || '[]');
   if (!rows.some(row => row.sessionId === result.sessionId)) {
-    rows.unshift({ sessionId: result.sessionId, title: result.scene.title, physicalStatus: result.scene.physicalStatus, review: result.review, messages: online.messages, time: new Date().toISOString() });
+    rows.unshift({ sessionId: result.sessionId, title: result.scene.title, physicalStatus: result.scene.physicalStatus, variant_id: result.state.variantId, ending_type: result.state.endingType, injury_level: result.state.injuryLevel, exposure: result.state.exposure, injury_causes: result.state.injuryCauses, decisions:result.decisions, review: result.review, messages: online.messages, time: new Date().toISOString() });
     localStorage.setItem(key, JSON.stringify(rows.slice(0, 30)));
   }
   online.saved.add(result.sessionId);
@@ -76,13 +75,12 @@ async function start() {
 }
 function localResult(session, request) {
   const spec = online.catalog.find(row => row.id === session.scenarioId).spec;
-  const fire = spec.id === 'drill_fire_dorm';
-  const engine = fire ? globalThis.FireDrill : globalThis.ScenarioEngineV3;
+  const engine = globalThis.ScenarioEngineV3;
   const result = request ? engine.step(spec, session.state, request.text, request.intent) : {state:engine.create(spec), message:''};
   const {state} = result;
-  const terminal = fire ? state.outcome !== 'CONTINUE' : state.sessionStatus !== 'ACTIVE';
-  const physicalStatus = fire ? ({FAILED:'CRITICAL',SUCCESS:'WAITING_RESCUE'}[state.outcome] || 'EXPOSED') : state.physicalStatus;
-  const node = fire ? spec.nodes[state.node] : spec.nodes.find(item => item.id === state.node);
+  const terminal = state.sessionStatus !== 'ACTIVE';
+  const physicalStatus = ['SAFE_RESCUE','DELAYED_RESCUE'].includes(state.endingType) ? 'RESCUED' : state.physicalStatus;
+  const node = spec.nodes.find(item => item.id === state.node);
   const citations = request ? globalThis.DrillEvents.citations(spec,session.state,result) : [];
   const reply = request && !citations.length && !['observe','hint'].includes(request.intent)
     ? `我收到你說的「${request.text.slice(0,120)}」。你是在描述現場、詢問，還是在說自己現在決定採取的行動？` : result.message;

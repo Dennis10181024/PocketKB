@@ -75,9 +75,23 @@ object OnlineCoachState {
             nodeTurn = state.getInt("nodeTurn"), accepted = state.strings("accepted"),
             elapsed = state.optInt("elapsed"), consecutiveQuestions = state.optInt("consecutiveQuestions"),
             resources = resources.keys().asSequence().associateWith { resources.getInt(it) },
+            variantId = state.optString("variantId", "base"),
+            exposure = state.optJSONObject("exposure")?.let { data -> data.keys().asSequence().associateWith { data.getInt(it) } }.orEmpty(),
+            injuryCauses = state.objects("injuryCauses").map {
+                ExposureCauseV3(it.getString("node"), it.getString("action"), it.getString("eventId"), it.getString("exposure"), it.getInt("delta"), it.getInt("turn"))
+            },
+            endingType = state.optString("endingType").takeUnless { it.isBlank() || it == "null" },
+            injuryLevel = state.optString("injuryLevel").takeUnless { it.isBlank() || it == "null" },
+            injuryWorsened = if (state.isNull("injuryWorsened")) null else state.getBoolean("injuryWorsened"),
+            npc = state.optJSONObject("npc")?.let {
+                ScenarioNpcV3(it.getString("position"), it.optString("proposal").takeUnless { value -> value == "null" },
+                    it.getBoolean("handled"), it.optString("emotion").takeUnless { value -> value == "null" })
+            },
+            hints = state.objects("hints").map { FireHint(it.getString("node"), it.getInt("level")) },
             facts = facts.keys().asSequence().associateWith { facts.get(it).toString() },
             events = state.objects("events").map { event -> ScenarioEventV3(
                 node = event.getString("node"), action = event.optString("action").takeIf { it.isNotBlank() && it != "null" },
+                eventId = event.optString("eventId").takeUnless { it.isBlank() || it == "null" },
                 kind = event.getString("kind"), message = event.optString("message").takeIf { it.isNotBlank() && it != "null" },
             ) },
         )

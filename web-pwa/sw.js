@@ -1,5 +1,5 @@
-const CACHE_NAME = "pocketkb-pwa-v11-drill-events";
-const CORE_ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./drill-language.js", "./drill-events.js", "./fire-engine.js", "./scenarios/fire-dorm.json", "./manifest.webmanifest", "./icon.svg"];
+const CACHE_NAME = "pocketkb-pwa-v12-scenario-v3";
+const CORE_ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./drill-language.js", "./drill-events.js", "./scenario-engine-v3.js", "./scenarios/v3/fire-dorm.json", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS)));
   self.skipWaiting();

@@ -1,4 +1,4 @@
-﻿# PocketKB 災前情境演練 · 步驟 1.4 體驗設計規格
+# PocketKB 災前情境演練 · 步驟 1.4 體驗設計規格
 
 對象為一般大眾與大學生。定位為實體防災演練的日常補充。本文的對話、時間與畫面為步驟 2 的設計目標和驗收案例。教育效果留待盲驗收與使用者研究評估。
 
@@ -293,9 +293,9 @@
 | --- | --- |
 | 劇本版本 | 增列 schemaVersion、variants、injuryEvents、exposureDefinitions（項目、傷害機制、四級門檻及來源）、initialExposure、endingRules、rescueEvents、firstAidDecisions、reportingDecisionId。每個可達結局列出確定性前置條件、來源、事件 ID 與固定增量。每劇本驗收現有或基準開場的最佳路徑，另測至少一項明確失誤導致輕傷及中度。 |
 | 動作與事件 | 危險動作具有 hazardMode、exposureDeltas、exposureWhen、consequenceTemplate、sourceIds。環境與救援事件具有 eventId、guards、exposureDeltas、delayReason、outcomePatch。累積型及零增量危險行動都須記錄，不可藉低分視為安全。 |
-| 狀態機 | 累積 exposure、injuryCauses、injuryLevel、endingType、rescuerContact、delayFlags、stopReason。回合依 ID 去重，暴露事件、傷勢結算和安全保護在離線及線上共用。GPT 只讀引擎結果。開場一次固定變體；事件不得依隨機數、牆鐘或模型輸出。原文的權威解析及消歧固定。 |
+| 狀態機 | 累積 exposure、injuryCauses、injuryLevel、endingType、rescuerContact、delayFlags、stopReason。回合依 ID 去重，暴露事件、傷勢結算和安全保護在離線及線上共用。GPT 只讀引擎結果。開場一次固定變體；事件不得依隨機數、牆鐘或模型輸出。線上模型可提出經程式驗證的動作；以記錄的動作 ID 重播。 |
 | 顯示及流程 | 開場內容提醒、全程停止、引擎結局與中性傷勢描述、輕傷條件式急救與回顧。退出獨立標記，未實際接觸救援不發出獲救。 |
-| 驗收案例 | 每項暴露測試 0、1、2、3、4、5 分與臨界安全事件，驗證去重、立即終止優先且傷勢不評定、相同變體與輸入逐事件重放一致、環境傷害歸因、單純延誤不生傷、救援接觸守門與退出不計失敗。保留先前危險零漏判及安全語境回歸。 |
+| 驗收案例 | 每項暴露測試 0、1、2、3、4、5 分與臨界安全事件，驗證去重、立即終止優先且傷勢不評定、相同變體與採用動作 ID 序列的結局、傷勢、暴露一致、環境傷害歸因、單純延誤不生傷、救援接觸守門與退出不計失敗。保留先前危險零漏判及安全語境回歸。 |
 | 版本遷移 | 舊 EVACUATED、WAITING_RESCUE、FAILED 照歷史顯示。舊待救紀錄不升格為獲救，缺傷勢資料不補寫無傷。六舊劇本先落地共同契約，三新劇本 JSON 留待步驟 3。 |
 
 ### Log schema 與研究計分

@@ -2,15 +2,15 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
-const engine = require('./fire-engine');
-const spec = require('./scenarios/fire-dorm.json');
+const engine = require('./scenario-engine-v3');
+const spec = require('./scenarios/v3/fire-dorm.json');
 const nodes = new Map();
 const storage = new Map();
 const getNode = id => {
   if (!nodes.has(id)) nodes.set(id, { innerHTML:'', value:'', textContent:'', addEventListener(){}, focus(){}, scrollTop:0, scrollHeight:0 });
   return nodes.get(id);
 };
-const context = { console, FireDrill:engine, POCKETKB_FIRE_SPEC:spec,
+const context = { console, ScenarioEngineV3:engine, POCKETKB_FIRE_SPEC:spec,
   localStorage: {getItem:k=>storage.get(k)||null, setItem:(k,v)=>storage.set(k,v), removeItem:k=>storage.delete(k)},
   document:{querySelector:getNode, querySelectorAll:()=>[]}, navigator:{}, window:{}, confirm:()=>true, alert(){} };
 vm.createContext(context);

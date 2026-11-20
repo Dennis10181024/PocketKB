@@ -1,0 +1,167 @@
+[
+  {
+    "category": "danger",
+    "sourceId": 49,
+    "scenario": "barrier_lake_downstream",
+    "actionIds": [
+      "jump_river"
+    ],
+    "text": "我直接往河裡一躍下去"
+  },
+  {
+    "category": "danger",
+    "sourceId": 53,
+    "scenario": "flood_low_home",
+    "actionIds": [
+      "drive_flood"
+    ],
+    "text": "我把車直接駛過淹在水下的路"
+  },
+  {
+    "category": "danger",
+    "sourceId": 53,
+    "scenario": "flood_low_home",
+    "actionIds": [
+      "drive_flood"
+    ],
+    "text": "我踩油門，讓車穿過那段泡在水裡的路"
+  },
+  {
+    "category": "danger",
+    "sourceId": 50,
+    "scenario": "earthquake_home_trapped",
+    "actionIds": [
+      "climb_debris"
+    ],
+    "text": "我順著倒下來的櫃子往上攀，翻到另一邊出去"
+  },
+  {
+    "category": "danger",
+    "sourceId": 50,
+    "scenario": "earthquake_home_trapped",
+    "actionIds": [
+      "climb_debris"
+    ],
+    "text": "我沿著倒掉的櫃子往上爬，從另一面離開"
+  },
+  {
+    "category": "danger",
+    "sourceId": 51,
+    "scenario": "earthquake_school",
+    "actionIds": [
+      "run_outside"
+    ],
+    "text": "趁地面還在震動，我直接往室外跑"
+  },
+  {
+    "category": "danger",
+    "sourceId": 51,
+    "scenario": "earthquake_school",
+    "actionIds": [
+      "run_outside"
+    ],
+    "text": "地板還在抖，我先衝到室外"
+  },
+  {
+    "category": "danger",
+    "sourceId": 52,
+    "scenario": "flood_low_home",
+    "actionIds": [
+      "swim_out"
+    ],
+    "text": "我直接下水划手踢腿，想靠這樣到對面"
+  },
+  {
+    "category": "correct",
+    "scenario": "drill_fire_dorm",
+    "actionIds": [
+      "close"
+    ],
+    "text": "我把房門帶上"
+  },
+  {
+    "category": "correct",
+    "scenario": "drill_fire_dorm",
+    "actionIds": [
+      "close",
+      "seal"
+    ],
+    "text": "我把房門帶上，再拿濕毛巾堵住門底下那條縫"
+  },
+  {
+    "category": "correct",
+    "scenario": "earthquake_school",
+    "actionIds": [
+      "drop_cover_hold"
+    ],
+    "text": "我鑽到桌子底下抓住桌腳"
+  },
+  {
+    "category": "correct",
+    "scenario": "earthquake_school",
+    "actionIds": [
+      "wait_stop"
+    ],
+    "text": "我等地板靜下來再動"
+  },
+  {
+    "category": "correct",
+    "scenario": "earthquake_home_trapped",
+    "actionIds": [
+      "assess_injury"
+    ],
+    "text": "我先看看腿上的狀況"
+  },
+  {
+    "category": "correct",
+    "scenario": "flood_low_home",
+    "actionIds": [
+      "power_off"
+    ],
+    "text": "我腳下跟手都是乾的，配電箱也到得了，我把家裡的電切掉"
+  },
+  {
+    "category": "correct",
+    "scenario": "landslide_mountain_road",
+    "actionIds": [
+      "confirm_warning"
+    ],
+    "text": "我先讀一下水保署發來的封路簡訊"
+  },
+  {
+    "category": "correct",
+    "scenario": "barrier_lake_downstream",
+    "actionIds": [
+      "confirm_official"
+    ],
+    "text": "我先看一下鄉公所傳來的簡訊叫我們去哪裡集合"
+  },
+  {
+    "category": "protected",
+    "sourceId": 1,
+    "scenario": "drill_fire_dorm",
+    "actionIds": [],
+    "text": "我拒絕搭電梯"
+  },
+  {
+    "category": "protected",
+    "sourceId": 5,
+    "scenario": "drill_fire_dorm",
+    "actionIds": [],
+    "text": "我提醒室友先別把房門推開"
+  },
+  {
+    "category": "protected",
+    "sourceId": 15,
+    "scenario": "earthquake_school",
+    "actionIds": [],
+    "text": "我看到有人正往電梯跑"
+  },
+  {
+    "category": "protected",
+    "sourceId": 47,
+    "scenario": "barrier_lake_downstream",
+    "actionIds": [],
+    "text": "我看到有人從岸邊跳下去"
+  }
+]

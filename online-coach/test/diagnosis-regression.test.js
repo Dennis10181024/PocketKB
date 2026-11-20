@@ -1,11 +1,10 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const {ConversationCoach, specs} = require('../coach');
-const Fire = require('../../web-pwa/fire-engine');
 const V3 = require('../../web-pwa/scenario-engine-v3');
 
 test('non-action language preserves exact state in both engines', () => {
-  for (const [engine,id,danger] of [[Fire,'drill_fire_dorm','搭電梯'],[V3,'earthquake_school','衝去搭電梯']]) {
+  for (const [engine,id,danger] of [[V3,'drill_fire_dorm','搭電梯'],[V3,'earthquake_school','衝去搭電梯']]) {
     const spec=specs.get(id), state=engine.create(spec);
     for (const input of [`我只是想像${danger}`,`如果我${danger}會怎樣？`,`我不會${danger}`,`可以${danger}嗎？`]) {
       const actual=engine.step(spec,state,input);
@@ -51,7 +50,7 @@ test('deadline discards late model output and commits one fallback for duplicate
   const keepAlive=setInterval(()=>{},100);
   try {
     const result=await coach.turn(initial.sessionId,request);
-    assert.equal(result.offline,true); assert.equal(result.state.node,1);
+    assert.equal(result.offline,true); assert.equal(result.state.node,'report');
     unblock({value:{intent:'action',understanding:'晚到',question:'',needsClarification:false,actions:[]}});
     assert.deepEqual(await coach.turn(initial.sessionId,request),result);
     assert.equal(coach.calls,1); assert.equal(coach.sessions.get(initial.sessionId).history.length,2);

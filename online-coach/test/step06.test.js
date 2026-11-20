@@ -1,7 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {ConversationCoach,specs,actionCatalog}=require('../coach');
-const Fire=require('../../web-pwa/fire-engine');
 const V3=require('../../web-pwa/scenario-engine-v3');
 const probes={
   drill_fire_dorm:['我從窗戶跳下去','我搭升降機下樓','我穿進走廊，開始穿過濃煙'],
@@ -19,7 +18,7 @@ test('raw hazard overrides missing model proposals, but explicit non-action does
   const coach=new ConversationCoach({ready:true,model:'test',async generate(stage){return {value:stage==='interpret'?clarify:{reply:'已收到這項輸入。'}};}},{maxSessions:100});
   for(const [id,inputs] of Object.entries(probes)) for(const text of inputs) {
     const result=await turn(coach,coach.create(id),text);
-    assert.equal(result.kind,'failed',text);
+    assert.equal(result.kind,id==='earthquake_school' && text!=='我從窗戶跳下去' ? 'risk' : 'failed',text);
     assert.ok(result.disagreement,text);
     assert.ok(result.citations.length,text);
   }
@@ -44,7 +43,7 @@ test('each catalog has every node hazard and each action and event has valid sou
 
 test('each rule engine advances two nonterminal events and allows a question grace period',()=>{
   for(const spec of specs.values()) {
-    const engine=spec.id==='drill_fire_dorm'?Fire:V3;
+    const engine=V3;
     let state=engine.create(spec);
     for(let i=0;i<4;i++) state=engine.step(spec,state,'哈哈哈').state;
     assert.equal(state.elapsed,4);

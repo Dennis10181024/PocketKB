@@ -1,6 +1,6 @@
 {
   "id": "flood_low_home",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "title": "淹水：低窪住宅撤離已中斷",
   "hazard": "flood",
   "locationProfile": "low_lying_home",
@@ -64,7 +64,8 @@
       "blockedMessage": "有觸電風險，未執行關電。只有腳下乾燥、手部乾燥且配電箱能安全抵達，才允許操作。",
       "sourceIds": [
         "cdc-electrical"
-      ]
+      ],
+      "hazardMode": "EXPOSURE"
     },
     {
       "id": "basement",
@@ -72,7 +73,9 @@
       "pattern": "(?:進|下).*(?:地下室|地下停車場).*(?:救|開|拿).*(?:車|財物)",
       "sourceIds": [
         "source-0"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我下到進水的地下空間取車。水還在往上漲，我所在的位置也有電氣危險。"
     },
     {
       "id": "wade_out",
@@ -85,7 +88,9 @@
       "teaching": "道路積水使行走不安全；依劇本留在可達的高處。",
       "examples": [
         "我涉水離開"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我徒步踏進水流。水一推過來，我的腳就失去立足點。"
     },
     {
       "id": "swim_out",
@@ -98,7 +103,9 @@
       "teaching": "積水道路沒有已知安全路線；依劇本考慮垂直避難。",
       "examples": [
         "我游出去"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我下水想游過快速漫出的積水。水流仍在，我可能被水帶走。"
     },
     {
       "id": "drive_flood",
@@ -111,7 +118,9 @@
       "teaching": "道路深度及通行條件未知；不要駕車闖入積水路段。",
       "examples": [
         "我開車通過積水"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我把車開進積水路段。路面被水蓋住，我已進入不安全的路段。"
     },
     {
       "id": "upper_floor",
@@ -141,6 +150,36 @@
       "sourceIds": [
         "source-0"
       ]
+    },
+    {
+      "id": "emotion_supportive",
+      "label": "我聽見阿敏回了一聲，表示已聽見。",
+      "pattern": "^(?:我聽見你很自責我陪你留在這裡等我們確認樓梯的狀況|我聽得到你告訴我你在哪我可以一起回報位置|東西的事可以先放一下我可以陪你核對上樓的路)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "supportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_unsupportive",
+      "label": "我聽見阿敏說，還想確認接下來怎麼聯絡。",
+      "pattern": "^(?:我保證樓下不會再淹了|你自己處理我不管你了|都是你害的你早該把東西拿上來)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "unsupportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_neutral",
+      "label": "我聽見阿敏的聲音，情況仍未改變。",
+      "pattern": "^(?:車道入口有水|我看到一樓樓梯口)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "neutral",
+      "wholeInput": true
     }
   ],
   "nodes": [
@@ -160,7 +199,10 @@
         "basement",
         "wade_out",
         "swim_out",
-        "drive_flood"
+        "drive_flood",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "basement": {
@@ -211,7 +253,10 @@
         "conserve",
         "wade_out",
         "swim_out",
-        "drive_flood"
+        "drive_flood",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "wade_out": {
@@ -237,7 +282,8 @@
         "sessionStatus": "COMPLETED",
         "physicalStatus": "WAITING_RESCUE",
         "completionKind": "SURVIVAL_STABILIZED",
-        "message": "你已轉移到高處並回報位置，但仍受困於淹水區。演練以『穩定等待救援』結束。"
+        "message": "你已轉移到高處並回報位置，但仍受困於淹水區。演練以『穩定等待救援』結束。",
+        "rescueHandoff": true
       }
     }
   ],
@@ -273,5 +319,23 @@
         "source-0"
       ]
     }
-  ]
+  ],
+  "variantId": "base",
+  "injuryThresholds": {
+    "mild": 1,
+    "moderate": 3,
+    "severe": 5
+  },
+  "npc": {
+    "name": "阿敏",
+    "position": "室內一樓",
+    "proposal": "想下地下室取車",
+    "handleAction": "avoid_basement",
+    "responsePattern": "^(?:我)?(?:請|勸)阿敏(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+  },
+  "endingMessages": {
+    "SAFE_RESCUE": {
+      "NONE": "我在樓上聽見救援人員回應位置通報。地面那條路仍在水下，他們從確認過的路線接手。"
+    }
+  }
 }

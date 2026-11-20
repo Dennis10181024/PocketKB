@@ -1,6 +1,6 @@
 {
   "id": "earthquake_school",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "title": "地震：學校教室",
   "hazard": "earthquake",
   "locationProfile": "school_classroom",
@@ -33,7 +33,11 @@
     },
     "facts": {
       "shaking": true,
-      "stairsChecked": false
+      "stairsChecked": false,
+      "returnClearance": false
+    },
+    "exposure": {
+      "trauma": 0
     }
   },
   "actions": [
@@ -64,7 +68,9 @@
       "teaching": "正在搖晃時先保護頭頸並依老師指示，等主要搖晃停止。",
       "examples": [
         "我衝去搭電梯"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我在搖晃中往電梯跑。身邊仍在晃，我可能跌倒、被掉落物砸到，也可能困在電梯裡。"
     },
     {
       "id": "run_outside",
@@ -77,7 +83,8 @@
       "teaching": "主要搖晃停止前先就地保護頭頸，之後依老師指示疏散。",
       "examples": [
         "我在搖晃時跑到外面"
-      ]
+      ],
+      "hazardMode": "EXPOSURE"
     },
     {
       "id": "follow_stairs",
@@ -107,12 +114,56 @@
       "pattern": "返回.*教室.*(?:拿|找).*(?:手機|書包|東西)",
       "sourceIds": [
         "source-0"
-      ]
+      ],
+      "unsafeWhenBlocked": true,
+      "blockedMessage": "我留在老師帶隊的路線，返回教室的動作被攔下。",
+      "hazardMode": "EXPOSURE",
+      "blockedAfterInjury": "S1"
     },
     {
       "id": "jump_window",
       "label": "從高樓窗戶跳下",
       "pattern": "(?:從|自).*(?:窗戶|窗子).*(?:跳|翻)|跳窗|跳樓",
+      "sourceIds": [
+        "source-0"
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我選擇從三樓窗戶跳下。窗外離地很遠，我可能從高處墜落。"
+    },
+    {
+      "id": "emotion_supportive",
+      "label": "我聽見小維回了一聲，表示已聽見。",
+      "pattern": "^(?:我聽到了我在附近我們先在各自的位置護住頭頸|我知道你擔心家人等老師確認動線後我陪你聽指示|我會用聲音回應你到集合點後我可以陪你向老師報到)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "supportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_unsupportive",
+      "label": "我聽見小維說，還想確認接下來怎麼聯絡。",
+      "pattern": "^(?:不可能受傷我保證|別哭了大家都在看你|你先把剛才怎麼被嚇到的經過全部說出來)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "unsupportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_neutral",
+      "label": "我聽見小維的聲音，情況仍未改變。",
+      "pattern": "^(?:我聽見桌腳在響|老師在教室裡)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "neutral",
+      "wholeInput": true
+    },
+    {
+      "id": "report_injury",
+      "label": "回報受傷位置並等待協助",
+      "pattern": "回報(?:受傷|傷勢)|通報(?:受傷|傷勢)|119",
       "sourceIds": [
         "source-0"
       ]
@@ -134,7 +185,10 @@
         "wait_stop",
         "run_elevator",
         "run_outside",
-        "jump_window"
+        "jump_window",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "run_elevator": {
@@ -147,12 +201,6 @@
           "message": "三樓窗戶不是疏散路線。跳下會暴露於高處墜落風險。",
           "terminal": true,
           "physicalStatus": "CRITICAL"
-        },
-        "run_outside": {
-          "terminal": true,
-          "sessionStatus": "FAILED",
-          "physicalStatus": "CRITICAL",
-          "message": "你在搖晃仍持續時跑向戶外。演練因移動時的掉落物與跌倒風險結束。"
         }
       },
       "onComplete": {
@@ -178,21 +226,40 @@
       "available": [
         "follow_stairs",
         "assembly",
-        "return_bag"
+        "return_bag",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
-      "hazards": {
-        "return_bag": {
-          "terminal": true,
-          "sessionStatus": "FAILED",
-          "physicalStatus": "CRITICAL",
-          "message": "你在未解除風險前返回受損教室拿物品，遭遇餘震與掉落物。本次演練失敗。"
-        }
-      },
+      "hazards": {},
       "terminal": {
         "sessionStatus": "COMPLETED",
         "physicalStatus": "EVACUATED",
         "completionKind": "SAFE_AREA_REACHED",
         "message": "你依指示抵達集合點並完成點名。本次演練以『完成撤離』結束。"
+      }
+    },
+    {
+      "id": "injury_handoff",
+      "title": "回報位置並等待救援",
+      "situation": "我在可通訊的位置，聽見老師回應。",
+      "task": "回報受傷情況與所在位置。",
+      "required": [
+        "report_injury"
+      ],
+      "available": [
+        "report_injury",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
+      ],
+      "hazards": {},
+      "terminal": {
+        "sessionStatus": "COMPLETED",
+        "physicalStatus": "WAITING_RESCUE",
+        "completionKind": "SURVIVAL_STABILIZED",
+        "message": "救援人員完成接手。",
+        "rescueHandoff": true
       }
     }
   ],
@@ -218,6 +285,62 @@
       "id": "elapsed-2",
       "at": 4,
       "message": "廣播更新，仍需由校方確認指定動線。",
+      "sourceIds": [
+        "source-0"
+      ]
+    }
+  ],
+  "variantId": "base",
+  "injuryThresholds": {
+    "mild": 1,
+    "moderate": 3,
+    "severe": 5
+  },
+  "npc": {
+    "name": "小維",
+    "position": "教室",
+    "proposal": "想跑出教室",
+    "handleAction": "drop_cover_hold",
+    "responsePattern": "^(?:我)?(?:請|勸)小維(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+  },
+  "endingMessages": {
+    "SELF_EVACUATION": {
+      "NONE": "我跟著確認過的動線走到集合點。老師喊到我的名字，我回了一聲，也把同學的狀況報給老師。",
+      "MILD": "我急著往外跑時，腳下一絆。到了集合點，我把剛才跌倒和輕傷的情況告訴老師。"
+    },
+    "DELAYED_RESCUE": {
+      "MODERATE": "我回去拿包時，才聽見餘震帶來的落物聲。救護人員找到我後，評估我需要送醫。"
+    }
+  },
+  "injuryEvents": [
+    {
+      "id": "S1",
+      "node": "shaking",
+      "action": "run_outside",
+      "facts": {
+        "shaking": true
+      },
+      "exposure": "trauma",
+      "delta": 2,
+      "message": "我急著往外跑時，腳下一絆。",
+      "sourceIds": [
+        "source-0"
+      ]
+    },
+    {
+      "id": "S2",
+      "node": "evacuate",
+      "action": "return_bag",
+      "facts": {
+        "shaking": false,
+        "returnClearance": false
+      },
+      "unless": "S1",
+      "exposure": "trauma",
+      "delta": 3,
+      "delayed": true,
+      "to": "injury_handoff",
+      "message": "我回教室拿包時，聽見餘震中的落物聲。",
       "sourceIds": [
         "source-0"
       ]

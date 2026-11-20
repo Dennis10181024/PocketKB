@@ -1,6 +1,6 @@
 {
   "id": "barrier_lake_downstream",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "title": "堰塞湖警戒：下游聚落",
   "hazard": "barrier_lake",
   "locationProfile": "downstream_valley_settlement",
@@ -76,7 +76,8 @@
       "pattern": "(?:繼續|先).*(?:收拾|整理|拿).*(?:行李|財物|東西)|等我.*收拾",
       "sourceIds": [
         "source-0"
-      ]
+      ],
+      "hazardMode": "EXPOSURE"
     },
     {
       "id": "watch_river",
@@ -89,7 +90,9 @@
       "teaching": "不要到河道警戒區觀察；應依官方撤離指示行動。",
       "examples": [
         "我到河邊觀看"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我走近管制中的河道，聽見水聲就在前方。這裡可能突然來水，沒有確認可安全停留的位置。"
     },
     {
       "id": "jump_river",
@@ -102,7 +105,9 @@
       "teaching": "河道已列為警戒區；不要入水，依官方撤離指示。",
       "examples": [
         "我跳進河裡"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我跳進河道的水裡。水流就在身邊，突發洪水也可能波及我。"
     },
     {
       "id": "vertical_refuge",
@@ -139,7 +144,9 @@
       "teaching": "原路線已中斷；依公告改用可達的就近避難點。",
       "examples": [
         "我涉水穿越積水"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我徒步穿過水流。腳下一滑，我失去立足點。"
     },
     {
       "id": "drive_cutoff",
@@ -152,7 +159,39 @@
       "teaching": "封閉道路不可駕車通行；依公告改用可達的就近避難點。",
       "examples": [
         "我開車通過積水"
-      ]
+      ],
+      "hazardMode": "IMMEDIATE",
+      "consequenceTemplate": "我把車開進已中斷的積水道路。水流仍在，車所在的位置並不安全。"
+    },
+    {
+      "id": "emotion_supportive",
+      "label": "我聽見阿蘭回了一聲，表示已聽見。",
+      "pattern": "^(?:我知道你擔心家人東側路線確認開放時我可以陪你去公告的集合點|我可以幫你記下集合點名字你願意的話我們把位置一起回報|你可以先聽我念官方通知到集合點後我陪你詢問聯絡方式)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "supportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_unsupportive",
+      "label": "我聽見阿蘭說，還想確認接下來怎麼聯絡。",
+      "pattern": "^(?:我保證你家一定沒事|你不走我就丟下你之後也不幫你聯絡|你早就該和家人講好現在緊張有什麼用)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "unsupportive",
+      "wholeInput": true
+    },
+    {
+      "id": "emotion_neutral",
+      "label": "我聽見阿蘭的聲音，情況仍未改變。",
+      "pattern": "^(?:我聽見廣播|我看到路口的指示牌)$",
+      "sourceIds": [
+        "source-0"
+      ],
+      "emotion": "neutral",
+      "wholeInput": true
     }
   ],
   "nodes": [
@@ -171,7 +210,10 @@
         "evacuate_east",
         "pack_more",
         "watch_river",
-        "jump_river"
+        "jump_river",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "watch_river": {
@@ -236,7 +278,10 @@
         "send_location",
         "conserve",
         "cross_flood",
-        "drive_cutoff"
+        "drive_cutoff",
+        "emotion_supportive",
+        "emotion_unsupportive",
+        "emotion_neutral"
       ],
       "hazards": {
         "cross_flood": {
@@ -286,5 +331,23 @@
         "source-0"
       ]
     }
-  ]
+  ],
+  "variantId": "base",
+  "injuryThresholds": {
+    "mild": 1,
+    "moderate": 3,
+    "severe": 5
+  },
+  "npc": {
+    "name": "阿蘭",
+    "position": "聚落",
+    "proposal": "想繼續收拾",
+    "handleAction": "confirm_official",
+    "responsePattern": "^(?:我)?(?:請|勸)阿蘭(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+  },
+  "endingMessages": {
+    "SELF_EVACUATION": {
+      "NONE": "我聽見集合點的人在核對名單。從上面望去，靠河的路還在管制。"
+    }
+  }
 }

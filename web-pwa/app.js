@@ -1,4 +1,4 @@
-﻿const categories = {
+const categories = {
   FIRE: "火災",
   TYPHOON: "豪雨颱風"
 };
@@ -210,16 +210,43 @@ function installFireSpec(spec) {
   fire.steps = spec.nodes;
 }
 if (fireSpec) installFireSpec(fireSpec);
-else fetch('./scenarios/fire-dorm.json').then(r => {
+else fetch('./scenarios/v3/fire-dorm.json').then(r => {
   if (!r.ok) throw new Error('scenario unavailable');
   return r.json();
 }).then(spec => { installFireSpec(spec); render(); }).catch(() => { fireLoadError = true; render(); });
 
 function isTerminal() { return ['SUCCESS', 'FAILED'].includes(state.lastResult?.outcome); }
 
+const fireRuntime = {
+  create(spec) { return this.project(spec, ScenarioEngineV3.create(spec)); },
+  project(spec, state) {
+    const node = spec.nodes.findIndex(item => item.id === state.node);
+    const outcome = {COMPLETED:'SUCCESS', FAILED:'FAILED'}[state.sessionStatus] || 'CONTINUE';
+    return {...state, node, outcome, completed: spec.nodes.slice(0, node + (outcome === 'SUCCESS' ? 1 : 0)).map(item => item.id)};
+  },
+  step(spec, before, text, intent) {
+    const result = ScenarioEngineV3.step(spec, {...before, node: spec.nodes[before.node].id}, text, intent);
+    const state = this.project(spec,result.state);
+    const progressDelta = state.completed.length - before.completed.length;
+    const kind = {transition:'advance',completed:'success'}[result.kind] || result.kind;
+    const verdictLabel = {
+      question:'詢問・尚未採取行動', observe:'觀察・不計入完成', clarify:'需要釐清',
+      partial:'已記住你的行動', advance:'進入下一階段', success:'練習完成',
+      risk:'請修正決定', failed:'演練已停止', locked:'本次已結束', hint:'提示',
+    }[kind];
+    return {...result, state, kind, outcome:state.outcome, progressDelta,
+      reason: result.message, effects: [], shouldAskAgain: !progressDelta, verdictLabel,
+      safety: kind === 'failed' ? 'FAILED' : kind === 'risk' ? 'LOW' : 'MEDIUM'};
+  },
+  review(spec, state) {
+    const review = ScenarioEngineV3.review(spec,{...state,node:spec.nodes[state.node].id});
+    return `完成 ${state.completed.length}/${spec.nodes.length} 階段\n${review}`;
+  }
+};
+
 function fireInteract(text, intent = 'action') {
   if (!state.fireSession || isTerminal()) return;
-  const result = FireDrill.step(fireSpec, state.fireSession, text, intent);
+  const result = fireRuntime.step(fireSpec, state.fireSession, text, intent);
   state.fireSession = result.state;
   state.currentStep = result.state.node + 1;
   state.lastResult = result;
@@ -248,7 +275,7 @@ function containsRuleTerm(normalizedText, term, allowNegated) {
 function evaluateUserAction(scenario, userText) {
   if (scenario.id === 'drill_fire_dorm') {
     if (!fireSpec) throw new Error('Fire scenario is not loaded; legacy fallback is disabled.');
-    return FireDrill.step(fireSpec, state.fireSession || FireDrill.create(fireSpec), userText);
+    return fireRuntime.step(fireSpec, state.fireSession || fireRuntime.create(fireSpec), userText);
   }
   const normalized = normalize(userText);
   const step = scenario.steps[state.currentStep - 1];
@@ -456,7 +483,7 @@ function startScenario(id = state.selectedScenarioId) {
   state.saved = false;
   state.draft = '';
   state.inputIntent = 'action';
-  state.fireSession = scenario.id === 'drill_fire_dorm' ? FireDrill.create(fireSpec) : null;
+  state.fireSession = scenario.id === 'drill_fire_dorm' ? fireRuntime.create(fireSpec) : null;
   state.selectedScenarioId = scenario.id;
   state.activeScenario = scenario;
   state.currentStep = 1;
@@ -511,8 +538,11 @@ function saveRecord(outcome, scenario, result) {
     safety: result.safety,
     step: state.currentStep,
     totalSteps: scenario.steps.length,
-    summary: state.fireSession ? FireDrill.review(fireSpec, state.fireSession) : result.reason,
+    summary: state.fireSession ? fireRuntime.review(fireSpec, state.fireSession) : result.reason,
     version: state.fireSession?.version || 'legacy',
+    ...(state.fireSession ? {variant_id:state.fireSession.variantId, ending_type:state.fireSession.endingType,
+      injury_level:state.fireSession.injuryLevel, exposure:state.fireSession.exposure,
+      injury_causes:state.fireSession.injuryCauses} : {}),
     completedSteps: state.fireSession?.completed.length ?? (outcome === 'SUCCESS' ? scenario.steps.length : state.currentStep - 1),
     hints: state.fireSession?.hints || [],
     messages: state.messages.map(m => ({ ...m }))
@@ -711,7 +741,7 @@ function renderFireView(scenario) {
     ${active ? `<div class="fire-controls"><div class="button-row"><button class="ghost" id="observeBtn" type="button">觀察環境</button><button class="ghost" id="hintBtn" type="button">${session.hints.filter(h=>h.node===node.id).length < node.hints.length ? '給我下一層提示' : '重看提示'}</button></div>
       <fieldset class="intent-picker"><legend>你的輸入是</legend>${[['action','採取行動'],['question','詢問']].map(([id,label])=>`<label><input type="radio" name="intent" value="${id}" ${state.inputIntent===id?'checked':''}>${label}</label>`).join('')}</fieldset>
       <div class="input-area"><label for="actionInput">${state.inputIntent==='question'?'你的問題（目前提供階段說明）':'你的行動'}<textarea id="actionInput" placeholder="可以分次說明，不必一次寫完所有步驟。">${escapeHtml(state.draft)}</textarea></label><button class="primary" id="submitBtn" type="button">${state.inputIntent==='question'?'送出問題':'確認行動'}</button></div>
-      <details><summary>不知道怎麼表達？使用引導選項</summary><p class="tiny">選項不一定安全。點選只會填入，確認後才執行。</p><div class="guided-choices">${node.choices.map((c,i)=>`<button class="ghost" data-fire-choice="${i}" type="button">${escapeHtml(c)}</button>`).join('')}</div></details></div>` : `<div class="fire-review"><h3>這次練習的回顧</h3><p>${escapeHtml(FireDrill.review(fireSpec,session))}</p><button class="primary" id="startBtn" type="button">另開一次練習</button></div>`}`}
+      <details><summary>不知道怎麼表達？使用引導選項</summary><p class="tiny">選項不一定安全。點選只會填入，確認後才執行。</p><div class="guided-choices">${node.choices.map((c,i)=>`<button class="ghost" data-fire-choice="${i}" type="button">${escapeHtml(c)}</button>`).join('')}</div></details></div>` : `<div class="fire-review"><h3>這次練習的回顧</h3><p>${escapeHtml(fireRuntime.review(fireSpec,session))}</p><button class="primary" id="startBtn" type="button">另開一次練習</button></div>`}`}
     ${renderConversationHistory()}
     ${session ? `<details><summary>查看全部演練階段</summary><ol>${fireSpec.nodes.map(n=>`<li>${escapeHtml(n.title)}</li>`).join('')}</ol></details>` : ''}
     <details class="fire-sources"><summary>適用範圍與參考依據</summary><p>${escapeHtml(fireSpec.notice)}</p>${node.sources.concat('safety').map(id=>fireSpec.sources.find(s=>s.id===id)).map(s=>`<p><a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.title)}</a> · 核對 ${s.checked}</p>`).join('')}</details>

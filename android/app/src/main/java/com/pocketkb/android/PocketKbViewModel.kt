@@ -1,4 +1,4 @@
-﻿package com.pocketkb.android
+package com.pocketkb.android
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -80,6 +80,7 @@ class PocketKbViewModel(
     private val judge = DrillJudge()
     val fireDrill = FireDrill(JSONObject(application.assets.open("fire-dorm.json").bufferedReader(Charsets.UTF_8).use { it.readText() }))
     private val scenarioV3Files = listOf(
+        "fire-dorm.json",
         "earthquake-school.json",
         "earthquake-home-trapped.json",
         "flood-low-home.json",
@@ -91,7 +92,7 @@ class PocketKbViewModel(
         runtime.spec.getString("id") to runtime
     }
     val scenarios = scenarioRuntimesV3.values.map { it.scenario() } +
-        KnowledgeBase.scenarios.map { if (it.id == "drill_fire_dorm") fireDrill.scenario() else it }
+        KnowledgeBase.scenarios.filterNot { it.id in scenarioRuntimesV3 }
     private val historyRepository = DrillHistoryRepository(
         PocketKbDatabase.get(application).drillHistoryDao(),
     )
@@ -203,10 +204,10 @@ class PocketKbViewModel(
 
     fun startScenario(requestedScenario: DrillScenario) {
         onlineJob?.cancel(); remoteSession = null; pendingOnline = null
-        val scenario = if (requestedScenario.id == "drill_fire_dorm") fireDrill.scenario() else requestedScenario
+        val scenario = scenarioRuntimesV3[requestedScenario.id]?.scenario() ?: requestedScenario
         countdownJob?.cancel()
         val sessionId = UUID.randomUUID().toString()
-        val fireState = if (scenario.id == "drill_fire_dorm") fireDrill.create() else null
+        val fireState: FireState? = null
         val scenarioStateV3 = scenarioRuntimesV3[scenario.id]?.create()
         val opening = ChatMessage(role = ChatRole.ASSISTANT, content = scenario.openingLine +
             when {
@@ -421,6 +422,7 @@ class PocketKbViewModel(
         val outcome = when {
             result.state.sessionStatus == "FAILED" -> DrillOutcome.FAILED
             result.state.physicalStatus == "EVACUATED" -> DrillOutcome.EVACUATED
+            terminal && result.state.endingType in setOf("SAFE_RESCUE", "DELAYED_RESCUE") -> DrillOutcome.RESCUED
             result.state.physicalStatus == "WAITING_RESCUE" -> DrillOutcome.WAITING_RESCUE
             result.state.physicalStatus == "RESCUED" -> DrillOutcome.RESCUED
             result.state.physicalStatus == "SHELTERED" && terminal -> DrillOutcome.SHELTERED

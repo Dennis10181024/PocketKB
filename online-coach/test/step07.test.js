@@ -1,7 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {ConversationCoach,specs,unsupportedBehavior}=require('../coach');
-const Fire=require('../../web-pwa/fire-engine');
 const V3=require('../../web-pwa/scenario-engine-v3');
 const {safe}=require('./step07-cases');
 const nominal={intent:'clarify',needsClarification:true,actions:[],question:'',understanding:'待釐清'};
@@ -14,7 +13,7 @@ test('48 negative, causal denial, advice to others and observation examples cann
       actions:proposed ? [{id:proposed.id,evidence:payload.text}] : [] } : {reply:'你應該搭電梯。'}};
   }});
   for(const row of safe) {
-    const spec=specs.get(row.scenario), engine=spec.id==='drill_fire_dorm'?Fire:V3;
+    const spec=specs.get(row.scenario), engine=V3;
     const initial=engine.create(spec), local=engine.step(spec,initial,row.input);
     assert.ok(!['failed','risk'].includes(local.kind),row.input);
     const session=coach.create(spec.id);
@@ -28,7 +27,7 @@ test('48 negative, causal denial, advice to others and observation examples cann
 
 test('split acts have independently resolvable examples, grounded consequences, teaching and sources',()=>{
   for(const spec of specs.values()) {
-    const engine=spec.id==='drill_fire_dorm'?Fire:V3;
+    const engine=V3;
     for(const action of [...spec.actions,...(spec.hazards || [])].filter(a=>a.examples)) {
       for(const text of action.examples) {
         const initial=engine.create(spec);
@@ -37,7 +36,8 @@ test('split acts have independently resolvable examples, grounded consequences, 
         const result=engine.rawStep(spec,initial,text);
         assert.ok(['failed','risk'].includes(result.kind),text);
         assert.ok(result.state.events.some(e=>e.action===action.id || e.labels?.includes(action.label)),text);
-        assert.ok(result.message.includes(action.consequence) && result.message.includes(action.teaching), text);
+        assert.ok(action.consequence && action.teaching, text);
+        if (action.hazardMode === 'IMMEDIATE') assert.equal(result.message, action.consequenceTemplate, text);
         assert.ok(action.sourceIds.length);
       }
     }
@@ -60,6 +60,6 @@ test('model may not replace a split hazard with a different executed act',async(
   const r=await coach.turn(s.sessionId,decide(text));
   assert.equal(narrations,2);
   assert.equal(r.narration,'template');
-  assert.match(r.reply,/駕車穿越積水/);
+  assert.match(r.reply,/把車開進積水路段/);
   assert.doesNotMatch(r.reply,/游泳/);
 });
