@@ -237,6 +237,27 @@
         "to": "contact",
         "physicalStatus": "SHELTERED",
         "message": "你沒有冒險穿越不穩定倒塌物，先降低二次受傷風險。"
+      },
+      "experience": {
+        "suggestions": [
+          "我先確認腿傷和周遭，不搬大型倒塌物。",
+          "我先看看腿能不能動，再確認出口。",
+          "我先爬上倒塌物看另一側有沒有空隙。"
+        ],
+        "sensory": [
+          {
+            "id": "home_exit",
+            "text": "看見出口被倒塌物堵住"
+          },
+          {
+            "id": "home_leg",
+            "text": "感覺腿部受傷"
+          },
+          {
+            "id": "home_stability",
+            "text": "看不出倒塌物有沒有卡穩"
+          }
+        ]
       }
     },
     {
@@ -288,6 +309,27 @@
       "onComplete": {
         "to": "survive",
         "message": "必要位置資訊已傳出，但這不代表救援隊已經抵達。"
+      },
+      "experience": {
+        "suggestions": [
+          "我傳送地址和受困位置，然後保留手機電量並定時查看。",
+          "我先用手機發出位置，再看看還剩多少電。",
+          "我開直播讓親友一直看到我在哪。"
+        ],
+        "sensory": [
+          {
+            "id": "看見手機仍有訊號",
+            "text": "看見手機仍有訊號"
+          },
+          {
+            "id": "看見手機只剩35%的電量",
+            "text": "看見手機只剩35%的電量"
+          },
+          {
+            "id": "home_exit",
+            "text": "仍看不見能通行的出口"
+          }
+        ]
       }
     },
     {
@@ -332,6 +374,27 @@
         "completionKind": "SURVIVAL_STABILIZED",
         "message": "你已採取可行的待救措施，但仍未脫離災區，也不能假設救援已抵達。演練以『穩定等待救援』結束。",
         "rescueHandoff": true
+      },
+      "experience": {
+        "suggestions": [
+          "我做出救援人員容易發現的訊號，保留水和體力。",
+          "我先做出能定位的訊號，再處理手邊的飲水。",
+          "我爬過倒塌物去外面，讓別人比較容易看見我。"
+        ],
+        "sensory": [
+          {
+            "id": "home_exit",
+            "text": "看見出口仍被堵住"
+          },
+          {
+            "id": "home_stability",
+            "text": "仍看不出倒塌物有沒有卡穩"
+          },
+          {
+            "id": "home_leg",
+            "text": "感覺腿部受傷"
+          }
+        ]
       }
     }
   ],
@@ -379,7 +442,13 @@
     "position": "隔牆",
     "proposal": "想推櫃",
     "handleAction": "avoid_forcing_exit",
-    "responsePattern": "^(?:我)?(?:請|勸)阿哲(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+    "responsePattern": "^(?:我)?(?:請|勸)阿哲(?:先)?(?:停手|停下|別急|等等)[。！!]?$",
+    "emotionResponses": {
+      "handled": "我聽見阿哲答應先停下。",
+      "supportive": "我聽見阿哲應了一聲，講話慢了一些。",
+      "unsupportive": "我聽見阿哲的回話變得急促。",
+      "neutral": "我聽見阿哲短短地應了一聲。"
+    }
   },
   "endingMessages": {
     "SAFE_RESCUE": {

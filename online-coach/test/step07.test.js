@@ -20,7 +20,7 @@ test('48 negative, causal denial, advice to others and observation examples cann
     const server=await coach.turn(session.sessionId,decide(row.input));
     assert.equal(server.terminal,false,row.input);
     assert.ok(!['failed','risk'].includes(server.kind),row.input);
-    assert.equal(server.narration,'neutral_unsourced');
+    assert.equal(server.narration,'template');
     assert.doesNotMatch(server.reply,/你應該搭電梯/);
   }
 });
@@ -58,8 +58,9 @@ test('model may not replace a split hazard with a different executed act',async(
   }});
   const s=coach.create(spec.id);
   const r=await coach.turn(s.sessionId,decide(text));
-  assert.equal(narrations,2);
-  assert.equal(r.narration,'template');
+  assert.equal(narrations,1);
+  assert.equal(r.narration,'engine_ending');
+  assert.deepEqual(r.decision.narration_checks[0].failures,['quote_mismatch']);
   assert.match(r.reply,/把車開進積水路段/);
   assert.doesNotMatch(r.reply,/游泳/);
 });

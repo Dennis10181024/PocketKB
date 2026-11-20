@@ -211,6 +211,23 @@
         },
         "physicalStatus": "SHELTERED",
         "message": "主要搖晃停止，教師確認指定樓梯可用並開始帶隊疏散。"
+      },
+      "experience": {
+        "suggestions": [
+          "我趴下躲到桌下護住頭頸，抓住桌腳，等搖晃停了再動。",
+          "我先鑽到桌下抓住桌腳，等老師說話。",
+          "我趁還能走的時候先跑到戶外空地。"
+        ],
+        "sensory": [
+          {
+            "id": "school_shaking",
+            "text": "感覺教室仍在搖晃"
+          },
+          {
+            "id": "看得見近處的課桌",
+            "text": "看得見近處的課桌"
+          }
+        ]
       }
     },
     {
@@ -237,6 +254,27 @@
         "physicalStatus": "EVACUATED",
         "completionKind": "SAFE_AREA_REACHED",
         "message": "你依指示抵達集合點並完成點名。本次演練以『完成撤離』結束。"
+      },
+      "experience": {
+        "suggestions": [
+          "我跟老師走指定樓梯到集合點點名，不回教室。",
+          "我先跟著老師走樓梯，到外面再確認集合點。",
+          "我先回教室把手機和書包拿齊，再跟上隊伍。"
+        ],
+        "sensory": [
+          {
+            "id": "看見指定的樓梯",
+            "text": "看見指定的樓梯"
+          },
+          {
+            "id": "聽見校方要求依序集合",
+            "text": "聽見校方要求依序集合"
+          },
+          {
+            "id": "看得見疏散的動線",
+            "text": "看得見疏散的動線"
+          }
+        ]
       }
     },
     {
@@ -260,6 +298,23 @@
         "completionKind": "SURVIVAL_STABILIZED",
         "message": "救援人員完成接手。",
         "rescueHandoff": true
+      },
+      "experience": {
+        "suggestions": [
+          "我向老師回報哪裡受傷、我在哪裡，再等協助。",
+          "我先叫住老師，再說我在哪裡。",
+          "我先自己回教室拿東西處理，晚點再說。"
+        ],
+        "sensory": [
+          {
+            "id": "teacher_voice",
+            "text": "聽見老師回應"
+          },
+          {
+            "id": "injury_handoff_position",
+            "text": "意識到自己還在可以聯絡老師的位置"
+          }
+        ]
       }
     }
   ],
@@ -301,7 +356,13 @@
     "position": "教室",
     "proposal": "想跑出教室",
     "handleAction": "drop_cover_hold",
-    "responsePattern": "^(?:我)?(?:請|勸)小維(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+    "responsePattern": "^(?:我)?(?:請|勸)小維(?:先)?(?:停手|停下|別急|等等)[。！!]?$",
+    "emotionResponses": {
+      "handled": "我聽見小維答應先停下。",
+      "supportive": "我聽見小維應了一聲，講話慢了一些。",
+      "unsupportive": "我聽見小維的回話變得急促。",
+      "neutral": "我聽見小維短短地應了一聲。"
+    }
   },
   "endingMessages": {
     "SELF_EVACUATION": {

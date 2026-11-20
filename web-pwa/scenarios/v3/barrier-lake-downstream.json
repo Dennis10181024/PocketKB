@@ -260,6 +260,27 @@
         "physicalStatus": "EVACUATED",
         "completionKind": "SAFE_AREA_REACHED",
         "message": "你在路線仍開放時依命令抵達指定高地。本次演練以『完成撤離』結束。"
+      },
+      "experience": {
+        "suggestions": [
+          "我確認官方命令，立刻沿東側指定路線往高地撤離。",
+          "我先向阿蘭確認廣播的內容和指定方向。",
+          "我先回去收完重要的東西，再沿東側路線走。"
+        ],
+        "sensory": [
+          {
+            "id": "聽見官方下令撤離",
+            "text": "聽見官方下令撤離"
+          },
+          {
+            "id": "聽得見廣播指示東側路線",
+            "text": "聽得見廣播指示東側路線"
+          },
+          {
+            "id": "看得見指定撤離的方向",
+            "text": "看得見指定撤離的方向"
+          }
+        ]
       }
     },
     {
@@ -302,6 +323,27 @@
         "physicalStatus": "WAITING_RESCUE",
         "completionKind": "SURVIVAL_STABILIZED",
         "message": "你已到達公告的就近避難點並回報位置，但尚未離開警戒區，也不能假設救援已抵達。演練以『穩定等待救援』結束。"
+      },
+      "experience": {
+        "suggestions": [
+          "我先去公告指定的垂直避難點，回報位置與人數，保留物資和電量。",
+          "我先去公告的垂直避難點，到了再確認能不能傳位置。",
+          "我走過中斷路線的積水，繼續到原來的集合點。"
+        ],
+        "sensory": [
+          {
+            "id": "看見外面出現快速水流",
+            "text": "看見外面出現快速水流"
+          },
+          {
+            "id": "看見原來的指定道路已中斷",
+            "text": "看見原來的指定道路已中斷"
+          },
+          {
+            "id": "看得見公告指定的垂直避難點",
+            "text": "看得見公告指定的垂直避難點"
+          }
+        ]
       }
     }
   ],
@@ -343,7 +385,13 @@
     "position": "聚落",
     "proposal": "想繼續收拾",
     "handleAction": "confirm_official",
-    "responsePattern": "^(?:我)?(?:請|勸)阿蘭(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+    "responsePattern": "^(?:我)?(?:請|勸)阿蘭(?:先)?(?:停手|停下|別急|等等)[。！!]?$",
+    "emotionResponses": {
+      "handled": "我聽見阿蘭答應先停下。",
+      "supportive": "我聽見阿蘭應了一聲，講話慢了一些。",
+      "unsupportive": "我聽見阿蘭的回話變得急促。",
+      "neutral": "我聽見阿蘭短短地應了一聲。"
+    }
   },
   "endingMessages": {
     "SELF_EVACUATION": {

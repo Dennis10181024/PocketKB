@@ -384,6 +384,27 @@
             "doorClosed": true
           }
         }
+      },
+      "experience": {
+        "suggestions": [
+          "我把房門帶上，留在房裡。",
+          "我先看一眼手邊有哪些東西，再決定怎麼處理門口。",
+          "我把房門拉開一點，確認走廊現在看不看得到路。"
+        ],
+        "sensory": [
+          {
+            "id": "看見門縫外的濃煙",
+            "text": "看見門縫外的濃煙"
+          },
+          {
+            "id": "fire_window",
+            "text": "看得見對外窗"
+          },
+          {
+            "id": "摸到手邊的衣物",
+            "text": "摸到手邊的衣物"
+          }
+        ]
       }
     },
     {
@@ -478,6 +499,27 @@
       "onComplete": {
         "to": "wait",
         "message": "模擬接線員已取得求救與定位資訊，請你保持聯絡。這不表示消防隊已到達。"
+      },
+      "experience": {
+        "suggestions": [
+          "我打119，說安學路100號、A棟宿舍、五樓503室有人受困。",
+          "我先打119求救，接通後再把位置拆開說。",
+          "我先開門看看是不是有人能直接來幫忙。"
+        ],
+        "sensory": [
+          {
+            "id": "fire_closed_door",
+            "text": "看見緊閉的房門"
+          },
+          {
+            "id": "fire_phone_signal",
+            "text": "看見手機還有訊號"
+          },
+          {
+            "id": "fire_window",
+            "text": "看得見對外窗"
+          }
+        ]
       }
     },
     {
@@ -573,6 +615,27 @@
         "physicalStatus": "WAITING_RESCUE",
         "message": "你完成本次待救決策練習；模擬到此結束，不代表真實救援已完成。",
         "rescueHandoff": true
+      },
+      "experience": {
+        "suggestions": [
+          "我留在房內等救援，手機保持通訊並照消防人員指示。",
+          "我先留在房裡等，再確認手機還能不能用。",
+          "我到走廊看一下消防員到了沒，好讓他們知道我在哪。"
+        ],
+        "sensory": [
+          {
+            "id": "fire_closed_door",
+            "text": "看見緊閉的房門"
+          },
+          {
+            "id": "fire_phone_signal",
+            "text": "看見手機還有訊號"
+          },
+          {
+            "id": "望向窗外，還沒看見消防人員",
+            "text": "望向窗外，還沒看見消防人員"
+          }
+        ]
       }
     }
   ],
@@ -682,7 +745,13 @@
     "position": "同房室內",
     "proposal": "想開門",
     "handleAction": "close",
-    "responsePattern": "^(?:我)?(?:請|勸)小岑(?:先)?(?:停手|停下|別急|等等)[。！!]?$"
+    "responsePattern": "^(?:我)?(?:請|勸)小岑(?:先)?(?:停手|停下|別急|等等)[。！!]?$",
+    "emotionResponses": {
+      "handled": "我聽見小岑答應先停下。",
+      "supportive": "我聽見小岑應了一聲，講話慢了一些。",
+      "unsupportive": "我聽見小岑的回話變得急促。",
+      "neutral": "我聽見小岑短短地應了一聲。"
+    }
   },
   "endingMessages": {
     "SAFE_RESCUE": {

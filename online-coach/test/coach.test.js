@@ -8,7 +8,11 @@ const V3 = require('../../web-pwa/scenario-engine-v3');
 const input = (text, actions = [], intent = 'action', extra = {}) => ({ intent, understanding: text, question: '', needsClarification: false, actions: actions.map(id => ({ id, evidence: text })), ...extra });
 const withoutClock = ({elapsed,consecutiveQuestions,...state}) => state;
 const request = (text, revision = 0, intent = 'action', requestId = `test-${Math.random()}`) => ({ text, revision, intent, requestId });
-function fakeProvider(interpret, narrate = () => ({ reply: '測試替身回覆，非實際 GPT 回覆。', sourceIds: [] })) {
+function fakeProvider(interpret, narrate = payload => {
+  if (payload.evidence) return {quote:payload.evidence};
+  const detail = payload.sensoryChoices[0];
+  return { reply:`我${detail.text}。${payload.requiredChange || '我重新看向眼前的情況。'}`,sensoryId:detail.id };
+}) {
   const calls = [];
   return { ready: true, model: 'test-double', calls,
     async generate(stage, payload) {
@@ -23,7 +27,8 @@ test('validated GPT evidence can execute a paraphrase missed by the rules', asyn
   const coach = new ConversationCoach(provider); const s = coach.create('drill_fire_dorm');
   const result = await coach.turn(s.sessionId, request('我把房門帶上'));
   assert.equal(result.state.node, 'report'); assert.equal(result.revision, 1);
-  assert.deepEqual(result.decision, {turn:1,intent:'action',actionIds:['close'],source:'model',validation:'ACCEPTED'});
+  const {turn,intent,actionIds,source,validation} = result.decision;
+  assert.deepEqual({turn,intent,actionIds,source,validation}, {turn:1,intent:'action',actionIds:['close'],source:'model',validation:'ACCEPTED'});
 });
 test('model action IDs replay through the same state machine, and rule danger overrides a model omission', async () => {
   const provider = fakeProvider(p => input(p.text, p.text === '我把房門帶上' ? ['close'] : []));

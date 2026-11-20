@@ -262,9 +262,14 @@
     const compact = text.replace(/[\s，。；、,;!！]/g,'');
     const emotion = spec.actions.find(action => action.emotion && new RegExp(action.pattern).test(compact));
     if (!emotion) return result;
-    result.state.npc.emotion = emotion.emotion;
-    result.state.events.push({node:before.node, action:emotion.id, kind:'npc_emotion',message:emotion.label});
-    return {...result, message:emotion.label};
+    return {...result, state:applyEmotion(spec,result.state,emotion.emotion), message:emotion.label};
+  }
+
+  function applyEmotion(spec, before, category) {
+    const emotion = category && spec.actions.find(action => action.emotion === category);
+    if (!emotion || !before.npc?.handled || before.npc.emotion) return before;
+    return {...before,npc:{...before.npc,emotion:category},events:[...before.events,
+      {node:before.node,action:emotion.id,kind:'npc_emotion',message:emotion.label}]};
   }
 
   function review(spec, state) {
@@ -350,15 +355,22 @@ ${list(state.injuryCauses.map(c => `${c.node}／${actionById[c.action]} · ${c.e
 
   function replayDecisions(spec, decisions) {
     return decisions.reduce((state, decision) => {
+      if (decision.noAdvance) return state;
+      if (decision.actionBatches?.length) {
+        const result = decision.actionBatches.reduce((prior,batch) =>
+          step(spec,prior.state,'已確認行動',decision.intent,{actionIds:batch.ids}),{state});
+        return applyEmotion(spec,events().advance(spec,result,'已確認行動').state,decision.emotion?.category);
+      }
       const text = decision.actionIds.length ? '已確認行動' : decision.controlInput || '';
       const resolved = decision.actionIds.length ? {actionIds:decision.actionIds} : null;
       const result = step(spec,state,text,decision.intent,resolved);
-      return events().advance(spec,result,text).state;
+      const updated = decision.emotion ? result.state : events().advance(spec,result,text).state;
+      return applyEmotion(spec,updated,decision.emotion?.category);
     }, create(spec));
   }
 
   root.ScenarioEngineV3 = {
-    create, rawStep:step, review, validateProposal, adoptedActionIds, replayDecisions,
+    create, rawStep:step, review, validateProposal, adoptedActionIds, replayDecisions, applyEmotion,
     step:(spec,state,text,intent,resolved)=>events().advance(spec,step(spec,state,text,intent,resolved),text)
   };
   if (typeof module !== 'undefined') module.exports = root.ScenarioEngineV3;
