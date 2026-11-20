@@ -31,8 +31,29 @@ function createServer(coach) {
           return json(200, { ready: true, message: '金鑰已存入本機後端記憶體；尚未驗證 API 權限與額度。可以開始演練。' });
         }
         if (url.pathname === '/api/sessions') return json(201, coach.create(body.scenarioId));
-        const route = /^\/api\/sessions\/([a-f0-9-]+)\/turn$/.exec(url.pathname);
-        if (route) return json(200, await coach.turn(route[1], body));
+        const route = /^\/api\/sessions\/([a-f0-9-]+)\/turn(\/stream)?$/.exec(url.pathname);
+        if (route && !route[2]) return json(200, await coach.turn(route[1], body));
+        if (route) {
+          const emit = (type,value)=>{
+            if (res.destroyed) return;
+            if (!res.headersSent) res.writeHead(200, {'Content-Type':'text/event-stream; charset=utf-8','X-Accel-Buffering':'no'});
+            res.write('event: '+type+'\ndata: '+JSON.stringify(value)+'\n\n');
+          };
+          let prefix = '';
+          const result = await coach.turn(route[1], body, anchor=>{
+            prefix = anchor;
+            emit('narration',anchor);
+          });
+          if (res.destroyed) return;
+          const tail = result.reply.startsWith(prefix) ? result.reply.slice(prefix.length) : result.reply;
+          for (const match of tail.matchAll(/[\s\S]{1,12}/gu)) {
+            if (res.destroyed) return;
+            emit('narration',match[0]);
+            await new Promise(resolve=>setTimeout(resolve,24));
+          }
+          if (!res.destroyed) {emit('settled',result);res.end();}
+          return;
+        }
         return json(404, { code: 'NOT_FOUND', error: '找不到這個操作。' });
       }
       if (req.method !== 'GET') return json(405, { error: '不支援這個操作。' });
@@ -49,7 +70,9 @@ function createServer(coach) {
   });
 }
 if (require.main === module) {
+  const port = Number(process.env.POCKETKB_PORT || 5175);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('POCKETKB_PORT 必須介於 1 和 65535。');
   const coach = new ConversationCoach(createOpenAIProvider({ apiKey: process.env.OPENAI_API_KEY, model: process.env.OPENAI_MODEL || 'gpt-6.1-terra' }), { maxCalls: Number(process.env.POCKETKB_MAX_CALLS || 100) });
-  createServer(coach).listen(5175, '127.0.0.1', () => console.log(`PocketKB 線上演練：http://127.0.0.1:5175/\nGPT 金鑰：${coach.provider.ready ? '已設定' : '尚未設定（只可預覽與連線測試）'}\n模型：${coach.provider.model}`));
+  createServer(coach).listen(port, '127.0.0.1', () => console.log(`PocketKB 線上演練：http://127.0.0.1:${port}/online.html\nGPT 金鑰：${coach.provider.ready ? '已設定' : '尚未設定（可用規則續玩）'}\n模型：${coach.provider.model}`));
 }
 module.exports = { createServer };

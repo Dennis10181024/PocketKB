@@ -4,6 +4,7 @@ const banned = [/^我收到你說的/, /^我收到你說的「[^」]+」。/, /�
   /描述現場、詢問，還是/, /還是在說自己現在決定採取的行動？$/, /^你試圖/,
   /暴露於[^。]*(?:風險|危險)/, /演練危急失敗。/];
 const bannedClosings = [/我(?:還沒|還沒有|尚未)決定/, /(?:還要|還得|仍得|還需要|還沒)決定/, /接下來.{0,12}(?:怎麼做|做什麼|如何做)/, /在這個抉擇前又停了一會兒/];
+const {sceneText} = require('../web-pwa/drill-presentation');
 const aliases = {fire_closed_door:/緊閉的房門|關著的(?:房)?門|房門(?:仍|還)?(?:緊閉|關著)|關緊的門板|房門維持關閉/,
   fire_phone_signal:/手機.{0,6}(?:訊號|收得到|接得到)|螢幕.{0,6}訊號/, fire_window:/對外窗|朝外的窗/,
   school_shaking:/教室.{0,6}(?:在晃|搖晃)|地面.{0,5}(?:在抖|在動|在晃)|腳下.{0,5}(?:在抖|在動|在晃)/,
@@ -29,7 +30,11 @@ function sensoryIds(reply, details) {
   return [...new Set(details.filter(item=>reply.includes(item.text) || aliases[item.id]?.test(reply)).map(item=>item.id))];
 }
 
-function checkNarration(value, {text, details, allDetails = details, previous, change, refused = false, authored = [], strict = false, unsupported}) {
+function repeatedLine(text, history) {
+  return text.split(/[。！？!?]/).some(line=>line.trim().length>=8 && history.some(previous=>previous.includes(line.trim())));
+}
+
+function checkNarration(value, {text, details, allDetails = details, previous, change, refused = false, authored = [], strict = false, priorLines = [], unsupported}) {
   const reply = typeof value?.reply === 'string' ? value.reply.trim() : '';
   const sentences = reply.split(/[。！？!?]/).filter(part => part.trim() && !/^[」』”]+$/.test(part));
   const detail = details.find(item => item.id === value?.sensoryId);
@@ -40,6 +45,8 @@ function checkNarration(value, {text, details, allDetails = details, previous, c
   if (sentences.length < 2 || sentences.length > 4 || !/(?:我|我的)/.test(reply)) failures.push('voice_or_sentence_count');
   if (banned.some(pattern => pattern.test(reply))) failures.push('banned_pattern');
   if (strict && bannedClosings.some(pattern=>pattern.test(reply))) failures.push('banned_closing');
+  if (strict && /演練|模擬/.test(reply)) failures.push('out_of_scene');
+  if (strict && repeatedLine(reply,priorLines)) failures.push('repeated_line');
   if (strict ? quotes(ownText).length : quotes(reply).some(quote => !text.includes(quote))) failures.push('quote_mismatch');
   const overlap = strict ? sharedSubstring(reply,text) : 0;
   if (overlap > 10) failures.push('input_repeated');
@@ -51,20 +58,25 @@ function checkNarration(value, {text, details, allDetails = details, previous, c
   return { reply, failures, sensoryIds: mentioned, length: size(reply), overlap };
 }
 
-function ground(spec, before, result) {
+function ground(spec, before, result, priorLines = []) {
   const state = result.state;
   const node = spec.nodes.find(node => node.id === state.node);
   const events = state.events.slice(before.events.length);
   if (state.onlineExperience) {
     const npcLines = events.filter(event=>['npc_proposal','npc_emotion_prompt','npc_emotion'].includes(event.kind))
-      .map(event=>event.kind==='npc_emotion' ? spec.npc.emotionResponses[state.npc.emotion] : event.message);
+      .map(event=>{
+        if (event.kind!=='npc_emotion') return event.message;
+        const lines = spec.npc.online.emotionVariants?.[state.npc.emotion] || [spec.npc.emotionResponses[state.npc.emotion]];
+        const pivot = (state.elapsed || 0) % lines.length;
+        return [...lines.slice(pivot),...lines.slice(0,pivot)].find(line=>validFixedLine(line,priorLines)) || lines[0];
+      });
     const environment = events.filter(event=>event.kind==='environment_change').map(event=>event.message);
     const actionBeat = events.filter(event=>event.kind==='action').map(event=>spec.onlineExperience.actionBeats?.[event.action]).filter(Boolean).at(-1);
     const beat = spec.onlineExperience.beats[(state.elapsed || 0) % spec.onlineExperience.beats.length];
     const authored = result.kind==='completed' ? [result.message] : [...environment,...npcLines];
     if (!authored.length) authored.push(actionBeat || beat);
     return {details:node.experience.sensory, allDetails:spec.nodes.flatMap(item=>item.experience.sensory),
-      change:authored.join(''), authored, focus:node.experience.focus, strict:true};
+      change:authored.join(''), authored, focus:focusLine(node,priorLines), strict:true};
   }
   const event = events.findLast(event => event.kind === 'environment_change');
   const elapsed = (state.elapsed || 0) > (before.elapsed || 0);
@@ -85,10 +97,21 @@ function template(grounded, previous, { stopped, refused, terminal, kind, task, 
   return {reply, sensoryIds: grounded.strict ? sensoryIds(reply,grounded.allDetails) : detail ? [detail.id] : []};
 }
 
-function answerQuestion(spec, before, text) {
+function validFixedLine(line,previous) {
+  return line && !bannedClosings.some(pattern=>pattern.test(line)) && !repeatedLine(line,previous);
+}
+
+function focusLine(node, previous) {
+  return [node.experience.focus,node.task].map(sceneText).find(line=>validFixedLine(line,previous)) || '';
+}
+
+function answerQuestion(spec, before, text, priorLines = []) {
   const node = spec.nodes.find(item=>item.id===before.node);
   const answer = spec.onlineExperience.questions.find(item=>new RegExp(item.pattern).test(text));
-  return {state:before,kind:'question',message:(answer?.answer || '這段演練沒有提供足夠資料回答這個問題。') + node.experience.focus,
+  const proposedSpeaker = spec.onlineExperience.questionSpeaker?.[before.node];
+  const speaker = proposedSpeaker==='接線員' && !before.events.some(event=>event.action==='call') ? spec.npc.name : proposedSpeaker || spec.npc.name;
+  const quote = answer ? `${speaker}說：「${sceneText(answer.answer)}」` : '眼前的資訊還不足以回答這個問題。';
+  return {state:before,kind:'question',message:quote + focusLine(node,priorLines),
     sourceIds:answer?.sourceIds || [],answerId:answer?.id || null};
 }
 
@@ -124,4 +147,4 @@ function shuffled(options, random) {
   return copy;
 }
 
-module.exports = { checkNarration, ground, template, refusal, refusalFact, shuffled, size, sharedSubstring, sensoryIds, answerQuestion, questionText, bannedClosings };
+module.exports = { checkNarration, ground, template, refusal, refusalFact, shuffled, size, sharedSubstring, sensoryIds, answerQuestion, questionText, bannedClosings, validFixedLine };

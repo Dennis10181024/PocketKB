@@ -205,11 +205,10 @@ private fun ScenarioPickerScreen(state: PocketKbUiState, actions: PocketKbViewMo
     var candidate by remember { mutableStateOf<DrillScenario?>(null) }
     candidate?.let { scenario ->
         val runtimeV3 = actions.scenarioRuntimeV3(scenario.id)
-        val goals = runtimeV3?.learningObjectives()?.joinToString("\n") { "• $it" }.orEmpty()
         AlertDialog(onDismissRequest = { candidate = null },
             title = { Text(scenario.title) },
             text = { Text("${scenario.openingLine}\n\n" + when {
-                runtimeV3 != null -> "這次要練習：\n$goals\n\n新版因果情境，不限時。可能撤離、待救或失敗；完成演練不代表一定獲救。"
+                runtimeV3 != null -> "演練中可能出現受傷的結果，你可以隨時停止。\n\n用自己的話輸入行動或問題。卡住時可以看看四周或開啟建議。"
                 scenario.id == "drill_fire_dorm" -> "學習模式不限時。這是教學模擬，不會真的撥打電話。"
                 else -> "舊版情境：尚未套用新版核心，每個決策有30秒。"
             }) },
@@ -535,6 +534,7 @@ private fun outcomeLabel(value: String): String = when (value) {
     "RESCUED" -> "已由救援人員接觸"
     "FAILED" -> "需要再練習"
     "TIMEOUT" -> "決策逾時"
+    "EXITED" -> "已退出"
     else -> "尚未完成"
 }
 private fun safetyLabel(value: String): String = when (value) {

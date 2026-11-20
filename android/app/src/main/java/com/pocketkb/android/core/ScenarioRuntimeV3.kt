@@ -139,6 +139,9 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
     fun currentTitle(state: ScenarioStateV3): String = node(state).getString("title")
     fun currentSituation(state: ScenarioStateV3): String = node(state).getString("situation")
     fun currentTask(state: ScenarioStateV3): String = node(state).getString("task")
+    fun practiceSuggestions(state: ScenarioStateV3): List<String> = node(state).optJSONObject("experience")?.strings("suggestions").orEmpty()
+    fun practiceObservation(state: ScenarioStateV3): String = node(state).optString("observation").ifBlank { currentSituation(state) }
+    fun practiceActionLabel(id: String): String = actions.firstOrNull { it.optString("id") == id }?.optString("label") ?: id
     fun suggestedActions(state: ScenarioStateV3): List<String> {
         val current = node(state)
         return current.strings("available").map { id -> actions.first { it.getString("id") == id }.getString("label") }

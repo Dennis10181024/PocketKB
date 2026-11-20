@@ -9,11 +9,17 @@ if (-not $env:OPENAI_API_KEY) {
 }
 if (-not $env:OPENAI_API_KEY) { throw '金鑰未設定。' }
 if (-not $env:POCKETKB_MAX_CALLS) { $env:POCKETKB_MAX_CALLS = '100' }
+$coachPort = 5175
+if ($env:POCKETKB_PORT) {
+    if (-not [int]::TryParse($env:POCKETKB_PORT, [ref]$coachPort) -or $coachPort -lt 1 -or $coachPort -gt 65535) {
+        throw 'POCKETKB_PORT 必須介於 1 和 65535。'
+    }
+}
 $adbPath = Join-Path $projectRoot 'android\.tooling\android-sdk\platform-tools\adb.exe'
 if (Test-Path -LiteralPath $adbPath) {
-    & $adbPath reverse tcp:5175 tcp:5175
+    & $adbPath reverse tcp:5175 "tcp:$coachPort"
 }
-Write-Host '開啟 http://127.0.0.1:5175/ ，選擇「GPT 演練」。'
+Write-Host "開啟 http://127.0.0.1:$coachPort/online.html 。"
 Write-Host "本次啟動最多 $env:POCKETKB_MAX_CALLS 次模型請求。Ctrl+C 可停止。"
 try { & node (Join-Path $PSScriptRoot 'server.js') }
 finally { Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue }

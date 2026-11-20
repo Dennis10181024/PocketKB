@@ -108,6 +108,7 @@ enum class DrillOutcome {
     RESCUED,
     FAILED,
     TIMEOUT,
+    EXITED,
 }
 
 data class DrillJudgeResult(

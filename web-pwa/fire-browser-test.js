@@ -56,7 +56,7 @@ const path=require('node:path');
     await page.reload();
     await page.getByRole('button',{name:'開始練習',exact:true}).click();
     await send('我關門');
-    assert.match(await page.locator('.task-box').innerText(),/模擬聯絡119/);
+    assert.match(await page.locator('.task-box').innerText(),/聯絡119.*告知地址/);
     await page.setViewportSize({width:375,height:812});
     await page.screenshot({path:path.join(output,'fire-mobile-active.png'),fullPage:true});
     await page.locator('#actionInput').fill('尚未送出的文字');

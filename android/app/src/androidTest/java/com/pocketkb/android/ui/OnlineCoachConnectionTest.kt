@@ -22,7 +22,7 @@ class OnlineCoachConnectionTest {
             .put("revision", 0).put("text", "").put("intent", "observe")
         val result = client.turn(session.getString("sessionId"), request)
         assertEquals("observe", result.getString("kind"))
-        assertEquals(0, result.getJSONObject("state").getInt("node"))
+        assertEquals("isolate", result.getJSONObject("state").getString("node"))
         assertEquals(1, result.getInt("revision"))
         assertFalse(result.getBoolean("terminal"))
     }

@@ -38,13 +38,13 @@ class ScenarioV3ContentTest {
         composeRule.onNodeWithTag("scenario_input").performTextInput("我很害怕，不知道怎麼辦")
         composeRule.onNodeWithTag("scenario_submit").performClick()
         composeRule.runOnIdle { model = model.copy(onlineError = "請重試") }
-        composeRule.onNodeWithTag("scenario_input").assertTextEquals("你的行動，可以分次回答", "我很害怕，不知道怎麼辦")
+        composeRule.onNodeWithTag("scenario_input").assertTextEquals("你的行動或問題", "我很害怕，不知道怎麼辦")
         composeRule.onNodeWithTag("scenario_submit").performClick()
         composeRule.runOnIdle {
             check(sent.size == 2 && sent[0] == sent[1])
             model = model.copy(onlineError = "", onlineRevision = 1)
         }
-        composeRule.onNodeWithTag("scenario_input").assertTextEquals("你的行動，可以分次回答", "")
+        composeRule.onNodeWithTag("scenario_input").assertTextEquals("你的行動或問題", "")
     }
 
     @Test
@@ -112,6 +112,7 @@ class ScenarioV3ContentTest {
         }
 
         composeRule.onNodeWithTag("scenario_review_restart").performScrollTo().performClick()
+        composeRule.onNodeWithText("開始", substring = false).performClick()
 
         composeRule.runOnIdle {
             check(restartRequests == 1) { "restartRequests=$restartRequests" }
@@ -143,6 +144,29 @@ class ScenarioV3ContentTest {
             check(submissions == listOf("我先確認出口是否安全" to "action"))
             check(observeRequests == 1)
         }
+    }
+
+    @Test
+    fun suggestionsFillTheFieldWithoutSubmittingAndStopIsAvailable() {
+        var model by mutableStateOf(activeModel())
+        var stops = 0
+        val sent = mutableListOf<String>()
+        var picked: Int? = null
+        composeRule.setContent {
+            PocketKbTheme {
+                ScenarioV3Content(model, onLeave = { stops++ }, onObserve = {}, onSubmit = { _, _ -> }, onRestart = {}, onOpenSource = {},
+                    onHint = { trigger -> if (trigger == "button") model = model.copy(hintOptions = listOf("我核對公告", "我先查看周圍", "我走原來的路")) },
+                    onPracticeSubmit = { text, index, _ -> sent += text; picked = index })
+            }
+        }
+        composeRule.onAllNodesWithTag("scenario_hint_0").assertCountEquals(0)
+        composeRule.onNodeWithTag("scenario_hints").performScrollTo().performClick()
+        composeRule.onNodeWithTag("scenario_hint_0").performScrollTo().performClick()
+        composeRule.runOnIdle { check(sent.isEmpty()) }
+        composeRule.onNodeWithTag("scenario_input").assertTextEquals("你的行動或問題", "我核對公告")
+        composeRule.onNodeWithTag("scenario_submit").performScrollTo().performClick()
+        composeRule.onNodeWithTag("scenario_stop").performScrollTo().performClick()
+        composeRule.runOnIdle { check(sent.single() == "我核對公告" && picked == 0 && stops == 1) }
     }
 
     private fun activeModel() = ScenarioV3UiModel(

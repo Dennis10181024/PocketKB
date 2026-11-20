@@ -129,3 +129,26 @@ summary { cursor:pointer; min-height:48px; padding:12px 0; line-height:1.5; }
 .online-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
 select:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
 @media(max-width:480px) { .fire-progress { grid-template-columns:1fr; gap:4px; } .fire-progress span { padding:8px 12px; } }
+/* Scenario practice keeps one reading column and one set of controls. */
+.step23 { max-width:44rem; margin-inline:auto; display:grid; gap:1rem; padding:clamp(1rem,4vw,2rem); }
+.step23 h1,.step23 h2,.step23 h3,.step23 h4,.step23 p { margin:0; }
+.step23 h1 {font-size:1.55rem;}
+.step23 h2 {font-size:1.3rem;}
+.step23 h3 {font-size:1.1rem;}
+.step23 p,.step23 label,.step23 li {font-size:1rem;line-height:1.6;overflow-wrap:anywhere;}
+.step23 .drill-head {display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.step23 .drill-panel {display:grid;gap:12px;padding:clamp(.9rem,3vw,1.35rem);background:#14243a;border:1px solid #48617c;border-radius:16px;}
+.step23 .drill-notice {border-inline-start:4px solid #ffbd74;padding-inline-start:.75rem;color:#ffdda9;}
+.step23 .judge-box {padding:0;background:none;border:0;color:inherit;margin:0;}
+.step23 .drill-status {list-style:none;padding:0;margin:0;display:flex;gap:8px;flex-wrap:wrap;}
+.step23 .drill-status li {padding:.2rem .65rem;border:1px solid #7293ad;border-radius:8px;color:#dbeefd;}
+.step23 .drill-input textarea,.step23 select {width:100%;min-height:48px;font:inherit;}
+.step23 button,.step23 summary,.step23 header a {min-height:48px;min-width:48px;font-size:1rem;}
+.step23 summary,.step23 header a {padding:.75rem .25rem;}
+.step23 .drill-commands {display:flex;flex-wrap:wrap;gap:8px;}
+.step23 .drill-commands button {flex:1 1 8rem;}
+.step23 .drill-hints {display:grid;gap:8px;}
+.step23 .drill-hints button {text-align:start;}
+.step23 .drill-observation {border-inline-start:3px solid #89b4d5;padding-inline-start:.75rem;}
+.step23 :focus-visible {outline:3px solid #ffbd74;outline-offset:3px;}
+.step23 .offline-label {color:#ffdda9;}

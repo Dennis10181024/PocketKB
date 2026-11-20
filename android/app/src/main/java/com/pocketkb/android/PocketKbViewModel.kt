@@ -12,6 +12,8 @@ import com.pocketkb.android.ai.coachTurnOrFallback
 import com.pocketkb.android.ai.OnlineCoachState
 import com.pocketkb.android.core.FireResult
 import com.pocketkb.android.core.ScenarioResultV3
+import com.pocketkb.android.core.strings
+import com.pocketkb.android.core.objects
 import kotlinx.coroutines.CancellationException
 import com.pocketkb.android.core.AppTab
 import com.pocketkb.android.core.ChatMessage
@@ -66,6 +68,15 @@ data class PocketKbUiState(
     val onlineError: String = "",
     val onlineRevision: Int = 0,
     val onlineLocalOnly: Boolean = false,
+    val roundNarration: String = "",
+    val onlinePreview: String = "",
+    val hintOptions: List<String> = emptyList(),
+    val hintTrigger: String? = null,
+    val hintShownTurn: Int? = null,
+    val invalidStreak: Int = 0,
+    val decisionLog: List<String> = emptyList(),
+    val roundSources: List<String> = emptyList(),
+    val roundStartedAt: Long = 0,
 )
 
 class PocketKbViewModel(
@@ -122,13 +133,13 @@ class PocketKbViewModel(
         }
     }
 
-    private fun sendOnlineInteraction(text: String, intent: String) {
+    private fun sendOnlineInteraction(text: String, intent: String, trigger: String? = null, hintIndex: Int? = null, edited: Boolean = false) {
         val before = _uiState.value
         val localId = before.activeSessionId ?: return
         val scenario = before.selectedScenario ?: return
         if (before.isGenerating) return
         if (before.onlineLocalOnly) {
-            applyOfflineTurn(before, text, intent)
+            applyOfflineTurn(before, text, intent, trigger, hintIndex, edited)
             return
         }
         val pending = pendingOnline
@@ -136,7 +147,9 @@ class PocketKbViewModel(
             _uiState.update { it.copy(onlineError = "上一筆回答尚未確認，請先以相同內容重試，或另開一次演練。") }
             return
         }
-        _uiState.update { it.copy(isGenerating = true, onlineError = "", onlineStatus = "教練正在理解你的回答…") }
+        val sentAt = android.os.SystemClock.elapsedRealtime()
+        _uiState.update { it.copy(isGenerating = true, onlineError = "", onlinePreview = "", onlineStatus = "正在處理這次決定",
+            roundStartedAt = if (intent == "action") sentAt else 0) }
         onlineJob = viewModelScope.launch {
             coachTurnOrFallback(remote = remote@{
                 val remote = remoteSession ?: onlineCoach.create(scenario.id).also {
@@ -144,38 +157,62 @@ class PocketKbViewModel(
                 }
                 if (_uiState.value.activeSessionId != localId) return@remote
                 val request = pendingOnline ?: JSONObject().put("requestId", UUID.randomUUID().toString())
-                    .put("revision", remote.getInt("revision")).put("text", text).put("intent", intent).also { pendingOnline = it }
-                val value = onlineCoach.turn(remote.getString("sessionId"), request)
+                    .put("revision", remote.getInt("revision")).put("text", text).put("intent", intent)
+                    .put("hintTrigger", trigger).put("hintSelectedIndex", hintIndex)
+                    .put("hintEditedBeforeSubmit", if (hintIndex != null) edited else null).also { pendingOnline = it }
+                var firstAt: Long? = null
+                val value = onlineCoach.turn(remote.getString("sessionId"), request) { part ->
+                    if (intent != "hint") _uiState.update {
+                        if (it.activeSessionId == localId) {
+                            if (firstAt == null) firstAt = android.os.SystemClock.elapsedRealtime()
+                            it.copy(onlinePreview = it.onlinePreview + part)
+                        } else it
+                    }
+                }
                 if (_uiState.value.activeSessionId != localId) return@remote
                 check(value.getString("scenarioId") == scenario.id) { "線上劇本與目前場次不一致。" }
                 check(value.getString("version") == (before.fireState?.version ?: before.scenarioStateV3?.version)) { "線上劇本版本不同，請更新電腦與 App。" }
                 val fireResult = if (before.fireState != null) OnlineCoachState.fire(value) else null
                 val v3Result = if (before.scenarioStateV3 != null) OnlineCoachState.v3(value) else null
                 remoteSession = value; pendingOnline = null
+                val hints = value.optJSONObject("hintContext")
+                val decision = value.optJSONObject("decision")?.toString()
+                val doneAt = android.os.SystemClock.elapsedRealtime()
+                if (intent == "action" && BuildConfig.DEBUG) android.util.Log.i("Step23Timing", "first=${(firstAt ?: doneAt) - sentAt} complete=${doneAt - sentAt}")
                 _uiState.update { it.copy(isGenerating = false,
+                    onlinePreview = "", roundNarration = if (intent == "hint") it.roundNarration else value.optString("reply"),
+                    hintOptions = value.strings("suggestions"), hintTrigger = hints?.optString("trigger"), hintShownTurn = hints?.optInt("turn"),
+                    invalidStreak = value.optInt("invalidStreak"), decisionLog = it.decisionLog + listOfNotNull(decision),
+                    roundSources = if (intent == "hint") it.roundSources else value.objects("citations").map { source -> source.optString("title") },
                     onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1,
                     onlineStatus = if (value.optBoolean("offline")) "目前使用離線判讀" else "GPT 線上教練", onlineError = "") }
-                if (fireResult != null) sendFireInteraction(text, intent, fireResult)
-                if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
+                if (intent != "hint") {
+                    if (fireResult != null) sendFireInteraction(text, intent, fireResult)
+                    if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
+                }
             }, offline = {
                 if (_uiState.value.activeSessionId == localId) {
                     remoteSession = null
                     pendingOnline = null
-                    applyOfflineTurn(before, text, intent)
+                    applyOfflineTurn(before, text, intent, trigger, hintIndex, edited)
                 }
             })
         }
     }
 
-    private fun applyOfflineTurn(before: PocketKbUiState, text: String, intent: String) {
+    private fun applyOfflineTurn(before: PocketKbUiState, text: String, intent: String, trigger: String?, hintIndex: Int?, edited: Boolean) {
         val scenario = before.selectedScenario ?: return
         val fireResult = before.fireState?.let { fireDrill.step(it, text, intent) }
         val v3Result = before.scenarioStateV3?.let { scenarioRuntimesV3[scenario.id]?.step(it, text, intent) }
-        _uiState.update { it.copy(isGenerating = false, onlineLocalOnly = true, onlineError = "",
+        _uiState.update { it.copy(isGenerating = false, onlineLocalOnly = true, onlineError = "", onlinePreview = "",
             onlineStatus = "目前使用離線判讀",
             onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1) }
         if (fireResult != null) sendFireInteraction(text, intent, fireResult)
-        if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
+        if (v3Result != null && intent != "hint") {
+            updateLocalRound(before, v3Result, null, hintIndex, edited)
+            sendScenarioV3Interaction(text, intent, v3Result)
+        }
+        if (intent == "hint" && trigger != null) showLocalHints(trigger)
     }
     private var persistenceJob: Job? = null
     private val finishedSessions = mutableSetOf<String>()
@@ -249,6 +286,7 @@ class PocketKbViewModel(
         val sessionId = state.activeSessionId
         if (sessionId != null && state.selectedScenario != null && finishedSessions.add(sessionId)) {
             persist {
+                if (state.decisionLog.isNotEmpty()) historyRepository.appendMessage(sessionId, ChatMessage(role = ChatRole.SYSTEM, content = state.decisionLog.joinToString("\n")))
                 state.fireState?.let { historyRepository.appendMessage(sessionId, ChatMessage(role = ChatRole.SYSTEM, content = fireDrill.review(it))) }
                 state.scenarioStateV3?.let { scenarioRuntimesV3[state.selectedScenario.id]?.review(it) }
                     ?.let { historyRepository.appendMessage(sessionId, ChatMessage(role = ChatRole.SYSTEM, content = it)) }
@@ -259,7 +297,7 @@ class PocketKbViewModel(
                         ?: state.drillStep.currentStep,
                     totalSteps = state.drillStep.totalSteps,
                     finalSafety = state.drillStep.safetyLevel,
-                    outcome = state.drillStep.outcome,
+                    outcome = if (state.scenarioStateV3?.sessionStatus == "ACTIVE" || state.drillStep.outcome == DrillOutcome.CONTINUE) DrillOutcome.EXITED else state.drillStep.outcome,
                     messages = state.messages,
                 )
             }
@@ -470,6 +508,51 @@ class PocketKbViewModel(
         if (terminal) finishActiveSession()
     }
 
+    fun submitPractice(text: String, hintIndex: Int?, edited: Boolean) {
+        val before = _uiState.value
+        if (text.isBlank() || before.isGenerating || before.scenarioStateV3?.sessionStatus != "ACTIVE") return
+        if (before.onlineEnabled) {
+            sendOnlineInteraction(text.trim(), "action", hintIndex = hintIndex, edited = edited)
+            return
+        }
+        val result = scenarioRuntimesV3[before.scenarioStateV3.scenarioId]?.step(before.scenarioStateV3, text.trim()) ?: return
+        _uiState.update { it.copy(onlineRevision = it.onlineRevision + 1) }
+        updateLocalRound(before, result, null, hintIndex, edited)
+        sendScenarioV3Interaction(text.trim(), onlineResult = result)
+    }
+
+    fun requestPracticeHints(trigger: String) {
+        val state = _uiState.value
+        if (state.isGenerating || state.hintOptions.isNotEmpty() || state.scenarioStateV3?.sessionStatus != "ACTIVE") return
+        if (state.onlineEnabled && !state.onlineLocalOnly) sendOnlineInteraction("", "hint", trigger)
+        else showLocalHints(trigger)
+    }
+
+    private fun showLocalHints(trigger: String) {
+        val current = _uiState.value
+        val session = current.scenarioStateV3 ?: return
+        val options = scenarioRuntimesV3[session.scenarioId]?.practiceSuggestions(session).orEmpty().shuffled()
+        _uiState.update { it.copy(hintOptions = options, hintTrigger = trigger, hintShownTurn = it.onlineRevision + 1,
+            decisionLog = it.decisionLog + JSONObject().put("hint_trigger", trigger).put("hint_shown_turn", it.onlineRevision + 1).toString()) }
+    }
+
+    private fun updateLocalRound(before: PocketKbUiState, result: ScenarioResultV3, trigger: String?, hintIndex: Int?, edited: Boolean) {
+        val reset = before.scenarioStateV3?.node != result.state.node || result.state.sessionStatus != "ACTIVE"
+        val streak = when {
+            reset -> 0
+            result.kind == "clarify" -> before.invalidStreak + 1
+            result.kind == "question" -> before.invalidStreak
+            else -> 0
+        }
+        _uiState.update { it.copy(roundNarration = result.message, roundSources = emptyList(), invalidStreak = streak,
+            hintOptions = if (reset) emptyList() else before.hintOptions, hintTrigger = if (reset) null else before.hintTrigger,
+            hintShownTurn = if (reset) null else before.hintShownTurn,
+            decisionLog = it.decisionLog + JSONObject().put("source", "rule").put("hint_shown", before.hintOptions.isNotEmpty())
+                .put("hint_shown_turn", before.hintShownTurn).put("hint_trigger", before.hintTrigger ?: trigger)
+                .put("hint_selected_index", hintIndex).put("hint_edited_before_submit", edited).toString()) }
+        if (streak >= 2 && _uiState.value.hintOptions.isEmpty()) showLocalHints("invalid_streak")
+    }
+
     fun loadModelFromPath(modelPath: String) {
         if (!ENABLE_EXPERIMENTAL_LOCAL_LLM) {
             _uiState.update {
@@ -582,6 +665,7 @@ class PocketKbViewModel(
         val sessionId = state.activeSessionId ?: return
         if (!finishedSessions.add(sessionId)) return
         persist {
+            if (state.decisionLog.isNotEmpty()) historyRepository.appendMessage(sessionId, ChatMessage(role = ChatRole.SYSTEM, content = state.decisionLog.joinToString("\n")))
             historyRepository.finishSession(
                 sessionId = sessionId,
                 finalStep = state.fireState?.completed?.size
@@ -614,6 +698,7 @@ class PocketKbViewModel(
             DrillOutcome.RESCUED -> "已由救援人員接觸"
             DrillOutcome.FAILED -> "演練失敗"
             DrillOutcome.TIMEOUT -> "逾時中止"
+            DrillOutcome.EXITED -> "已退出"
             DrillOutcome.CONTINUE -> "未完成"
         }
         val finalTask = scenario.steps.getOrNull(step.currentStep - 1)?.title ?: "一般情境判斷"

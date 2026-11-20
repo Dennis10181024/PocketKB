@@ -192,6 +192,7 @@ class DrillJudge {
             DrillOutcome.SHELTERED -> "你已完成目前可行的就地掩蔽，仍需持續接收官方資訊。"
             DrillOutcome.RESCUED -> "只有劇本明示救援人員已接觸時才可使用此結果。"
             DrillOutcome.TIMEOUT -> "立刻補上一個具體行動，不要停留在原地等待。"
+            DrillOutcome.EXITED -> "這次已退出，可以另開一次練習。"
             DrillOutcome.CONTINUE -> if (result.shouldAskAgain) {
                 "請改用一句具體行動回答：你要避開什麼、確認什麼、往哪裡移動或如何求救。"
             } else {

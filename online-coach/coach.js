@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const V3 = require('../web-pwa/scenario-engine-v3');
 const Events = require('../web-pwa/drill-events');
+const Presentation = require('../web-pwa/drill-presentation');
 const Experience = require('./experience');
 const directory = path.join(__dirname, '../web-pwa/scenarios');
 const specs = new Map();
@@ -23,11 +24,12 @@ function scene(spec, state) {
   const node = currentNode(spec, state);
   const proposal = state.onlineExperience && state.sessionStatus==='ACTIVE' && !state.npc.handled && !state.elapsed ? spec.npc.online.proposal : '';
   return { title: spec.title, opening: spec.opening, notice: spec.notice,
-    node:proposal ? {...node,situation:`${node.situation} ${proposal}`} : node, state,
+    node:{...node,situation:Presentation.sceneText(proposal ? `${node.situation} ${proposal}` : node.situation)}, state,
     sources: spec.sources, misconceptions: spec.commonMisconceptions || [],
     actionRules: spec.actions.filter(a => (node.available || [...(node.required || []), ...(node.optional || [])]).includes(a.id)).map(a => ({ id:a.id, label:a.label, effect:a.effect })),
     hazardRules: spec.hazards || node.hazards || {},
-    physicalStatus: ['SAFE_RESCUE','DELAYED_RESCUE'].includes(state.endingType) ? 'RESCUED' : state.physicalStatus };
+    physicalStatus: ['SAFE_RESCUE','DELAYED_RESCUE'].includes(state.endingType) ? 'RESCUED' : state.physicalStatus,
+    status:Presentation.status(spec,state) };
 }
 
 function settle(spec,before,result,text,intent,audit) {
@@ -178,6 +180,44 @@ const narratorPrompt = `以台灣繁體中文寫沉浸現場。用玩家第一�
 只寫現場和當前決定。若 verifiedResult.kind 是 completed，直接呈現 requiredChange 確定的結局，切勿寫成仍等待、尚未接手或演練未完。不要教學、暗示答案、提供建議或寫保證、倒數、未驗證災況、傷勢、救援或行為。如果要加引號，裡面只能逐字引用 text 的連續片段。禁止「我收到你說的」、「你是在描述現場」、「你試圖」、「暴露於⋯風險」、「演練危急失敗」。`;
 const quotePrompt = `只輸出 quote，原樣摘錄 text 中代表該危險動作的單一連續片段，優先選擇 evidence。不可添加標點、引號、描述或引言。`;
 
+async function completedResponse(response) {
+  if (!response.headers?.get('content-type')?.includes('text/event-stream')) return response.json();
+  const decoder = new TextDecoder();
+  let pending = '';
+  for await (const chunk of response.body) {
+    pending += decoder.decode(chunk,{stream:true});
+    const frames = pending.split(/\r?\n\r?\n/);
+    pending = frames.pop();
+    for (const frame of frames) {
+      const line = frame.split(/\r?\n/).find(row=>row.startsWith('data: '));
+      if (!line || line.slice(6)==='[DONE]') continue;
+      const event = JSON.parse(line.slice(6));
+      if (event.type==='response.completed' || event.type==='response.incomplete' || event.type==='response.failed') return event.response;
+    }
+  }
+  return {};
+}
+
+function changedFields(before,after) {
+  return Object.fromEntries(Object.entries(after).filter(([key,value])=>value!==before[key]));
+}
+
+function anchorNarration(reply,anchor) {
+  if (!anchor || reply.startsWith(anchor)) return reply;
+  return anchor+reply.replace(anchor,'').trim();
+}
+
+function explicitRuleAction(spec,state,text,intent,literal) {
+  if (intent!=='action' || !['partial','transition','completed','risk','failed','environment_change'].includes(literal.kind)) return false;
+  const clean = text.trim().replace(/[。！!]$/,'');
+  if (/[，,。；;、!?？！]|或者|也許|可能|然後|接著|再|同時|並且|還要|又不|本來|假裝|如果|想像|聽說|看見|我不|不會/.test(clean)) return false;
+  const ids = V3.adoptedActionIds(state,literal.state);
+  if (ids.length!==1) return false;
+  const action = spec.actions.find(item=>item.id===ids[0]);
+  if (!action || action.emotion) return false;
+  return new RegExp(`^(?:我(?:們)?(?:先|要)?)?(?:${action.pattern})$`).test(clean);
+}
+
 function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fetch, timeoutMs = 45000 } = {}) {
   return {
     ready: Boolean(apiKey), model,
@@ -188,7 +228,7 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
         response = await fetchImpl('https://api.openai.com/v1/responses', {
           method: 'POST', signal: turnSignal ? AbortSignal.any([turnSignal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs),
           headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model, store: false, reasoning: { effort: 'none' }, max_output_tokens: 1200,
+          body: JSON.stringify({ model, store: false, stream:stage==='narrate', reasoning: { effort: 'none' }, max_output_tokens: 1200,
             instructions: stage === 'interpret' ? interpreterPrompt : stage === 'quote' ? quotePrompt : narratorPrompt,
             input: JSON.stringify(payload),
             text: { format: { type: 'json_schema', name: stage, strict: true, schema } },
@@ -196,7 +236,7 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
         });
       } catch { throw apiError('MODEL_TIMEOUT', 'GPT 暫時未回應。你的行動尚未執行，請重試。', 504); }
       if (!response.ok) throw apiError('MODEL_UNAVAILABLE', `GPT 服務未完成請求（HTTP ${response.status}）。請檢查電腦端金鑰、額度或稍後重試。`, 502);
-      const data = await response.json();
+      const data = await completedResponse(response);
       if (data.status !== 'completed') throw apiError('MODEL_INCOMPLETE', 'GPT 回覆未完成，行動尚未執行，請重試。', 502);
       const raw = (data.output || []).filter(item => item.type === 'message').flatMap(item => item.content || []).filter(item => item.type === 'output_text').map(item => item.text).join('');
       let value;
@@ -207,13 +247,14 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
 }
 
 class ConversationCoach {
-  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, random = Math.random, onlineExperience = true } = {}) {
+  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, random = Math.random, onlineExperience = true, compactNarration = true } = {}) {
     if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
     this.provider = provider; this.sessions = new Map(); this.maxSessions = maxSessions;
     this.maxTurns = maxTurns; this.maxCalls = maxCalls; this.calls = 0; this.ttlMs = ttlMs;
     this.turnTimeoutMs = turnTimeoutMs;
     this.random = random;
     this.onlineExperience = onlineExperience;
+    this.compactNarration = compactNarration;
   }
   catalog() { return [...specs.values()].map(s => ({ id: s.id, title: s.title, opening: s.opening, version: s.version, spec: s })); }
   create(scenarioId) {
@@ -230,13 +271,13 @@ class ConversationCoach {
     return { sessionId: session.id, scenarioId: spec.id, version: spec.version, revision: session.revision,
       state, decisions: session.decisions.slice(), scene: scene(spec, state), terminal: terminal(spec, state),
       review: terminal(spec, state) ? engine(spec).review(spec, state) : '', model: this.provider.model,
-      suggestions: session.hint?.options || [] };
+      suggestions: session.hint?.options || [], hintContext:session.hint, invalidStreak:session.invalidStreak };
   }
   async generate(stage, payload, schema, signal) {
     if (this.calls >= this.maxCalls) throw apiError('CALL_LIMIT', '本次啟動的 GPT 請求上限已用完，請在電腦端確認後重啟。', 429);
     this.calls++; return this.provider.generate(stage, payload, schema, signal);
   }
-  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null }) {
+  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null }, onGround) {
     const session = this.sessions.get(id);
     if (!session || Date.now() - session.updatedAt > this.ttlMs) throw apiError('SESSION_EXPIRED', '演練連線已過期，請另開一次練習。', 410);
     if (typeof requestId !== 'string' || requestId.length < 8 || requestId.length > 100 || !Number.isInteger(revision) || typeof text !== 'string' || text.length > 2000 || !['action','question','observe','hint'].includes(intent))
@@ -256,13 +297,13 @@ class ConversationCoach {
     if (session.revision >= this.maxTurns) throw apiError('TURN_LIMIT', '這次對話已達回合上限，請保存回顧或另開演練。', 429);
     if (hintSelectedIndex !== null && !session.hint) throw apiError('INVALID_HINT', '目前沒有顯示的建議句。');
     session.busy = true;
-    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit}).finally(() => { session.busy = false; });
+    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround}).finally(() => { session.busy = false; });
     session.requests.set(requestId, { fingerprint, promise });
     // Failed attempts remain uncommitted; clients may safely retry the same request.
     promise.catch(() => { session.requests.delete(requestId); });
     return promise;
   }
-  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit}) {
+  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround}) {
     const { spec } = session; const runtime = engine(spec);
     let result, reply, offline = false, fallbackReason;
     const before = session.state;
@@ -280,13 +321,13 @@ class ConversationCoach {
       const refused = Experience.refusal(spec,before,literal,text,intent);
       if (before.onlineExperience && (intent==='question' ||
           (literal.kind==='question' || Experience.questionText(text)) && !V3.recognizesNpcResponse(spec,text))) {
-        result = Experience.answerQuestion(spec,before,text);
+        result = Experience.answerQuestion(spec,before,text,session.history.filter(m=>m.role==='assistant').slice(-2).map(m=>m.content));
         reply = result.message;
         Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
       } else {
       const signal = AbortSignal.timeout(this.turnTimeoutMs);
       try {
-        ({result, reply} = await this.modelTurn(session, text, intent, signal, audit, literal, refused));
+        ({result, reply} = await this.modelTurn(session, text, intent, signal, audit, literal, refused, onGround));
       } catch (error) {
         const emotional = literal.state.npc?.emotion !== before.npc?.emotion;
         result = refused ? {...literal,state:before} : emotional ? literal : settle(spec,before,literal,text,intent,audit);
@@ -301,6 +342,7 @@ class ConversationCoach {
       }
       }
     }
+    reply = Presentation.sceneText(reply);
     const citations = Events.citations(spec,before,result);
     const priorHint = session.hint;
     const switched = before.node !== result.state.node;
@@ -343,12 +385,14 @@ class ConversationCoach {
     } else session.sensory = audit.sensoryIds || [];
     session.history.push({ role: 'user', content: text || intent }, { role: 'assistant', content: reply });
     session.history = session.history.slice(-24);
-    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, ...audit, decision, result: { ...result, message: reply, reason: reply, effects: [] } };
+    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, ...audit, decision,
+      ending:terminal(spec,result.state) ? Presentation.summary(spec,result.state,reply) : null,
+      result: { ...result, message: reply, reason: reply, effects: [] } };
   }
   narrationFallback(session,result,audit,refused,text) {
     audit.narration = 'template';
     if (result.kind === 'failed') return this.endingQuote(session,result,text,'' ,audit);
-    const grounded = Experience.ground(session.spec,session.state,result);
+    const grounded = Experience.ground(session.spec,session.state,result,session.history.filter(m=>m.role==='assistant').slice(-2).map(m=>m.content));
     if (refused) grounded.change = Experience.refusalFact(text,!grounded.strict);
     if (result.kind === 'risk' || (result.kind === 'clarify' && result.sourceIds?.length)) {
       const hazard = result.state.events.slice(session.state.events.length).findLast(event => event.kind === 'hazard' || event.kind === 'action');
@@ -373,7 +417,7 @@ class ConversationCoach {
     audit.narrationChecks.push({stage:'quote',length:Experience.size(excerpt),failures:verified ? [] : ['quote_mismatch']});
     return prefix + result.message;
   }
-  async modelTurn(session, text, intent, signal, audit, literal, refused) {
+  async modelTurn(session, text, intent, signal, audit, literal, refused, onGround) {
       const {spec} = session;
       const runtime = engine(spec);
       const generate = async (...args) => {
@@ -391,14 +435,19 @@ class ConversationCoach {
       };
       if (!this.provider.ready) throw apiError('NOT_CONFIGURED', '尚未設定 GPT API 金鑰，請在電腦啟動線上教練後重試。', 503);
       const history = session.history.slice(-12);
+      const priorLines = history.filter(m=>m.role==='assistant').slice(-2).map(m=>m.content);
       const node = currentNode(spec,session.state);
       const actions = actionCatalog(spec,node);
       const literalDanger = ['failed','risk'].includes(literal.kind);
       const later = spec.nodes.filter(item => item.id !== node.id).map(item => ({
         node:item.id, actions:actionCatalog(spec,item).filter(action => !action.id.startsWith('emotion_')),
       }));
-      const interpreted = await generate('interpret', { scene:scene(spec,session.state), history, text, inputMode:intent,
-        actionCatalog:actions, potentialLaterActions:later }, interpretationSchema(spec));
+      // The streaming entry point can settle an exact single rule action without waiting for intent inference.
+      // Ambiguity, paraphrases and compound input still go through the full interpretation contract.
+      const exact = onGround && explicitRuleAction(spec,session.state,text,intent,literal);
+      const interpreted = exact ? {value:{intent:'action',understanding:'',question:'',needsClarification:false,actions:[]}} :
+        await generate('interpret', { scene:scene(spec,session.state), history, text, inputMode:intent,
+          actionCatalog:actions, potentialLaterActions:later }, interpretationSchema(spec));
       const understanding = interpreted.value;
       const validIntents = ['action','question','emotion','off_topic','unclear','clarify'];
       if (!understanding || !validIntents.includes(understanding.intent) || typeof understanding.needsClarification !== 'boolean' ||
@@ -408,13 +457,13 @@ class ConversationCoach {
       audit.interpretation = {intent:understanding.intent, needsClarification:understanding.needsClarification, actionIds:proposedIds};
       const modelDanger = proposedIds.some(id=>[...actions,...later.flatMap(item=>item.actions)].some(action=>action.id===id && action.danger));
       const literalIds = runtime.adoptedActionIds(session.state,literal.state);
-      if (literalDanger !== modelDanger || literalDanger && literalIds.some(id=>!proposedIds.includes(id)) ||
-          literal.kind === 'clarify' && literal.sourceIds?.length) {
+      if (!exact && (literalDanger !== modelDanger || literalDanger && literalIds.some(id=>!proposedIds.includes(id)) ||
+          literal.kind === 'clarify' && literal.sourceIds?.length)) {
         audit.disagreement = {literal:literal.kind, modelIntent:understanding.intent, modelDanger, actionIds:proposedIds,literalIds};
       }
       let result;
       if (session.state.onlineExperience && understanding.intent==='question' && !literalDanger && !literalIds.length && !refused && !V3.recognizesNpcResponse(spec,text)) {
-        result = Experience.answerQuestion(spec,session.state,text);
+        result = Experience.answerQuestion(spec,session.state,text,priorLines);
         Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
         return {result,reply:result.message};
       } else if (refused) {
@@ -422,7 +471,8 @@ class ConversationCoach {
         audit.validation = 'RULE_REFUSAL';
         result = {...literal,state:session.state};
       } else {
-        result = selectActions(spec,session.state,text,intent,literal,understanding,audit);
+        result = exact ? literal : selectActions(spec,session.state,text,intent,literal,understanding,audit);
+        if (exact) audit.validation = 'RULE_EXACT_INPUT';
         result = judgeEmotion(spec,session.state,result,literal,text,intent,understanding,audit);
         result = settle(spec,session.state,result,text,intent,audit);
       }
@@ -442,25 +492,36 @@ class ConversationCoach {
         audit.narration = 'engine_ending';
         return {result,reply};
       }
-      const grounded = Experience.ground(spec,session.state,result);
+      const grounded = Experience.ground(spec,session.state,result,priorLines);
       if (refused) grounded.change = Experience.refusalFact(text,!grounded.strict);
       if (result.kind === 'risk' || result.kind === 'clarify' && result.sourceIds?.length) {
         const hazard = result.state.events.slice(session.state.events.length).findLast(event=>event.kind==='hazard' || event.kind==='action');
         const action = spec.actions.find(action=>action.id===hazard?.action);
         grounded.change = action?.consequenceTemplate || action?.blockedMessage || (result.sourceIds?.length ? result.message : grounded.change);
       }
-      const after = scene(spec,result.state);
-      const payload = {before:scene(spec,session.state), after, history, text, refused, stopped:Boolean(audit.stopped),
+      grounded.change = Presentation.sceneText(grounded.change);
+      const anchor = onGround && Experience.validFixedLine(grounded.change,priorLines) &&
+        Experience.sharedSubstring(grounded.change,text)<=10 && Experience.size(grounded.change)<=105 ? grounded.change : '';
+      if (anchor) onGround(anchor);
+      const common = {text, refused, stopped:Boolean(audit.stopped),
         understanding:{intent:understanding.intent, understanding:understanding.understanding, question:understanding.question},
         sensoryChoices:grounded.details.filter(item=>!session.sensory.includes(item.id)), requiredChange:grounded.change,
         verifiedResult:{kind:result.kind,message:result.message,actions:audit.actionBatches || [],emotion:audit.emotion || null}};
+      const payload = this.compactNarration ? {...common,
+        context:{title:spec.title,from:node.title,to:currentNode(spec,result.state).title,
+          physical:result.state.physicalStatus,ending:result.state.endingType,
+          facts:changedFields(session.state.facts,result.state.facts),resources:changedFields(session.state.resources,result.state.resources),
+          clockDelta:(result.state.elapsed || 0)-(session.state.elapsed || 0),
+          actions:runtime.adoptedActionIds(session.state,result.state).map(id=>spec.actions.find(a=>a.id===id)?.label || id)}} :
+        {before:scene(spec,session.state),after:scene(spec,result.state),history,...common};
       // When a long authoritative consequence cannot fit, preserve it through the engine template.
       try {
         for (let attempt=0;attempt<2;attempt++) {
           const correction = attempt ? audit.narrationChecks.at(-1).failures : undefined;
-          const {value} = await generate('narrate',{...payload,correction},narrationSchema);
+          const {value,usage} = await generate('narrate',{...payload,correction},narrationSchema);
+          (audit.narrationUsage ??= []).push(usage?.input_tokens ?? null);
           const checked = Experience.checkNarration(value,{text,details:grounded.strict ? payload.sensoryChoices : grounded.details,allDetails:grounded.allDetails,
-            previous:session.sensory,change:grounded.change,authored:[...(grounded.authored || []),grounded.change],strict:grounded.strict,refused,
+            previous:session.sensory,change:grounded.change,authored:[...(grounded.authored || []),grounded.change],strict:grounded.strict,priorLines,refused,
             unsupported:reply=>{
               const original = grounded.change ? reply.replace(grounded.change,'') : reply;
               const disputedEnding = result.kind === 'completed'
@@ -472,14 +533,14 @@ class ConversationCoach {
           if (!checked.failures.length) {
             audit.sensoryIds = checked.sensoryIds;
             audit.narration = attempt ? 'regenerated' : 'accepted';
-            return {result,reply:checked.reply};
+            return {result,reply:anchorNarration(checked.reply,anchor)};
           }
         }
       } catch(error) {
         audit.narrationReason = signal.aborted ? 'TURN_TIMEOUT' : error.code || 'PROVIDER_ERROR';
         audit.narrationChecks.push({stage:'narrate',length:null,failures:[audit.narrationReason]});
       }
-      return {result,reply:this.narrationFallback(session,result,audit,refused,text)};
+      return {result,reply:anchorNarration(Presentation.sceneText(this.narrationFallback(session,result,audit,refused,text)),anchor)};
   }
 }
 module.exports = { ConversationCoach, createOpenAIProvider, CoachError, specs, actionCatalog, unsupportedAdvice, unsupportedBehavior };

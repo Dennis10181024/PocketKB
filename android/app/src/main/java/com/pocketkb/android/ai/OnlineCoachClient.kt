@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import org.json.JSONTokener
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -23,13 +24,14 @@ internal suspend fun coachTurnOrFallback(remote: suspend () -> Unit, offline: ()
 class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
     suspend fun health() = request("/api/health")
     suspend fun create(scenarioId: String) = request("/api/sessions", JSONObject().put("scenarioId", scenarioId))
-    suspend fun turn(sessionId: String, body: JSONObject) = request("/api/sessions/$sessionId/turn", body)
+    suspend fun turn(sessionId: String, body: JSONObject, onPart: (String) -> Unit = {}) =
+        request("/api/sessions/$sessionId/turn/stream", body, onPart)
 
-    private suspend fun request(path: String, body: JSONObject? = null): JSONObject = withContext(Dispatchers.IO) {
+    private suspend fun request(path: String, body: JSONObject? = null, onPart: ((String) -> Unit)? = null): JSONObject = withContext(Dispatchers.IO) {
         val connection = URL(baseUrl.trimEnd('/') + path).openConnection() as HttpURLConnection
         try {
             connection.connectTimeout = 2_000
-            connection.readTimeout = if (path.endsWith("/turn")) 8_500 else 4_000
+            connection.readTimeout = if (onPart != null) 12_500 else 4_000
             connection.requestMethod = if (body == null) "GET" else "POST"
             if (body != null) {
                 connection.doOutput = true
@@ -37,6 +39,21 @@ class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
                 connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
             }
             val status = connection.responseCode
+            if (status in 200..299 && onPart != null) {
+                check(connection.contentType?.startsWith("text/event-stream") == true)
+                var type = ""
+                connection.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
+                    while (true) {
+                        val line = reader.readLine() ?: break
+                        when {
+                            line.startsWith("event: ") -> type = line.substring(7)
+                            line.startsWith("data: ") && type == "narration" -> onPart(JSONTokener(line.substring(6)).nextValue() as String)
+                            line.startsWith("data: ") && type == "settled" -> return@withContext JSONObject(line.substring(6))
+                        }
+                    }
+                }
+                error("連線在確認回合前中斷。")
+            }
             val stream = if (status in 200..299) connection.inputStream else connection.errorStream
             val value = JSONObject(stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() } ?: "{}")
             check(status in 200..299) { value.optString("error", "線上教練尚未完成請求，請重試。") }
