@@ -10,6 +10,7 @@ import com.pocketkb.android.ai.ModelRuntimePolicy
 import com.pocketkb.android.ai.OnlineCoachClient
 import com.pocketkb.android.ai.coachTurnOrFallback
 import com.pocketkb.android.ai.OnlineCoachState
+import com.pocketkb.android.ai.OnlineScenarioPresentation
 import com.pocketkb.android.core.FireResult
 import com.pocketkb.android.core.ScenarioResultV3
 import com.pocketkb.android.core.strings
@@ -74,6 +75,7 @@ data class PocketKbUiState(
     val logResearchText: Boolean = false,
     val roundNarration: String = "",
     val onlinePreview: String = "",
+    val onlineScenarioPresentation: OnlineScenarioPresentation? = null,
     val hintOptions: List<String> = emptyList(),
     val hintTrigger: String? = null,
     val hintShownTurn: Int? = null,
@@ -173,12 +175,14 @@ class PocketKbViewModel(
                 if (_uiState.value.activeSessionId != localId) return@remote
                 if (offlineTurns.isNotEmpty()) {
                     for (queued in offlineTurns) {
+                        if (remote.optBoolean("terminal")) break
                         val replay = JSONObject(queued.toString()).put("revision", remote.getInt("revision")).put("rulesOnly", true)
                         remote = onlineCoach.turn(remote.getString("sessionId"), replay)
                     }
                     val recovered = OnlineCoachState.v3(remote).state
                     val confirmed = checkNotNull(before.scenarioStateV3)
-                    check(recovered.node == confirmed.node && recovered.accepted.toSet() == confirmed.accepted.toSet() &&
+                    check(remote.optJSONObject("state")?.optJSONObject("quality") != null ||
+                        recovered.node == confirmed.node && recovered.accepted.toSet() == confirmed.accepted.toSet() &&
                         recovered.facts == confirmed.facts && recovered.resources == confirmed.resources && recovered.exposure == confirmed.exposure &&
                         recovered.endingType == confirmed.endingType && recovered.injuryLevel == confirmed.injuryLevel)
                     remoteSession = remote
@@ -186,7 +190,7 @@ class PocketKbViewModel(
                 }
                 val request = outgoing.put("revision", remote.getInt("revision")).also { pendingOnline = it }
                 var firstAt: Long? = null
-                val value = onlineCoach.turn(remote.getString("sessionId"), request) { part ->
+                val value = if (remote.optBoolean("terminal")) remote else onlineCoach.turn(remote.getString("sessionId"), request) { part ->
                     if (intent != "hint") _uiState.update {
                         if (it.activeSessionId == localId) {
                             if (firstAt == null) firstAt = android.os.SystemClock.elapsedRealtime()
@@ -213,6 +217,7 @@ class PocketKbViewModel(
                 if (intent == "action" && BuildConfig.DEBUG) android.util.Log.i("Step23Timing", "first=${(firstAt ?: doneAt) - sentAt} complete=${doneAt - sentAt}")
                 _uiState.update { it.copy(isGenerating = false,
                     onlinePreview = "", roundNarration = if (intent == "hint") it.roundNarration else value.optString("reply"),
+                    onlineScenarioPresentation = OnlineCoachState.qualityPresentation(value),
                     hintOptions = value.strings("suggestions"), hintTrigger = hints?.optString("trigger"), hintShownTurn = hints?.optInt("turn"),
                     invalidStreak = value.optInt("invalidStreak"), decisionLog = it.decisionLog + listOfNotNull(decision),
                     roundSources = if (intent == "hint") it.roundSources else value.objects("citations").map { source -> source.optString("title") },
@@ -237,7 +242,7 @@ class PocketKbViewModel(
         val scenario = before.selectedScenario ?: return
         val fireResult = before.fireState?.let { fireDrill.step(it, text, intent) }
         val v3Result = before.scenarioStateV3?.let { scenarioRuntimesV3[scenario.id]?.step(it, text, intent) }
-        _uiState.update { it.copy(isGenerating = false, onlineLocalOnly = true, onlineError = "", onlinePreview = "",
+        _uiState.update { it.copy(isGenerating = false, onlineLocalOnly = true, onlineError = "", onlinePreview = "", onlineScenarioPresentation = null,
             onlineFallbackReason = reason, connectionNotice = connectionNotice(reason),
             onlineStatus = if (reason == "CLIENT_SYNC") "GPT 線上教練" else "目前使用離線判讀",
             onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1) }

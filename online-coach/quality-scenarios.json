@@ -1,0 +1,619 @@
+{
+  "drill_fire_dorm": [
+    {
+      "node": "isolate",
+      "situation": "我從宿舍門縫看見走廊滿是煙，房門仍開著一道縫。",
+      "question": "門縫外有濃煙，房門還沒有關好。我怎麼應對？",
+      "principles": [
+        {
+          "id": "barrier",
+          "label": "把房門關好，隔開走廊濃煙",
+          "source": "door-cloth",
+          "actions": [
+            "close"
+          ]
+        },
+        {
+          "id": "avoid_smoke",
+          "label": "留在相對安全的位置，不穿越濃煙",
+          "source": "nfa",
+          "actions": [
+            "avoid_open",
+            "wait"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "barrier"
+        ]
+      ],
+      "mistake": "拖延關門，或把有煙的走廊視為逃生路線"
+    },
+    {
+      "node": "roommate",
+      "situation": "小岑伸手靠近門把：「我開一點看看外面。」",
+      "question": "小岑正想開門確認走廊。我會怎麼回應她？",
+      "principles": [
+        {
+          "id": "stop_roommate",
+          "label": "明確勸阻同伴開門",
+          "source": "nfa",
+          "actions": [
+            "npc_dissuade"
+          ]
+        },
+        {
+          "id": "share_work",
+          "label": "分工聯絡救援、由室內提供位置",
+          "source": "report-content",
+          "actions": [
+            "call",
+            "contact"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "stop_roommate"
+        ]
+      ],
+      "mistake": "沒理會同伴，或同意她試開房門"
+    },
+    {
+      "node": "report",
+      "situation": "手機能打119。我在A棟宿舍五樓503室，房內有我和小岑。",
+      "question": "手機在手邊；如果要讓救援知道這裡的情況，我會說什麼、做什麼？",
+      "principles": [
+        {
+          "id": "dial",
+          "label": "以手機撥打119求助",
+          "source": "report-content",
+          "actions": [
+            "call"
+          ]
+        },
+        {
+          "id": "location",
+          "label": "告知地址與棟別",
+          "source": "report-content",
+          "actions": [
+            "address"
+          ]
+        },
+        {
+          "id": "room",
+          "label": "告知樓層與房號",
+          "source": "report-content",
+          "actions": [
+            "room"
+          ]
+        },
+        {
+          "id": "condition",
+          "label": "告知受困人數和現場狀況",
+          "source": "report-content",
+          "actions": [
+            "headcount",
+            "smoke_report"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "dial"
+        ]
+      ],
+      "mistake": "只對房內的人說明，接線員收不到通報",
+      "report": true
+    },
+    {
+      "node": "feelings",
+      "situation": "小岑把手縮回去：「我怕有同學還在走廊。」",
+      "question": "小岑擔心其他同學，聲音開始發抖。我會怎麼跟她說？",
+      "principles": [
+        {
+          "id": "reassure",
+          "label": "冷靜回應同伴的擔憂或陪在身旁",
+          "source": "pfa",
+          "actions": [
+            "emotion_supportive"
+          ]
+        },
+        {
+          "id": "ground",
+          "label": "提供做得到的分工或說明目前安全界線",
+          "source": "pfa",
+          "actions": [
+            "emotion_neutral"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "reassure"
+        ],
+        [
+          "ground"
+        ]
+      ],
+      "mistake": "保證其他人一定沒事，或責備對方",
+      "emotion": true
+    },
+    {
+      "node": "smoke_gap",
+      "situation": "門下透進一點焦味，房內手邊有布料。",
+      "question": "門底開始有焦味，房裡還能活動。我會怎麼安排？",
+      "principles": [
+        {
+          "id": "seal_gap",
+          "label": "關門後用手邊布料塞住門縫",
+          "source": "door-cloth",
+          "actions": [
+            "seal"
+          ]
+        },
+        {
+          "id": "avoid_more_smoke",
+          "label": "移向室內煙較少處，並在可通訊時報告煙況",
+          "source": "nfa",
+          "actions": [
+            "limit_smoke"
+          ]
+        },
+        {
+          "id": "cloth_limit",
+          "label": "理解濕布摀口鼻無法濾除有毒煙氣",
+          "source": "wet-towel",
+          "actions": [
+            "towel_face"
+          ],
+          "bonus": true
+        }
+      ],
+      "advance": [
+        [
+          "seal_gap"
+        ],
+        [
+          "avoid_more_smoke"
+        ]
+      ],
+      "mistake": "冒煙離房找布，或把濕毛巾當作可穿越濃煙的防護"
+    },
+    {
+      "node": "window",
+      "situation": "我從室內看向對外窗，窗外目前沒有煙，窗下是五樓高處。",
+      "question": "我能看見樓下，但還沒和樓下的人對上視線。我會怎麼做？",
+      "principles": [
+        {
+          "id": "check_window",
+          "label": "從室內確認窗外煙況",
+          "source": "window-guide",
+          "actions": [
+            "inspect_window"
+          ]
+        },
+        {
+          "id": "signal",
+          "label": "留在室內，確認窗外無煙才開窗呼救，或在窗邊示意",
+          "source": "window-guide",
+          "actions": [
+            "signal_window",
+            "open_window_call"
+          ]
+        },
+        {
+          "id": "wait_inside",
+          "label": "留在房內，照救援人員或接線員指示待援",
+          "source": "nfa",
+          "actions": [
+            "wait",
+            "contact"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "signal"
+        ],
+        [
+          "check_window"
+        ],
+        [
+          "wait_inside"
+        ]
+      ],
+      "mistake": "跳窗，爬到窗外，或在不能確認外側煙況時硬開窗"
+    },
+    {
+      "node": "battery",
+      "situation": "我發現手機電量只剩一格，接線員仍在線。",
+      "question": "手機電量下降，電話那頭仍有人。我怎麼安排通訊？",
+      "principles": [
+        {
+          "id": "keep_contact",
+          "label": "保留通訊，必要時回報狀況",
+          "source": "report-content",
+          "actions": [
+            "hold_line",
+            "contact"
+          ]
+        },
+        {
+          "id": "save_power",
+          "label": "減少非必要程式耗電",
+          "source": "report-content",
+          "actions": [
+            "hold_line"
+          ],
+          "bonus": true
+        }
+      ],
+      "advance": [
+        [
+          "keep_contact"
+        ]
+      ],
+      "mistake": "直接掛斷或關機，讓外面無法聯絡",
+      "optionalWith": [
+        "signal"
+      ]
+    },
+    {
+      "node": "wait",
+      "situation": "我聽見消防員隔著房門喊：「503有人嗎？」電話裡請我留在房內回應。",
+      "question": "消防員剛在門外喊「503有人嗎？」我怎麼做？",
+      "principles": [
+        {
+          "id": "handoff",
+          "label": "回應消防員，或按照已聽到的指示配合接手",
+          "source": "nfa",
+          "actions": [
+            "handoff_fire"
+          ]
+        },
+        {
+          "id": "wait_inside",
+          "label": "依指示留在原處待援，不擅自開門或移動",
+          "source": "nfa",
+          "actions": [
+            "wait",
+            "contact"
+          ]
+        },
+        {
+          "id": "keep_contact",
+          "label": "保持聯絡，讓救援能確認位置",
+          "source": "report-content",
+          "actions": [
+            "hold_line",
+            "contact"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "handoff"
+        ],
+        [
+          "wait_inside"
+        ],
+        [
+          "keep_contact"
+        ]
+      ],
+      "mistake": "不理會救援呼喊，自行穿越煙霧或跳窗",
+      "finish": "fire"
+    }
+  ],
+  "earthquake_school": [
+    {
+      "node": "shaking",
+      "situation": "桌腳敲著地板，吊燈正劇烈晃動。",
+      "question": "教室開始劇烈搖晃，我身旁就是課桌。我會怎麼反應？",
+      "principles": [
+        {
+          "id": "cover",
+          "label": "立即找掩護，護住頭頸",
+          "source": "source-0",
+          "actions": [
+            "drop_cover_hold",
+            "padding_head"
+          ]
+        },
+        {
+          "id": "hold",
+          "label": "抓住掩護物，維持穩定",
+          "source": "source-0",
+          "actions": [
+            "drop_cover_hold"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "cover"
+        ]
+      ],
+      "mistake": "搖晃中往戶外跑、衝向電梯或跳窗"
+    },
+    {
+      "node": "classmate",
+      "situation": "小維扶著桌沿喊：「我想現在跑出去！」",
+      "question": "小維打算在搖晃中跑出教室。我會對他說什麼或做什麼？",
+      "principles": [
+        {
+          "id": "stop_classmate",
+          "label": "勸同伴停在掩護處",
+          "source": "source-0",
+          "actions": [
+            "npc_dissuade"
+          ]
+        },
+        {
+          "id": "teacher_help",
+          "label": "在維持自身掩護下請附近的老師協助",
+          "source": "campus-evac",
+          "actions": [
+            "leave_teacher"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "stop_classmate"
+        ],
+        [
+          "teacher_help"
+        ]
+      ],
+      "mistake": "自己也跑出去或鼓勵同伴在搖晃時衝出去"
+    },
+    {
+      "node": "worry",
+      "situation": "小維留在課桌旁：「我很擔心家裡的人。」",
+      "question": "小維正在擔心家人。我會怎麼回應他的話？",
+      "principles": [
+        {
+          "id": "reassure",
+          "label": "接住同伴情緒，冷靜回應",
+          "source": "pfa",
+          "actions": [
+            "emotion_supportive"
+          ]
+        },
+        {
+          "id": "ground",
+          "label": "提出安全後才聯絡等可履行的事",
+          "source": "pfa",
+          "actions": [
+            "emotion_neutral"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "reassure"
+        ],
+        [
+          "ground"
+        ]
+      ],
+      "mistake": "責怪同伴，或保證家人一定安全",
+      "emotion": true
+    },
+    {
+      "node": "main_stop",
+      "situation": "桌腳的聲音變小，吊燈仍晃著，老師還沒叫大家起身。",
+      "question": "搖晃變小了，老師還沒下指示。我會怎麼做？",
+      "principles": [
+        {
+          "id": "remain_covered",
+          "label": "留在掩護處直到主要搖晃停止",
+          "source": "source-0",
+          "actions": [
+            "wait_stop",
+            "padding_head"
+          ]
+        },
+        {
+          "id": "listen_teacher",
+          "label": "留意老師確認的疏散指示",
+          "source": "campus-evac",
+          "actions": [
+            "wait_stop"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "remain_covered"
+        ],
+        [
+          "listen_teacher"
+        ]
+      ],
+      "mistake": "把晃動減弱當成已停止，急著離開掩護"
+    },
+    {
+      "node": "aftershock",
+      "situation": "桌腳又敲了一下地板，老師示意先停住。",
+      "question": "我剛準備動，地板又搖起來了。我怎麼反應？",
+      "principles": [
+        {
+          "id": "cover_again",
+          "label": "重新掩護頭頸，餘震時先不移動",
+          "source": "source-0",
+          "actions": [
+            "aftershock_cover",
+            "padding_head"
+          ]
+        },
+        {
+          "id": "stay_stable",
+          "label": "抓穩近處安全支撐直到搖晃停歇",
+          "source": "source-0",
+          "actions": [
+            "aftershock_cover"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "cover_again"
+        ],
+        [
+          "stay_stable"
+        ]
+      ],
+      "mistake": "趁餘震衝出教室",
+      "onComplete": "school_routes"
+    },
+    {
+      "node": "injured",
+      "situation": "老師說這一側暫時安全。同學坐著，清醒並說腳踝很痛。",
+      "question": "前方同學喊腳痛，老師和校護可聯絡。我會怎麼做？",
+      "principles": [
+        {
+          "id": "assess",
+          "label": "在安全位置看同學是否清醒、詢問狀況",
+          "source": "first-aid",
+          "actions": [
+            "assess_classmate"
+          ]
+        },
+        {
+          "id": "tell_teacher",
+          "label": "將受傷情形回報老師或校護",
+          "source": "campus-evac",
+          "actions": [
+            "check_injured",
+            "tell_teacher_support"
+          ]
+        },
+        {
+          "id": "no_move",
+          "label": "避免強行搬動，交由老師及校護協調",
+          "source": "first-aid",
+          "actions": [
+            "check_injured"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "tell_teacher"
+        ],
+        [
+          "assess"
+        ]
+      ],
+      "mistake": "強拉傷者起身，或把還沒確認的傷況當作事實"
+    },
+    {
+      "node": "evacuate",
+      "situation": "老師已確認指定樓梯可通行，另一側落物還沒清除。",
+      "question": "老師正在帶隊，旁邊有一條受損的動線。我會怎麼走？",
+      "principles": [
+        {
+          "id": "safe_route",
+          "label": "等動線確認後跟老師走指定樓梯",
+          "source": "campus-evac",
+          "actions": [
+            "follow_stairs"
+          ]
+        },
+        {
+          "id": "spacing",
+          "label": "穩定行走，維持隊伍間距",
+          "source": "campus-evac",
+          "actions": [
+            "walk_steadily"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "safe_route"
+        ]
+      ],
+      "mistake": "折回教室拿物品，或走未確認的動線"
+    },
+    {
+      "node": "assembly",
+      "situation": "操場上老師拿著班級名冊，正在清點。",
+      "question": "我已經到本班集合區。老師開始點名，我會回報什麼？",
+      "principles": [
+        {
+          "id": "roster",
+          "label": "應答點名或回報本班隊伍到場狀況",
+          "source": "campus-evac",
+          "actions": [
+            "school_class",
+            "count_report",
+            "assembly"
+          ]
+        },
+        {
+          "id": "where",
+          "label": "指出本班集合位置",
+          "source": "campus-evac",
+          "actions": [
+            "school_location"
+          ]
+        },
+        {
+          "id": "injuries",
+          "label": "將有人受傷和可確認的狀況交給老師核對",
+          "source": "campus-evac",
+          "actions": [
+            "school_injury"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "roster"
+        ],
+        [
+          "where"
+        ]
+      ],
+      "mistake": "未報到就離開集合處，或替現場編造傷勢"
+    },
+    {
+      "node": "return_choice",
+      "situation": "廣播說教室尚未開放，小維想回去拿手機。",
+      "question": "小維問能不能先回去拿手機。老師還沒發布返班通知，我會怎麼處理？",
+      "principles": [
+        {
+          "id": "stay_group",
+          "label": "留在集合區，等候老師返班通知",
+          "source": "campus-evac",
+          "actions": [
+            "stay_assembly"
+          ]
+        },
+        {
+          "id": "stop_return",
+          "label": "勸同伴等候老師而非擅自返班",
+          "source": "campus-evac",
+          "actions": [
+            "stay_assembly"
+          ]
+        }
+      ],
+      "advance": [
+        [
+          "stay_group"
+        ],
+        [
+          "stop_return"
+        ]
+      ],
+      "mistake": "擅自折返或鼓勵同伴回去拿物",
+      "finish": "school"
+    }
+  ]
+}

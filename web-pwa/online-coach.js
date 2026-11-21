@@ -95,7 +95,7 @@ function render() {
         <h3>簡單回顧</h3><p>結果：${esc(s.ending?.type)} · ${esc(s.ending?.injury)}</p>
         ${s.ending?.decisions.length ? `<h4>關鍵決策</h4><ul>${s.ending.decisions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
         ${s.ending?.causes.length ? `<h4>造成傷勢的步驟</h4><ul>${s.ending.causes.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
-        ${(s.ending?.lessons || []).map(lesson=>`<h4>這個行動為什麼危險</h4><p>${esc(lesson.why)}</p><h4>下次可以怎麼做</h4><p>${esc(lesson.next)}</p>${lesson.sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a>`).join('')}`).join('')}
+        ${(s.ending?.lessons || []).map(lesson=>`<h4>${esc(lesson.title || '這個行動為什麼危險')}</h4><p>${esc(lesson.why)}</p><h4>下次可以怎麼做</h4><p>${esc(lesson.next)}</p>${lesson.sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a>`).join('')}`).join('')}
       </section>` : `
       <section class="task-box drill-panel" ${online.timing ? `data-first-ms="${online.timing.first}" data-complete-ms="${online.timing.complete}"` : ''}>
         <h3>現在發生什麼</h3>
@@ -206,9 +206,11 @@ async function resume(snapshot,signal) {
   for (const queued of snapshot.queue || []) {
     settled=await streamTurn(base.sessionId,{...queued,revision:base.revision,rulesOnly:true},()=>{},signal);
     base={sessionId:settled.sessionId,revision:settled.revision};
+    if (settled.terminal) break;
   }
-  if (settled && presentation.resumeState(settled.state)!==presentation.resumeState(snapshot.state)) throw coachFailure('遠端與最後確認場景不同','CLIENT_SYNC');
-  return base;
+  if (settled && !settled.state.quality && presentation.resumeState(settled.state)!==presentation.resumeState(snapshot.state))
+    throw coachFailure('遠端與最後確認場景不同','CLIENT_SYNC');
+  return settled || base;
 }
 
 async function send(text,intent='action',hintTrigger) {
@@ -226,7 +228,7 @@ async function send(text,intent='action',hintTrigger) {
     let result;
     try {
       const base = snapshot.localOnly ? await resume(snapshot,controller.signal) : snapshot;
-      result=await streamTurn(base.sessionId,{...request,revision:base.revision},part=>{
+      result=base.terminal ? base : await streamTurn(base.sessionId,{...request,revision:base.revision},part=>{
         if (controller.signal.aborted || intent==='hint') return;
         preview+=part;
         const output=document.querySelector('#currentNarration .online-reply');

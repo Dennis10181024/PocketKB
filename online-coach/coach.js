@@ -6,6 +6,7 @@ const V3 = require('../web-pwa/scenario-engine-v3');
 const Events = require('../web-pwa/drill-events');
 const Presentation = require('../web-pwa/drill-presentation');
 const Experience = require('./experience');
+const Quality = require('./quality');
 const {researchTurn} = require('./session-log');
 const directory = path.join(__dirname, '../web-pwa/scenarios');
 const specs = new Map();
@@ -23,9 +24,11 @@ function currentNode(spec, state) { return spec.nodes.find(n => n.id === state.n
 function terminal(spec, state) { return state.sessionStatus !== 'ACTIVE'; }
 function scene(spec, state) {
   const node = currentNode(spec, state);
+  const quality = state.quality && Quality.point(spec,state);
   const proposal = state.onlineExperience && state.sessionStatus==='ACTIVE' && !state.npc.handled && !state.elapsed ? spec.npc.online.proposal : '';
   return { title: spec.title, opening: spec.opening, notice: spec.notice,
-    node:{...node,task:node.decisionPrompt || node.task,situation:Presentation.sceneText(proposal ? `${node.situation} ${proposal}` : node.situation)}, state,
+    node:{...node,task:quality?.question || node.decisionPrompt || node.task,
+      situation:quality?.situation || Presentation.sceneText(proposal ? `${node.situation} ${proposal}` : node.situation)}, state,
     sources: spec.sources, misconceptions: spec.commonMisconceptions || [],
     actionRules: spec.actions.filter(a => (node.available || [...(node.required || []), ...(node.optional || [])]).includes(a.id)).map(a => ({ id:a.id, label:a.label, effect:a.effect })),
     hazardRules: spec.hazards || node.hazards || {},
@@ -287,7 +290,8 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
           method: 'POST', signal: turnSignal ? AbortSignal.any([turnSignal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs),
           headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ model, store: false, stream:stage==='narrate', reasoning: { effort: 'none' }, max_output_tokens: 1200,
-            instructions: stage === 'interpret' ? interpreterPrompt + (payload.semanticGoals ? '\n'+semanticGoalsPrompt : '') : stage === 'quote' ? quotePrompt : narratorPrompt,
+            instructions: stage === 'assess' ? Quality.instruction : stage === 'interpret'
+              ? interpreterPrompt + (payload.semanticGoals ? '\n'+semanticGoalsPrompt : '') : stage === 'quote' ? quotePrompt : narratorPrompt,
             input: JSON.stringify(payload),
             text: { format: { type: 'json_schema', name: stage, strict: true, schema } },
           }),
@@ -308,7 +312,7 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
 }
 
 class ConversationCoach {
-  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, formal = false, logText = process.env.POCKETKB_LOG_TEXT === '1', record } = {}) {
+  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, formal = false, quality = false, logText = process.env.POCKETKB_LOG_TEXT === '1', record } = {}) {
     if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs,narrationTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
     this.provider = provider; this.sessions = new Map(); this.maxSessions = maxSessions;
     this.maxTurns = maxTurns; this.maxCalls = maxCalls; this.calls = 0; this.ttlMs = ttlMs;
@@ -319,7 +323,11 @@ class ConversationCoach {
     this.random = random;
     this.onlineExperience = onlineExperience;
     this.compactNarration = compactNarration;
-    this.specs = formal ? new Map([...specs].map(([id,spec])=>[id,V3.formalSpec(spec)])) : specs;
+    this.quality=quality;
+    this.specs = formal ? new Map([...specs].map(([id,spec])=>{
+      const formalSpec=V3.formalSpec(spec);
+      return [id,quality?Quality.scenarioSpec(formalSpec):formalSpec];
+    })) : specs;
   }
   catalog() { return [...this.specs.values()].map(({formal,...s}) => ({ id: s.id, title: s.title, opening: s.opening, version: s.version, spec: s })); }
   create(scenarioId) {
@@ -329,6 +337,7 @@ class ConversationCoach {
     if (this.sessions.size >= this.maxSessions) throw apiError('SESSION_LIMIT', '本機教練場次已滿，請重新啟動服務。', 429);
     const now = Date.now();
     const session = { id: randomUUID(), spec, state: engine(spec).create(spec,{onlineExperience:this.onlineExperience}), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, createdAt: now, updatedAt: now, sensory:[], recentSensory:[], invalidStreak:0, hint:null, pending:null };
+    if (this.quality && spec.formalPractice && Quality.points(spec).length) session.state=Quality.start(session.state);
     this.sessions.set(session.id, session);
     return this.snapshot(session);
   }
@@ -336,7 +345,7 @@ class ConversationCoach {
     const { spec, state } = session;
     return { sessionId: session.id, scenarioId: spec.id, version: spec.version, revision: session.revision,
       state, decisions: session.decisions.slice(), scene: scene(spec, state), terminal: terminal(spec, state),
-      review: terminal(spec, state) ? engine(spec).review(spec, state) : '', model: this.provider.model,
+      review: terminal(spec, state) ? (state.quality ? Quality.review(spec,state) : engine(spec).review(spec, state)) : '', model: this.provider.model,
       suggestions: session.hint?.options || [], hintContext:session.hint, invalidStreak:session.invalidStreak };
   }
   async generate(stage, payload, schema, signal) {
@@ -385,7 +394,8 @@ class ConversationCoach {
       reply = result.message;
     } else {
       if (!text) throw apiError('EMPTY_INPUT', '請先輸入想法或問題。');
-      const literal = runtime.rawStep(spec,before,text,intent);
+      const qualityPoint=before.quality && Quality.point(spec,before);
+      const literal = runtime.rawStep(spec,qualityPoint?Quality.ruleState(before):before,text,intent);
       const refused = Experience.refusal(spec,before,literal,text,intent);
       const pending = session.pending;
       session.pending = null;
@@ -400,10 +410,32 @@ class ConversationCoach {
           actionValidation:[{...pending.proposal,confirmed:true,result:accepted?'ACCEPTED':'NOT_EXECUTED'}]});
         reply=this.narrationFallback(session,result,audit,false,text);
       } else if (before.onlineExperience && (intent==='question' ||
-          (literal.kind==='question' || Experience.questionText(text)) && !V3.recognizesNpcResponse(spec,text))) {
+          (qualityPoint ? Quality.directQuestion(text) && !['risk','failed'].includes(literal.kind) :
+            (literal.kind==='question' || Experience.questionText(text)) && !V3.recognizesNpcResponse(spec,text)))) {
         result = Experience.answerQuestion(spec,before,text);
         reply = result.message;
         Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
+      } else if (qualityPoint) {
+        const signal=AbortSignal.timeout(this.turnTimeoutMs);
+        let assessment;
+        try {
+          if (replayReason) {
+            fallbackReason=replayReason;
+            assessment=Quality.ruleAssessment(spec,before,text,literal);
+          } else {
+            const {value}=await this.generate('assess',Quality.modelInput(spec,before,text),Quality.schema(spec),signal);
+            assessment=Quality.validate(spec,before,text,value,literal);
+          }
+        } catch(error) {
+          fallbackReason=signal.aborted?'TURN_TIMEOUT':error instanceof CoachError?error.code:'MODEL_INVALID';
+          assessment=Quality.ruleAssessment(spec,before,text,literal);
+        }
+        offline=Presentation.isConnectionFallback(fallbackReason);
+        result=Quality.apply(spec,before,assessment);
+        reply=result.kind==='failed'?this.endingQuote(session,result,text,'',audit):result.message;
+        if (onGround && reply) onGround(reply);
+        Object.assign(audit,{assessment,source:assessment.source,validation:fallbackReason || 'QUALITY_ASSESSED',
+          disagreement:assessment.disagreement || null,narration:'quality_scenario'});
       } else if (currentNode(spec,before).aftercareComplete || replayReason) {
         result = settle(spec,before,literal,text,intent,audit);
         if (replayReason) {fallbackReason=replayReason;offline=Presentation.isConnectionFallback(replayReason);}
@@ -472,6 +504,12 @@ class ConversationCoach {
       injury_causes:result.state.injuryCauses, source_ids:citations.map(source=>source.id),
       ...(audit.noAdvance ? {noAdvance:true} : {}), ...(!actionIds.length ? {controlInput:text} : {}),
       ...(before.onlineExperience ? {onlineExperience:true,...(actionIds.length && !before.npc.handled ? {npcInput:text} : {})} : {})};
+    if (audit.assessment) {
+      decision.assessment=audit.assessment;
+      decision.quality_effect=result.qualityEffect;
+      decision.completed_points=result.completedPoints;
+      decision.new_principles=result.newPrinciples || [];
+    }
     const npcEvents = result.state.events.filter(event=>event.kind.startsWith('npc_'));
     decision.npc_state = result.state.npc ? {
       proposal_shown:Boolean(before.npc?.proposal || result.state.npc.handled || npcEvents.some(event=>event.kind==='npc_proposal')),
@@ -485,6 +523,12 @@ class ConversationCoach {
     if (session.revision===0 && before.npc?.proposal) npcLines.unshift(spec.npc.online.proposal);
     if (audit.narration==='sourced_question' && reply.includes('說：「')) npcLines.push(reply);
     const ending = terminal(spec,result.state) ? Presentation.summary(spec,result.state,reply) : null;
+    if (ending && result.state.quality) {
+      if (result.kind==='completed' && audit.assessment) ending.text=reply;
+      ending.decisions=result.state.quality.history.filter(entry=>entry.principles.length).slice(-3)
+        .map(entry=>Quality.point(spec,{node:entry.node})?.question).filter(Boolean);
+      ending.lessons.push(...Quality.lessons(spec,result.state));
+    }
     const displayed = result.kind==='hint' ? session.lastDisplayedReply || spec.opening : ending?.text || reply;
     const logContext = {reply:displayed,suggestions:session.hint?.options || [],npcLines,proposals:proposedActions};
     const timing = Date.now()-started;

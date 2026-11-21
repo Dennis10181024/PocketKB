@@ -20,6 +20,13 @@ internal object ResearchPrivacy {
             listOf("input_text", "reply_text", "suggestion_texts", "npc_lines", "model_actions").forEach(record::remove)
             listOf("controlInput", "npcInput").filter(record::has).forEach { record.put(it, "[redacted]") }
             record.optJSONObject("emotion")?.put("evidence", "[redacted]")
+            record.optJSONObject("assessment")?.let { assessment ->
+                assessment.put("evidence", "[redacted]")
+                for (field in listOf("matches", "fields")) {
+                    val items = assessment.optJSONArray(field) ?: continue
+                    for (i in 0 until items.length()) items.optJSONObject(i)?.put("evidence", "[redacted]")
+                }
+            }
             record.optJSONArray("actionValidation")?.let { items ->
                 for (i in 0 until items.length()) items.optJSONObject(i)?.put("evidence", "[redacted]")
             }

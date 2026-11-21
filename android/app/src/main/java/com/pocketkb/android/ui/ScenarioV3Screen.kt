@@ -83,6 +83,7 @@ internal data class ScenarioLessonUiModel(
     val why: String,
     val next: String,
     val sources: List<ScenarioSourceUiModel>,
+    val title: String = "這個行動為什麼危險",
 )
 
 internal data class ScenarioV3UiModel(
@@ -184,8 +185,9 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
             onlineError = state.onlineError,
             progress = (runtime.nodeIndex(session) + if (session.sessionStatus == "ACTIVE") 0f else 1f) /
                 scenario.steps.size.coerceAtLeast(1),
-            situation = if (state.onlineRevision == 0) scenario.openingLine else runtime.currentSituation(session),
-            task = runtime.practiceDecision(session),
+            situation = if (state.onlineRevision == 0) scenario.openingLine
+                else state.onlineScenarioPresentation?.situation ?: runtime.currentSituation(session),
+            task = state.onlineScenarioPresentation?.task ?: runtime.practiceDecision(session),
             resources = session.resources,
             messages = state.messages,
             suggestedActions = runtime.suggestedActions(session),
@@ -199,16 +201,21 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
             hintOptions = state.hintOptions,
             endingType = endingType,
             injury = injury,
-            endingText = runtime.spec.optJSONObject("endingMessages")?.optJSONObject(session.endingType ?: "")
-                ?.optString(session.injuryLevel ?: "").orEmpty().ifBlank { state.roundNarration },
-            keyDecisions = (state.scenarioReviewV3?.hazardActions.orEmpty() +
+            endingText = state.onlineScenarioPresentation?.endingText?.takeIf { it.isNotBlank() }
+                ?: runtime.spec.optJSONObject("endingMessages")?.optJSONObject(session.endingType ?: "")
+                    ?.optString(session.injuryLevel ?: "").orEmpty().ifBlank { state.roundNarration },
+            keyDecisions = state.onlineScenarioPresentation?.keyDecisions ?: (state.scenarioReviewV3?.hazardActions.orEmpty() +
                 session.injuryCauses.map { runtime.practiceActionLabel(it.action) } + state.scenarioReviewV3?.completedActions.orEmpty().asReversed()).distinct(),
             causes = session.injuryCauses.map { "第 ${it.turn} 個決策 · ${runtime.practiceActionLabel(it.action)}" },
             roundSources = state.roundSources,
             roundStartedAt = state.roundStartedAt,
             connectionNotice = state.connectionNotice,
             firstDecision = runtime.nodeIndex(session) == 0,
-            criticalLessons = if (session.endingType == "CRITICAL_FAILURE") runtime.practiceLessons(session).map { action ->
+            criticalLessons = state.onlineScenarioPresentation?.lessons?.map { lesson ->
+                ScenarioLessonUiModel(lesson.why, lesson.next, lesson.sources.map {
+                    ScenarioSourceUiModel(it.agency, it.title, it.url)
+                }, lesson.title)
+            } ?: if (session.endingType == "CRITICAL_FAILURE") runtime.practiceLessons(session).map { action ->
                 val sourceIds = action.strings("sourceIds")
                 ScenarioLessonUiModel(
                     action.optString("consequenceTemplate", action.optString("consequence")),
@@ -357,8 +364,8 @@ internal fun ScenarioV3Content(
                         Text("造成傷勢的步驟", fontWeight = FontWeight.Bold)
                         model.causes.forEach { Text(it) }
                     }
-                    model.criticalLessons.forEach { (why, next, sources) ->
-                        Text("這個行動為什麼危險", fontWeight = FontWeight.Bold)
+                    model.criticalLessons.forEach { (why, next, sources, title) ->
+                        Text(title, fontWeight = FontWeight.Bold)
                         Text(sceneWords(why))
                         Text("下次可以怎麼做", fontWeight = FontWeight.Bold)
                         Text(sceneWords(next))

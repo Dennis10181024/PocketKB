@@ -70,8 +70,40 @@ class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
     }
 }
 
-/** Decodes backend state; local UI/review rendering continues to use the shared spec. */
+data class OnlineScenarioSource(val agency: String, val title: String, val url: String)
+data class OnlineScenarioLesson(val title: String, val why: String, val next: String, val sources: List<OnlineScenarioSource>)
+data class OnlineScenarioPresentation(
+    val task: String,
+    val situation: String,
+    val endingText: String,
+    val keyDecisions: List<String>,
+    val lessons: List<OnlineScenarioLesson>,
+)
+
+/** Decodes verified state and the presentation of a quality-assessed turn. */
 object OnlineCoachState {
+    fun qualityPresentation(value: JSONObject): OnlineScenarioPresentation? {
+        if (value.optJSONObject("state")?.optJSONObject("quality") == null) return null
+        val node = value.optJSONObject("scene")?.optJSONObject("node") ?: return null
+        val ending = value.optJSONObject("ending")
+        return OnlineScenarioPresentation(
+            task = node.optString("task"),
+            situation = node.optString("situation"),
+            endingText = ending?.optString("text").orEmpty(),
+            keyDecisions = ending?.strings("decisions").orEmpty(),
+            lessons = ending?.objects("lessons").orEmpty().map { lesson ->
+                OnlineScenarioLesson(
+                    lesson.optString("title", "這個行動為什麼危險"),
+                    lesson.optString("why"),
+                    lesson.optString("next"),
+                    lesson.objects("sources").map { source ->
+                        OnlineScenarioSource(source.optString("agency"), source.optString("title"), source.optString("url"))
+                    },
+                )
+            },
+        )
+    }
+
     private fun reply(value: JSONObject): String {
         val sources = value.objects("citations").joinToString("\n") { "${it.getString("title")} · ${it.getString("url")}" }
         return value.getString("reply") + if (sources.isEmpty()) "" else "\n\n來源\n$sources"

@@ -53,5 +53,167 @@
       "小維說要回去拿手機，我跟他說不行，等老師說可以再回去",
       "我在集合點等老師通知"
     ]
+  },
+  "D": {
+    "scenario": "drill_fire_dorm",
+    "label": "宿舍火災｜最新使用者實測",
+    "source": "3d7d1768-ea35-4026-bafe-4500e4b2e259",
+    "inputs": [
+      {
+        "text": "跟小岑說千萬不能開門 並把門關緊 先用手機撥通119 然後找濕毛巾或來堵住門縫跟口鼻\n並找宿舍的對外窗 將窗戶打開大聲呼救",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 1
+      },
+      {
+        "text": "跟接線員說明現在情況 外面有濃煙 不知道是否還有其他同學在外面\n同時跟小岑說我們先顧好自己就好 沒有餘力擔心外面的人",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 2
+      },
+      {
+        "text": "打電話給119",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 3
+      },
+      {
+        "text": "跟接線員說明現在的地址跟發生的處境",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 4
+      },
+      {
+        "text": "5樓 503",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 5
+      },
+      {
+        "text": "回復2人",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 6
+      },
+      {
+        "text": "用濕布堵住門縫",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 7
+      },
+      {
+        "text": "開啟省電模式 盡可能延長手機撥通時間",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 8
+      },
+      {
+        "text": "依照指示留在房間內",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 9
+      },
+      {
+        "text": "保持冷靜 跟接線員保持聯絡",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 10
+      },
+      {
+        "text": "",
+        "intent": "hint",
+        "originalHint": false,
+        "originalTurn": 11
+      },
+      {
+        "text": "留在房間內跟接線員保持聯絡",
+        "intent": "action",
+        "originalHint": false,
+        "originalTurn": 12
+      },
+      {
+        "text": "我回應消防員並配合消防人員的指示。",
+        "intent": "action",
+        "originalHint": true,
+        "originalTurn": 13
+      }
+    ]
+  },
+  "E": {
+    "label": "各決策點的異詞同義測試",
+    "probes": {
+      "drill_fire_dorm": {
+        "isolate": [
+          "把開口合上，讓走廊的煙留在外面。",
+          "我扳回那片門板，讓它確實扣進門框。"
+        ],
+        "roommate": [
+          "我叫她把手從門把收回來，別讓煙進來。",
+          "我攔住小岑，說那條縫不能再拉大。"
+        ],
+        "report": [
+          "我聯絡消防救援，報安學路100號A棟五樓503，兩個人被煙困住。",
+          "我撥119說安學路100號的A棟，503在五樓，我跟室友都在，走道煙很重。"
+        ],
+        "feelings": [
+          "我跟她說我也理解她掛念朋友，我會在這陪她。",
+          "我聽她把擔心說完，告訴她我們可以把走廊的情形交給救援隊。"
+        ],
+        "smoke_gap": [
+          "我把身邊的衣料壓進門底漏煙的地方。",
+          "我用衣物把關緊的門和地板間的空隙填起來。"
+        ],
+        "window": [
+          "我留在房裡，靠玻璃處朝樓下舉起衣服讓人看見。",
+          "我待在房間裡，先看看玻璃外有沒有煙，再從室內向下方比手勢。"
+        ],
+        "battery": [
+          "我先不結束這通電話，把手機留給救援聯繫。",
+          "我把用不著的程式都收掉，手機繼續留在通話畫面。"
+        ],
+        "wait": [
+          "我待在原地，聽門外的人叫我怎麼配合。",
+          "我跟門外回一聲，照他們的話留在房間等接手。"
+        ]
+      },
+      "earthquake_school": {
+        "shaking": [
+          "我縮到課桌底，用手臂護住頭，再扣著桌腳。",
+          "我壓低身子鑽進桌下，雙手扶牢桌腿，頭不要露出去。"
+        ],
+        "classmate": [
+          "我叫小維先別離開桌下，外頭還在搖。",
+          "我大聲請他穩住，留在課桌底下，不要往走廊去。"
+        ],
+        "worry": [
+          "我知道他惦記家裡，我說等安全了可以一起想怎麼聯絡。",
+          "我先聽他說完，告訴他現在有人陪他一起等。"
+        ],
+        "main_stop": [
+          "我在原來躲的位置待著，等地面不再晃。",
+          "我先護著後腦，等老師確認才站起來。"
+        ],
+        "aftershock": [
+          "我又縮回課桌下，把頭頸包住，手抓住支撐物。",
+          "地板又動了，我就地蹲低往掩護靠，不急著走。"
+        ],
+        "injured": [
+          "我從安全處問他能不能回話，把腳痛的情形喊給老師。",
+          "我沒有拉他起來，跟校護說前方坐著的同學在喊痛。"
+        ],
+        "evacuate": [
+          "我走老師確認過的那側樓梯，避開還有碎玻璃的走道。",
+          "我隨班排隊從老師帶的方向下樓，和前面的人留一點空間。"
+        ],
+        "assembly": [
+          "我跟拿名冊的老師應聲，說這排同學都到操場了。",
+          "我把班上的到場人數和有同學需要校護的情形告訴帶隊老師。"
+        ],
+        "return_choice": [
+          "我勸他先留在集合區，等廣播說能進去再處理手機。",
+          "我不跟著回教室，在操場等老師通知，提醒小維也先留下。"
+        ]
+      }
+    }
   }
 }

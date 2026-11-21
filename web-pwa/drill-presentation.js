@@ -11,7 +11,13 @@
   }
   function questionAnswer(spec,state,text) {
     const entry = spec.onlineExperience.questions.find(item=>(!item.nodes || item.nodes.includes(state.node)) && new RegExp(item.pattern).test(text));
-    const completed = id => state.events.some(event=>event.kind==='action' && event.action===id);
+    const quality=state.quality;
+    const knownActions=quality ? {
+      call:quality.met.dial,close:quality.met.barrier,seal:quality.met.seal_gap,
+      address:quality.report.address,room:quality.report.room,headcount:quality.report.headcount,
+      smoke_report:quality.report.condition,signal_window:quality.met.signal,
+    } : {};
+    const completed = id => Boolean(knownActions[id]) || state.events.some(event=>event.kind==='action' && event.action===id);
     const variant = entry?.variants?.find(item =>
       Object.entries(item.whenFacts || {}).every(([key,value])=>state.facts[key]===value) &&
       (item.whenActions || []).every(completed) && (item.withoutActions || []).every(id=>!completed(id)));
