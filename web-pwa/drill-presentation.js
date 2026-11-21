@@ -2,6 +2,21 @@
   const endings = {SELF_EVACUATION:'自行撤離', SAFE_RESCUE:'安全待救獲救', DELAYED_RESCUE:'延誤後獲救', CRITICAL_FAILURE:'危急失敗', EXITED:'已退出'};
   const injuries = {NONE:'無傷', MILD:'輕傷', MODERATE:'中度傷勢（需送醫）', SEVERE:'重傷（需住院治療）', NOT_ASSESSED:'傷勢不評定', BASELINE:'傷勢未加重'};
   const sceneText = text => String(text || '').replace(/模擬119/g,'119').replace(/模擬通報/g,'通報').replace(/(?:模擬|演練)中/g,'現場').replace(/這段演練|此演練|本次演練/g,'目前情況').replace(/演練|模擬/g,'');
+  function fallbackNotice(reason,recovered) {
+    if (recovered) return '已恢復線上判讀。';
+    if (!reason) return '';
+    if (reason==='TURN_TIMEOUT') return '這回合理解逾時，暫時改用離線判讀。';
+    if (reason==='CLIENT_TRANSPORT' || reason==='MODEL_TIMEOUT') return '這回合連線中斷或逾時，暫時改用離線判讀。';
+    if (reason==='NOT_CONFIGURED') return '線上教練尚未設定，這回合使用離線判讀。';
+    if (reason==='CALL_LIMIT') return '線上教練本次請求額度已用完，這回合使用離線判讀。';
+    return '線上判讀這回合未能確認，暫時改用離線規則。';
+  }
+  function resumeState(state) {
+    const canonical = value=>Array.isArray(value)?value.map(canonical):value && typeof value==='object' ?
+      Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])) : value;
+    return JSON.stringify(canonical({node:state.node,accepted:state.accepted,facts:state.facts,resources:state.resources,elapsed:state.elapsed || 0,
+      npc:state.npc, exposure:state.exposure, endingType:state.endingType, injuryLevel:state.injuryLevel}));
+  }
   function status(spec,state) {
     const view = [];
     const events = state.events || [];
@@ -22,10 +37,14 @@
     const causes = state.injuryCauses || [];
     const ordered = [...new Set([...risk,...causes.map(item=>item.action),...good.reverse()])];
     const keys = ordered.map(id=>(risk.includes(id)?'風險決策　':causes.some(item=>item.action===id)?'傷勢相關　':'')+label(id));
+    const lessons = state.endingType==='CRITICAL_FAILURE' ? risk.map(id=>spec.actions.find(action=>action.id===id)).filter(Boolean).map(action=>({
+      why:sceneText(action.consequenceTemplate || action.consequence),next:action.teaching,
+      sources:spec.sources.filter(source=>action.sourceIds?.includes(source.id)),
+    })) : [];
     return {type:endings[state.endingType] || '情境結束', injury:injuries[state.injuryLevel] || (state.injuryWorsened===false && spec.initialState.exposure && Object.values(spec.initialState.exposure).some(x=>x>0) ? '傷勢未加重' : state.injuryLevel),
       text:sceneText(state.endingType==='CRITICAL_FAILURE' ? reply : spec.endingMessages?.[state.endingType]?.[state.injuryLevel] || reply),
-      decisions:[...new Set(keys)].slice(0,3), causes:causes.map(c=>`第 ${c.turn} 個決策 · ${label(c.action)}`)};
+      decisions:[...new Set(keys)].slice(0,3), causes:causes.map(c=>`第 ${c.turn} 個決策 · ${label(c.action)}`),lessons};
   }
-  root.DrillPresentation = {status,summary,sceneText};
+  root.DrillPresentation = {status,summary,sceneText,fallbackNotice,resumeState};
   if (typeof module!=='undefined') module.exports=root.DrillPresentation;
 })(globalThis);

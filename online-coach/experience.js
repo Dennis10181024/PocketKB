@@ -71,9 +71,16 @@ function ground(spec, before, result, priorLines = []) {
         return [...lines.slice(pivot),...lines.slice(0,pivot)].find(line=>validFixedLine(line,priorLines)) || lines[0];
       });
     const environment = events.filter(event=>event.kind==='environment_change').map(event=>event.message);
-    const actionBeat = events.filter(event=>event.kind==='action').map(event=>spec.onlineExperience.actionBeats?.[event.action]).filter(Boolean).at(-1);
+    const action = events.findLast(event=>event.kind==='action');
+    const actionBeat = spec.onlineExperience.actionBeats?.[action?.action];
+    const requiredBeat = ['avoid_open','towel_face','open_window_call'].includes(action?.action) ? actionBeat : null;
     const beat = spec.onlineExperience.beats[(state.elapsed || 0) % spec.onlineExperience.beats.length];
-    const authored = result.kind==='completed' ? [result.message] : [...environment,...npcLines];
+    const progress = state.node!==before.node && node.aftercareComplete ? result.message : null;
+    const explanation = result.kind==='blocked' ? result.message : result.kind==='clarify' && !result.sourceIds?.length ?
+      (/已經完成/.test(result.message) ? '我已經做過這個動作，手上的做法沒有帶來新的變化。' : '我在這個位置還找不到能照剛才那個做法行動的條件。') : null;
+    const recovery = spec.onlineExperience.unsupportedBeats?.[(state.elapsed || 0) % (spec.onlineExperience.unsupportedBeats?.length || 1)];
+    const authored = result.kind==='completed' ? [result.message] : [progress,explanation,requiredBeat,...environment,...npcLines].filter(Boolean);
+    if (explanation && !environment.length && !npcLines.length) authored.push(recovery || beat);
     if (!authored.length) authored.push(actionBeat || beat);
     return {details:node.experience.sensory, allDetails:spec.nodes.flatMap(item=>item.experience.sensory),
       change:authored.join(''), authored, focus:focusLine(node,priorLines), strict:true};
@@ -102,12 +109,12 @@ function validFixedLine(line,previous) {
 }
 
 function focusLine(node, previous) {
-  return [node.experience.focus,node.task].map(sceneText).find(line=>validFixedLine(line,previous)) || '';
+  return [node.experience.focus,node.decisionPrompt || node.task].map(sceneText).find(line=>validFixedLine(line,previous)) || '';
 }
 
 function answerQuestion(spec, before, text, priorLines = []) {
   const node = spec.nodes.find(item=>item.id===before.node);
-  const answer = spec.onlineExperience.questions.find(item=>new RegExp(item.pattern).test(text));
+  const answer = spec.onlineExperience.questions.find(item=>(!item.nodes || item.nodes.includes(before.node)) && new RegExp(item.pattern).test(text));
   const proposedSpeaker = spec.onlineExperience.questionSpeaker?.[before.node];
   const speaker = proposedSpeaker==='接線員' && !before.events.some(event=>event.action==='call') ? spec.npc.name : proposedSpeaker || spec.npc.name;
   const quote = answer ? `${speaker}說：「${sceneText(answer.answer)}」` : '眼前的資訊還不足以回答這個問題。';

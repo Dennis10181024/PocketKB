@@ -38,7 +38,7 @@ test('every declared condition rejects the action when removed or broken', () =>
       }
     }
   }
-  assert.equal(requirements,10);
+  assert.equal(requirements,14);
 });
 
 test('deadline discards late model output and commits one fallback for duplicate requests', async () => {

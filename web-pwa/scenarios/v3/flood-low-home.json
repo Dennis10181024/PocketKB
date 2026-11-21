@@ -1,10 +1,10 @@
 {
   "id": "flood_low_home",
   "version": "3.1.0",
-  "title": "淹水：低窪住宅撤離已中斷",
+  "title": "雨夜的一樓",
   "hazard": "flood",
   "locationProfile": "low_lying_home",
-  "opening": "豪雨持續，住宅外道路已有快速積水，地方通知目前不要涉水外出。你位於一樓，樓梯可通往二樓，地下停車場已開始進水。此時沒有可安全步行離開社區的路線。",
+  "opening": "傍晚六點，我和家人阿敏回到低窪住宅的一樓。外頭的雨沒停，我看見積水已進到地下車道。一樓室內還乾燥，我聽見阿敏說他想去把車開走。",
   "notice": "本情境設定為撤離窗口已關閉；實際災時依地方政府警報與現場狀況行動。",
   "learningObjectives": [
     "撤離窗口關閉後不涉水、不進地下空間搶救財物",
@@ -180,6 +180,30 @@
       ],
       "emotion": "neutral",
       "wholeInput": true
+    },
+    {
+      "id": "bring_light_supplies",
+      "label": "帶上手邊可取得的輕便避難物品",
+      "pattern": "(?:帶上|拿起|隨手帶).{0,8}(?:手電筒|包裝飲水|輕便避難包)",
+      "sourceIds": [
+        "flood-guide"
+      ],
+      "effect": "我只拿手邊的輕便物品，沒有往低處找東西。"
+    },
+    {
+      "id": "stay_together",
+      "label": "與同伴結伴在可辨識處待援",
+      "pattern": "(?:跟|和|陪|帶著)阿敏.{0,12}(?:待在一起|一起等|結伴|留在樓上)|(?:留在|移到).{0,5}(?:明顯處|顯眼處).{0,4}(?:待援|等救援)",
+      "sourceIds": [
+        "flood-guide"
+      ],
+      "effect": "我和阿敏留在樓上可供定位的位置，兩人沒有分開。",
+      "requires": {
+        "facts": {
+          "upperFloorReached": true
+        }
+      },
+      "blockedMessage": "我和阿敏還在一樓，樓上的待援位置還沒到。"
     }
   ],
   "nodes": [
@@ -202,7 +226,8 @@
         "drive_flood",
         "emotion_supportive",
         "emotion_unsupportive",
-        "emotion_neutral"
+        "emotion_neutral",
+        "bring_light_supplies"
       ],
       "hazards": {
         "basement": {
@@ -256,7 +281,8 @@
           }
         ],
         "focus": "眼前的兩個區域是乾燥的一樓與已進水的地下室。"
-      }
+      },
+      "decisionPrompt": "阿敏想去車道，我打算怎麼應對眼前的情況？"
     },
     {
       "id": "wait",
@@ -278,7 +304,9 @@
         "drive_flood",
         "emotion_supportive",
         "emotion_unsupportive",
-        "emotion_neutral"
+        "emotion_neutral",
+        "bring_light_supplies",
+        "stay_together"
       ],
       "hazards": {
         "wade_out": {
@@ -328,6 +356,14 @@
           }
         ],
         "focus": "目前的抉擇涉及樓層、通報位置與手邊物資。"
+      },
+      "decisionPrompt": "屋外道路還在水裡，我要怎麼處理我和阿敏接下來的處境？",
+      "effects": {
+        "upper_floor": {
+          "setFacts": {
+            "upperFloorReached": true
+          }
+        }
       }
     }
   ],
@@ -344,6 +380,13 @@
       "agency": "美國 CDC",
       "title": "What to Do to Protect Yourself From Electrical Hazards",
       "url": "https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html"
+    },
+    {
+      "id": "flood-guide",
+      "title": "淹水避難須知",
+      "url": "https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D",
+      "agency": "臺南市政府",
+      "checked": "2026-11-21"
     }
   ],
   "deterioration": [
@@ -461,7 +504,9 @@
       "avoid_basement": "我離開通往地下室的方向，留在乾燥的一樓。",
       "power_off": "我完成關電，配電箱的操作已結束。",
       "upper_floor": "我往上移動，和低處的水拉開了距離。",
-      "send_location": "我發出位置通報，把受困者所在的樓層說清楚。"
+      "send_location": "我發出位置通報，把受困者所在的樓層說清楚。",
+      "bring_light_supplies": "我只拿手邊的輕便物品，沒有往低處找東西。",
+      "stay_together": "我和阿敏留在樓上可供定位的位置，兩人沒有分開。"
     },
     "questionSpeaker": {
       "isolate": "阿敏",

@@ -240,7 +240,8 @@ const fireRuntime = {
   },
   review(spec, state) {
     const review = ScenarioEngineV3.review(spec,{...state,node:spec.nodes[state.node].id});
-    return `完成 ${state.completed.length}/${spec.nodes.length} 階段\n${review}`;
+    const total = spec.nodes.filter((node, index) => !node.aftercareComplete || index === state.node).length;
+    return `完成 ${state.completed.length}/${total} 階段\n${review}`;
   }
 };
 

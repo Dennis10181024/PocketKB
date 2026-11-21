@@ -186,7 +186,8 @@
     if (blocked) {
       const dangerous = blocked.action.unsafeWhenBlocked;
       state.events.push({ node: node.id, action: blocked.action.id, kind: dangerous ? 'hazard' : 'blocked' });
-      return result(dangerous ? 'risk' : 'blocked', blocked.action.blockedMessage || `${blocked.reason}，因此沒有執行。請改用目前仍可行的方法。`);
+      const fact = Object.entries(blocked.action.requires?.facts || {}).find(([key,value])=>state.facts[key]!==value)?.[0];
+      return result(dangerous ? 'risk' : 'blocked', blocked.action.blockedByFact?.[fact] || blocked.action.blockedMessage || `${blocked.reason}，因此沒有執行。請改用目前仍可行的方法。`);
     }
 
     for (const action of available) {
@@ -234,11 +235,24 @@
       return result('partial', `已記住：${fresh.map(action => action.label).join('、')}。本階段仍有必要行動尚未完成。`);
     }
 
+    if (node.aftercareComplete) {
+      state.sessionStatus = 'COMPLETED';
+      return result('completed', fresh.at(-1).effect);
+    }
+
     if (node.terminal) {
       applyPatch(state, node.terminal);
       state.sessionStatus = node.terminal.sessionStatus;
       state.completionKind = node.terminal.completionKind;
-      return result('completed', finish(spec,state) || node.terminal.message);
+      const ending = finish(spec,state) || node.terminal.message;
+      if (state.onlineExperience && state.injuryLevel===spec.aftercare?.injuryLevel) {
+        state.sessionStatus = 'ACTIVE';
+        state.node = spec.aftercare.node;
+        state.accepted = [];
+        state.nodeTurn = 0;
+        return result('transition', ending);
+      }
+      return result('completed', ending);
     }
 
     applyPatch(state, node.onComplete);
@@ -303,7 +317,9 @@
     const actionById = Object.fromEntries(spec.actions.map(action => [action.id, action.label]));
     const completedIds = [...new Set(state.events.filter(event => event.kind === 'action').map(event => event.action))];
     const hazardIds = [...new Set(state.events.filter(event => event.kind === 'hazard').map(event => event.action))];
-    const requiredIds = [...new Set(spec.nodes.flatMap(node => node.required || []))];
+    const requiredIds = [...new Set(spec.nodes
+      .filter(node => !node.aftercareComplete || state.node === node.id)
+      .flatMap(node => node.required || []))];
     const missingIds = requiredIds.filter(id => !completedIds.includes(id));
     const list = values => values.length ? values.map(value => `- ${value}`).join('\n') : '- 無';
     return [

@@ -13,6 +13,8 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Update
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.pocketkb.android.core.ChatMessage
 import com.pocketkb.android.core.ChatRole
 import com.pocketkb.android.core.DrillAnalytics
@@ -62,8 +64,16 @@ data class DrillMessageEntity(
     val judgeReason: String?,
 )
 
+@Entity(tableName = "drill_turns", primaryKeys = ["sessionId", "ordinal"])
+data class DrillTurnEntity(val sessionId: String, val ordinal: Int, val json: String)
+
 @Dao
 interface DrillHistoryDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTurn(turn: DrillTurnEntity)
+
+    @Query("SELECT json FROM drill_turns WHERE sessionId = :id ORDER BY ordinal")
+    suspend fun researchTurns(id: String): List<String>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSession(session: DrillSessionEntity)
 
@@ -84,8 +94,8 @@ interface DrillHistoryDao {
 }
 
 @Database(
-    entities = [DrillSessionEntity::class, DrillMessageEntity::class],
-    version = 1,
+    entities = [DrillSessionEntity::class, DrillMessageEntity::class, DrillTurnEntity::class],
+    version = 2,
     exportSchema = false,
 )
 abstract class PocketKbDatabase : RoomDatabase() {
@@ -100,7 +110,11 @@ abstract class PocketKbDatabase : RoomDatabase() {
                     context.applicationContext,
                     PocketKbDatabase::class.java,
                     "pocketkb_android.db",
-                ).build().also { instance = it }
+                ).addMigrations(object : Migration(1, 2) {
+                    override fun migrate(db: SupportSQLiteDatabase) {
+                        db.execSQL("CREATE TABLE IF NOT EXISTS drill_turns (sessionId TEXT NOT NULL, ordinal INTEGER NOT NULL, json TEXT NOT NULL, PRIMARY KEY(sessionId, ordinal))")
+                    }
+                }).build().also { instance = it }
             }
         }
     }
@@ -111,6 +125,8 @@ class DrillHistoryRepository(
 ) {
     fun recentSessions(): Flow<List<DrillSessionEntity>> = dao.recentSessions()
     suspend fun messagesForSession(id: String): List<DrillMessageEntity> = dao.messagesForSession(id)
+    suspend fun appendResearchTurn(id: String, ordinal: Int, json: String) = dao.insertTurn(DrillTurnEntity(id, ordinal, json))
+    suspend fun exportResearch(id: String): String = dao.researchTurns(id).joinToString("\n", postfix = "\n")
 
     suspend fun startSession(
         id: String,

@@ -20,7 +20,7 @@ async function json(route, body) {
   return value;
 }
 async function streamTurn(id,request,onPart,signal) {
-  const response = await fetch('/api/sessions/'+id+'/turn/stream',post(request,AbortSignal.any([signal,AbortSignal.timeout(12500)])));
+  const response = await fetch('/api/sessions/'+id+'/turn/stream',post(request,AbortSignal.any([signal,AbortSignal.timeout(26000)])));
   if (!response.ok) throw new Error('線上回合未完成。');
   const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
   let buffer = '';
@@ -83,16 +83,18 @@ function render() {
       <button class="primary" id="onlineStart" ${online.busy||!online.catalog.length?'disabled':''}>開始線上練習</button></section>
       <details><summary>演練紀錄</summary>${records().map(row=>`<p>${esc(row.title)} · ${esc(row.ending_type==='EXITED'?'已退出':row.ending?.type || '已結束')}</p>`).join('') || '<p>目前沒有紀錄。</p>'}</details>` : `
       <h2>${esc(s.scene.title)}</h2>
-      ${s.offline?'<p class="offline-label" role="status">目前使用離線判讀</p>':''}
+      ${s.offline?'<p class="offline-label">目前使用離線判讀</p>':''}
+      ${s.fallbackReason || s.onlineRecovered ? `<p role="status">${esc(presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered))}</p>` : ''}
       ${s.terminal ? `<section class="fire-review drill-panel" aria-live="polite">
-        <h3>${esc(s.ending?.type)}</h3><p class="drill-notice">${esc(s.ending?.injury)}</p><p>${esc(s.ending?.text)}</p>
+        <h3>${esc(s.ending?.type)}</h3><p class="drill-notice">${esc(s.ending?.injury)}</p><p class="online-reply">${esc(s.ending?.text)}</p>
         <h3>簡單回顧</h3><p>結果：${esc(s.ending?.type)} · ${esc(s.ending?.injury)}</p>
         ${s.ending?.decisions.length ? `<h4>關鍵決策</h4><ul>${s.ending.decisions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
         ${s.ending?.causes.length ? `<h4>造成傷勢的步驟</h4><ul>${s.ending.causes.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
+        ${(s.ending?.lessons || []).map(lesson=>`<h4>這個行動為什麼危險</h4><p>${esc(lesson.why)}</p><h4>下次可以怎麼做</h4><p>${esc(lesson.next)}</p>${lesson.sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a>`).join('')}`).join('')}
       </section>` : `
       <section class="task-box drill-panel" ${online.timing ? `data-first-ms="${online.timing.first}" data-complete-ms="${online.timing.complete}"` : ''}>
         <h3>現在發生什麼</h3>
-        <div class="judge-box" id="currentNarration" aria-live="${online.busy?'off':'polite'}"><p class="online-reply">${esc(s.reply || node.situation)}</p></div>
+        <div class="judge-box" id="currentNarration" aria-live="${online.busy?'off':'polite'}"><p class="online-reply">${esc(s.reply || s.scene.opening || node.situation)}</p></div>
         ${s.scene.status?.length ? `<ul class="drill-status">${s.scene.status.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
         <h3>我面臨什麼決定</h3><p>${esc(node.task)}</p>
       </section>
@@ -136,7 +138,7 @@ function render() {
 async function start() {
   online.busy=true;online.error='';render();
   try {
-    online.session=await json('/api/sessions',{scenarioId:online.selected}).catch(()=>localResult({sessionId:crypto.randomUUID(),scenarioId:online.selected,revision:-1},null));
+    online.session=await json('/api/sessions',{scenarioId:online.selected}).catch(()=>localResult({sessionId:crypto.randomUUID(),scenarioId:online.selected,revision:-1,unregistered:true},null));
   } catch (error) {online.error=error.message;}
   finally {online.busy=false;suspendIdle(true);render();syncIdle();document.querySelector('#onlineInput')?.focus();}
 }
@@ -144,13 +146,19 @@ function localResult(session,request) {
   const spec=specFor(session.scenarioId);
   const engine=globalThis.ScenarioEngineV3;
   const before=session.state || engine.create(spec,{onlineExperience:true});
-  let result=request?.intent==='action'?engine.step(spec,before,request.text,request.intent):{state:before,kind:'hint',message:session.reply || ''};
+  let result=request?.intent==='action'?engine.rawStep(spec,before,request.text,request.intent):{state:before,kind:'hint',message:session.reply || ''};
   if (result.kind==='question') {
-    const answer=spec.onlineExperience.questions.find(item=>new RegExp(item.pattern).test(request.text));
+    const answer=spec.onlineExperience.questions.find(item=>(!item.nodes || item.nodes.includes(before.node)) && new RegExp(item.pattern).test(request.text));
     const proposed=spec.onlineExperience.questionSpeaker[before.node];
     const speaker=proposed==='接線員' && !before.events.some(event=>event.action==='call')?spec.npc.name:proposed || spec.npc.name;
     result={...result,state:before,sourceIds:answer?.sourceIds || [],
       message:answer?`${speaker}說：「${answer.answer}」`:'眼前的資訊還不足以回答這個問題。'};
+  } else if (request?.intent==='action') {
+    result=engine.settleOnline(spec,before,result,request.text,request.intent);
+    result=globalThis.DrillEvents.advance(spec,result,request.text,before);
+    const developments=result.state.events.slice(before.events.length)
+      .filter(event=>['environment_change','npc_proposal','npc_emotion_prompt','npc_emotion'].includes(event.kind));
+    if (developments.length) result={...result,message:[result.message,...developments.map(event=>event.message)].filter(Boolean).join(' ')};
   }
   const state=result.state;
   const node=spec.nodes.find(item=>item.id===state.node);
@@ -171,11 +179,27 @@ function localResult(session,request) {
     hint_trigger:hintContext?.trigger,hint_selected_index:request.hintSelectedIndex,hint_edited_before_submit:request.hintEditedBeforeSubmit,
     actionIds:engine.adoptedActionIds(before,state)}:null;
   const reply=presentation.sceneText(result.message);
-  return {...session,revision:session.revision+1,state,terminal,offline:true,localOnly:true,reply,
+  const queue = request ? [...(session.queue || []),request] : [];
+  return {...session,revision:session.revision+1,state,terminal,offline:true,localOnly:true,reply,queue,fallbackReason:'CLIENT_TRANSPORT',onlineRecovered:false,
     suggestions:hintContext?.options || [],hintContext,invalidStreak,decisions:[...(session.decisions || []),...(decision?[decision]:[])],
     citations:globalThis.DrillEvents.citations(spec,before,result),
     ending:terminal?presentation.summary(spec,state,reply):null,
-    scene:{title:spec.title,node:!request?{...node,situation:node.situation+' '+spec.npc.online.proposal}:node,status:presentation.status(spec,state)}};
+    scene:{title:spec.title,opening:spec.opening,node:{...node,task:node.decisionPrompt || node.task},status:presentation.status(spec,state)}};
+}
+
+async function resume(snapshot,signal) {
+  let base = snapshot.resumeFrom || {sessionId:snapshot.sessionId,revision:snapshot.revision-(snapshot.queue || []).length};
+  if (snapshot.unregistered && !snapshot.resumeFrom) {
+    base = await json('/api/sessions',{scenarioId:snapshot.scenarioId});
+    snapshot.resumeFrom = base;
+  }
+  let settled;
+  for (const queued of snapshot.queue || []) {
+    settled=await streamTurn(base.sessionId,{...queued,revision:base.revision,rulesOnly:true},()=>{},signal);
+    base={sessionId:settled.sessionId,revision:settled.revision};
+  }
+  if (settled && presentation.resumeState(settled.state)!==presentation.resumeState(snapshot.state)) throw new Error('遠端與最後確認場景不同');
+  return base;
 }
 
 async function send(text,intent='action',hintTrigger) {
@@ -192,12 +216,14 @@ async function send(text,intent='action',hintTrigger) {
   try {
     let result;
     try {
-      result=snapshot.localOnly?localResult(snapshot,request):await streamTurn(snapshot.sessionId,request,part=>{
+      const base = snapshot.localOnly ? await resume(snapshot,controller.signal) : snapshot;
+      result=await streamTurn(base.sessionId,{...request,revision:base.revision},part=>{
         if (controller.signal.aborted || intent==='hint') return;
         preview+=part;
         const output=document.querySelector('#currentNarration .online-reply');
         if (output) {output.textContent=preview;first ??= performance.now()-started;}
       },controller.signal);
+      if (snapshot.localOnly || snapshot.offline) result.onlineRecovered = !result.offline;
     } catch {
       if (controller.signal.aborted) return;
       result=localResult(snapshot,request);

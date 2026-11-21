@@ -1,10 +1,10 @@
 {
   "id": "earthquake_school",
   "version": "3.1.0",
-  "title": "地震：學校教室",
+  "title": "上課鐘響後",
   "hazard": "earthquake",
   "locationProfile": "school_classroom",
-  "opening": "上課期間發生強烈搖晃。教室位於三樓，天花板燈具晃動，門外樓梯狀況尚未確認。老師正在要求所有人先保護自己。",
+  "opening": "上午十點，我和同學小維在教室上課。桌面突然晃起來，我聽見物品碰撞的聲音。老師就在教室前方，我看見小維轉身望向出口。",
   "notice": "演練依消防與校園防災原則設計；實際狀況依校方及救援人員指示。",
   "learningObjectives": [
     "強烈搖晃時先趴下、掩護、穩住，不急著往外跑",
@@ -167,6 +167,33 @@
       "sourceIds": [
         "source-0"
       ]
+    },
+    {
+      "id": "padding_head",
+      "label": "用手邊物品護住頭頸",
+      "pattern": "用(?:手邊|手上)?(?:書包|防災頭套|軟墊).*(?:護|遮).*(?:頭|頸)",
+      "sourceIds": [
+        "campus-evac"
+      ],
+      "effect": "我把手邊的緩衝物靠近頭頸，仍留在目前的位置。"
+    },
+    {
+      "id": "walk_steadily",
+      "label": "依隊伍步行且避免推擠",
+      "pattern": "(?:不推擠|不推不跑|依序步行|排隊慢慢走|保持隊伍間距)",
+      "sourceIds": [
+        "campus-evac"
+      ],
+      "effect": "我把步伐放慢，和前面的人保持間距。"
+    },
+    {
+      "id": "tell_teacher_support",
+      "label": "告知老師需要協助的人",
+      "pattern": "(?:向|叫|告訴|通知|通報|回報).{0,5}老師.{0,10}(?:有人需要幫忙|有人需要協助|同學行動不便)",
+      "sourceIds": [
+        "campus-evac"
+      ],
+      "effect": "我告訴老師哪裡有人需要協助，由他協調同學和引導人員。"
     }
   ],
   "nodes": [
@@ -188,7 +215,8 @@
         "jump_window",
         "emotion_supportive",
         "emotion_unsupportive",
-        "emotion_neutral"
+        "emotion_neutral",
+        "padding_head"
       ],
       "hazards": {
         "run_elevator": {
@@ -229,7 +257,8 @@
           }
         ],
         "focus": "目前仍在搖晃階段，留意自己和同伴的位置。"
-      }
+      },
+      "decisionPrompt": "教室還在晃，我眼前要做什麼決定？"
     },
     {
       "id": "evacuate",
@@ -247,7 +276,10 @@
         "return_bag",
         "emotion_supportive",
         "emotion_unsupportive",
-        "emotion_neutral"
+        "emotion_neutral",
+        "padding_head",
+        "walk_steadily",
+        "tell_teacher_support"
       ],
       "hazards": {},
       "terminal": {
@@ -277,7 +309,8 @@
           }
         ],
         "focus": "目前要處理的是指定動線和集合點。"
-      }
+      },
+      "decisionPrompt": "老師回到隊伍前方，我打算怎麼應對？"
     },
     {
       "id": "injury_handoff",
@@ -291,7 +324,8 @@
         "report_injury",
         "emotion_supportive",
         "emotion_unsupportive",
-        "emotion_neutral"
+        "emotion_neutral",
+        "tell_teacher_support"
       ],
       "hazards": {},
       "terminal": {
@@ -318,7 +352,8 @@
           }
         ],
         "focus": "目前要讓在場的老師知道受傷者的位置。"
-      }
+      },
+      "decisionPrompt": "我現在能和老師說話，我打算怎麼處理眼前的狀況？"
     }
   ],
   "reflection": "地震當下先就地保護，主要搖晃停止後才依校方確認的路線集體疏散。",
@@ -328,6 +363,13 @@
       "title": "地震防災須知",
       "url": "https://www.nfa.gov.tw/pro/index.php?act=article&article_id=587&code=print&ids=113",
       "id": "source-0"
+    },
+    {
+      "id": "campus-evac",
+      "title": "校園地震避難掩護疏散流程",
+      "url": "https://www.hs.ntnu.edu.tw/static/webroot/G162269152981136/application/NW175800402062082.pdf",
+      "agency": "國立臺灣師範大學附屬高級中學",
+      "checked": "2026-11-21"
     }
   ],
   "deterioration": [
@@ -478,7 +520,10 @@
     "actionBeats": {
       "drop_cover_hold": "我把頭頸縮進掩護範圍，手抓穩身邊的支撐物。",
       "wait_stop": "地面漸穩，我聽見老師確認指定樓梯可以通行。",
-      "follow_stairs": "我跟上往下疏散的隊伍，腳下換成一階階的踏面。"
+      "follow_stairs": "我跟上往下疏散的隊伍，腳下換成一階階的踏面。",
+      "padding_head": "我把手邊的緩衝物靠近頭頸，仍留在目前的位置。",
+      "walk_steadily": "我把步伐放慢，和前面的人保持間距。",
+      "tell_teacher_support": "我告訴老師哪裡有人需要協助，由他協調同學和引導人員。"
     },
     "questionSpeaker": {
       "shaking": "老師",

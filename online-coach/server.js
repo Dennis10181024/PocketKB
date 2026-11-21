@@ -3,6 +3,7 @@ const http = require('node:http');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { ConversationCoach, createOpenAIProvider, CoachError } = require('./coach');
+const {createSessionWriter} = require('./session-log');
 const root = path.resolve(__dirname, '../web-pwa');
 function createServer(coach) {
   return http.createServer(async (req, res) => {
@@ -72,7 +73,7 @@ function createServer(coach) {
 if (require.main === module) {
   const port = Number(process.env.POCKETKB_PORT || 5175);
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('POCKETKB_PORT 必須介於 1 和 65535。');
-  const coach = new ConversationCoach(createOpenAIProvider({ apiKey: process.env.OPENAI_API_KEY, model: process.env.OPENAI_MODEL || 'gpt-6.1-terra' }), { maxCalls: Number(process.env.POCKETKB_MAX_CALLS || 100) });
+  const coach = new ConversationCoach(createOpenAIProvider({ apiKey: process.env.OPENAI_API_KEY, model: process.env.OPENAI_MODEL || 'gpt-6.1-terra' }), { maxCalls: Number(process.env.POCKETKB_MAX_CALLS || 100), record:createSessionWriter() });
   createServer(coach).listen(port, '127.0.0.1', () => console.log(`PocketKB 線上演練：http://127.0.0.1:${port}/online.html\nGPT 金鑰：${coach.provider.ready ? '已設定' : '尚未設定（可用規則續玩）'}\n模型：${coach.provider.model}`));
 }
 module.exports = { createServer };

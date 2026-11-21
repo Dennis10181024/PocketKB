@@ -1,6 +1,8 @@
 package com.pocketkb.android.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -491,8 +493,18 @@ private fun CategoryChip(label: String, selected: Boolean, onClick: () -> Unit) 
 
 @Composable
 private fun HistoryScreen(sessions: List<DrillSessionEntity>, actions: PocketKbViewModel) {
+    var exporting by rememberSaveable { mutableStateOf<String?>(null) }
+    var exportNotice by rememberSaveable { mutableStateOf("") }
+    val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/x-ndjson")) { uri ->
+        val id = exporting
+        if (uri != null && id != null) actions.exportResearch(id, uri) { success ->
+            exportNotice = if (success) "已匯出研究紀錄。" else "無法寫入選取的檔案。"
+        }
+        exporting = null
+    }
     LazyColumn(contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item { PageHeading("每次練習，都算數", "回顧最近 20 次演練，了解自己的決策過程。") }
+        if (exportNotice.isNotBlank()) item { Text(exportNotice) }
         if (sessions.isEmpty()) item {
             Surface(color = PocketColors.Surface, shape = cardShape) {
                 Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -511,7 +523,8 @@ private fun HistoryScreen(sessions: List<DrillSessionEntity>, actions: PocketKbV
                 var saved by remember(session.id, session.endedAtMs) { mutableStateOf<List<com.pocketkb.android.data.DrillMessageEntity>>(emptyList()) }
                 var showChat by remember { mutableStateOf(false) }
                 LaunchedEffect(session.id, session.endedAtMs) { saved = actions.savedMessages(session.id) }
-                saved.lastOrNull { it.role == ChatRole.SYSTEM.name }?.let { Text(it.content, lineHeight = 26.sp) }
+                saved.lastOrNull { it.role == ChatRole.SYSTEM.name && !it.content.startsWith("{") }?.let { Text(it.content, lineHeight = 26.sp) }
+                TextButton(onClick = { exporting = session.id; export.launch("PocketKB-${session.id}.jsonl") }) { Text("匯出研究紀錄（JSONL）") }
                 TextButton(onClick = { showChat = !showChat }) { Text(if (showChat) "收起對話" else "查看完整對話") }
                 if (showChat) saved.filter { it.role != ChatRole.SYSTEM.name }.forEach { Text(it.content, lineHeight = 26.sp) }
             }

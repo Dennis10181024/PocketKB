@@ -3,7 +3,7 @@
     const state = result.state;
     if (!spec.deterioration?.length || !text) return result;
     if (state.onlineExperience) {
-      if (['question','observe','hint','locked','failed','blocked'].includes(result.kind) ||
+      if (['question','observe','hint','locked','failed'].includes(result.kind) ||
           /如果|假如|假設|想像|幻想|萬一|要是/.test(text) ||
           state.events.slice(before?.events.length ?? state.events.length).some(event=>event.kind==='npc_emotion')) return result;
       const elapsed = (state.elapsed || 0) + 1;

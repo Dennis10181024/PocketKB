@@ -25,7 +25,7 @@ class DiagnosisRegressionTest {
     }
 
     @Test fun verifiesEveryDeclaredFactAndResourceCondition() {
-        val files = listOf("earthquake-school", "earthquake-home-trapped", "flood-low-home", "landslide-mountain-road", "barrier-lake-downstream")
+        val files = listOf("fire-dorm", "earthquake-school", "earthquake-home-trapped", "flood-low-home", "landslide-mountain-road", "barrier-lake-downstream")
         var checks = 0
         for (file in files) {
             val json = spec("v3/$file.json")
@@ -57,7 +57,21 @@ class DiagnosisRegressionTest {
                 }
             }
         }
-        assertEquals(10, checks)
+        assertEquals(14, checks)
+    }
+
+    @Test fun blockedNoviceFireActionsExplainTheSceneWithoutChangingSafetyFacts() {
+        val runtime = ScenarioRuntimeV3(spec("v3/fire-dorm.json"))
+        val start = runtime.create(firstAidEnabled = true)
+        val towel = runtime.step(start, "拿濕毛巾堵住門口")
+        assertEquals("blocked", towel.kind)
+        assertTrue(towel.message.contains("布料貼不住"))
+        assertEquals(start.elapsed + 1, towel.state.elapsed)
+        val openWindow = runtime.step(towel.state, "尋找對外窗打開並呼救")
+        assertEquals("blocked", openWindow.kind)
+        assertTrue(openWindow.message.contains("房門還開著"))
+        assertEquals("false", openWindow.state.facts["doorClosed"])
+        assertEquals(start.elapsed + 2, openWindow.state.elapsed)
     }
 
     @Test fun transportTimeoutRunsLocalTurnOnceAndCancellationDoesNotReplay() = runBlocking {

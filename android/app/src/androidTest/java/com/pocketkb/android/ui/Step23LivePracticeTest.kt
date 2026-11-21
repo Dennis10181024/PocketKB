@@ -28,7 +28,7 @@ class Step23LivePracticeTest {
         val timingsOnly = InstrumentationRegistry.getArguments().getString("step23Timings") == "true"
         rule.onNodeWithText("開始情境演練").performClick()
         rule.onNode(isToggleable()).performClick()
-        val title = "宿舍濃煙：關門待救"
+        val title = "深夜的宿舍"
         rule.onNodeWithText(title, substring = false).performScrollTo().performClick()
         if (!timingsOnly) screenshot("01-reminder")
         rule.onNodeWithText("準備好了，開始").performClick()
@@ -63,18 +63,19 @@ class Step23LivePracticeTest {
         restart()
         send("我徒手抓住熱門把")
         send("我關門")
-        finishFire()
+        finishFire(withAid = true)
         waitFor("輕傷")
         rule.onNodeWithTag("scenario_review_outcome").performScrollTo()
         screenshot("07-injury")
     }
 
-    private fun finishFire(called: Boolean = false) {
+    private fun finishFire(called: Boolean = false, withAid: Boolean = false) {
         if (!called) send("我撥119")
         send("我告知地址A棟宿舍")
         send("我回報五樓503室")
         send("我等待救援")
-        send("我保持通訊並依消防人員指示", terminal = true)
+        send("我保持通訊並依消防人員指示", terminal = !withAid)
+        if (withAid) send("沖脫泡蓋送", terminal = true)
     }
 
     private fun restart() {

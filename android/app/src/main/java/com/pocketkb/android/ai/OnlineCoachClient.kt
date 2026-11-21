@@ -31,7 +31,7 @@ class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
         val connection = URL(baseUrl.trimEnd('/') + path).openConnection() as HttpURLConnection
         try {
             connection.connectTimeout = 2_000
-            connection.readTimeout = if (onPart != null) 12_500 else 4_000
+            connection.readTimeout = if (onPart != null) 26_000 else 4_000
             connection.requestMethod = if (body == null) "GET" else "POST"
             if (body != null) {
                 connection.doOutput = true
@@ -105,6 +105,7 @@ object OnlineCoachState {
                     it.getBoolean("handled"), it.optString("emotion").takeUnless { value -> value == "null" })
             },
             hints = state.objects("hints").map { FireHint(it.getString("node"), it.getInt("level")) },
+            firstAidEnabled = state.optBoolean("onlineExperience"),
             facts = facts.keys().asSequence().associateWith { facts.get(it).toString() },
             events = state.objects("events").map { event -> ScenarioEventV3(
                 node = event.getString("node"), action = event.optString("action").takeIf { it.isNotBlank() && it != "null" },

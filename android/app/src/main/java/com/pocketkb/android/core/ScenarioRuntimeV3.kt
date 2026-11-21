@@ -35,6 +35,7 @@ data class ScenarioStateV3(
     val injuryWorsened: Boolean? = null,
     val npc: ScenarioNpcV3? = null,
     val hints: List<FireHint> = emptyList(),
+    val firstAidEnabled: Boolean = false,
 )
 
 data class ScenarioResultV3(
@@ -71,7 +72,7 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
     private val actions = spec.objects("actions")
     private val nodes = spec.objects("nodes")
 
-    fun create(): ScenarioStateV3 {
+    fun create(firstAidEnabled: Boolean = false): ScenarioStateV3 {
         val initial = spec.getJSONObject("initialState")
         return ScenarioStateV3(
             scenarioId = spec.getString("id"),
@@ -83,6 +84,7 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
             variantId = spec.optString("variantId", "base"),
             exposure = initial.optJSONObject("exposure").toIntMap(),
             npc = spec.optJSONObject("npc")?.let { ScenarioNpcV3(it.getString("position"), it.getString("proposal")) },
+            firstAidEnabled = firstAidEnabled,
         )
     }
 
@@ -139,6 +141,8 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
     fun currentTitle(state: ScenarioStateV3): String = node(state).getString("title")
     fun currentSituation(state: ScenarioStateV3): String = node(state).getString("situation")
     fun currentTask(state: ScenarioStateV3): String = node(state).getString("task")
+    fun practiceDecision(state: ScenarioStateV3): String = node(state).optString("decisionPrompt", currentTask(state))
+    fun practiceLessons(state: ScenarioStateV3): List<JSONObject> = state.events.filter { it.kind == "hazard" }.mapNotNull { event -> actions.firstOrNull { it.optString("id") == event.action } }.distinctBy { it.optString("id") }
     fun practiceSuggestions(state: ScenarioStateV3): List<String> = node(state).optJSONObject("experience")?.strings("suggestions").orEmpty()
     fun practiceObservation(state: ScenarioStateV3): String = node(state).optString("observation").ifBlank { currentSituation(state) }
     fun practiceActionLabel(id: String): String = actions.firstOrNull { it.optString("id") == id }?.optString("label") ?: id
@@ -196,7 +200,8 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         requirements.optJSONObject("facts")?.let { facts ->
             facts.keys().forEach { key ->
                 if (state.facts[key] != facts.get(key).toString()) {
-                    return "${action.getString("label")}的現場條件目前不成立"
+                    return action.optJSONObject("blockedByFact")?.optString(key)?.takeIf { it.isNotBlank() }
+                        ?: "${action.getString("label")}的現場條件目前不成立"
                 }
             }
         }
@@ -301,6 +306,18 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
             }
         }
         val state = result.state
+        if (state.firstAidEnabled && result.kind == "blocked") {
+            val elapsed = state.elapsed + 1
+            val event = spec.objects("deterioration").firstOrNull { it.optInt("onlineAt", it.optInt("at")) == elapsed }
+            val change = event?.optJSONObject("onlineMessageByNode")?.optString(state.node)?.takeIf { it.isNotBlank() }
+                ?: event?.optString("message")
+            val next = patch(state, event).copy(
+                elapsed = elapsed,
+                events = if (change == null) state.events else state.events +
+                    ScenarioEventV3(state.node, kind = "environment_change", message = change, eventId = event?.optString("id")),
+            )
+            return result.copy(state = next, message = listOfNotNull(result.message, change).joinToString(" "))
+        }
         val clock = DrillLanguage.advance(spec, result.kind, text, state.elapsed, state.consecutiveQuestions) ?: return result
         val event = clock.event
         val message = event?.getString("message")
@@ -391,7 +408,11 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         }?.let { (action, reason) ->
             val dangerous = action.optBoolean("unsafeWhenBlocked")
             state = state.copy(events = state.events + ScenarioEventV3(node.getString("id"), action.getString("id"), if (dangerous) "hazard" else "blocked"))
-            return result(if (dangerous) "risk" else "blocked", action.optString("blockedMessage", "$reason，因此沒有執行。請改用目前仍可行的方法。"))
+            val specific = action.optJSONObject("blockedByFact")?.let { messages ->
+                messages.keys().asSequence().map { messages.getString(it) }.firstOrNull { it == reason }
+            }
+            return result(if (dangerous) "risk" else "blocked", specific
+                ?: action.optString("blockedMessage", "$reason，因此沒有執行。請改用目前仍可行的方法。"))
         }
 
         available.forEach { action ->
@@ -442,6 +463,11 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
             return result("partial", "已記住：${fresh.joinToString("、") { it.getString("label") }}。本階段仍有必要行動尚未完成。")
         }
 
+        if (node.optBoolean("aftercareComplete")) {
+            state = state.copy(sessionStatus = "COMPLETED")
+            return result("completed", fresh.last().getString("effect"))
+        }
+
         node.optJSONObject("terminal")?.let { terminal ->
             state = patch(state, terminal).copy(
                 sessionStatus = terminal.getString("sessionStatus"),
@@ -449,6 +475,11 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
             )
             state = finish(state)
             val ending = spec.optJSONObject("endingMessages")?.optJSONObject(state.endingType ?: "")
+            val care = spec.optJSONObject("aftercare")
+            if (state.firstAidEnabled && care != null && state.injuryLevel == care.getString("injuryLevel")) {
+                state = state.copy(sessionStatus = "ACTIVE", node = care.getString("node"), accepted = emptyList(), nodeTurn = 0)
+                return result("transition", ending?.optString(state.injuryLevel.orEmpty()).orEmpty())
+            }
             return result("completed", ending?.optString(state.injuryLevel ?: "", terminal.getString("message")) ?: terminal.getString("message"))
         }
 
@@ -473,7 +504,8 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         val actionLabels = actions.associate { it.getString("id") to it.getString("label") }
         val completedIds = state.events.filter { it.kind == "action" }.mapNotNull { it.action }.distinct()
         val hazardIds = state.events.filter { it.kind == "hazard" }.mapNotNull { it.action }.distinct()
-        val requiredIds = nodes.flatMap { it.strings("required") }.distinct()
+        val requiredIds = nodes.filterNot { it.optBoolean("aftercareComplete") && it.getString("id") != state.node }
+            .flatMap { it.strings("required") }.distinct()
         val missingIds = requiredIds.filterNot { it in completedIds }
         val timeline = state.events.mapNotNull { event ->
             val actionLabel = event.action?.let { actionLabels[it] ?: it }

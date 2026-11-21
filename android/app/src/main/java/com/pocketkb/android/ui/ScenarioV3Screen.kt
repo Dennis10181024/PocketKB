@@ -1,5 +1,8 @@
 package com.pocketkb.android.ui
 
+import com.pocketkb.android.core.objects
+import com.pocketkb.android.core.strings
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,6 +77,12 @@ internal data class ScenarioSourceUiModel(
     val url: String,
 )
 
+internal data class ScenarioLessonUiModel(
+    val why: String,
+    val next: String,
+    val sources: List<ScenarioSourceUiModel>,
+)
+
 internal data class ScenarioV3UiModel(
     val sessionId: String?,
     val scenarioTitle: String,
@@ -106,6 +115,8 @@ internal data class ScenarioV3UiModel(
     val causes: List<String> = emptyList(),
     val roundSources: List<String> = emptyList(),
     val roundStartedAt: Long = 0,
+    val connectionNotice: String = "",
+    val criticalLessons: List<ScenarioLessonUiModel> = emptyList(),
 )
 
 @Composable
@@ -170,9 +181,8 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
             onlineError = state.onlineError,
             progress = (runtime.nodeIndex(session) + if (session.sessionStatus == "ACTIVE") 0f else 1f) /
                 scenario.steps.size.coerceAtLeast(1),
-            situation = runtime.currentSituation(session) + if (state.onlineRevision == 0 && state.onlineEnabled) " " +
-                runtime.spec.optJSONObject("npc")?.optJSONObject("online")?.optString("proposal").orEmpty() else "",
-            task = runtime.currentTask(session),
+            situation = if (state.onlineRevision == 0) scenario.openingLine else runtime.currentSituation(session),
+            task = runtime.practiceDecision(session),
             resources = session.resources,
             messages = state.messages,
             suggestedActions = runtime.suggestedActions(session),
@@ -193,6 +203,16 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
             causes = session.injuryCauses.map { "第 ${it.turn} 個決策 · ${runtime.practiceActionLabel(it.action)}" },
             roundSources = state.roundSources,
             roundStartedAt = state.roundStartedAt,
+            connectionNotice = state.connectionNotice,
+            criticalLessons = if (session.endingType == "CRITICAL_FAILURE") runtime.practiceLessons(session).map { action ->
+                val sourceIds = action.strings("sourceIds")
+                ScenarioLessonUiModel(
+                    action.optString("consequenceTemplate", action.optString("consequence")),
+                    action.optString("teaching"),
+                    runtime.spec.objects("sources").filter { it.getString("id") in sourceIds }
+                        .map { ScenarioSourceUiModel(it.getString("agency"), it.getString("title"), it.getString("url")) },
+                )
+            } else emptyList(),
         ),
         onLeave = onLeave,
         onObserve = {},
@@ -268,6 +288,7 @@ internal fun ScenarioV3Content(
             }
         }
         if (model.onlineStatus == "目前使用離線判讀") Text(model.onlineStatus, color = PocketColors.SafetyOrange)
+        if (model.connectionNotice.isNotBlank()) Text(model.connectionNotice, Modifier.semantics { liveRegion = LiveRegionMode.Polite }, color = PocketColors.Info)
         if (model.onlineError.isNotBlank()) Text(model.onlineError, color = PocketColors.EmergencyRed)
 
         if (model.active) {
@@ -329,6 +350,17 @@ internal fun ScenarioV3Content(
                     if (model.causes.isNotEmpty()) {
                         Text("造成傷勢的步驟", fontWeight = FontWeight.Bold)
                         model.causes.forEach { Text(it) }
+                    }
+                    model.criticalLessons.forEach { (why, next, sources) ->
+                        Text("這個行動為什麼危險", fontWeight = FontWeight.Bold)
+                        Text(sceneWords(why))
+                        Text("下次可以怎麼做", fontWeight = FontWeight.Bold)
+                        Text(sceneWords(next))
+                        sources.forEach { source ->
+                            TextButton(onClick = { onOpenSource(source.url) }, modifier = Modifier.heightIn(min = 48.dp)) {
+                                Text(source.title)
+                            }
+                        }
                     }
                 }
             }

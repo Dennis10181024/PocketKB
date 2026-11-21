@@ -6,6 +6,7 @@ const V3 = require('../web-pwa/scenario-engine-v3');
 const Events = require('../web-pwa/drill-events');
 const Presentation = require('../web-pwa/drill-presentation');
 const Experience = require('./experience');
+const {researchTurn} = require('./session-log');
 const directory = path.join(__dirname, '../web-pwa/scenarios');
 const specs = new Map();
 for (const file of fs.readdirSync(path.join(directory, 'v3')).filter(f => f.endsWith('.json'))) {
@@ -24,7 +25,7 @@ function scene(spec, state) {
   const node = currentNode(spec, state);
   const proposal = state.onlineExperience && state.sessionStatus==='ACTIVE' && !state.npc.handled && !state.elapsed ? spec.npc.online.proposal : '';
   return { title: spec.title, opening: spec.opening, notice: spec.notice,
-    node:{...node,situation:Presentation.sceneText(proposal ? `${node.situation} ${proposal}` : node.situation)}, state,
+    node:{...node,task:node.decisionPrompt || node.task,situation:Presentation.sceneText(proposal ? `${node.situation} ${proposal}` : node.situation)}, state,
     sources: spec.sources, misconceptions: spec.commonMisconceptions || [],
     actionRules: spec.actions.filter(a => (node.available || [...(node.required || []), ...(node.optional || [])]).includes(a.id)).map(a => ({ id:a.id, label:a.label, effect:a.effect })),
     hazardRules: spec.hazards || node.hazards || {},
@@ -247,11 +248,13 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
 }
 
 class ConversationCoach {
-  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, random = Math.random, onlineExperience = true, compactNarration = true } = {}) {
-    if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
+  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, record } = {}) {
+    if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs,narrationTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
     this.provider = provider; this.sessions = new Map(); this.maxSessions = maxSessions;
     this.maxTurns = maxTurns; this.maxCalls = maxCalls; this.calls = 0; this.ttlMs = ttlMs;
     this.turnTimeoutMs = turnTimeoutMs;
+    this.narrationTimeoutMs = narrationTimeoutMs;
+    this.record = record;
     this.random = random;
     this.onlineExperience = onlineExperience;
     this.compactNarration = compactNarration;
@@ -262,7 +265,8 @@ class ConversationCoach {
     if (!spec) throw apiError('UNKNOWN_SCENARIO', '此劇本尚未支援線上演練。');
     for (const [id, s] of this.sessions) if (Date.now() - s.updatedAt > this.ttlMs && !s.busy) this.sessions.delete(id);
     if (this.sessions.size >= this.maxSessions) throw apiError('SESSION_LIMIT', '本機教練場次已滿，請重新啟動服務。', 429);
-    const session = { id: randomUUID(), spec, state: engine(spec).create(spec,{onlineExperience:this.onlineExperience}), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, updatedAt: Date.now(), sensory:[], recentSensory:[], invalidStreak:0, hint:null };
+    const now = Date.now();
+    const session = { id: randomUUID(), spec, state: engine(spec).create(spec,{onlineExperience:this.onlineExperience}), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, createdAt: now, updatedAt: now, sensory:[], recentSensory:[], invalidStreak:0, hint:null };
     this.sessions.set(session.id, session);
     return this.snapshot(session);
   }
@@ -277,7 +281,7 @@ class ConversationCoach {
     if (this.calls >= this.maxCalls) throw apiError('CALL_LIMIT', '本次啟動的 GPT 請求上限已用完，請在電腦端確認後重啟。', 429);
     this.calls++; return this.provider.generate(stage, payload, schema, signal);
   }
-  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null }, onGround) {
+  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null, rulesOnly = false }, onGround) {
     const session = this.sessions.get(id);
     if (!session || Date.now() - session.updatedAt > this.ttlMs) throw apiError('SESSION_EXPIRED', '演練連線已過期，請另開一次練習。', 410);
     if (typeof requestId !== 'string' || requestId.length < 8 || requestId.length > 100 || !Number.isInteger(revision) || typeof text !== 'string' || text.length > 2000 || !['action','question','observe','hint'].includes(intent))
@@ -297,13 +301,14 @@ class ConversationCoach {
     if (session.revision >= this.maxTurns) throw apiError('TURN_LIMIT', '這次對話已達回合上限，請保存回顧或另開演練。', 429);
     if (hintSelectedIndex !== null && !session.hint) throw apiError('INVALID_HINT', '目前沒有顯示的建議句。');
     session.busy = true;
-    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround}).finally(() => { session.busy = false; });
+    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,rulesOnly:rulesOnly===true}).finally(() => { session.busy = false; });
     session.requests.set(requestId, { fingerprint, promise });
     // Failed attempts remain uncommitted; clients may safely retry the same request.
     promise.catch(() => { session.requests.delete(requestId); });
     return promise;
   }
-  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround}) {
+  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,rulesOnly}) {
+    const started = Date.now();
     const { spec } = session; const runtime = engine(spec);
     let result, reply, offline = false, fallbackReason;
     const before = session.state;
@@ -324,6 +329,13 @@ class ConversationCoach {
         result = Experience.answerQuestion(spec,before,text,session.history.filter(m=>m.role==='assistant').slice(-2).map(m=>m.content));
         reply = result.message;
         Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
+      } else if (currentNode(spec,before).aftercareComplete || rulesOnly) {
+        result = settle(spec,before,literal,text,intent,audit);
+        if (rulesOnly) {offline=true;fallbackReason='CLIENT_TRANSPORT';}
+        if (currentNode(spec,before).aftercareComplete && result.kind==='clarify') {
+          result = {...result,kind:'blocked',message:'我還沒說清完整順序。救護人員指向清水和乾淨覆蓋物，提醒我可以先問他處理燙傷的步驟。',sourceIds:['burn-aid']};
+        }
+        reply = this.narrationFallback(session,result,audit,false,text);
       } else {
       const signal = AbortSignal.timeout(this.turnTimeoutMs);
       try {
@@ -363,6 +375,7 @@ class ConversationCoach {
     const actionIds = runtime.adoptedActionIds(before,result.state);
     const actionBatches = audit.actionBatches?.length ? audit.actionBatches : actionIds.length ? [{ids:actionIds,source:'rule'}] : [];
     const decision = {turn:session.revision + 1, intent, actionIds:actionBatches.flatMap(batch=>batch.ids), actionBatches,
+      fallbackReason:fallbackReason || null, narrationFallbackReason:audit.narrationReason || (audit.narration==='template' && !offline ? 'NARRATION_VALIDATION' : null),
       source:audit.source, validation:audit.validation, actionValidation:audit.actionValidation || [], disagreement:audit.disagreement || null,
       narration_checks:audit.narrationChecks || [], narration:audit.narration || 'control', emotion:audit.emotion || null,
       question_answer_id:audit.answerId || null,
@@ -374,6 +387,8 @@ class ConversationCoach {
       injury_causes:result.state.injuryCauses, source_ids:citations.map(source=>source.id),
       ...(audit.noAdvance ? {noAdvance:true} : {}), ...(!actionIds.length ? {controlInput:text} : {}),
       ...(before.onlineExperience ? {onlineExperience:true,...(actionIds.length && !before.npc.handled ? {npcInput:text} : {})} : {})};
+    const record = researchTurn(session,decision,result.kind,text,Date.now()-started);
+    this.record?.(record);
     session.decisions.push(decision);
     session.state = result.state; session.revision++; session.updatedAt = Date.now();
     if (before.onlineExperience) {
@@ -385,7 +400,9 @@ class ConversationCoach {
     } else session.sensory = audit.sensoryIds || [];
     session.history.push({ role: 'user', content: text || intent }, { role: 'assistant', content: reply });
     session.history = session.history.slice(-24);
-    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, ...audit, decision,
+    const onlineRecovered = Boolean(session.offline && !offline && !['observe','hint'].includes(intent));
+    if (!['observe','hint'].includes(intent)) session.offline = offline;
+    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, onlineRecovered, ...audit, decision, researchRecord:record,
       ending:terminal(spec,result.state) ? Presentation.summary(spec,result.state,reply) : null,
       result: { ...result, message: reply, reason: reply, effects: [] } };
   }
@@ -415,12 +432,14 @@ class ConversationCoach {
     const prefix = excerpt && Experience.size(excerpt) <= 120 ? `「${excerpt}」` : '';
     audit.narrationChecks ??= [];
     audit.narrationChecks.push({stage:'quote',length:Experience.size(excerpt),failures:verified ? [] : ['quote_mismatch']});
-    return prefix + result.message;
+    return (prefix ? prefix+'\n\n' : '') + result.message;
   }
-  async modelTurn(session, text, intent, signal, audit, literal, refused, onGround) {
+  async modelTurn(session, text, intent, interpretationSignal, audit, literal, refused, onGround) {
       const {spec} = session;
       const runtime = engine(spec);
+      let narrationSignal;
       const generate = async (...args) => {
+        const signal = args[0]==='interpret' ? interpretationSignal : (narrationSignal ??= AbortSignal.timeout(this.narrationTimeoutMs));
         signal.throwIfAborted();
         let abort;
         try {
@@ -444,7 +463,9 @@ class ConversationCoach {
       }));
       // The streaming entry point can settle an exact single rule action without waiting for intent inference.
       // Ambiguity, paraphrases and compound input still go through the full interpretation contract.
-      const exact = onGround && explicitRuleAction(spec,session.state,text,intent,literal);
+      const recognized = runtime.adoptedActionIds(session.state,literal.state);
+      const authoredRule = recognized.length > 0 && recognized.every(id=>spec.actions.find(action=>action.id===id)?.ruleGrounded);
+      const exact = authoredRule || onGround && explicitRuleAction(spec,session.state,text,intent,literal);
       const interpreted = exact ? {value:{intent:'action',understanding:'',question:'',needsClarification:false,actions:[]}} :
         await generate('interpret', { scene:scene(spec,session.state), history, text, inputMode:intent,
           actionCatalog:actions, potentialLaterActions:later }, interpretationSchema(spec));
@@ -486,7 +507,7 @@ class ConversationCoach {
           const {value} = await generate('quote',{text,actionId:hazard?.action,evidence},quoteSchema);
           quote = value?.quote;
         } catch (error) {
-          audit.narrationReason = signal.aborted ? 'TURN_TIMEOUT' : error.code || 'PROVIDER_ERROR';
+          audit.narrationReason = narrationSignal?.aborted ? 'NARRATION_TIMEOUT' : error.code || 'PROVIDER_ERROR';
         }
         const reply = this.endingQuote(session,result,text,quote,audit);
         audit.narration = 'engine_ending';
@@ -537,7 +558,7 @@ class ConversationCoach {
           }
         }
       } catch(error) {
-        audit.narrationReason = signal.aborted ? 'TURN_TIMEOUT' : error.code || 'PROVIDER_ERROR';
+        audit.narrationReason = narrationSignal?.aborted ? 'NARRATION_TIMEOUT' : error.code || 'PROVIDER_ERROR';
         audit.narrationChecks.push({stage:'narrate',length:null,failures:[audit.narrationReason]});
       }
       return {result,reply:anchorNarration(Presentation.sceneText(this.narrationFallback(session,result,audit,refused,text)),anchor)};
