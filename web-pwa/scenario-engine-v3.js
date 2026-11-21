@@ -293,6 +293,13 @@
   const attributed = /^(?:我)?(?:看見|看到|聽見|聽到|聽說|聽人說)|^(?:室友|同學|有人|他|她).{0,6}(?:說|想|要)/;
   const formalClauses = text=>text.split(/(?:然後|接著|並(?!非|未|無)|[，,；;。！!]|(?=\s+(?:等待|保持)))/)
     .map(clause=>clause.trim()).filter(Boolean);
+  function scopedSafeEvidence(spec,proposal) {
+    const evidence=proposal.evidence;
+    const clauses=formalClauses(evidence);
+    if (proposal.id==='npc_dissuade' || !clauses.some(clause=>recognizesNpcResponse(spec,clause))) return evidence;
+    const own=clauses.filter(clause=>/^我(?:們)?/.test(clause) && !recognizesNpcResponse(spec,clause));
+    return own.length===1 ? own[0] : evidence;
+  }
   function negatesAction(spec,text,action) {
     const compact=text.replace(/\s/g,'');
     return inputClauses(spec,compact).some(({part,owned})=>owned && !recognizesNpcResponse(spec,part) &&
@@ -307,7 +314,8 @@
     const permitted=(id, fragment)=>!semantic || proposals.some(item=> {
       if (item.id!==id) return false;
       // Evidence may span punctuation. Run the action at the first clause of the quoted span.
-      return fragment.includes(item.evidence) || fragment.includes(formalClauses(item.evidence)[0] || item.evidence);
+      const evidence=scopedSafeEvidence(spec,item);
+      return fragment.includes(evidence) || fragment.includes(formalClauses(evidence)[0] || evidence);
     });
     const clauses=formalClauses(text);
     // An independent literal hazard stays authoritative before any safe proposal is considered.
@@ -351,10 +359,6 @@
     for (const clause of clauses) {
       if (state.sessionStatus!=='ACTIVE' || recognizesNpcResponse(spec,clause) || attributed.test(clause)) continue;
       const scene=currentNode(spec,state);
-      if (spec.id==='drill_fire_dorm' && /教室.*(?:窗|門)|(?:窗|門).*教室/.test(clause)) {
-        addOutcome('我眼前的是宿舍503室；我沒有到教室開窗或處理教室的門。');
-        continue;
-      }
       if (spec.id==='drill_fire_dorm' && /降低呼吸|減少呼吸|憋氣/.test(clause)) {
         addOutcome('我沒有刻意憋氣或放慢呼吸來省氧。');
         continue;
@@ -421,14 +425,14 @@
     }
     const action=spec.actions.find(item=>item.id===proposal.id);
     if (!action || action.emotion || dangerous(spec,currentNode(spec,before),action)) return 'MODEL_UNKNOWN_ACTION';
-    const first=formalClauses(evidence)[0] || evidence;
-    const fragment=formalClauses(text).find(part=>part.includes(first)) || evidence;
+    const scoped=scopedSafeEvidence(spec,proposal);
+    const first=formalClauses(scoped)[0] || scoped;
+    const fragment=formalClauses(text).find(part=>part.includes(first)) || scoped;
     const span=inputClauses(spec,fragment)[0];
-    if (!span?.owned || attributed.test(span.part.trim()) || /^(?:不會|不想|不要|拒絕|不打算|不能|不行|不|別|勿|沒有要)/.test(evidence))
+    if (!span?.owned || attributed.test(span.part.trim()) || /^(?:不會|不想|不要|拒絕|不打算|不能|不行|不|別|勿|沒有要)/.test(scoped))
       return 'MODEL_PROTECTED_LANGUAGE';
     const lead=fragment.slice(0,fragment.indexOf(first)).trim();
     if (ownNegation.test(lead) || negatesAction(spec,text,action)) return 'MODEL_PROTECTED_LANGUAGE';
-    if (spec.id==='drill_fire_dorm' && /教室/.test(span.part) && /窗|門/.test(evidence)) return 'MODEL_OUT_OF_SCENE';
     return null;
   }
 

@@ -952,7 +952,8 @@
           "drag_injured",
           "emotion_supportive",
           "emotion_unsupportive",
-          "emotion_neutral"
+          "emotion_neutral",
+          "assess_classmate"
         ],
         "hazards": {},
         "hints": [
@@ -1113,8 +1114,8 @@
           {
             "id": "school_class",
             "label": "回報班級",
-            "pattern": "(?:二|2)年(?:二|2)班|我們班",
-            "confirm": "老師聽到我報出二年二班。",
+            "pattern": "(?:二|2)年(?:二|2)班|我們班|我們這排.{0,5}(?:到齊|都到了)",
+            "confirm": "老師核對我回報的隊伍，記下是二年二班。",
             "ask": "你是哪一班？"
           },
           {
@@ -1127,8 +1128,8 @@
           {
             "id": "school_injury",
             "label": "回報受傷人數及現況",
-            "pattern": "(?:一|1)(?:位|名|個)(?:學生|同學|人)?.{0,9}(?:腳痛|腳踝|受傷|傷者)",
-            "confirm": "我回報有一位同學腳部受傷。",
+            "pattern": "(?:一|1)(?:位|名|個)?(?:學生|同學|人)?.{0,9}(?:手.{0,2}受傷|腳痛|腳踝|受傷|傷者)",
+            "confirm": "我回報有一位同學受傷，由老師核對傷勢。",
             "ask": "有幾人受傷，現在是什麼情況？"
           }
         ],
@@ -1431,7 +1432,8 @@
           "first-aid",
           "campus-evac"
         ],
-        "effect": "由安全處回報老師，先不搬動傷者。"
+        "effect": "由安全處回報老師，先不搬動傷者。",
+        "confirm": "我告訴老師有同學受傷，讓老師和校護確認狀況。"
       },
       {
         "id": "drag_injured",
@@ -1511,6 +1513,21 @@
           "campus-evac"
         ],
         "effect": "我回報有一位同學腳部受傷。"
+      },
+      {
+        "id": "assess_classmate",
+        "label": "從安全位置查看同學狀況",
+        "pattern": "(?:先)?(?:看|確認|檢查).{0,6}(?:傷到哪|傷在哪|受傷的地方)|看看.{0,6}(?:同學|他).{0,6}(?:受傷|傷到)",
+        "requires": {
+          "facts": {
+            "shaking": false
+          }
+        },
+        "effect": "我從這裡看見同學清醒，坐著說腳踝痛。",
+        "sourceIds": [
+          "first-aid",
+          "campus-evac"
+        ]
       }
     ],
     "injuryEvents": [

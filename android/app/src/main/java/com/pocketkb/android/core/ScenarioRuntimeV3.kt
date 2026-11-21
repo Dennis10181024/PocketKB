@@ -480,10 +480,6 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
         }
         for (clause in clauses) {
             if (state.sessionStatus != "ACTIVE" || recognizesNpcResponse(clause) || attributed.containsMatchIn(clause)) continue
-            if (spec.getString("id") == "drill_fire_dorm" && Regex("教室.*(?:窗|門)|(?:窗|門).*教室").containsMatchIn(clause)) {
-                outcomes += "我眼前的是宿舍503室；我沒有到教室開窗或處理教室的門。"
-                continue
-            }
             if (spec.getString("id") == "drill_fire_dorm" && Regex("降低呼吸|減少呼吸|憋氣").containsMatchIn(clause)) {
                 outcomes += "我沒有刻意憋氣或放慢呼吸來省氧。"
                 continue

@@ -191,7 +191,7 @@ function selectActions(spec, before, text, intent, literal, understanding, audit
 
 function judgeEmotion(spec, before, result, literal, text, intent, understanding, audit) {
   if (intent !== 'action' || !before.npc?.handled || before.npc.emotion ||
-      spec.formalPractice && !currentNode(spec,before).onNpcEmotion ||
+      spec.formalPractice && !before.events.some(event=>event.kind==='npc_emotion_prompt') ||
       ['risk','failed','completed','question','blocked'].includes(result.kind) ||
       /假設|如果|假如|互相衝突/.test(literal.message) ||
       result.state.sessionStatus !== 'ACTIVE') return result;
@@ -199,9 +199,11 @@ function judgeEmotion(spec, before, result, literal, text, intent, understanding
   if (repeatedReminder && (!understanding.emotionEvidence || repeatedReminder.evidence.includes(understanding.emotionEvidence) ||
       !/害怕|擔心|冷靜|不要怕|陪|我在|一起|聯絡|幫忙/.test(understanding.emotionEvidence))) return result;
   const rule = literal.state.npc?.emotion || null;
+  const addressesCompanion=text.includes(spec.npc.name) || spec.formalPractice &&
+    /你(?:很|會|還|也|現在)?(?:怕|害怕|擔心|緊張)|(?:陪|幫|聽)著?你/.test(text);
   const model = ['supportive','unsupportive','neutral'].includes(understanding.emotion) &&
     typeof understanding.emotionEvidence === 'string' && understanding.emotionEvidence.trim() &&
-    text.includes(understanding.emotionEvidence) && text.includes(spec.npc.name) ? understanding.emotion : null;
+    text.includes(understanding.emotionEvidence) && addressesCompanion ? understanding.emotion : null;
   if (rule !== model && (rule || model)) audit.disagreement = {...audit.disagreement,emotion:{rule,model}};
   const category = rule || model;
   if (!category) return result;
@@ -220,6 +222,14 @@ const semanticGoalsPrompt = `若提供 semanticGoals，使用下列規則優先�
 以台灣口語的語意辨識行動和目標。安全行動的「會、要、去、打算」是承諾。「跟他或她說不能開門」是否定同伴的危險提議，請提出 npc_dissuade；就算同伴還沒開口，或已經說過，仍提出這個目標供引擎承接。只描述第三人的動作不算採取行動。
 按原文順序提議最多五個目標。每一項的 evidence 要是原文連續片段，包含必要主語及否定語意。明確對應為 high，有可能但關鍵意思不明為 medium，只有弱關聯為 low。確定關門並用濕毛巾堵縫時，提出 close 和 seal。只在放下其他事離開去找毛巾時提出危險 towel。
 一句有多件事時，各件事獨立判斷。即使後面的事地點錯誤或做不到，也必須回傳前面已說清楚的安全目標，整句 intent 仍為 action。例：學生在宿舍說「我會去把門關起來，跟室友說不能開門，再把門縫塞住，然後出去找教室的窗戶」，前面三項是高信心的 close、npc_dissuade、seal。不要因最後一項地點錯誤而把 needsClarification 設為 true。
+勸同伴與自己做事是兩個獨立動作。例如「小岑你先不要開門！外面都是煙，我先把門關緊」要回傳高信心 npc_dissuade（「小岑你先不要開門」）和 close（「我先把門關緊」）。遇到房門、對外窗等物件能由當前場景唯一判定，且只是把「房間」叫成「教室」時，依當前場景辨識，保留玩家原句作為 evidence。
+同伴已經表達擔心時，「我知道你擔心他們，我會陪著你」是對同伴的情緒回應，即使沒有名字或目前仍在通報，也回傳 supportive 及逐字證據。
+「我確認窗外有沒有煙」是查看窗外 inspect_window，與揮手求救 signal_window 不同。「窗外沒煙就開窗揮衣服求救」只在程式提供的窗外無煙與房門關閉時提議 open_window_call，程式仍會檢查前置條件。
+宿舍通報尚未完成時，「等消防員來，配合他們的指示」只表示留在房內待命 wait；不能推定消防員已接手。等到現場確認消防員正在呼叫或接手，再將回應消防員或依其指示歸為 handoff_fire。
+學校地震主要搖晃後，「我先看他傷到哪裡」是原地查看 assess_classmate。玩家提到沒有確認的額外傷勢時，只採用確定的可行行動；若同句說要跟老師講，可以提議 check_injured，回報由老師查證。抵達本班集合區後，對帶隊老師回報「我們這排人都到了」可提議 school_class（由老師依名冊辨識本班隊伍）；明說到操場提議 school_location，說明有一人受傷提議 school_injury，不推定具體傷勢或已做處置。
+複合句先有「他手在流血」，最後說「然後跟老師說」時，check_injured 的證據只引「跟老師說」，不要把同學的狀況或未被採用的處置一併當成玩家回報的證據。
+學校已在 assembly 節點時，「到操場後跟老師說我們這排人都到了，有一個同學手受傷」是當下在指定集合點完成回報，必須分別提出 high 的 school_location（「到操場後」）、school_class（「我們這排人都到了」）、school_injury（「有一個同學手受傷」）。位置由目前節點佐證；「到操場後」在這裡不是尚未發生的假設。
+在已抵達操場的 assembly 節點，「我在集合點等老師通知」確定表明位置，提議 high 的 school_location；也提議 high 的 stay_assembly，讓引擎在回報完成後執行留在集合點。如果回報其他欄位仍缺，不能宣告撤離完成。在 return_choice 節點，玩家說「等老師說可以再回去」同樣是自己的 stay_assembly；同學說要回教室不是玩家要折返。
 如果剛才已完成關門、塞縫或通報，再看到同一件事仍提出目標。讓引擎確認其已完成。玩家重提通報時可辨識已回報的欄位，但不要把「接線員已收到」猜成新的欄位。
 同伴先前說過想開門時，「堅決不能開門 等待接線員指示」前半段是延續對同伴的明確勸阻，提議高信心的 npc_dissuade 並引用「堅決不能開門」；後半段另行判斷。
 通報可一次填多項。向119說「地址跟現在遇到的情況」分別提出 address 和 smoke_report；通報的欄位可以共享逐字證據。缺少的欄位不要猜。不要把告知房內同伴的訊息算成已告知119。只提出當前目標、可先完成目標或同句前一動作完成後可做的目標。目錄中的已完成項目仍可辨識，是否需要重做由程式決定。`;

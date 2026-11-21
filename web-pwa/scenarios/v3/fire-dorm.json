@@ -1287,7 +1287,8 @@
           "avoid_open",
           "signal_window",
           "open_window_call",
-          "towel_face"
+          "towel_face",
+          "inspect_window"
         ],
         "hazards": {
           "elevator": {
@@ -1424,7 +1425,9 @@
           "towel_face",
           "headcount",
           "smoke_report",
-          "turn_off_phone"
+          "turn_off_phone",
+          "inspect_window",
+          "wait"
         ],
         "hazards": {
           "elevator": {
@@ -1574,7 +1577,8 @@
           "collect_belongings",
           "seal",
           "signal_window",
-          "open_window_call"
+          "open_window_call",
+          "inspect_window"
         ],
         "hazards": {
           "elevator": {
@@ -1683,7 +1687,8 @@
           "collect_belongings",
           "seal",
           "signal_window",
-          "open_window_call"
+          "open_window_call",
+          "inspect_window"
         ],
         "hazards": {
           "elevator": {
@@ -2274,11 +2279,17 @@
       {
         "id": "wait",
         "label": "留在房內等待救援",
-        "pattern": "等待(?:消防)?救援|留在(?:原地|房內|房間|室內)(?:待救)?|原地待救|等(?:待)?消防(?:人員)?(?:來)?救援",
+        "pattern": "等待(?:消防)?救援|留在(?:原地|房內|房間|室內)(?:待救)?|原地待救|等(?:待)?消防(?:人員)?(?:來)?救援|等(?:待)?消防員來",
         "effect": "你留在已回報的位置等待，不再進入走廊濃煙。",
         "sourceIds": [
           "nfa"
-        ]
+        ],
+        "requires": {
+          "facts": {
+            "doorClosed": true
+          }
+        },
+        "confirm": "我留在房內等候，手機還留在手邊。"
       },
       {
         "id": "contact",
@@ -2593,7 +2604,9 @@
         "sourceIds": [
           "window-guide"
         ],
-        "effect": "查看窗外煙況。"
+        "effect": "查看窗外煙況。",
+        "confirm": "我從室內查看窗外的煙況。",
+        "already": "我先前已經從室內查看過窗外。"
       },
       {
         "id": "limit_smoke",
@@ -2999,7 +3012,8 @@
       "signal_window",
       "open_window_call",
       "hold_line",
-      "close"
+      "close",
+      "inspect_window"
     ]
   }
 }

@@ -3,6 +3,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const {ConversationCoach,specs}=require('../coach');
 const V3=require('../../web-pwa/scenario-engine-v3');
+const replaySets=require('./human-replay-sets.json');
 
 const fire='drill_fire_dorm';
 const makeAction=(id,evidence,confidence='high')=>({id,evidence,confidence});
@@ -14,6 +15,28 @@ function coachFor(interpret,records=[]) {
   }},{formal:true,logText:true,record:row=>records.push(row)});
 }
 const send=(coach,state,text)=>coach.turn(state.sessionId,{revision:state.revision,requestId:'step31b-turn-'+state.revision,text});
+test('the formal Web turn can keep an explicit own safe action alongside a dissuasion',async()=>{
+  const input=replaySets.B.inputs[0];
+  const coach=coachFor(()=>[
+    makeAction('npc_dissuade','小岑你先不要開門'),
+    makeAction('close','我先把門關緊'),
+  ]);
+  const start=coach.create(fire);
+  let result=await send(coach,start,input);
+  assert.equal(result.state.npc.handled,true);
+  assert.deepEqual(result.decision.actionIds,['close']);
+  assert.equal(result.state.facts.doorClosed,true);
+  assert.equal(result.state.node,'report');
+
+  const mixedEvidence=coachFor(()=>[
+    makeAction('npc_dissuade','小岑你先不要開門'),
+    makeAction('close',input),
+  ]);
+  result=await send(mixedEvidence,mixedEvidence.create(fire),input);
+  assert.equal(result.state.npc.handled,true);
+  assert.deepEqual(result.decision.actionIds,['close']);
+  assert.equal(result.state.node,'report');
+});
 const fixture=[
   ['我會去把門關起來 並跟小岑說不能開門並找濕毛巾把門縫塞住，然後找濕毛巾摀住自己的口鼻，接著找到教室的對外窗把窗戶打開，大聲向外面呼救',
     [makeAction('close','我會去把門關起來'),makeAction('npc_dissuade','跟小岑說不能開門'),makeAction('seal','找濕毛巾把門縫塞住'),makeAction('towel_face','找濕毛巾摀住自己的口鼻')],['close','seal','towel_face'], 'report'],
@@ -111,6 +134,19 @@ test('school report slots accept multiple values and ask for only the missing va
   assert.match(partial.outcomes.at(-1),/老師問：「有幾人受傷/);
   const complete=V3.rawStep(spec,partial.state,'我回報一位同學腳踝受傷');
   assert.equal(complete.state.node,'return_choice');
+});
+
+test('a school report followed by waiting can use the location already verified by the engine',()=>{
+  const spec=V3.formalSpec(specs.get('earthquake_school'));
+  const start=V3.create(spec,{onlineExperience:true});
+  const state={...start,node:'assembly',accepted:['school_class','school_injury'],
+    npc:{...start.npc,handled:true,proposal:null,emotion:'supportive'}};
+  const input=replaySets.C.inputs[10];
+  const proposals=[makeAction('school_location','我在集合點'),makeAction('stay_assembly','我在集合點等老師通知')];
+  assert.ok(proposals.every(proposal=>V3.validateSafeEvidence(spec,state,input,proposal)===null));
+  const result=V3.formalStep(spec,state,input,'action',proposals);
+  assert.deepEqual(V3.adoptedActionIds(state,result.state),['school_location','stay_assembly']);
+  assert.equal(result.state.endingType,'SELF_EVACUATION');
 });
 
 test('a high-confidence action can cite evidence across a comma without being dropped',()=>{
