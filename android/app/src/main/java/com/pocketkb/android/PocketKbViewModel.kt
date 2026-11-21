@@ -32,6 +32,7 @@ import com.pocketkb.android.core.ScenarioStateV3
 import com.pocketkb.android.data.DrillHistoryRepository
 import com.pocketkb.android.data.DrillSessionEntity
 import com.pocketkb.android.data.PocketKbDatabase
+import com.pocketkb.android.data.ResearchPrivacy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -70,6 +71,7 @@ data class PocketKbUiState(
     val onlineRevision: Int = 0,
     val onlineLocalOnly: Boolean = false,
     val onlineFallbackReason: String? = null,
+    val logResearchText: Boolean = false,
     val roundNarration: String = "",
     val onlinePreview: String = "",
     val hintOptions: List<String> = emptyList(),
@@ -115,7 +117,9 @@ class PocketKbViewModel(
         historyRepository.recentSessions()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    private val _uiState = MutableStateFlow(PocketKbUiState(modelStatus = llmEngine.status))
+    private val researchPreferences = application.getSharedPreferences("research_logging", android.content.Context.MODE_PRIVATE)
+    private val _uiState = MutableStateFlow(PocketKbUiState(modelStatus = llmEngine.status,
+        logResearchText = researchPreferences.getBoolean("text", false)))
     val uiState: StateFlow<PocketKbUiState> = _uiState.asStateFlow()
 
     private var countdownJob: Job? = null
@@ -125,13 +129,21 @@ class PocketKbViewModel(
     private val offlineTurns = mutableListOf<JSONObject>()
     private var onlineJob: Job? = null
 
+    fun setResearchText(enabled: Boolean) {
+        researchPreferences.edit().putBoolean("text", enabled).apply()
+        _uiState.update { it.copy(logResearchText = enabled) }
+    }
+
     fun setOnlineMode(enabled: Boolean) {
         if (_uiState.value.selectedScenario != null) return
         _uiState.update { it.copy(onlineEnabled = enabled, onlineError = "", onlineStatus = if (enabled) "正在確認線上教練…" else "離線規則模式") }
         if (enabled) viewModelScope.launch {
             try {
                 val health = onlineCoach.health()
-                if (_uiState.value.onlineEnabled) _uiState.update { it.copy(onlineStatus = if (health.getBoolean("ready")) "GPT 線上教練已就緒" else "電腦尚未設定 GPT 金鑰") }
+                if (_uiState.value.onlineEnabled) _uiState.update { it.copy(
+                    onlineStatus = if (health.getBoolean("ready")) "GPT 線上教練已就緒" else "電腦尚未設定 GPT 金鑰",
+                    logResearchText = researchPreferences.getBoolean("text", health.optBoolean("logText")),
+                ) }
             } catch (error: CancellationException) { throw error }
             catch (_: Exception) { if (_uiState.value.onlineEnabled) _uiState.update { it.copy(onlineStatus = "尚未連上電腦的線上教練") } }
         }
@@ -149,6 +161,7 @@ class PocketKbViewModel(
         }
         val sentAt = android.os.SystemClock.elapsedRealtime()
         val outgoing = JSONObject().put("requestId", UUID.randomUUID().toString()).put("text", text).put("intent", intent)
+            .put("researchText", before.logResearchText)
             .put("hintTrigger", trigger).put("hintSelectedIndex", hintIndex).put("hintEditedBeforeSubmit", if (hintIndex != null) edited else null)
         _uiState.update { it.copy(isGenerating = true, onlineError = "", onlinePreview = "", onlineStatus = "正在處理這次決定",
             roundStartedAt = if (intent == "action") sentAt else 0) }
@@ -189,8 +202,8 @@ class PocketKbViewModel(
                 remoteSession = value; pendingOnline = null
                 val hints = value.optJSONObject("hintContext")
                 val decision = value.optJSONObject("researchRecord")?.let { record ->
-                    record.put("backendSessionId", record.optString("sessionId"))
-                        .put("sessionId", localId).put("turn", before.decisionLog.size + 1).toString()
+                    ResearchPrivacy.protect(record.put("backendSessionId", record.optString("sessionId"))
+                        .put("sessionId", localId).put("turn", before.decisionLog.size + 1), before.logResearchText).toString()
                 }
                 if (decision != null) storeResearch(localId, before.decisionLog.size + 1, decision)
                 val fallback = value.optString("fallbackReason")
@@ -305,6 +318,7 @@ class PocketKbViewModel(
             modelStatus = _uiState.value.modelStatus,
             onlineEnabled = _uiState.value.onlineEnabled && (fireState != null || scenarioStateV3 != null),
             onlineStatus = _uiState.value.onlineStatus,
+            logResearchText = _uiState.value.logResearchText,
             fireState = fireState,
             scenarioStateV3 = scenarioStateV3,
         )
@@ -546,7 +560,8 @@ class PocketKbViewModel(
                 lastReport = report,
             )
         }
-        persistMessages(user, assistant, *reviewMessage.toTypedArray())
+        if (before.logResearchText) persistMessages(user, assistant, *reviewMessage.toTypedArray())
+        else persistMessages(*reviewMessage.toTypedArray())
         if (terminal) finishActiveSession()
     }
 
@@ -554,13 +569,13 @@ class PocketKbViewModel(
         val before = _uiState.value
         if (text.isBlank() || before.isGenerating || before.scenarioStateV3?.sessionStatus != "ACTIVE") return
         if (before.onlineEnabled) {
-            sendOnlineInteraction(text.trim(), "action", hintIndex = hintIndex, edited = edited)
+            sendOnlineInteraction(text, "action", hintIndex = hintIndex, edited = edited)
             return
         }
         val result = scenarioRuntimesV3[before.scenarioStateV3.scenarioId]?.step(before.scenarioStateV3, text.trim()) ?: return
         _uiState.update { it.copy(onlineRevision = it.onlineRevision + 1) }
-        updateLocalRound(before, result, text.trim(), null, hintIndex, edited)
-        sendScenarioV3Interaction(text.trim(), onlineResult = result)
+        updateLocalRound(before, result, text, null, hintIndex, edited)
+        sendScenarioV3Interaction(text, onlineResult = result)
     }
 
     fun requestPracticeHints(trigger: String) {
@@ -574,7 +589,8 @@ class PocketKbViewModel(
         val current = _uiState.value
         val session = current.scenarioStateV3 ?: return
         val options = scenarioRuntimesV3[session.scenarioId]?.practiceSuggestions(session).orEmpty().shuffled()
-        val row = localResearch(current, ScenarioResultV3(session, "hint", ""), "hint", trigger, null, false)
+        val visible = current.roundNarration.ifBlank { current.selectedScenario?.openingLine.orEmpty() }
+        val row = localResearch(current, ScenarioResultV3(session, "hint", visible), "hint", trigger, null, false, suggestions = options)
         current.activeSessionId?.let { storeResearch(it, current.decisionLog.size + 1, row) }
         _uiState.update { it.copy(hintOptions = options, hintTrigger = trigger, hintShownTurn = it.onlineRevision + 1,
             decisionLog = it.decisionLog + row) }
@@ -599,7 +615,8 @@ class PocketKbViewModel(
         if (streak >= 2 && _uiState.value.hintOptions.isEmpty()) showLocalHints("invalid_streak")
     }
 
-    private fun localResearch(before: PocketKbUiState, result: ScenarioResultV3, intent: String, trigger: String?, hintIndex: Int?, edited: Boolean, text: String = ""): String {
+    private fun localResearch(before: PocketKbUiState, result: ScenarioResultV3, intent: String, trigger: String?, hintIndex: Int?, edited: Boolean,
+                              text: String = "", suggestions: List<String> = before.hintOptions): String {
         val state = result.state
         val runtime = scenarioRuntimesV3[state.scenarioId]
         val events = state.events.drop(before.scenarioStateV3?.events?.size ?: 0)
@@ -616,7 +633,7 @@ class PocketKbViewModel(
             .put("actionBatches", org.json.JSONArray(if (ids.isEmpty()) emptyList() else listOf(JSONObject().put("ids", org.json.JSONArray(ids)).put("source", "rule"))))
             .put("actionValidation", org.json.JSONArray()).put("narration_checks", org.json.JSONArray()).put("disagreement", JSONObject.NULL)
             .put("question_answer_id", result.answerId ?: JSONObject.NULL).put("emotion", state.npc?.emotion?.takeIf { it != before.scenarioStateV3?.npc?.emotion }
-                ?.let { JSONObject().put("category", it).put("source", "rule").put("evidence", "[redacted]") } ?: JSONObject.NULL)
+                ?.let { JSONObject().put("category", it).put("source", "rule").put("evidence", text) } ?: JSONObject.NULL)
             .put("fallbackReason", _uiState.value.onlineFallbackReason ?: JSONObject.NULL).put("narrationFallbackReason", JSONObject.NULL)
             .put("hint_shown", before.hintOptions.isNotEmpty()).put("hint_seen_before_submit", before.hintOptions.isNotEmpty())
             .put("hint_shown_turn", before.hintShownTurn ?: JSONObject.NULL).put("hint_trigger", before.hintTrigger ?: trigger ?: JSONObject.NULL)
@@ -625,7 +642,21 @@ class PocketKbViewModel(
             .put("exposure", JSONObject(state.exposure)).put("ending_type", state.endingType ?: JSONObject.NULL).put("injury_level", state.injuryLevel ?: JSONObject.NULL)
             .put("injury_causes", org.json.JSONArray(state.injuryCauses.map { JSONObject().put("node", it.node).put("action", it.action)
                 .put("eventId", it.eventId).put("exposure", it.exposure).put("delta", it.delta).put("turn", it.turn) }))
-        return json.toString()
+        state.npc?.let { npc ->
+            json.put("npc_state", JSONObject().put("proposal_shown", npc.proposal != null || npc.handled)
+                .put("handled", npc.handled).put("emotion_triggered", state.events.any { it.kind == "npc_emotion_prompt" })
+                .put("emotion_result", npc.emotion ?: JSONObject.NULL))
+        }
+        if (before.logResearchText) {
+            val lines = events.filter { it.kind.startsWith("npc_") }.mapNotNull { it.message }.toMutableList()
+            if (before.decisionLog.isEmpty() && before.scenarioStateV3?.npc?.proposal != null) {
+                runtime?.spec?.optJSONObject("npc")?.optJSONObject("online")?.optString("proposal")?.let { lines.add(0, it) }
+            }
+            json.put("input_text", text).put("reply_text", result.message).put("controlInput", text)
+                .put("suggestion_texts", org.json.JSONArray(suggestions)).put("npc_lines", org.json.JSONArray(lines))
+                .put("model_actions", org.json.JSONArray())
+        }
+        return ResearchPrivacy.protect(json, before.logResearchText).toString()
     }
 
     fun loadModelFromPath(modelPath: String) {

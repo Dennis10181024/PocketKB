@@ -180,7 +180,9 @@ Xcode → Window → Devices and Simulators
 
 - 線上教練依臺灣日期把每次已結算的互動寫入 `online-coach/logs/<日期>/<sessionId>.jsonl`。同一筆重送沿用已結算結果。資料夾已加入 Git 忽略清單。
 - Android 使用 Room 的 `drill_turns` 表保存相同的研究欄位。從「演練紀錄」選「匯出研究紀錄」，可在系統檔案選擇器儲存 JSONL。
-- 紀錄包含劇本版本與場次 ID、回合時間、動作 ID 順序及採用來源、驗證與判定差異、敘事檢查、提示使用、情緒判定、暴露與傷勢、結局、來源 ID、`fallbackReason` 與 `narrationFallbackReason`。研究檔只保留自由文字長度及遮蔽後的證據欄位，省略自由文字、IP 與憑證。
+- 紀錄包含劇本版本與場次 ID、回合時間、動作 ID 順序及採用來源、驗證與判定差異、敘事檢查、提示使用、`npc_state`、暴露與傷勢、結局、來源 ID、`fallbackReason` 與 `narrationFallbackReason`。
+- `POCKETKB_LOG_TEXT=1` 另保存輸入 `input_text`、畫面敘事 `reply_text`、建議句 `suggestion_texts`、NPC 台詞 `npc_lines` 與模型提出的動作及證據 `model_actions`。兩種模式都排除金鑰和 IP。直接啟動 Node 或設定為 `0` 時使用去識別化紀錄。開發腳本 `online-coach/start-online.ps1` 在 Windows 未設定此變數時預設 `1`。
+- Android 從演練選單的「研究紀錄文字保存」切換。尚未選擇時，線上模式沿用後端設定，其餘情況預設關閉。切換只影響之後的紀錄。正式實驗前，請依知情同意書分別確認後端設定和 Android 文字保存選項。
 - 理解最多等 8 秒，逾時會用同一筆輸入走離線規則。敘事有獨立的 15 秒期限。敘事失敗時顯示場景模板，保留已確認的動作。之後的回合可重試線上連線。
 
 ## Bug 修正紀錄

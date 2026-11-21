@@ -485,7 +485,7 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
             )
             injuryEvent(state, id)?.let { (next, event) -> state = next; injury = event }
             val npc = state.npc
-            if (npc != null && id == spec.optJSONObject("npc")?.optString("handleAction") && !npc.handled) {
+            if (!state.firstAidEnabled && npc != null && id == spec.optJSONObject("npc")?.optString("handleAction") && !npc.handled) {
                 state = state.copy(npc = npc.copy(handled = true, proposal = null),
                     events = state.events + ScenarioEventV3(node.getString("id"), id, "npc_handled"))
             }
@@ -517,6 +517,11 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         }
 
         node.optJSONObject("terminal")?.let { terminal ->
+            val ignored = spec.optJSONObject("npc")?.optJSONObject("online")?.optJSONObject("unhandledRescue")
+            if (state.firstAidEnabled && state.npc?.handled == false && terminal.optBoolean("rescueHandoff") && ignored != null) {
+                state = state.copy(facts = state.facts + ("delayed" to "true"), events = state.events +
+                    ScenarioEventV3(state.node, kind = "npc_proposal", eventId = "npc-unhandled-rescue", message = ignored.getString("reminder")))
+            }
             state = patch(state, terminal).copy(
                 sessionStatus = terminal.getString("sessionStatus"),
                 completionKind = terminal.getString("completionKind"),

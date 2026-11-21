@@ -1,20 +1,36 @@
 'use strict';
 const {appendFileSync,mkdirSync} = require('node:fs');
 const path = require('node:path');
+const {isIP} = require('node:net');
 const taiwanDay = new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'});
 
 // Free text can contain arbitrary personal information. Keep the complete decision schema,
 // with a stable marker in any position that otherwise contains player/model evidence.
-function researchTurn(session, decision, kind, text, timing) {
+function scrub(text) {
+  const key = process.env.OPENAI_API_KEY;
+  return (key ? text.replaceAll(key,'[redacted]') : text)
+    .replace(/sk-[A-Za-z0-9_-]{16,}/gi,'[redacted]')
+    .replace(/[0-9a-f:.]*:[0-9a-f:.]+(?:%[a-z0-9_.-]+)?/gi,candidate=>{
+      const address = candidate.replace(/[.]$/,'');
+      const looksLikeAddress = isIP(address)===6 || address.includes('::') || address.split(':').length >= 8;
+      return looksLikeAddress ? '[redacted]'+candidate.slice(address.length) : candidate;
+    })
+    .replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g,'[redacted]');
+}
+
+function researchTurn(session, decision, kind, text, timing, {logText=false,reply='',suggestions=[],npcLines=[],proposals=[]}={}) {
   const {controlInput, npcInput, actionValidation, emotion, disagreement, ...fields} = decision;
   const ids = values=>(values || []).filter(id=>session.spec.actions.some(action=>action.id===id));
+  const evidence = value => logText ? scrub(typeof value==='string' ? value : '') : '[redacted]';
   return {schema:'2.2',sessionId:session.id,scenarioId:session.spec.id,version:session.spec.version,
     startedAt:new Date(session.createdAt).toISOString(),recordedAt:new Date().toISOString(),kind,inputLength:[...text].length,...fields,
-    ...(controlInput !== undefined ? {controlInput:'[redacted]'} : {}),
-    ...(npcInput !== undefined ? {npcInput:'[redacted]'} : {}),
-    actionValidation:actionValidation.map(({id,result})=>({id:session.spec.actions.some(action=>action.id===id) ? id : null,result,evidence:'[redacted]'})),
-    emotion:emotion ? {category:emotion.category,source:emotion.source,evidence:'[redacted]'} : null,
+    ...(controlInput !== undefined ? {controlInput:evidence(controlInput)} : {}),
+    ...(npcInput !== undefined ? {npcInput:evidence(npcInput)} : {}),
+    actionValidation:actionValidation.map(({id,result,evidence:quote})=>({id:ids([id])[0] || null,result,evidence:evidence(quote)})),
+    emotion:emotion ? {category:emotion.category,source:emotion.source,evidence:evidence(emotion.evidence)} : null,
     disagreement:disagreement ? {...disagreement,actionIds:ids(disagreement.actionIds),modelIds:ids(disagreement.modelIds),literalIds:ids(disagreement.literalIds)} : null,
+    ...(logText ? {input_text:scrub(text),reply_text:scrub(reply),suggestion_texts:suggestions.map(scrub),
+      npc_lines:npcLines.map(scrub),model_actions:proposals.map(item=>({id:typeof item?.id==='string' ? scrub(item.id) : null,evidence:evidence(item?.evidence)}))} : {}),
     elapsedMs:timing};
 }
 

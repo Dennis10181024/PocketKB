@@ -1,5 +1,7 @@
 package com.pocketkb.android.ui
 
+import androidx.compose.ui.text.input.TextFieldValue
+
 import com.pocketkb.android.core.objects
 import com.pocketkb.android.core.strings
 
@@ -117,6 +119,7 @@ internal data class ScenarioV3UiModel(
     val roundStartedAt: Long = 0,
     val connectionNotice: String = "",
     val criticalLessons: List<ScenarioLessonUiModel> = emptyList(),
+    val firstDecision: Boolean = true,
 )
 
 @Composable
@@ -204,6 +207,7 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
             roundSources = state.roundSources,
             roundStartedAt = state.roundStartedAt,
             connectionNotice = state.connectionNotice,
+            firstDecision = runtime.nodeIndex(session) == 0,
             criticalLessons = if (session.endingType == "CRITICAL_FAILURE") runtime.practiceLessons(session).map { action ->
                 val sourceIds = action.strings("sourceIds")
                 ScenarioLessonUiModel(
@@ -236,7 +240,7 @@ internal fun ScenarioV3Content(
     onHint: (String) -> Unit = {},
     onPracticeSubmit: ((String, Int?, Boolean) -> Unit)? = null,
 ) {
-    var input by rememberSaveable(model.sessionId) { mutableStateOf("") }
+    var input by rememberSaveable(model.sessionId, stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     var showObservation by rememberSaveable(model.sessionId, model.task) { mutableStateOf(false) }
     var showSources by rememberSaveable(model.sessionId) { mutableStateOf(false) }
     var hintIndex by rememberSaveable(model.sessionId, model.task) { mutableStateOf<Int?>(null) }
@@ -256,18 +260,20 @@ internal fun ScenarioV3Content(
     }
     val life by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
     val foreground = life.isAtLeast(Lifecycle.State.RESUMED)
-    val remaining = rememberSaveable(model.sessionId, model.task, model.onlineRevision) { mutableLongStateOf(45_000L) }
+    val remaining = rememberSaveable(model.sessionId, model.task, model.onlineRevision, input.text, input.composition) {
+        mutableLongStateOf(if (model.firstDecision) 90_000L else 60_000L)
+    }
     val requestHint by rememberUpdatedState(onHint)
     LaunchedEffect(model.sessionId, model.onlineRevision) {
         if (model.onlineRevision > 0) {
-            input = ""
+            input = TextFieldValue()
             hintIndex = null
             edited = false
             showObservation = false
         }
     }
-    LaunchedEffect(remaining, foreground, model.active, model.isGenerating, model.hintOptions.isEmpty()) {
-        if (!foreground || !model.active || model.isGenerating || model.hintOptions.isNotEmpty()) return@LaunchedEffect
+    LaunchedEffect(remaining, foreground, model.active, model.isGenerating, model.hintOptions.isEmpty(), input.text, input.composition) {
+        if (!foreground || !model.active || model.isGenerating || model.hintOptions.isNotEmpty() || input.text.isNotEmpty() || input.composition != null) return@LaunchedEffect
         val started = android.os.SystemClock.elapsedRealtime()
         try {
             delay(remaining.longValue)
@@ -316,17 +322,17 @@ internal fun ScenarioV3Content(
             Button(
                 onClick = {
                     focus.clearFocus()
-                    if (onPracticeSubmit != null) onPracticeSubmit(input, hintIndex, edited)
-                    else { onSubmit(input, "action"); if (!model.onlineEnabled) input = "" }
+                    if (onPracticeSubmit != null) onPracticeSubmit(input.text, hintIndex, edited)
+                    else { onSubmit(input.text, "action"); if (!model.onlineEnabled) input = TextFieldValue() }
                 },
-                enabled = input.isNotBlank() && !model.isGenerating,
+                enabled = input.text.isNotBlank() && !model.isGenerating,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("scenario_submit"),
             ) { Text(if (model.isGenerating) "正在處理這次決定" else "送出") }
             if (showObservation) Text(sceneWords(model.observation.ifBlank { model.situation }), style = MaterialTheme.typography.bodyLarge)
             if (model.hintOptions.isNotEmpty()) {
                 Text("可以試著這樣說", Modifier.semantics { heading() })
                 model.hintOptions.forEachIndexed { index, suggestion ->
-                    OutlinedButton(onClick = { input = suggestion; hintIndex = index; edited = false }, enabled = !model.isGenerating,
+                    OutlinedButton(onClick = { input = TextFieldValue(suggestion); hintIndex = index; edited = false }, enabled = !model.isGenerating,
                         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("scenario_hint_$index")) { Text(suggestion) }
                 }
             }

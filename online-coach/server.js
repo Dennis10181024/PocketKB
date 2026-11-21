@@ -16,7 +16,7 @@ function createServer(coach) {
       if (!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(req.headers.host || '')) throw new CoachError('HOST_DENIED', '此服務僅供本機示範。', 403);
       if (origin && origin !== `http://${req.headers.host}`) throw new CoachError('ORIGIN_DENIED', '請從線上教練的網頁入口操作。', 403);
       const url = new URL(req.url, 'http://localhost');
-      if (req.method === 'GET' && url.pathname === '/api/health') return json(200, { ready: coach.provider.ready, model: coach.provider.model, callsRemaining: Math.max(0, coach.maxCalls - coach.calls) });
+      if (req.method === 'GET' && url.pathname === '/api/health') return json(200, { ready: coach.provider.ready, model: coach.provider.model, logText: coach.logText, callsRemaining: Math.max(0, coach.maxCalls - coach.calls) });
       if (req.method === 'GET' && url.pathname === '/api/scenarios') return json(200, { scenarios: coach.catalog() });
       if (req.method === 'POST' && url.pathname.startsWith('/api/')) {
         if (!req.headers['content-type']?.startsWith('application/json')) throw new CoachError('JSON_REQUIRED', '請使用 JSON 請求。', 415);

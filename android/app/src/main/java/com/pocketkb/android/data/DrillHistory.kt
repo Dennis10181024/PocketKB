@@ -153,12 +153,12 @@ class DrillHistoryRepository(
                 id = message.id,
                 sessionId = sessionId,
                 role = message.role.name,
-                content = message.content,
+                content = ResearchPrivacy.scrub(message.content),
                 timestampMs = message.timestampMs,
                 safety = message.judgeMetadata?.safety?.name,
                 progressDelta = message.judgeMetadata?.progressDelta,
                 outcome = message.judgeMetadata?.outcome?.name,
-                judgeReason = message.judgeMetadata?.reason,
+                judgeReason = message.judgeMetadata?.reason?.let(ResearchPrivacy::scrub),
             ),
         )
     }

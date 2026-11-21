@@ -1,6 +1,7 @@
 package com.pocketkb.android.core
 
 import com.pocketkb.android.ai.coachTurnOrFallback
+import com.pocketkb.android.data.ResearchPrivacy
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
@@ -120,5 +121,32 @@ class DiagnosisRegressionTest {
             assertEquals(1, localCalls)
         }
         coachTurnOrFallback(remote = { error("state mismatch") }, offline = { assertEquals("CLIENT_SYNC", it) })
+    }
+
+    @Test fun practiceDoesNotGrantBestRescueWhenRoommateIsIgnored() {
+        val runtime = ScenarioRuntimeV3(spec("v3/fire-dorm.json"))
+        val actions = listOf("我關門", "我撥119", "安學路100號A棟", "五樓503室", "我等待救援", "我保持通訊")
+        val start = runtime.create(firstAidEnabled = true)
+        val ignored = actions.fold(start) { state, text -> runtime.step(state, text).state }
+        assertEquals("DELAYED_RESCUE", ignored.endingType)
+        assertTrue(ignored.events.any { it.eventId == "npc-unhandled-rescue" })
+        val handled = runtime.step(start, "小岑不要把門打開").state
+        assertTrue(handled.events.any { it.kind == "npc_emotion_prompt" })
+        assertEquals("SAFE_RESCUE", actions.fold(handled) { state, text -> runtime.step(state, text).state }.endingType)
+    }
+
+    @Test fun researchPrivacyRemovesCredentialsAndPreservesOnlyOptedInText() {
+        val key = listOf("sk", "test", "research_dummy_00000000000").joinToString("-")
+        val record = JSONObject().put("input_text", "原文 $key 192.0.2.1 [2001:db8::98]")
+            .put("reply_text", "我看見了房門").put("npc_state", JSONObject().put("handled", false))
+        val enabled = ResearchPrivacy.protect(JSONObject(record.toString()), true)
+        assertTrue(enabled.getString("input_text").startsWith("原文"))
+        assertFalse(enabled.toString().contains(key))
+        assertFalse(enabled.toString().contains("192.0.2.1"))
+        assertFalse(enabled.toString().contains("2001:db8::98"))
+        val disabled = ResearchPrivacy.protect(record, false)
+        assertFalse(disabled.has("input_text"))
+        assertFalse(disabled.has("reply_text"))
+        assertTrue(disabled.has("npc_state"))
     }
 }

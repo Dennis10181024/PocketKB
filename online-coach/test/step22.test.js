@@ -130,12 +130,13 @@ test('an accepted engine rescue cannot be described as ongoing waiting',async()=
     return {reply:`我${detail.text}。${payload.requiredChange}我仍在房內等待。`,sensoryId:detail.id};
   }));
   let state = coach.create('drill_fire_dorm');
-  for (const text of ['我關好房門','我打119','安學路100號A棟，五樓503室','我留在房內待救','我保持通訊'])
+  for (const text of ['小岑別開門','我關好房門','我打119','安學路100號A棟，五樓503室','我留在房內待救','我保持通訊'])
     state = await submit(coach,state,text);
   assert.equal(state.state.endingType,'SAFE_RESCUE');
   assert.match(state.reply,/並接手/);
   assert.doesNotMatch(state.reply,/仍在房內等待/);
-  assert.ok(state.decision.narration_checks.every(entry=>entry.failures.includes('unsupported_content') || entry.failures.includes('voice_or_sentence_count')));
+  assert.ok(state.decision.narration_checks.length);
+  assert.ok(state.decision.narration_checks.every(entry=>entry.failures.includes('waiting_after_handoff')));
 });
 
 test('narration checker rejects length, quotes, banned structure, sensory repetition and missing change',()=>{

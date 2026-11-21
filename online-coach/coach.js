@@ -251,13 +251,14 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
 }
 
 class ConversationCoach {
-  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, record } = {}) {
+  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, logText = process.env.POCKETKB_LOG_TEXT === '1', record } = {}) {
     if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs,narrationTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
     this.provider = provider; this.sessions = new Map(); this.maxSessions = maxSessions;
     this.maxTurns = maxTurns; this.maxCalls = maxCalls; this.calls = 0; this.ttlMs = ttlMs;
     this.turnTimeoutMs = turnTimeoutMs;
     this.narrationTimeoutMs = narrationTimeoutMs;
     this.record = record;
+    this.logText = logText;
     this.random = random;
     this.onlineExperience = onlineExperience;
     this.compactNarration = compactNarration;
@@ -284,7 +285,7 @@ class ConversationCoach {
     if (this.calls >= this.maxCalls) throw apiError('CALL_LIMIT', '本次啟動的 GPT 請求上限已用完，請在電腦端確認後重啟。', 429);
     this.calls++; return this.provider.generate(stage, payload, schema, signal);
   }
-  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null, rulesOnly = false, clientFallbackReason }, onGround) {
+  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null, rulesOnly = false, clientFallbackReason, researchText }, onGround) {
     const session = this.sessions.get(id);
     if (!session || Date.now() - session.updatedAt > this.ttlMs) throw apiError('SESSION_EXPIRED', '演練連線已過期，請另開一次練習。', 410);
     if (typeof requestId !== 'string' || requestId.length < 8 || requestId.length > 100 || !Number.isInteger(revision) || typeof text !== 'string' || text.length > 2000 || !['action','question','observe','hint'].includes(intent))
@@ -305,13 +306,13 @@ class ConversationCoach {
     if (hintSelectedIndex !== null && !session.hint) throw apiError('INVALID_HINT', '目前沒有顯示的建議句。');
     session.busy = true;
     const replayReason = rulesOnly === true ? (['CLIENT_API_ERROR','CLIENT_SYNC'].includes(clientFallbackReason) ? clientFallbackReason : 'CLIENT_TRANSPORT') : null;
-    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason}).finally(() => { session.busy = false; });
+    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason,researchText,rawInput:text}).finally(() => { session.busy = false; });
     session.requests.set(requestId, { fingerprint, promise });
     // Failed attempts remain uncommitted; clients may safely retry the same request.
     promise.catch(() => { session.requests.delete(requestId); });
     return promise;
   }
-  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason}) {
+  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason,researchText,rawInput}) {
     const started = Date.now();
     const { spec } = session; const runtime = engine(spec);
     let result, reply, offline = false, fallbackReason;
@@ -391,9 +392,28 @@ class ConversationCoach {
       injury_causes:result.state.injuryCauses, source_ids:citations.map(source=>source.id),
       ...(audit.noAdvance ? {noAdvance:true} : {}), ...(!actionIds.length ? {controlInput:text} : {}),
       ...(before.onlineExperience ? {onlineExperience:true,...(actionIds.length && !before.npc.handled ? {npcInput:text} : {})} : {})};
-    const record = researchTurn(session,decision,result.kind,text,Date.now()-started);
+    const npcEvents = result.state.events.filter(event=>event.kind.startsWith('npc_'));
+    decision.npc_state = result.state.npc ? {
+      proposal_shown:Boolean(before.npc?.proposal || result.state.npc.handled || npcEvents.some(event=>event.kind==='npc_proposal')),
+      handled:result.state.npc.handled,
+      emotion_triggered:npcEvents.some(event=>event.kind==='npc_emotion_prompt'),
+      emotion_result:result.state.npc.emotion
+    } : null;
+    const {proposedActions,...publicAudit}=audit;
+    const newNpcEvents = result.state.events.slice(before.events.length).filter(event=>event.kind.startsWith('npc_'));
+    const npcLines = newNpcEvents.map(event=>event.kind==='npc_emotion' ? reply : event.message).filter(Boolean);
+    if (session.revision===0 && before.npc?.proposal) npcLines.unshift(spec.npc.online.proposal);
+    if (audit.narration==='sourced_question' && reply.includes('說：「')) npcLines.push(reply);
+    const ending = terminal(spec,result.state) ? Presentation.summary(spec,result.state,reply) : null;
+    const displayed = result.kind==='hint' ? session.lastDisplayedReply || spec.opening : ending?.text || reply;
+    const logContext = {reply:displayed,suggestions:session.hint?.options || [],npcLines,proposals:proposedActions};
+    const timing = Date.now()-started;
+    const record = researchTurn(session,decision,result.kind,rawInput,timing,{...logContext,logText:this.logText});
+    const clientRecord = typeof researchText==='boolean' && researchText!==this.logText ?
+      researchTurn(session,decision,result.kind,rawInput,timing,{...logContext,logText:researchText}) : record;
     this.record?.(record);
     session.decisions.push(decision);
+    session.lastDisplayedReply = displayed;
     session.state = result.state; session.revision++; session.updatedAt = Date.now();
     if (before.onlineExperience) {
       if (result.kind !== 'question') {
@@ -406,8 +426,8 @@ class ConversationCoach {
     session.history = session.history.slice(-24);
     const onlineRecovered = Boolean(session.offline && !offline && !['observe','hint'].includes(intent));
     if (!['observe','hint'].includes(intent)) session.offline = offline;
-    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, onlineRecovered, ...audit, decision, researchRecord:record,
-      ending:terminal(spec,result.state) ? Presentation.summary(spec,result.state,reply) : null,
+    return { ...this.snapshot(session), kind: result.kind, reply, citations, offline, fallbackReason, onlineRecovered, ...publicAudit, decision, researchRecord:clientRecord,
+      ending,
       result: { ...result, message: reply, reason: reply, effects: [] } };
   }
   narrationFallback(session,result,audit,refused,text) {
@@ -476,6 +496,7 @@ class ConversationCoach {
         await generate('interpret', { scene:scene(spec,session.state), history, text, inputMode:intent,
           actionCatalog:actions, potentialLaterActions:later }, interpretationSchema(spec));
       const understanding = interpreted.value;
+      if (Array.isArray(understanding?.actions)) audit.proposedActions = understanding.actions;
       const validIntents = ['action','question','emotion','off_topic','unclear','clarify'];
       if (!understanding || !validIntents.includes(understanding.intent) || typeof understanding.needsClarification !== 'boolean' ||
           typeof understanding.understanding !== 'string' || typeof understanding.question !== 'string' || !Array.isArray(understanding.actions))
@@ -553,6 +574,7 @@ class ConversationCoach {
           (audit.narrationUsage ??= []).push(usage?.input_tokens ?? null);
           const checked = Experience.checkNarration(value,{text,details:grounded.strict ? payload.sensoryChoices : grounded.details,allDetails:grounded.allDetails,
             previous:session.sensory,change:grounded.change,authored:[...(grounded.authored || []),grounded.change],strict:grounded.strict,priorLines,refused,
+            completed:Experience.completedPhase(session.state,result),
             unsupported:reply=>{
               const original = grounded.change ? reply.replace(grounded.change,'') : reply;
               const disputedEnding = result.kind === 'completed'

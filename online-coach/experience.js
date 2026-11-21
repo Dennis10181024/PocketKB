@@ -14,6 +14,11 @@ const aliases = {fire_closed_door:/緊閉的房門|關著的(?:房)?門|房門(?
 const advice = /(?:你|大家)(?:應該|最好|必須|要先|可以先)|(?:建議|務必|請先|請立即|不妨|正確做法)|只剩\s*\d+\s*分鐘/;
 const size = text => Array.from(text).length;
 const quotes = text => [...text.matchAll(/「([^」]+)」|『([^』]+)』|“([^”]+)”|"([^"]+)"/g)].map(m => m.slice(1).find(Boolean));
+const waitingAfterHandoff = /(?:尚未|還沒|未曾|沒有).{0,6}(?:(?:看到|看見|等到|接觸).{0,6}(?:消防|救援|救護|搜救)|抵達|接手|獲救|撤離)|(?:消防|救援|救護|搜救)(?:隊|人員|員)?.{0,4}(?:還沒到|尚未到|沒抵達|還沒接手)|(?:仍|還(?:在|得|要|會)|繼續|留在.{0,8})(?:在|留在.{0,6})?.{0,3}(?:等候|等待|待救)|(?:等|等著|等待).{0,4}(?:消防|救援|救護).{0,5}(?:來|到|接手)/;
+function completedPhase(before,result) {
+  return result.kind==='completed' || result.state.endingType !== before.endingType && Boolean(result.state.endingType) ||
+    result.state.events.slice(before.events.length).some(event=>event.kind==='rescue_contact');
+}
 
 function sharedSubstring(left,right) {
   const clean = text=>Array.from(text.normalize('NFKC').replace(/[\p{P}\p{Z}\s]/gu,''));
@@ -35,7 +40,7 @@ function repeatedLine(text, history) {
   return text.split(/[。！？!?]/).some(line=>line.trim().length>=8 && history.some(previous=>previous.includes(line.trim())));
 }
 
-function checkNarration(value, {text, details, allDetails = details, previous, change, refused = false, authored = [], strict = false, priorLines = [], unsupported}) {
+function checkNarration(value, {text, details, allDetails = details, previous, change, refused = false, authored = [], strict = false, priorLines = [], unsupported, completed = false}) {
   const reply = typeof value?.reply === 'string' ? value.reply.trim() : '';
   const sentences = reply.split(/[。！？!?]/).filter(part => part.trim() && !/^[」』”]+$/.test(part));
   const detail = details.find(item => item.id === value?.sensoryId);
@@ -54,6 +59,7 @@ function checkNarration(value, {text, details, allDetails = details, previous, c
   if ((!detail || !reply.includes(detail.text)) && !(strict && !details.length && change)) failures.push('ungrounded_sensory_detail');
   if (previous.some(id => mentioned.includes(id))) failures.push('repeated_sensory_detail');
   if (change && !reply.includes(change)) failures.push('missing_scene_change');
+  if (completed && waitingAfterHandoff.test(reply)) failures.push('waiting_after_handoff');
   if (refused && /(?:(?:還沒|尚未|沒有)(?:確認|確定|決定).{0,10}(?:是否|是不是).{0,10}(?:決定|拒絕|採取)|(?:也許|可能)還是會)/.test(reply)) failures.push('contradicted_refusal');
   if (advice.test(reply) || unsupported(reply)) failures.push('unsupported_content');
   return { reply, failures, sensoryIds: mentioned, length: size(reply), overlap };
@@ -85,7 +91,8 @@ function ground(spec, before, result, priorLines = []) {
       (rule?.blockedMessage || rule?.blockedByFact || node.aftercareComplete && result.kind==='blocked' ? result.message : rejectionLine(spec,state)) : null;
     const authored = result.kind==='completed' ? [result.message] : [progress,explanation,requiredBeat,...environment,...npcLines].filter(Boolean);
     if (!authored.length) authored.push(actionBeat || beat);
-    return {details:node.experience.sensory, allDetails:spec.nodes.flatMap(item=>item.experience.sensory),
+    return {details:completedPhase(before,result) ? node.experience.sensory.filter(item=>!waitingAfterHandoff.test(item.text)) : node.experience.sensory,
+      allDetails:spec.nodes.flatMap(item=>item.experience.sensory),
       change:authored.join(''), authored, focus:emotional ? '' : focusLine(node,priorLines), strict:true, emotional};
   }
   const event = events.findLast(event => event.kind === 'environment_change');
@@ -151,4 +158,4 @@ function shuffled(options, random) {
   return copy;
 }
 
-module.exports = { checkNarration, ground, template, refusal, refusalFact, shuffled, size, sharedSubstring, sensoryIds, answerQuestion, questionText, bannedClosings, validFixedLine };
+module.exports = { checkNarration, ground, template, refusal, refusalFact, shuffled, size, sharedSubstring, sensoryIds, answerQuestion, questionText, bannedClosings, validFixedLine, completedPhase };

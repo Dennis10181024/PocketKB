@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextClearance
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.pocketkb.android.core.ScenarioReviewV3
 import org.junit.Rule
@@ -24,6 +25,40 @@ import org.junit.runner.RunWith
 class ScenarioV3ContentTest {
     @get:Rule
     val composeRule = createComposeRule()
+
+    @Test
+    fun idleHintsUseNinetyThenSixtySecondsAndPauseWhileDraftExists() {
+        var model by mutableStateOf(activeModel())
+        var idleRequests = 0
+        composeRule.setContent {
+            PocketKbTheme {
+                ScenarioV3Content(model, onLeave = {}, onObserve = {}, onSubmit = { _, _ -> }, onRestart = {},
+                    onOpenSource = {}, onHint = { if (it == "idle") idleRequests++ })
+            }
+        }
+        composeRule.mainClock.autoAdvance = false
+        try {
+            composeRule.mainClock.advanceTimeBy(89_000)
+            composeRule.runOnIdle { check(idleRequests == 0) }
+            composeRule.mainClock.advanceTimeBy(1_100)
+            composeRule.runOnIdle {
+                check(idleRequests == 1)
+                model = model.copy(firstDecision = false, task = "在下一個地點決定行動")
+            }
+            composeRule.mainClock.advanceTimeBy(50_000)
+            val input = composeRule.onNodeWithTag("scenario_input")
+            input.performTextInput("我還在輸入")
+            composeRule.mainClock.advanceTimeBy(100_000)
+            composeRule.runOnIdle { check(idleRequests == 1) }
+            input.performTextClearance()
+            composeRule.mainClock.advanceTimeBy(59_000)
+            composeRule.runOnIdle { check(idleRequests == 1) }
+            composeRule.mainClock.advanceTimeBy(1_100)
+            composeRule.runOnIdle { check(idleRequests == 2) }
+        } finally {
+            composeRule.mainClock.autoAdvance = true
+        }
+    }
 
     @Test
     fun onlineDraftSurvivesFailedResponseAndClearsOnlyAfterSuccess() {

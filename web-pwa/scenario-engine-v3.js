@@ -241,6 +241,11 @@
     }
 
     if (node.terminal) {
+      const ignored = state.onlineExperience && !state.npc?.handled && spec.npc?.online?.unhandledRescue;
+      if (ignored && node.terminal.rescueHandoff) {
+        state.facts.delayed = true;
+        state.events.push({node:state.node,kind:'npc_proposal',eventId:'npc-unhandled-rescue',message:ignored.reminder});
+      }
       applyPatch(state, node.terminal);
       state.sessionStatus = node.terminal.sessionStatus;
       state.completionKind = node.terminal.completionKind;

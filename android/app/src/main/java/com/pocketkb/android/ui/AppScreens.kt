@@ -227,6 +227,9 @@ private fun ScenarioPickerScreen(state: PocketKbUiState, actions: PocketKbViewMo
                         Switch(checked = state.onlineEnabled, onCheckedChange = actions::setOnlineMode)
                     }
                     Text(state.onlineStatus, color = PocketColors.Info)
+                    TextButton(onClick = { actions.setResearchText(!state.logResearchText) }, modifier = Modifier.heightIn(min = 48.dp)) {
+                        Text(if (state.logResearchText) "研究紀錄文字保存：開啟" else "研究紀錄文字保存：關閉")
+                    }
                     Text("線上模式會將對話傳送至 OpenAI，請勿輸入個人資料。支援火災與五個新版因果劇本；其他舊版情境使用離線規則。", color = PocketColors.MidGray, lineHeight = 23.sp)
                 }
             }

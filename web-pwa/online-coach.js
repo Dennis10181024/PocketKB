@@ -6,7 +6,7 @@ import './drill-presentation.js';
 const app = document.querySelector('#app');
 const presentation = globalThis.DrillPresentation;
 const online = {catalog:[],session:null,draft:'',busy:false,error:'',selected:'drill_fire_dorm',observation:false,choice:null};
-const idle = {remaining:45000,started:0,timer:null};
+const idle = {remaining:90000,started:0,timer:null,composing:false};
 const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const specFor = id => online.catalog.find(row=>row.id===id)?.spec;
 const coachFailure = (message,reason) => Object.assign(new Error(message),{reason});
@@ -53,7 +53,9 @@ function save(result,exited=false) {
   if (rows.some(row=>row.sessionId===result.sessionId)) return;
   rows.unshift({sessionId:result.sessionId,title:result.scene.title,
     ending_type:exited?'EXITED':result.state.endingType,injury_level:result.state.injuryLevel,
-    ending:result.ending,decisions:result.decisions,time:new Date().toISOString()});
+    ending:result.ending ? {type:result.ending.type,injury:result.ending.injury} : null,
+    decisions:result.decisions.map(({turn,actionIds,source,validation,fallbackReason,npc_state})=>
+      ({turn,actionIds,source,validation,fallbackReason,npc_state})),time:new Date().toISOString()});
   localStorage.setItem('pocketkb-online-records',JSON.stringify(rows.slice(0,30)));
 }
 function suspendIdle(reset=false) {
@@ -62,16 +64,15 @@ function suspendIdle(reset=false) {
     idle.remaining=Math.max(0,idle.remaining-(performance.now()-idle.started));
     idle.timer=null;
   }
-  if (reset) idle.remaining=45000;
+  if (reset) idle.remaining=online.session && online.session.scene.node.id!==specFor(online.session.scenarioId).initialNode ? 60000 : 90000;
 }
 function syncIdle() {
   suspendIdle();
-  if (document.hidden || online.busy || !online.session || online.session.terminal || online.session.suggestions?.length) return;
+  if (document.hidden || online.busy || idle.composing || online.draft.length || !online.session || online.session.terminal || online.session.suggestions?.length) return;
   idle.started=performance.now();
   idle.timer=setTimeout(()=>{
     idle.timer=null;
-    idle.remaining=45000;
-    if (!document.hidden && !online.busy && online.session && !online.session.terminal) void send('','hint','idle');
+    if (!document.hidden && !online.busy && !idle.composing && !online.draft.length && online.session && !online.session.terminal) void send('','hint','idle');
   },idle.remaining);
 }
 function render() {
@@ -121,7 +122,10 @@ function render() {
   document.querySelector('#onlineInput')?.addEventListener('input',event=>{
     online.draft=event.target.value;
     if (online.choice!==null) online.edited=true;
+    suspendIdle(true);syncIdle();
   });
+  document.querySelector('#onlineInput')?.addEventListener('compositionstart',()=>{idle.composing=true;suspendIdle(true);});
+  document.querySelector('#onlineInput')?.addEventListener('compositionend',()=>{idle.composing=false;suspendIdle(true);syncIdle();});
   document.querySelector('#onlineSend')?.addEventListener('click',()=>send(online.draft));
   document.querySelector('#onlineObserve')?.addEventListener('click',()=>{online.observation=!online.observation;render();document.querySelector('#onlineObserve')?.focus();});
   document.querySelector('#onlineHint')?.addEventListener('click',()=>send('','hint','button'));
@@ -129,11 +133,12 @@ function render() {
     online.choice=Number(button.dataset.hint);
     online.edited=false;online.draft=s.suggestions[online.choice];
     const field=document.querySelector('#onlineInput');field.value=online.draft;field.focus();
+    suspendIdle(true);syncIdle();
   }));
   document.querySelector('#onlineRestart')?.addEventListener('click',()=>{
     if (!s.terminal && !confirm('確定停止這次演練？紀錄會標為已退出。')) return;
     if (!s.terminal) save(s,true);
-    online.controller?.abort();suspendIdle(true);
+    online.controller?.abort();idle.composing=false;suspendIdle(true);
     Object.assign(online,{session:null,draft:'',choice:null,busy:false,observation:false,error:'',timing:null});
     render();document.querySelector('#onlineStart')?.focus();
   });
