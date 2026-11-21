@@ -2,9 +2,10 @@
 
 const banned = [/^我收到你說的/, /^我收到你說的「[^」]+」。/, /。你是在描述現場/,
   /描述現場、詢問，還是/, /還是在說自己現在決定採取的行動？$/, /^你試圖/,
-  /暴露於[^。]*(?:風險|危險)/, /演練危急失敗。/];
+  /暴露於[^。]*(?:風險|危險)/, /演練危急失敗。/,
+  /還找不到能照.{0,12}(?:做法|方式).{0,12}條件|沒有照剛才那個做法動|(?:做法|行動).{0,6}(?:現場)?條件(?:目前)?不成立/];
 const bannedClosings = [/我(?:還沒|還沒有|尚未)決定/, /(?:還要|還得|仍得|還需要|還沒)決定/, /接下來.{0,12}(?:怎麼做|做什麼|如何做)/, /在這個抉擇前又停了一會兒/];
-const {sceneText} = require('../web-pwa/drill-presentation');
+const {sceneText,questionAnswer,rejectionLine} = require('../web-pwa/drill-presentation');
 const aliases = {fire_closed_door:/緊閉的房門|關著的(?:房)?門|房門(?:仍|還)?(?:緊閉|關著)|關緊的門板|房門維持關閉/,
   fire_phone_signal:/手機.{0,6}(?:訊號|收得到|接得到)|螢幕.{0,6}訊號/, fire_window:/對外窗|朝外的窗/,
   school_shaking:/教室.{0,6}(?:在晃|搖晃)|地面.{0,5}(?:在抖|在動|在晃)|腳下.{0,5}(?:在抖|在動|在晃)/,
@@ -76,14 +77,16 @@ function ground(spec, before, result, priorLines = []) {
     const requiredBeat = ['avoid_open','towel_face','open_window_call'].includes(action?.action) ? actionBeat : null;
     const beat = spec.onlineExperience.beats[(state.elapsed || 0) % spec.onlineExperience.beats.length];
     const progress = state.node!==before.node && node.aftercareComplete ? result.message : null;
-    const explanation = result.kind==='blocked' ? result.message : result.kind==='clarify' && !result.sourceIds?.length ?
-      (/已經完成/.test(result.message) ? '我已經做過這個動作，手上的做法沒有帶來新的變化。' : '我在這個位置還找不到能照剛才那個做法行動的條件。') : null;
-    const recovery = spec.onlineExperience.unsupportedBeats?.[(state.elapsed || 0) % (spec.onlineExperience.unsupportedBeats?.length || 1)];
+    const emotional = events.some(event=>event.kind==='npc_emotion');
+    const rejected = ['clarify','unclear','off_topic','blocked'].includes(result.kind) && !emotional;
+    const blocked = events.findLast(event=>event.kind==='blocked');
+    const rule = spec.actions.find(item=>item.id===blocked?.action);
+    const explanation = rejected && !result.sourceIds?.length ?
+      (rule?.blockedMessage || rule?.blockedByFact || node.aftercareComplete && result.kind==='blocked' ? result.message : rejectionLine(spec,state)) : null;
     const authored = result.kind==='completed' ? [result.message] : [progress,explanation,requiredBeat,...environment,...npcLines].filter(Boolean);
-    if (explanation && !environment.length && !npcLines.length) authored.push(recovery || beat);
     if (!authored.length) authored.push(actionBeat || beat);
     return {details:node.experience.sensory, allDetails:spec.nodes.flatMap(item=>item.experience.sensory),
-      change:authored.join(''), authored, focus:focusLine(node,priorLines), strict:true};
+      change:authored.join(''), authored, focus:emotional ? '' : focusLine(node,priorLines), strict:true, emotional};
   }
   const event = events.findLast(event => event.kind === 'environment_change');
   const elapsed = (state.elapsed || 0) > (before.elapsed || 0);
@@ -95,7 +98,7 @@ function ground(spec, before, result, priorLines = []) {
 
 function template(grounded, previous, { stopped, refused, terminal, kind, task, name, finalMessage }) {
   const detail = grounded.details.find(item => !previous.includes(item.id));
-  const opening = detail ? `我${detail.text}。` : '我把注意力拉回眼前。';
+  const opening = grounded.emotional ? '' : detail ? `我${detail.text}。` : '我把注意力拉回眼前。';
   const guidance = stopped ? '我做到前面的動作，後面的還沒有做。' : refused && !grounded.change ? '我決定先不採取剛才拒絕的做法。' : '';
   const focus = terminal ? (grounded.change === finalMessage ? '' : finalMessage) : grounded.strict ? grounded.focus : kind === 'clarify' && !refused ?
     '我還得想清楚自己現在打算怎麼做。' : name ? `我接下來要和${name}怎麼配合？` : '我現在要怎麼決定下一步？';
@@ -105,21 +108,15 @@ function template(grounded, previous, { stopped, refused, terminal, kind, task, 
 }
 
 function validFixedLine(line,previous) {
-  return line && !bannedClosings.some(pattern=>pattern.test(line)) && !repeatedLine(line,previous);
+  return line && !banned.some(pattern=>pattern.test(line)) && !bannedClosings.some(pattern=>pattern.test(line)) && !repeatedLine(line,previous);
 }
 
 function focusLine(node, previous) {
   return [node.experience.focus,node.decisionPrompt || node.task].map(sceneText).find(line=>validFixedLine(line,previous)) || '';
 }
 
-function answerQuestion(spec, before, text, priorLines = []) {
-  const node = spec.nodes.find(item=>item.id===before.node);
-  const answer = spec.onlineExperience.questions.find(item=>(!item.nodes || item.nodes.includes(before.node)) && new RegExp(item.pattern).test(text));
-  const proposedSpeaker = spec.onlineExperience.questionSpeaker?.[before.node];
-  const speaker = proposedSpeaker==='接線員' && !before.events.some(event=>event.action==='call') ? spec.npc.name : proposedSpeaker || spec.npc.name;
-  const quote = answer ? `${speaker}說：「${sceneText(answer.answer)}」` : '眼前的資訊還不足以回答這個問題。';
-  return {state:before,kind:'question',message:quote + focusLine(node,priorLines),
-    sourceIds:answer?.sourceIds || [],answerId:answer?.id || null};
+function answerQuestion(spec, before, text) {
+  return {state:before,kind:'question',...questionAnswer(spec,before,text)};
 }
 
 function questionText(text) {

@@ -9,19 +9,22 @@ const online = {catalog:[],session:null,draft:'',busy:false,error:'',selected:'d
 const idle = {remaining:45000,started:0,timer:null};
 const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const specFor = id => online.catalog.find(row=>row.id===id)?.spec;
+const coachFailure = (message,reason) => Object.assign(new Error(message),{reason});
+const httpFailure = status => status >= 500 ? 'CLIENT_API_ERROR' : 'CLIENT_SYNC';
+const fallbackReason = error => error.reason || (error instanceof SyntaxError ? 'CLIENT_SYNC' : 'CLIENT_TRANSPORT');
 function post(body,signal) {
   return {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal};
 }
 async function json(route, body) {
   const signal = AbortSignal.timeout(4000);
   const response = await fetch(route,body ? post(body,signal) : {signal});
+  if (!response.ok) throw coachFailure('線上教練尚未完成請求。',httpFailure(response.status));
   const value = await response.json();
-  if (!response.ok) throw new Error(value.error || '無法連上線上教練。');
   return value;
 }
 async function streamTurn(id,request,onPart,signal) {
   const response = await fetch('/api/sessions/'+id+'/turn/stream',post(request,AbortSignal.any([signal,AbortSignal.timeout(26000)])));
-  if (!response.ok) throw new Error('線上回合未完成。');
+  if (!response.ok) throw coachFailure('線上回合未完成。',httpFailure(response.status));
   const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
   let buffer = '';
   try {
@@ -36,6 +39,7 @@ async function streamTurn(id,request,onPart,signal) {
         const payload=JSON.parse(data.slice(6));
         if (event==='event: narration') onPart(payload);
         if (event==='event: settled') return payload;
+        if (event==='event: error') throw coachFailure('線上回合未完成。',payload.code === 'INTERNAL' ? 'CLIENT_API_ERROR' : 'CLIENT_SYNC');
       }
     }
   } finally { await reader.cancel(); }
@@ -84,7 +88,7 @@ function render() {
       <details><summary>演練紀錄</summary>${records().map(row=>`<p>${esc(row.title)} · ${esc(row.ending_type==='EXITED'?'已退出':row.ending?.type || '已結束')}</p>`).join('') || '<p>目前沒有紀錄。</p>'}</details>` : `
       <h2>${esc(s.scene.title)}</h2>
       ${s.offline?'<p class="offline-label">目前使用離線判讀</p>':''}
-      ${s.fallbackReason || s.onlineRecovered ? `<p role="status">${esc(presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered))}</p>` : ''}
+      ${presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered) ? `<p role="status">${esc(presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered))}</p>` : ''}
       ${s.terminal ? `<section class="fire-review drill-panel" aria-live="polite">
         <h3>${esc(s.ending?.type)}</h3><p class="drill-notice">${esc(s.ending?.injury)}</p><p class="online-reply">${esc(s.ending?.text)}</p>
         <h3>簡單回顧</h3><p>結果：${esc(s.ending?.type)} · ${esc(s.ending?.injury)}</p>
@@ -138,27 +142,26 @@ function render() {
 async function start() {
   online.busy=true;online.error='';render();
   try {
-    online.session=await json('/api/sessions',{scenarioId:online.selected}).catch(()=>localResult({sessionId:crypto.randomUUID(),scenarioId:online.selected,revision:-1,unregistered:true},null));
+    online.session=await json('/api/sessions',{scenarioId:online.selected})
+      .catch(error=>localResult({sessionId:crypto.randomUUID(),scenarioId:online.selected,revision:-1,unregistered:true},null,fallbackReason(error)));
   } catch (error) {online.error=error.message;}
   finally {online.busy=false;suspendIdle(true);render();syncIdle();document.querySelector('#onlineInput')?.focus();}
 }
-function localResult(session,request) {
+function localResult(session,request,reason) {
   const spec=specFor(session.scenarioId);
   const engine=globalThis.ScenarioEngineV3;
   const before=session.state || engine.create(spec,{onlineExperience:true});
   let result=request?.intent==='action'?engine.rawStep(spec,before,request.text,request.intent):{state:before,kind:'hint',message:session.reply || ''};
   if (result.kind==='question') {
-    const answer=spec.onlineExperience.questions.find(item=>(!item.nodes || item.nodes.includes(before.node)) && new RegExp(item.pattern).test(request.text));
-    const proposed=spec.onlineExperience.questionSpeaker[before.node];
-    const speaker=proposed==='接線員' && !before.events.some(event=>event.action==='call')?spec.npc.name:proposed || spec.npc.name;
-    result={...result,state:before,sourceIds:answer?.sourceIds || [],
-      message:answer?`${speaker}說：「${answer.answer}」`:'眼前的資訊還不足以回答這個問題。'};
+    result={...result,state:before,...presentation.questionAnswer(spec,before,request.text)};
   } else if (request?.intent==='action') {
     result=engine.settleOnline(spec,before,result,request.text,request.intent);
     result=globalThis.DrillEvents.advance(spec,result,request.text,before);
     const developments=result.state.events.slice(before.events.length)
       .filter(event=>['environment_change','npc_proposal','npc_emotion_prompt','npc_emotion'].includes(event.kind));
-    if (developments.length) result={...result,message:[result.message,...developments.map(event=>event.message)].filter(Boolean).join(' ')};
+    const emotion=developments.find(event=>event.kind==='npc_emotion');
+    const reason=['clarify','unclear','off_topic'].includes(result.kind) && !result.sourceIds?.length ? presentation.rejectionLine(spec,result.state) : result.message;
+    result={...result,message:emotion?.message || [reason,...developments.map(event=>event.message)].filter(Boolean).join(' ')};
   }
   const state=result.state;
   const node=spec.nodes.find(item=>item.id===state.node);
@@ -179,8 +182,8 @@ function localResult(session,request) {
     hint_trigger:hintContext?.trigger,hint_selected_index:request.hintSelectedIndex,hint_edited_before_submit:request.hintEditedBeforeSubmit,
     actionIds:engine.adoptedActionIds(before,state)}:null;
   const reply=presentation.sceneText(result.message);
-  const queue = request ? [...(session.queue || []),request] : [];
-  return {...session,revision:session.revision+1,state,terminal,offline:true,localOnly:true,reply,queue,fallbackReason:'CLIENT_TRANSPORT',onlineRecovered:false,
+  const queue = request ? [...(session.queue || []),{...request,clientFallbackReason:reason}] : [];
+  return {...session,revision:session.revision+1,state,terminal,offline:presentation.isConnectionFallback(reason),localOnly:true,reply,queue,fallbackReason:reason,onlineRecovered:false,
     suggestions:hintContext?.options || [],hintContext,invalidStreak,decisions:[...(session.decisions || []),...(decision?[decision]:[])],
     citations:globalThis.DrillEvents.citations(spec,before,result),
     ending:terminal?presentation.summary(spec,state,reply):null,
@@ -198,7 +201,7 @@ async function resume(snapshot,signal) {
     settled=await streamTurn(base.sessionId,{...queued,revision:base.revision,rulesOnly:true},()=>{},signal);
     base={sessionId:settled.sessionId,revision:settled.revision};
   }
-  if (settled && presentation.resumeState(settled.state)!==presentation.resumeState(snapshot.state)) throw new Error('遠端與最後確認場景不同');
+  if (settled && presentation.resumeState(settled.state)!==presentation.resumeState(snapshot.state)) throw coachFailure('遠端與最後確認場景不同','CLIENT_SYNC');
   return base;
 }
 
@@ -223,10 +226,10 @@ async function send(text,intent='action',hintTrigger) {
         const output=document.querySelector('#currentNarration .online-reply');
         if (output) {output.textContent=preview;first ??= performance.now()-started;}
       },controller.signal);
-      if (snapshot.localOnly || snapshot.offline) result.onlineRecovered = !result.offline;
-    } catch {
+      if (snapshot.offline) result.onlineRecovered = !result.offline;
+    } catch (error) {
       if (controller.signal.aborted) return;
-      result=localResult(snapshot,request);
+      result=localResult(snapshot,request,fallbackReason(error));
     }
     if (controller.signal.aborted || online.session?.sessionId!==snapshot.sessionId) return;
     if (intent==='hint') result={...result,reply:snapshot.reply,citations:snapshot.citations};

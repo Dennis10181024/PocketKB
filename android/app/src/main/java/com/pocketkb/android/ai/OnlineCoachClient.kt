@@ -7,16 +7,24 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.json.JSONTokener
+import java.io.EOFException
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
-internal suspend fun coachTurnOrFallback(remote: suspend () -> Unit, offline: () -> Unit) {
+private class CoachHttpFailure(val status: Int, message: String) : IOException(message)
+
+internal suspend fun coachTurnOrFallback(remote: suspend () -> Unit, offline: (String) -> Unit) {
     try {
         remote()
     } catch (error: CancellationException) {
         throw error
-    } catch (_: Exception) {
-        offline()
+    } catch (error: Exception) {
+        offline(when (error) {
+            is CoachHttpFailure -> if (error.status >= 500) "CLIENT_API_ERROR" else "CLIENT_SYNC"
+            is IOException -> "CLIENT_TRANSPORT"
+            else -> "CLIENT_SYNC"
+        })
     }
 }
 
@@ -52,11 +60,11 @@ class OnlineCoachClient(private val baseUrl: String = BuildConfig.COACH_URL) {
                         }
                     }
                 }
-                error("連線在確認回合前中斷。")
+                throw EOFException("連線在確認回合前中斷。")
             }
             val stream = if (status in 200..299) connection.inputStream else connection.errorStream
             val value = JSONObject(stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() } ?: "{}")
-            check(status in 200..299) { value.optString("error", "線上教練尚未完成請求，請重試。") }
+            if (status !in 200..299) throw CoachHttpFailure(status, value.optString("error", "線上教練尚未完成請求，請重試。"))
             value
         } finally { connection.disconnect() }
     }

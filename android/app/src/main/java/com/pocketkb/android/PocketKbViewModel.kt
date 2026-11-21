@@ -69,6 +69,7 @@ data class PocketKbUiState(
     val onlineError: String = "",
     val onlineRevision: Int = 0,
     val onlineLocalOnly: Boolean = false,
+    val onlineFallbackReason: String? = null,
     val roundNarration: String = "",
     val onlinePreview: String = "",
     val hintOptions: List<String> = emptyList(),
@@ -193,7 +194,8 @@ class PocketKbViewModel(
                 }
                 if (decision != null) storeResearch(localId, before.decisionLog.size + 1, decision)
                 val fallback = value.optString("fallbackReason")
-                val recoveredOnline = value.optBoolean("onlineRecovered") || before.onlineLocalOnly && !value.optBoolean("offline")
+                val recoveredOnline = value.optBoolean("onlineRecovered") ||
+                    before.onlineLocalOnly && before.onlineFallbackReason in setOf("CLIENT_TRANSPORT", "CLIENT_API_ERROR") && !value.optBoolean("offline")
                 val doneAt = android.os.SystemClock.elapsedRealtime()
                 if (intent == "action" && BuildConfig.DEBUG) android.util.Log.i("Step23Timing", "first=${(firstAt ?: doneAt) - sentAt} complete=${doneAt - sentAt}")
                 _uiState.update { it.copy(isGenerating = false,
@@ -202,29 +204,29 @@ class PocketKbViewModel(
                     invalidStreak = value.optInt("invalidStreak"), decisionLog = it.decisionLog + listOfNotNull(decision),
                     roundSources = if (intent == "hint") it.roundSources else value.objects("citations").map { source -> source.optString("title") },
                     onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1,
-                    onlineLocalOnly = false, connectionNotice = if (intent == "hint") it.connectionNotice else connectionNotice(fallback, recoveredOnline),
+                    onlineLocalOnly = false, onlineFallbackReason = null, connectionNotice = if (intent == "hint") it.connectionNotice else connectionNotice(fallback, recoveredOnline),
                     onlineStatus = if (value.optBoolean("offline")) "目前使用離線判讀" else "GPT 線上教練", onlineError = "") }
                 if (intent != "hint") {
                     if (fireResult != null) sendFireInteraction(text, intent, fireResult)
                     if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
                 }
-            }, offline = {
+            }, offline = { reason ->
                 if (_uiState.value.activeSessionId == localId) {
                     pendingOnline = null
-                    offlineTurns.add(outgoing)
-                    applyOfflineTurn(before, text, intent, trigger, hintIndex, edited)
+                    offlineTurns.add(outgoing.put("clientFallbackReason", reason))
+                    applyOfflineTurn(before, text, intent, trigger, hintIndex, edited, reason)
                 }
             })
         }
     }
 
-    private fun applyOfflineTurn(before: PocketKbUiState, text: String, intent: String, trigger: String?, hintIndex: Int?, edited: Boolean) {
+    private fun applyOfflineTurn(before: PocketKbUiState, text: String, intent: String, trigger: String?, hintIndex: Int?, edited: Boolean, reason: String) {
         val scenario = before.selectedScenario ?: return
         val fireResult = before.fireState?.let { fireDrill.step(it, text, intent) }
         val v3Result = before.scenarioStateV3?.let { scenarioRuntimesV3[scenario.id]?.step(it, text, intent) }
         _uiState.update { it.copy(isGenerating = false, onlineLocalOnly = true, onlineError = "", onlinePreview = "",
-            connectionNotice = connectionNotice("CLIENT_TRANSPORT"),
-            onlineStatus = "目前使用離線判讀",
+            onlineFallbackReason = reason, connectionNotice = connectionNotice(reason),
+            onlineStatus = if (reason == "CLIENT_SYNC") "GPT 線上教練" else "目前使用離線判讀",
             onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1) }
         if (fireResult != null) sendFireInteraction(text, intent, fireResult)
         if (v3Result != null && intent != "hint") {
@@ -271,13 +273,11 @@ class PocketKbViewModel(
     }
 
     private fun connectionNotice(reason: String, recovered: Boolean = false): String = when {
+        reason == "TURN_TIMEOUT" || reason == "MODEL_TIMEOUT" -> "這回合連線逾時，暫時改用離線判讀。"
+        reason == "CLIENT_TRANSPORT" -> "這回合連線中斷或逾時，暫時改用離線判讀。"
+        reason in setOf("CLIENT_API_ERROR", "PROVIDER_ERROR", "MODEL_UNAVAILABLE", "MODEL_INCOMPLETE") -> "線上服務這回合未完成請求，暫時改用離線判讀。"
         recovered -> "已恢復線上判讀。"
-        reason.isBlank() || reason == "null" -> ""
-        reason == "TURN_TIMEOUT" -> "這回合理解逾時，暫時改用離線判讀。"
-        reason in setOf("CLIENT_TRANSPORT", "MODEL_TIMEOUT") -> "這回合連線中斷或逾時，暫時改用離線判讀。"
-        reason == "NOT_CONFIGURED" -> "線上教練尚未設定，這回合使用離線判讀。"
-        reason == "CALL_LIMIT" -> "線上請求額度已用完，這回合使用離線判讀。"
-        else -> "線上判讀這回合未能確認，暫時改用離線規則。"
+        else -> ""
     }
     fun scenarioRuntimeV3(id: String): ScenarioRuntimeV3? = scenarioRuntimesV3[id]
 
@@ -590,7 +590,9 @@ class PocketKbViewModel(
         }
         val row = localResearch(before, result, "action", trigger, hintIndex, edited, text)
         before.activeSessionId?.let { storeResearch(it, before.decisionLog.size + 1, row) }
-        _uiState.update { it.copy(roundNarration = result.message, roundSources = emptyList(), invalidStreak = streak,
+        val sources = scenarioRuntimesV3[result.state.scenarioId]?.spec?.objects("sources").orEmpty()
+            .filter { it.optString("id") in result.sourceIds }.map { it.optString("title") }
+        _uiState.update { it.copy(roundNarration = result.message, roundSources = sources, invalidStreak = streak,
             hintOptions = if (reset) emptyList() else before.hintOptions, hintTrigger = if (reset) null else before.hintTrigger,
             hintShownTurn = if (reset) null else before.hintShownTurn,
             decisionLog = it.decisionLog + row) }
@@ -604,7 +606,7 @@ class PocketKbViewModel(
         val ids = events.filter { it.kind in setOf("action", "blocked", "hazard") }.mapNotNull { it.action }.distinct()
         val sourceIds = (runtime?.spec?.objects("actions").orEmpty().filter { it.optString("id") in ids } +
             runtime?.spec?.objects("deterioration").orEmpty().filter { item -> events.any { it.eventId == item.optString("id") } })
-            .flatMap { it.strings("sourceIds") }.distinct()
+            .flatMap { it.strings("sourceIds") }.plus(result.sourceIds).distinct()
         val json = JSONObject().put("schema", "2.2").put("sessionId", before.activeSessionId)
             .put("scenarioId", state.scenarioId).put("version", state.version).put("recordedAt", java.time.Instant.now().toString())
             .put("turn", before.decisionLog.size + 1).put("intent", intent).put("source", "rule").put("kind", result.kind)
@@ -613,9 +615,9 @@ class PocketKbViewModel(
             .put("actionIds", org.json.JSONArray(ids)).put("source_ids", org.json.JSONArray(sourceIds))
             .put("actionBatches", org.json.JSONArray(if (ids.isEmpty()) emptyList() else listOf(JSONObject().put("ids", org.json.JSONArray(ids)).put("source", "rule"))))
             .put("actionValidation", org.json.JSONArray()).put("narration_checks", org.json.JSONArray()).put("disagreement", JSONObject.NULL)
-            .put("question_answer_id", JSONObject.NULL).put("emotion", state.npc?.emotion?.takeIf { it != before.scenarioStateV3?.npc?.emotion }
+            .put("question_answer_id", result.answerId ?: JSONObject.NULL).put("emotion", state.npc?.emotion?.takeIf { it != before.scenarioStateV3?.npc?.emotion }
                 ?.let { JSONObject().put("category", it).put("source", "rule").put("evidence", "[redacted]") } ?: JSONObject.NULL)
-            .put("fallbackReason", if (_uiState.value.onlineLocalOnly) "CLIENT_TRANSPORT" else JSONObject.NULL).put("narrationFallbackReason", JSONObject.NULL)
+            .put("fallbackReason", _uiState.value.onlineFallbackReason ?: JSONObject.NULL).put("narrationFallbackReason", JSONObject.NULL)
             .put("hint_shown", before.hintOptions.isNotEmpty()).put("hint_seen_before_submit", before.hintOptions.isNotEmpty())
             .put("hint_shown_turn", before.hintShownTurn ?: JSONObject.NULL).put("hint_trigger", before.hintTrigger ?: trigger ?: JSONObject.NULL)
             .put("hint_selected_index", hintIndex ?: JSONObject.NULL).put("hint_edited_before_submit", edited)

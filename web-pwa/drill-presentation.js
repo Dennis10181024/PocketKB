@@ -2,14 +2,30 @@
   const endings = {SELF_EVACUATION:'自行撤離', SAFE_RESCUE:'安全待救獲救', DELAYED_RESCUE:'延誤後獲救', CRITICAL_FAILURE:'危急失敗', EXITED:'已退出'};
   const injuries = {NONE:'無傷', MILD:'輕傷', MODERATE:'中度傷勢（需送醫）', SEVERE:'重傷（需住院治療）', NOT_ASSESSED:'傷勢不評定', BASELINE:'傷勢未加重'};
   const sceneText = text => String(text || '').replace(/模擬119/g,'119').replace(/模擬通報/g,'通報').replace(/(?:模擬|演練)中/g,'現場').replace(/這段演練|此演練|本次演練/g,'目前情況').replace(/演練|模擬/g,'');
+  const isConnectionFallback = reason => ['TURN_TIMEOUT','MODEL_TIMEOUT','CLIENT_TRANSPORT','CLIENT_API_ERROR','PROVIDER_ERROR','MODEL_UNAVAILABLE','MODEL_INCOMPLETE'].includes(reason);
   function fallbackNotice(reason,recovered) {
-    if (recovered) return '已恢復線上判讀。';
-    if (!reason) return '';
-    if (reason==='TURN_TIMEOUT') return '這回合理解逾時，暫時改用離線判讀。';
-    if (reason==='CLIENT_TRANSPORT' || reason==='MODEL_TIMEOUT') return '這回合連線中斷或逾時，暫時改用離線判讀。';
-    if (reason==='NOT_CONFIGURED') return '線上教練尚未設定，這回合使用離線判讀。';
-    if (reason==='CALL_LIMIT') return '線上教練本次請求額度已用完，這回合使用離線判讀。';
-    return '線上判讀這回合未能確認，暫時改用離線規則。';
+    if (reason==='TURN_TIMEOUT' || reason==='MODEL_TIMEOUT') return '這回合連線逾時，暫時改用離線判讀。';
+    if (reason==='CLIENT_TRANSPORT') return '這回合連線中斷或逾時，暫時改用離線判讀。';
+    if (isConnectionFallback(reason)) return '線上服務這回合未完成請求，暫時改用離線判讀。';
+    return recovered ? '已恢復線上判讀。' : '';
+  }
+  function questionAnswer(spec,state,text) {
+    const entry = spec.onlineExperience.questions.find(item=>(!item.nodes || item.nodes.includes(state.node)) && new RegExp(item.pattern).test(text));
+    const completed = id => state.events.some(event=>event.kind==='action' && event.action===id);
+    const variant = entry?.variants?.find(item =>
+      Object.entries(item.whenFacts || {}).every(([key,value])=>state.facts[key]===value) &&
+      (item.whenActions || []).every(completed) && (item.withoutActions || []).every(id=>!completed(id)));
+    const answer = variant?.answer || entry?.answer;
+    let speaker = spec.onlineExperience.questionSpeaker?.[state.node] || spec.npc.name;
+    if (speaker==='接線員' && !completed('call')) speaker=spec.npc.name;
+    const unknown = spec.onlineExperience.unknownAnswer || '我望了一眼四周，這裡沒有能讓我確認的線索。';
+    return {message:answer ? `${speaker}說：「${sceneText(answer)}」` : unknown,
+      sourceIds:answer ? entry.sourceIds : [],answerId:answer ? entry.id : null};
+  }
+  function rejectionLine(spec,state) {
+    const node = spec.nodes.find(item=>item.id===state.node);
+    const lines = node.experience.rejection || [`我${node.experience.sensory[0].text}，眼前還有這件事得先確認。`];
+    return lines[(state.elapsed || 0) % lines.length];
   }
   function resumeState(state) {
     const canonical = value=>Array.isArray(value)?value.map(canonical):value && typeof value==='object' ?
@@ -45,6 +61,6 @@
       text:sceneText(state.endingType==='CRITICAL_FAILURE' ? reply : spec.endingMessages?.[state.endingType]?.[state.injuryLevel] || reply),
       decisions:[...new Set(keys)].slice(0,3), causes:causes.map(c=>`第 ${c.turn} 個決策 · ${label(c.action)}`),lessons};
   }
-  root.DrillPresentation = {status,summary,sceneText,fallbackNotice,resumeState};
+  root.DrillPresentation = {status,summary,sceneText,fallbackNotice,isConnectionFallback,questionAnswer,rejectionLine,resumeState};
   if (typeof module!=='undefined') module.exports=root.DrillPresentation;
 })(globalThis);

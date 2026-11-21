@@ -74,11 +74,42 @@ class DiagnosisRegressionTest {
         assertEquals(start.elapsed + 2, openWindow.state.elapsed)
     }
 
+    @Test fun practiceRecognizesDissuasionAndAnswersFromState() {
+        val examples = mapOf(
+            "fire-dorm" to listOf("小岑不要把門打開，我們先留在這", "小岑別開房門啦", "小岑拜託不要再把門拉開"),
+            "earthquake-school" to listOf("小維先不要往外跑", "小維不行，往外跑", "小維你拜託不要跑出去"),
+            "flood-low-home" to listOf("阿敏先不要下樓拿車", "阿敏不行，下去拿車", "阿敏拜託不要去地下室"),
+        )
+        for ((file, phrases) in examples) {
+            val runtime = ScenarioRuntimeV3(spec("v3/$file.json"))
+            for (text in phrases) {
+                val response = runtime.step(runtime.create(firstAidEnabled = true), text)
+                assertTrue(text, response.state.npc?.handled == true)
+                assertTrue(text, response.state.events.any { it.kind == "npc_emotion_prompt" })
+                assertFalse(text, response.state.events.any { it.kind == "action" })
+            }
+        }
+        val fire = ScenarioRuntimeV3(spec("v3/fire-dorm.json"))
+        val start = fire.create(firstAidEnabled = true)
+        assertEquals("false", fire.step(start, "我不關門").state.facts["doorClosed"])
+        val question = "窗戶那邊有煙嗎，可以開窗嗎？"
+        val open = fire.step(start, question)
+        assertEquals(start, open.state)
+        assertTrue(open.message.contains("房門還留著一道縫"))
+        assertEquals(listOf("nfa", "window-guide"), open.sourceIds)
+        val smoky = start.copy(facts = start.facts + ("windowOutsideClear" to "false"))
+        assertTrue(fire.step(smoky, question).message.contains("窗外有煙"))
+    }
+
     @Test fun transportTimeoutRunsLocalTurnOnceAndCancellationDoesNotReplay() = runBlocking {
         val engine = FireDrill(spec("fire-dorm.json"))
         var state = engine.create()
         var localCalls = 0
-        val local = { localCalls++; state = engine.step(state, "我把房門關好").state }
+        val local: (String) -> Unit = { reason ->
+            assertEquals("CLIENT_TRANSPORT", reason)
+            localCalls++
+            state = engine.step(state, "我把房門關好").state
+        }
         coachTurnOrFallback(remote = { throw SocketTimeoutException() }, offline = local)
         assertEquals(1, state.node)
         assertEquals(1, localCalls)
@@ -88,5 +119,6 @@ class DiagnosisRegressionTest {
         } catch (_: CancellationException) {
             assertEquals(1, localCalls)
         }
+        coachTurnOrFallback(remote = { error("state mismatch") }, offline = { assertEquals("CLIENT_SYNC", it) })
     }
 }

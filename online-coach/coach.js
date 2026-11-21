@@ -235,7 +235,10 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
             text: { format: { type: 'json_schema', name: stage, strict: true, schema } },
           }),
         });
-      } catch { throw apiError('MODEL_TIMEOUT', 'GPT 暫時未回應。你的行動尚未執行，請重試。', 504); }
+      } catch {
+        throw signal?.aborted ? apiError('MODEL_TIMEOUT', 'GPT 暫時未回應。', 504) :
+          apiError('PROVIDER_ERROR', '無法連線到 GPT 服務。', 502);
+      }
       if (!response.ok) throw apiError('MODEL_UNAVAILABLE', `GPT 服務未完成請求（HTTP ${response.status}）。請檢查電腦端金鑰、額度或稍後重試。`, 502);
       const data = await completedResponse(response);
       if (data.status !== 'completed') throw apiError('MODEL_INCOMPLETE', 'GPT 回覆未完成，行動尚未執行，請重試。', 502);
@@ -281,7 +284,7 @@ class ConversationCoach {
     if (this.calls >= this.maxCalls) throw apiError('CALL_LIMIT', '本次啟動的 GPT 請求上限已用完，請在電腦端確認後重啟。', 429);
     this.calls++; return this.provider.generate(stage, payload, schema, signal);
   }
-  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null, rulesOnly = false }, onGround) {
+  async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null, rulesOnly = false, clientFallbackReason }, onGround) {
     const session = this.sessions.get(id);
     if (!session || Date.now() - session.updatedAt > this.ttlMs) throw apiError('SESSION_EXPIRED', '演練連線已過期，請另開一次練習。', 410);
     if (typeof requestId !== 'string' || requestId.length < 8 || requestId.length > 100 || !Number.isInteger(revision) || typeof text !== 'string' || text.length > 2000 || !['action','question','observe','hint'].includes(intent))
@@ -301,13 +304,14 @@ class ConversationCoach {
     if (session.revision >= this.maxTurns) throw apiError('TURN_LIMIT', '這次對話已達回合上限，請保存回顧或另開演練。', 429);
     if (hintSelectedIndex !== null && !session.hint) throw apiError('INVALID_HINT', '目前沒有顯示的建議句。');
     session.busy = true;
-    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,rulesOnly:rulesOnly===true}).finally(() => { session.busy = false; });
+    const replayReason = rulesOnly === true ? (['CLIENT_API_ERROR','CLIENT_SYNC'].includes(clientFallbackReason) ? clientFallbackReason : 'CLIENT_TRANSPORT') : null;
+    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason}).finally(() => { session.busy = false; });
     session.requests.set(requestId, { fingerprint, promise });
     // Failed attempts remain uncommitted; clients may safely retry the same request.
     promise.catch(() => { session.requests.delete(requestId); });
     return promise;
   }
-  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,rulesOnly}) {
+  async execute(session, text, intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason}) {
     const started = Date.now();
     const { spec } = session; const runtime = engine(spec);
     let result, reply, offline = false, fallbackReason;
@@ -326,12 +330,12 @@ class ConversationCoach {
       const refused = Experience.refusal(spec,before,literal,text,intent);
       if (before.onlineExperience && (intent==='question' ||
           (literal.kind==='question' || Experience.questionText(text)) && !V3.recognizesNpcResponse(spec,text))) {
-        result = Experience.answerQuestion(spec,before,text,session.history.filter(m=>m.role==='assistant').slice(-2).map(m=>m.content));
+        result = Experience.answerQuestion(spec,before,text);
         reply = result.message;
         Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
-      } else if (currentNode(spec,before).aftercareComplete || rulesOnly) {
+      } else if (currentNode(spec,before).aftercareComplete || replayReason) {
         result = settle(spec,before,literal,text,intent,audit);
-        if (rulesOnly) {offline=true;fallbackReason='CLIENT_TRANSPORT';}
+        if (replayReason) {fallbackReason=replayReason;offline=Presentation.isConnectionFallback(replayReason);}
         if (currentNode(spec,before).aftercareComplete && result.kind==='clarify') {
           result = {...result,kind:'blocked',message:'我還沒說清完整順序。救護人員指向清水和乾淨覆蓋物，提醒我可以先問他處理燙傷的步驟。',sourceIds:['burn-aid']};
         }
@@ -348,8 +352,8 @@ class ConversationCoach {
         audit.source = 'rule';
         audit.emotion = result.state.npc?.emotion !== before.npc?.emotion ? {category:result.state.npc.emotion,source:'rule',evidence:text} : null;
         reply = this.narrationFallback(session,result,audit,refused,text);
-        offline = true;
         fallbackReason = signal.aborted ? 'TURN_TIMEOUT' : error instanceof CoachError ? error.code : 'PROVIDER_ERROR';
+        offline = Presentation.isConnectionFallback(fallbackReason);
         audit.validation = fallbackReason;
       }
       }
@@ -465,7 +469,9 @@ class ConversationCoach {
       // Ambiguity, paraphrases and compound input still go through the full interpretation contract.
       const recognized = runtime.adoptedActionIds(session.state,literal.state);
       const authoredRule = recognized.length > 0 && recognized.every(id=>spec.actions.find(action=>action.id===id)?.ruleGrounded);
-      const exact = authoredRule || onGround && explicitRuleAction(spec,session.state,text,intent,literal);
+      const npcOnly = session.state.onlineExperience && !session.state.npc.handled && !recognized.length &&
+        !literalDanger && V3.recognizesNpcResponse(spec,text);
+      const exact = authoredRule || npcOnly || onGround && explicitRuleAction(spec,session.state,text,intent,literal);
       const interpreted = exact ? {value:{intent:'action',understanding:'',question:'',needsClarification:false,actions:[]}} :
         await generate('interpret', { scene:scene(spec,session.state), history, text, inputMode:intent,
           actionCatalog:actions, potentialLaterActions:later }, interpretationSchema(spec));
@@ -484,7 +490,7 @@ class ConversationCoach {
       }
       let result;
       if (session.state.onlineExperience && understanding.intent==='question' && !literalDanger && !literalIds.length && !refused && !V3.recognizesNpcResponse(spec,text)) {
-        result = Experience.answerQuestion(spec,session.state,text,priorLines);
+        result = Experience.answerQuestion(spec,session.state,text);
         Object.assign(audit,{noAdvance:true,narration:'sourced_question',answerId:result.answerId});
         return {result,reply:result.message};
       } else if (refused) {
@@ -514,6 +520,10 @@ class ConversationCoach {
         return {result,reply};
       }
       const grounded = Experience.ground(spec,session.state,result,priorLines);
+      if (grounded.emotional && !runtime.adoptedActionIds(session.state,result.state).length) {
+        audit.narration = 'engine_emotion';
+        return {result,reply:grounded.change};
+      }
       if (refused) grounded.change = Experience.refusalFact(text,!grounded.strict);
       if (result.kind === 'risk' || result.kind === 'clarify' && result.sourceIds?.length) {
         const hazard = result.state.events.slice(session.state.events.length).findLast(event=>event.kind==='hazard' || event.kind==='action');

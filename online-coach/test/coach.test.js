@@ -113,7 +113,8 @@ test('unknown actions and fabricated evidence use rules without model narration'
   for (const interpretation of [input('關門',['invented']), input('這不是原文',['close'])]) {
     const provider = fakeProvider(()=>interpretation); const coach = new ConversationCoach(provider); const s=coach.create('drill_fire_dorm');
     const result = await coach.turn(s.sessionId,request('我關門'));
-    assert.equal(result.offline,true);
+    assert.equal(result.offline,false);
+    assert.ok(result.fallbackReason.startsWith('MODEL_'));
     assert.equal(result.state.node,'report');
     assert.equal(result.revision,1);
     assert.equal(provider.calls.length,1);
@@ -183,7 +184,7 @@ test('unsupported and future actions do not invent state transitions', () => {
 test('missing key does not call a fake coach or move the scenario', async () => {
   const coach=new ConversationCoach(createOpenAIProvider({apiKey:''}));const s=coach.create('drill_fire_dorm');
   const result=await coach.turn(s.sessionId,request('我想訂宵夜'));
-  assert.equal(result.offline,true);assert.deepEqual(withoutClock(result.state),s.state);
+  assert.equal(result.offline,false);assert.equal(result.fallbackReason,'NOT_CONFIGURED');assert.deepEqual(withoutClock(result.state),s.state);
   assert.equal(coach.calls,0);assert.equal(result.revision,1);
 });
 test('call limit also guards second-stage calls and uses a factual template', async () => {

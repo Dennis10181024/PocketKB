@@ -42,6 +42,8 @@ data class ScenarioResultV3(
     val state: ScenarioStateV3,
     val kind: String,
     val message: String,
+    val sourceIds: List<String> = emptyList(),
+    val answerId: String? = null,
 )
 
 data class ScenarioReviewTimelineItemV3(
@@ -285,12 +287,16 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         var result = rawStep(before, text, intent, actionIds)
         val npc = before.npc
         val proposal = spec.optJSONObject("npc")?.optString("responsePattern").orEmpty()
-        if (intent == "action" && npc != null && !npc.handled && result.kind == "clarify" &&
-            proposal.isNotEmpty() && Regex(proposal).matches(text.trim())
+        val addressed = before.firstAidEnabled && recognizesNpcResponse(text.trim())
+        if (intent == "action" && npc != null && !npc.handled && result.kind in setOf("clarify", "question", "partial", "transition") &&
+            (addressed || result.kind == "clarify" && proposal.isNotEmpty() && Regex(proposal).matches(text.trim()))
         ) {
+            val prompt = spec.getJSONObject("npc").optJSONObject("online")?.optString("emotion").orEmpty()
+            val event = ScenarioEventV3(before.node, kind = "npc_handled")
             val state = result.state.copy(npc = npc.copy(handled = true, proposal = null),
-                events = result.state.events + ScenarioEventV3(before.node, kind = "npc_handled"))
-            result = ScenarioResultV3(state, "safe", "我聽見同伴答應先停下。")
+                events = result.state.events + event + if (addressed) listOf(ScenarioEventV3(before.node, kind = "npc_emotion_prompt", message = prompt)) else emptyList())
+            result = result.copy(state = state, kind = if (result.kind in setOf("clarify","question")) "safe" else result.kind,
+                message = if (addressed) prompt else "我聽見同伴答應先停下。")
         }
         if (intent == "action" && npc?.handled == true && npc.emotion == null &&
             result.kind in setOf("clarify", "question", "partial")
@@ -303,7 +309,15 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
                     events = result.state.events + ScenarioEventV3(before.node, action.getString("id"), "npc_emotion", message),
                 )
                 result = result.copy(state = next, message = message)
+                if (before.firstAidEnabled) return result
             }
+        }
+        if (before.firstAidEnabled && result.kind == "question") return answerQuestion(before, text)
+        if (before.firstAidEnabled && result.kind == "clarify" && !result.message.startsWith("尚未執行")) {
+            val experience = node(before).getJSONObject("experience")
+            val reasons = experience.strings("rejection")
+            result = result.copy(message = reasons.getOrNull(before.elapsed % reasons.size.coerceAtLeast(1))
+                ?: "我${experience.objects("sensory").first().getString("text")}，眼前還有這件事得先確認。")
         }
         val state = result.state
         if (state.firstAidEnabled && result.kind == "blocked") {
@@ -324,6 +338,40 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         val next = (event?.let { patch(state,it) } ?: state).copy(elapsed = clock.elapsed, consecutiveQuestions = clock.questions,
             events = if (message == null) state.events else state.events + ScenarioEventV3(state.node, kind = "environment_change", message = message))
         return result.copy(state = next, message = if (message == null) result.message else "${result.message} $message")
+    }
+
+    private fun recognizesNpcResponse(text: String): Boolean {
+        if (Regex("如果|假設|假如|萬一|互相衝突|[?？]|可不可以|要不要|不要阻止|不要勸").containsMatchIn(text)) return false
+        val npc = spec.getJSONObject("npc")
+        val name = npc.getString("name")
+        val online = npc.getJSONObject("online")
+        val direct = text.replaceFirst(Regex("^(?:我)?(?:跟|對|請|勸|攔住|阻止|告訴|提醒)?"), "")
+        if (!direct.startsWith(name)) return false
+        val addressed = direct.removePrefix(name).replaceFirst(Regex("^[\\s，、,:：！!]*(?:你[\\s，、,:：]*)?"), "")
+        val veto = Regex("^(?:拜託[\\s，、,:：]*)?(?:先\\s*)?(?:不要|別|不行|不可以|不能)[\\s，、,:：]*").find(addressed)
+        val target = online.optString("dissuasionTarget")
+        return veto != null && target.isNotBlank() && Regex("^(?:$target)").containsMatchIn(addressed.drop(veto.value.length)) ||
+            Regex(online.getString("response")).containsMatchIn(text)
+    }
+
+    private fun answerQuestion(state: ScenarioStateV3, text: String): ScenarioResultV3 {
+        val experience = spec.getJSONObject("onlineExperience")
+        val completed = state.events.filter { it.kind == "action" }.mapNotNull { it.action }.toSet()
+        val item = experience.objects("questions").firstOrNull {
+            (!it.has("nodes") || state.node in it.strings("nodes")) && Regex(it.getString("pattern")).containsMatchIn(text)
+        }
+        val variant = item?.objects("variants")?.firstOrNull {
+            val facts = it.optJSONObject("whenFacts") ?: JSONObject()
+            facts.keys().asSequence().all { key -> state.facts[key] == facts.get(key).toString() } &&
+                completed.containsAll(it.strings("whenActions")) && it.strings("withoutActions").none { id -> id in completed }
+        }
+        val reply = variant?.optString("answer") ?: item?.optString("answer").orEmpty()
+        if (reply.isBlank()) return ScenarioResultV3(state,"question", experience.optString("unknownAnswer", "我望了一眼四周，這裡沒有能讓我確認的線索。"))
+        val npc = spec.getJSONObject("npc").getString("name")
+        val proposed = experience.optJSONObject("questionSpeaker")?.optString(state.node).orEmpty()
+        val speaker = if (proposed.isBlank() || proposed == "接線員" && "call" !in completed) npc else proposed
+        val answer = reply.replace("模擬119","119").replace("模擬通報","通報").replace("演練中","現場").replace("演練","").replace("模擬","")
+        return ScenarioResultV3(state,"question","${speaker}說：「$answer」",item?.strings("sourceIds").orEmpty(),item?.optString("id"))
     }
 
     private fun rawStep(before: ScenarioStateV3, text: String, intent: String, actionIds: List<String>?): ScenarioResultV3 {

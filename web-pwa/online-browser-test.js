@@ -67,7 +67,7 @@ const { createServer } = require('../online-coach/server');
     coach.provider={ready:false,model:'unconfigured'};
     await page.locator('#onlineStart').click();
     await send('我把房門關好');
-    await page.getByText('目前使用離線判讀',{exact:true}).waitFor();
+    assert.equal(await page.getByText('目前使用離線判讀',{exact:true}).count(),0);
     assert.match(await page.locator('.task-box').innerText(),/手機在我手邊/);
     await page.locator('#onlineRestart').click();
     await page.locator('#onlineStart').click();

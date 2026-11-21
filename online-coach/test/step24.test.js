@@ -25,7 +25,7 @@ test('independent stage deadlines preserve verified state; only interpretation f
   slow=true;
   s=await submit(coach,s,'我待在這裡');
   assert.equal(s.fallbackReason,'TURN_TIMEOUT');
-  assert.match(fallbackNotice(s.fallbackReason),/理解逾時/);
+  assert.match(fallbackNotice(s.fallbackReason),/連線逾時/);
   slow=false;
   s=await submit(coach,s,'我撥119');
   assert.equal(s.onlineRecovered,true);
@@ -73,7 +73,7 @@ test('novice inputs explain refusal and conditions, accept safe window signallin
   assert.equal(V3.rawStep(spec,initialState,'那我把門拉回來關好，先不要跑出去').kind,'clarify');
   for (const [question, answer] of [
     ['現在外面有煙可以走樓梯嗎？',/不要穿越濃煙/],
-    ['窗戶那邊有煙嗎，可以開窗嗎？',/窗外有煙時不要開窗/],
+    ['窗戶那邊有煙嗎，可以開窗嗎？',/窗外現在看不見煙，但房門還留著一道縫/],
   ]) {
     const initial=coach.create('drill_fire_dorm');
     const reply=await submit(coach,initial,question);

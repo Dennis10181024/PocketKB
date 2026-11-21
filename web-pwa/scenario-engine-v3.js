@@ -301,9 +301,13 @@
   }
 
   function recognizesNpcResponse(spec,text) {
-    const opening = /^(?:我)?(?:跟|對|請|勸|攔住|阻止|告訴|提醒)?/;
-    return text.replace(opening,'').startsWith(spec.npc.name) &&
-      !/如果|假設|假如|萬一|互相衝突|[?？]|可不可以|要不要|不要阻止|不要勸/.test(text) &&
+    if (/如果|假設|假如|萬一|互相衝突|[?？]|可不可以|要不要|不要阻止|不要勸/.test(text)) return false;
+    const direct = text.replace(/^(?:我)?(?:跟|對|請|勸|攔住|阻止|告訴|提醒)?/,'');
+    if (!direct.startsWith(spec.npc.name)) return false;
+    const addressed = direct.slice(spec.npc.name.length).replace(/^[\s，、,:：！!]*(?:你[\s，、,:：]*)?/,'');
+    const veto = addressed.match(/^(?:拜託[\s，、,:：]*)?(?:先\s*)?(?:不要|別|不行|不可以|不能)[\s，、,:：]*/);
+    const target = spec.npc.online.dissuasionTarget;
+    return Boolean(veto && target && new RegExp('^(?:'+target+')').test(addressed.slice(veto[0].length))) ||
       new RegExp(spec.npc.online.response).test(text);
   }
 
