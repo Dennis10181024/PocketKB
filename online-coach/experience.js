@@ -3,7 +3,8 @@
 const banned = [/^我收到你說的/, /^我收到你說的「[^」]+」。/, /。你是在描述現場/,
   /描述現場、詢問，還是/, /還是在說自己現在決定採取的行動？$/, /^你試圖/,
   /暴露於[^。]*(?:風險|危險)/, /演練危急失敗。/,
-  /還找不到能照.{0,12}(?:做法|方式).{0,12}條件|沒有照剛才那個做法動|(?:做法|行動).{0,6}(?:現場)?條件(?:目前)?不成立/];
+  /還找不到能照.{0,12}(?:做法|方式).{0,12}條件|沒有照剛才那個做法動|(?:做法|行動).{0,6}(?:現場)?條件(?:目前)?不成立/,
+  /系統攔下|你打算/];
 const bannedClosings = [/我(?:還沒|還沒有|尚未)決定/, /(?:還要|還得|仍得|還需要|還沒)決定/, /接下來.{0,12}(?:怎麼做|做什麼|如何做)/, /在這個抉擇前又停了一會兒/];
 const {sceneText,questionAnswer,rejectionLine} = require('../web-pwa/drill-presentation');
 const aliases = {fire_closed_door:/緊閉的房門|關著的(?:房)?門|房門(?:仍|還)?(?:緊閉|關著)|關緊的門板|房門維持關閉/,
@@ -83,14 +84,16 @@ function ground(spec, before, result, priorLines = []) {
     const requiredBeat = ['avoid_open','towel_face','open_window_call'].includes(action?.action) ? actionBeat : null;
     const beat = spec.onlineExperience.beats[(state.elapsed || 0) % spec.onlineExperience.beats.length];
     const emotionalPrompt = node.onNpcEmotion && events.some(event=>event.kind==='npc_emotion_prompt');
-    const progress = state.node!==before.node && !emotionalPrompt && (node.aftercareComplete || spec.formalPractice) ? result.message : null;
+    const progress = state.node!==before.node && !emotionalPrompt && (node.aftercareComplete || spec.formalPractice) &&
+      !/^(?:已記住|這項行動已經完成)/.test(result.message) ? result.message : null;
     const emotional = events.some(event=>event.kind==='npc_emotion');
     const rejected = ['clarify','unclear','off_topic','blocked'].includes(result.kind) && !emotional;
     const blocked = events.findLast(event=>event.kind==='blocked');
     const rule = spec.actions.find(item=>item.id===blocked?.action);
     const explanation = rejected && !result.sourceIds?.length ?
       (rule?.blockedMessage || rule?.blockedByFact || node.aftercareComplete && result.kind==='blocked' ? result.message : rejectionLine(spec,state)) : null;
-    const authored = result.kind==='completed' ? [result.message] : [progress,explanation,requiredBeat,...environment,...npcLines].filter(Boolean);
+    const authored = result.kind==='completed' ? [result.message] : result.outcomes?.length
+      ? [...result.outcomes.map(line=>sceneText(line).replace(/^你們/,'我們').replace(/^你/,'我')),...[progress].filter(Boolean),...environment,...npcLines] : [progress,explanation,requiredBeat,...environment,...npcLines].filter(Boolean);
     if (!authored.length) authored.push(actionBeat || beat);
     return {details:completedPhase(before,result) ? node.experience.sensory.filter(item=>!waitingAfterHandoff.test(item.text)) : node.experience.sensory,
       allDetails:spec.nodes.flatMap(item=>item.experience.sensory),
@@ -112,6 +115,7 @@ function template(grounded, previous, { stopped, refused, terminal, kind, task, 
     '我還得想清楚自己現在打算怎麼做。' : name ? `我接下來要和${name}怎麼配合？` : '我現在要怎麼決定下一步？';
   let reply = [opening, grounded.change, guidance, focus].filter(Boolean).join('');
   if (size(reply) > 120) reply = [opening, grounded.change, guidance].filter(Boolean).join('');
+  if (size(reply) > 120 && size(grounded.change) <= 120) reply = grounded.change;
   return {reply, sensoryIds: grounded.strict ? sensoryIds(reply,grounded.allDetails) : detail ? [detail.id] : []};
 }
 

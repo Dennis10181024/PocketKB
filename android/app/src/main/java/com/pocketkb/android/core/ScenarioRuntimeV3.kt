@@ -296,7 +296,8 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
         resolve(before, "已確認行動", "action", actionIds)
 
     private fun resolve(before: ScenarioStateV3, text: String, intent: String, actionIds: List<String>?): ScenarioResultV3 {
-        var result = rawStep(before, text, intent, actionIds)
+        var result = if (spec.optBoolean("formalPractice") && actionIds == null && intent == "action")
+            formalRuleStep(before, text) else rawStep(before, text, intent, actionIds)
         val npc = before.npc
         val proposal = spec.optJSONObject("npc")?.optString("responsePattern").orEmpty()
         val addressed = before.firstAidEnabled && recognizesNpcResponse(text.trim())
@@ -357,11 +358,12 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
         if (!spec.optBoolean("formalPractice") || original.state.sessionStatus != "ACTIVE" ||
             original.kind in setOf("risk", "blocked", "question")) return original
         var result = original
-        repeat(2) {
+        repeat(nodes.size) {
             val state = result.state
             val here = node(state)
             val next = (if (state.npc?.handled == true) here.optJSONObject("onNpcHandled") else null)
                 ?: (if (state.npc?.emotion != null) here.optJSONObject("onNpcEmotion") else null)
+                ?: (if (here.optBoolean("earlyCompletion") && missingGoals(here, state).isEmpty()) here.optJSONObject("onComplete") else null)
                 ?: return result
             val advanced = patch(state, next).copy(node = next.getString("to"), accepted = emptyList(), nodeTurn = 0,
                 events = state.events + ScenarioEventV3(state.node, kind = "milestone"))
@@ -375,6 +377,8 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
         val npc = spec.getJSONObject("npc")
         val name = npc.getString("name")
         val online = npc.getJSONObject("online")
+        val indirect = online.optString("indirectResponse")
+        if (spec.optBoolean("formalPractice") && indirect.isNotBlank() && Regex(indirect).containsMatchIn(text.trim())) return true
         val direct = text.replaceFirst(Regex("^(?:我)?(?:跟|對|請|勸|攔住|阻止|告訴|提醒)?"), "")
         if (!direct.startsWith(name)) return false
         val addressed = direct.removePrefix(name).replaceFirst(Regex("^[\\s，、,:：！!]*(?:你[\\s，、,:：]*)?"), "")
@@ -404,7 +408,133 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
         return ScenarioResultV3(state,"question","${speaker}說：「$answer」",item?.strings("sourceIds").orEmpty(),item?.optString("id"))
     }
 
-    private fun rawStep(before: ScenarioStateV3, text: String, intent: String, actionIds: List<String>?): ScenarioResultV3 {
+    private fun missingGoals(node: JSONObject, state: ScenarioStateV3): List<String> = node.strings("required").filterNot { goal ->
+        (listOf(goal) + node.optJSONObject("alternatives")?.strings(goal).orEmpty()).any {
+            it in state.accepted || state.facts["goal_$it"] == "true"
+        }
+    }
+
+    private fun formalRuleStep(before: ScenarioStateV3, text: String): ScenarioResultV3 {
+        val base = rawStep(before, text, "action", null)
+        val nonCommitment = Regex("[?？]|如果|假如|假設|想像|幻想|萬一|要是|只是想想|以前|上次|差點|本來想|(?:怎麼辦|會怎樣|嗎|呢)[。！!]?$")
+        if (before.sessionStatus != "ACTIVE" || text.isBlank() || nonCommitment.containsMatchIn(text) ||
+            base.kind in setOf("risk", "failed") || base.message.contains("互相衝突")) return base
+
+        val clauses = text.split(Regex("然後|接著|並(?!非|未|無)|[，,；;。！!]|(?=\\s+(?:等待|保持))"))
+            .map(String::trim).filter(String::isNotBlank)
+        val ownNegation = Regex("(?:不會|不打算|沒有要|沒打算|不是要|並未|不想|不要|不去|不做|拒絕|別|勿|不)(?:再|先|去|要|會)?$")
+        fun denies(action: JSONObject): Boolean = clauses.any { clause ->
+            !recognizesNpcResponse(clause) && Regex(action.getString("pattern")).findAll(clause).any {
+                ownNegation.containsMatchIn(clause.take(it.range.first))
+            }
+        }
+        for (clause in clauses.filterNot(::recognizesNpcResponse)) {
+            val danger = rawStep(before, clause, "action", null)
+            if (danger.kind in setOf("risk", "failed") && danger.state.events.drop(before.events.size).none { event ->
+                actions.any { it.getString("id") == event.action && denies(it) }
+            }) return danger
+        }
+
+        var state = before
+        var last: ScenarioResultV3? = null
+        val outcomes = linkedSetOf<String>()
+        val combined = if (clauses.firstOrNull()?.matches(Regex("^(?:我)?跟[他她]說$")) == true) clauses.take(2).joinToString("") else text
+        if (recognizesNpcResponse(combined) || clauses.any(::recognizesNpcResponse)) {
+            val npc = checkNotNull(state.npc)
+            val online = spec.getJSONObject("npc").getJSONObject("online")
+            if (!npc.handled) {
+                val line = online.optString("acknowledge", "我聽見同伴答應照剛才說的做。")
+                val emotion = online.getString("emotion")
+                state = state.copy(npc = npc.copy(handled = true, proposal = null), events = state.events + listOf(
+                    ScenarioEventV3(state.node, kind = "npc_handled", message = line),
+                    ScenarioEventV3(state.node, kind = "npc_emotion_prompt", message = emotion),
+                ))
+                outcomes += line
+                outcomes += emotion
+            } else {
+                state = state.copy(events = state.events + ScenarioEventV3(state.node, kind = "npc_acknowledged"))
+                outcomes += online.optString("alreadyHandled", "同伴記得我剛才的提醒。")
+            }
+            last = ScenarioResultV3(state, "safe", outcomes.last())
+        }
+        val attributed = Regex("^(?:我)?(?:看見|看到|聽見|聽到|聽說|聽人說)|^(?:室友|同學|有人|他|她).{0,6}(?:說|想|要)")
+        val report = node(state)
+        val slots = report.objects("reportSlots")
+        if (!attributed.containsMatchIn(text) && !Regex("不(?:會|要|打算)?(?:打|撥|通報|回報|告知|說)|沒有要").containsMatchIn(text)) {
+            val matchingSlots = slots.filter {
+                Regex(it.getString("pattern")).containsMatchIn(text.replace(Regex("\\s"), ""))
+            }
+            val supplied = if (slots.any { it.getString("id") == "call" } && "call" !in state.accepted &&
+                matchingSlots.none { it.getString("id") == "call" }) emptyList() else matchingSlots
+            val fresh = supplied.filter { it.getString("id") !in state.accepted }
+            if (supplied.isNotEmpty()) {
+                supplied.filterNot { it in fresh }.forEach { outcomes += it.optString("already", it.getString("confirm")) }
+                val result = if (fresh.isEmpty()) ScenarioResultV3(state, "safe", outcomes.last())
+                    else rawStep(state, "回報已確認的資料", "action", fresh.map { it.getString("id") }, verifiedSafe = true)
+                if (result.kind !in setOf("clarify", "question")) {
+                    fresh.forEach { outcomes += it.getString("confirm") }
+                    state = result.state
+                    last = result
+                }
+            }
+        }
+        for (clause in clauses) {
+            if (state.sessionStatus != "ACTIVE" || recognizesNpcResponse(clause) || attributed.containsMatchIn(clause)) continue
+            if (spec.getString("id") == "drill_fire_dorm" && Regex("教室.*(?:窗|門)|(?:窗|門).*教室").containsMatchIn(clause)) {
+                outcomes += "我眼前的是宿舍503室；我沒有到教室開窗或處理教室的門。"
+                continue
+            }
+            if (spec.getString("id") == "drill_fire_dorm" && Regex("降低呼吸|減少呼吸|憋氣").containsMatchIn(clause)) {
+                outcomes += "我沒有刻意憋氣或放慢呼吸來省氧。"
+                continue
+            }
+            if (spec.getString("id") == "drill_fire_dorm" && Regex("跟(?:裡面|房內|房裡)的人說").containsMatchIn(clause)) {
+                outcomes += "我的話是對房內的人說的；電話那頭還沒聽到這段話。"
+            }
+            val here = node(state)
+            if (state.node != before.node) {
+                val danger = rawStep(state, clause, "action", null)
+                if (danger.kind in setOf("risk", "failed")) return danger
+            }
+            for (action in matches(clause).filterNot(::denies)) {
+                val id = action.getString("id")
+                if (state.facts["goal_$id"] == "true") {
+                    if (action.has("already")) {
+                        outcomes += action.getString("already")
+                        if (last == null) last = ScenarioResultV3(state, "safe", outcomes.last())
+                    }
+                    continue
+                }
+                if (id in state.accepted || id !in node(state).strings("available") || action.has("emotion") ||
+                    action.has("hazardMode") || action.optBoolean("unsafeWhenBlocked") || here.optJSONObject("hazards")?.has(id) == true ||
+                    here.optJSONObject("effects")?.optJSONObject(id)?.optString("kind") == "risk" ||
+                    spec.objects("injuryEvents").any { it.optString("action") == id }) continue
+                val fields = node(state).objects("reportSlots")
+                if (id != "call" && "call" !in state.accepted && fields.any { it.getString("id") == "call" } &&
+                    fields.any { it.getString("id") == id }) continue
+                val result = rawStep(state, clause, "action", listOf(id), verifiedSafe = true)
+                if (result.kind in setOf("clarify", "question", "locked")) continue
+                outcomes += if (result.kind == "blocked") result.message else action.optString("confirm", action.optString("effect"))
+                state = result.state
+                last = result
+            }
+        }
+        val pending = node(state)
+        val pendingSlots = pending.objects("reportSlots")
+        val missing = missingGoals(pending, state)
+        pendingSlots.firstOrNull { it.getString("id") in missing }?.let { slot ->
+            val speaker = pending.optString("reportSpeaker")
+            val canAsk = pendingSlots.none { it.getString("id") == "call" } || "call" in state.accepted
+            outcomes += if (speaker.isNotBlank() && canAsk) "${speaker}問：「${slot.getString("ask")}」" else slot.getString("ask")
+        }
+        val mustConnect = slots.any { it.getString("id") == "call" } && "call" !in before.accepted
+        val result = last ?: if (mustConnect) ScenarioResultV3(before, "clarify", "") else base
+        if (result.kind == "completed" || result.kind == "failed") return result
+        return result.copy(kind = if (state.node != before.node) "transition" else result.kind,
+            message = outcomes.filter(String::isNotBlank).joinToString("").ifBlank { result.message })
+    }
+
+    private fun rawStep(before: ScenarioStateV3, text: String, intent: String, actionIds: List<String>?, verifiedSafe: Boolean = false): ScenarioResultV3 {
         var state = before.copy(
             accepted = before.accepted.toList(),
             resources = before.resources.toMap(),
@@ -426,9 +556,9 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
         val input = node.objects("phrasing").firstOrNull { Regex(it.getString("pattern")).matches(rawInput) }
             ?.getString("as") ?: rawInput
         if (input.isEmpty()) return result("clarify", "請描述你現在實際要採取的行動。")
-        DrillLanguage.nonAction(spec, input, intent, node)?.let { (kind, message) -> return result(kind, message) }
+        if (!verifiedSafe) DrillLanguage.nonAction(spec, input, intent, node)?.let { (kind, message) -> return result(kind, message) }
 
-        if (spec.has("uncertainPattern") && Regex(spec.getString("uncertainPattern")).containsMatchIn(input)) {
+        if (!verifiedSafe && spec.has("uncertainPattern") && Regex(spec.getString("uncertainPattern")).containsMatchIn(input)) {
             return result("clarify", DrillLanguage.unclear(input, node.getString("task")))
         }
         val name = spec.optJSONObject("npc")?.optString("name").orEmpty()
@@ -515,6 +645,7 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
                 accepted = (state.accepted + id).distinct(),
                 events = state.events + ScenarioEventV3(node.getString("id"), id, "action"),
             )
+            if (id in spec.strings("earlyGoals")) state = state.copy(facts = state.facts + ("goal_$id" to "true"))
             injuryEvent(state, id)?.let { (next, event) -> state = next; injury = event }
             val npc = state.npc
             if (!state.firstAidEnabled && npc != null && id == spec.optJSONObject("npc")?.optString("handleAction") && !npc.handled) {
@@ -539,9 +670,7 @@ class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
             }
 
         if (node.has("onNpcEmotion")) return result("partial", fresh.last().getString("effect"))
-        val missing = node.strings("required").filterNot { goal ->
-            (listOf(goal) + node.optJSONObject("alternatives")?.strings(goal).orEmpty()).any { it in state.accepted }
-        }
+        val missing = missingGoals(node, state)
         if (missing.isNotEmpty()) {
             return result("partial", "已記住：${fresh.joinToString("、") { it.getString("label") }}。本階段仍有必要行動尚未完成。")
         }

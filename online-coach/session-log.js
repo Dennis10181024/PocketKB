@@ -26,11 +26,15 @@ function researchTurn(session, decision, kind, text, timing, {logText=false,repl
     startedAt:new Date(session.createdAt).toISOString(),recordedAt:new Date().toISOString(),kind,inputLength:[...text].length,...fields,
     ...(controlInput !== undefined ? {controlInput:evidence(controlInput)} : {}),
     ...(npcInput !== undefined ? {npcInput:evidence(npcInput)} : {}),
-    actionValidation:actionValidation.map(({id,result,evidence:quote})=>({id:ids([id])[0] || null,result,evidence:evidence(quote)})),
+    actionValidation:actionValidation.map(({id,result,evidence:quote,confidence,confirmed})=>({
+      id:id==='npc_dissuade' ? id : ids([id])[0] || null,result,evidence:evidence(quote),
+      ...(confidence ? {confidence,confirmed:Boolean(confirmed)} : {}),
+    })),
     emotion:emotion ? {category:emotion.category,source:emotion.source,evidence:evidence(emotion.evidence)} : null,
     disagreement:disagreement ? {...disagreement,actionIds:ids(disagreement.actionIds),modelIds:ids(disagreement.modelIds),literalIds:ids(disagreement.literalIds)} : null,
     ...(logText ? {input_text:scrub(text),reply_text:scrub(reply),suggestion_texts:suggestions.map(scrub),
-      npc_lines:npcLines.map(scrub),model_actions:proposals.map(item=>({id:typeof item?.id==='string' ? scrub(item.id) : null,evidence:evidence(item?.evidence)}))} : {}),
+      npc_lines:npcLines.map(scrub),model_actions:proposals.map(item=>({id:typeof item?.id==='string' ? scrub(item.id) : null,evidence:evidence(item?.evidence),
+        ...(item?.confidence ? {confidence:item.confidence} : {})}))} : {}),
     elapsedMs:timing};
 }
 

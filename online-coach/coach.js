@@ -34,8 +34,8 @@ function scene(spec, state) {
 }
 
 function settle(spec,before,result,text,intent,audit) {
-  if (before.onlineExperience) result = V3.settleOnline(spec,before,result,text,intent);
-  if (!audit.emotion) result = Events.advance(spec,result,text,before);
+  if (before.onlineExperience) result = V3.settleOnline(spec,before,result,text,intent,false,!audit.semantic);
+  if (!audit.emotion && !audit.noAdvance) result = Events.advance(spec,result,text,before);
   return result;
 }
 const objSchema = properties => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
@@ -50,8 +50,9 @@ function interpretationSchema(spec) {
   return objSchema({
     intent: { type: 'string', enum: ['action', 'question', 'emotion', 'off_topic', 'unclear', 'clarify'] },
     understanding: str, question: str, needsClarification: { type: 'boolean' },
-    actions: { type: 'array', maxItems: 3, items: objSchema({
-      id: { type: 'string', enum: spec.actions.filter(a => !a.emotion).map(a => a.id) }, evidence: str,
+    actions: { type: 'array', maxItems: spec.formalPractice ? 5 : 3, items: objSchema({
+      id: { type: 'string', enum: [...spec.actions.filter(a => !a.emotion).map(a => a.id),...(spec.formalPractice ? ['npc_dissuade'] : [])] }, evidence: str,
+      ...(spec.formalPractice ? {confidence:{type:'string',enum:['high','medium','low']}} : {}),
     }) },
     emotion: {type:'string', enum:['supportive','unsupportive','neutral','none']}, emotionEvidence:str,
   });
@@ -86,6 +87,41 @@ function selectActions(spec, before, text, intent, literal, understanding, audit
   const proposals = understanding.actions;
   const literalDanger = ['failed','risk'].includes(literal.kind);
   const literalIds = V3.adoptedActionIds(before,literal.state);
+  const actionable = understanding.intent==='action' && !understanding.needsClarification;
+  const hazardIds = new Set(actionCatalog(spec,currentNode(spec,before)).filter(action=>action.danger).map(action=>action.id));
+  const modelHazard = spec.formalPractice && actionable && proposals.some(proposal=>hazardIds.has(proposal?.id) &&
+    V3.validateProposal(spec,before,text,intent,[proposal],literal).result);
+  if (spec.formalPractice && !literalDanger && !modelHazard) {
+    const accepted=[], uncertain=[];
+    let lowConfidence=false;
+    audit.actionValidation=proposals.map(proposal=>{
+      const error=V3.validateSafeEvidence(spec,before,text,proposal);
+      const confidence=['high','medium','low'].includes(proposal?.confidence) ? proposal.confidence : 'low';
+      if (actionable && !error && confidence==='high') accepted.push(proposal);
+      if (actionable && !error && confidence==='medium') uncertain.push(proposal);
+      if (actionable && !error && confidence==='low') lowConfidence=true;
+      return {...proposal,confidence,confirmed:false,result:error || (actionable ? 'NOT_EXECUTED' : 'NOT_COMMITTED')};
+    });
+    const interpreted=V3.formalStep(spec,before,text,intent,accepted);
+    const ids=[...new Set(interpreted.state.events.slice(before.events.length).filter(event=>
+      ['action','hazard'].includes(event.kind) && event.action).map(event=>event.action))];
+    const npcEvidence=interpreted.state.events.slice(before.events.length).some(event=>['npc_handled','npc_acknowledged'].includes(event.kind));
+    const confirmation=uncertain.find(item=>item.id==='npc_dissuade' ||
+      currentNode(spec,interpreted.state).available.includes(item.id) && !interpreted.state.accepted.includes(item.id));
+    if (confirmation && !terminal(spec,interpreted.state)) audit.pending={node:interpreted.state.node,proposal:confirmation,input:text};
+    audit.actionBatches=ids.map(id=>({ids:[id],source:'model'}));
+    audit.source='model';
+    audit.semantic=true;
+    if (lowConfidence && !ids.length && !npcEvidence) audit.noAdvance=true;
+    audit.validation=ids.length || npcEvidence ? 'ACCEPTED' : confirmation ? 'MODEL_CONFIRMATION_PENDING' : 'MODEL_NO_ACTION';
+    for (const item of audit.actionValidation) {
+      if (ids.includes(item.id) || item.id==='npc_dissuade' && npcEvidence) item.result='ACCEPTED';
+      else if (confirmation?.id===item.id) item.result='CONFIRMATION_PENDING';
+      else if (accepted.some(proposal=>proposal.id===item.id) && (before.facts['goal_'+item.id] || before.accepted.includes(item.id)))
+        item.result='ALREADY_COMPLETE';
+    }
+    return interpreted;
+  }
   const batches = [];
   const validations = [];
   audit.actionBatches = batches;
@@ -114,7 +150,7 @@ function selectActions(spec, before, text, intent, literal, understanding, audit
     const start = typeof evidence === 'string' && evidence.trim() ? text.indexOf(evidence, offset) : -1;
     if (literalDanger && (literalIndex < 0 || start < 0 || start + evidence.length > literalIndex || proposal.id === danger.id)) break;
     const verdict = start < 0 ? {error:'MODEL_EVIDENCE'} : V3.validateProposal(spec,state,text,intent,[proposal],literal);
-    validations.push({id:proposal?.id,evidence, result:verdict.error || 'ACCEPTED'});
+    validations.push({id:proposal?.id,evidence,confidence:proposal?.confidence || null,confirmed:false,result:verdict.error || 'ACCEPTED'});
     if (verdict.error) {
       if (!literalDanger) audit.validation = verdict.error;
       audit.stopped = batches.length > 0;
@@ -155,9 +191,13 @@ function selectActions(spec, before, text, intent, literal, understanding, audit
 
 function judgeEmotion(spec, before, result, literal, text, intent, understanding, audit) {
   if (intent !== 'action' || !before.npc?.handled || before.npc.emotion ||
+      spec.formalPractice && !currentNode(spec,before).onNpcEmotion ||
       ['risk','failed','completed','question','blocked'].includes(result.kind) ||
       /假設|如果|假如|互相衝突/.test(literal.message) ||
       result.state.sessionStatus !== 'ACTIVE') return result;
+  const repeatedReminder = spec.formalPractice && audit.actionValidation?.find(item=>item.id==='npc_dissuade' && item.result==='ACCEPTED');
+  if (repeatedReminder && (!understanding.emotionEvidence || repeatedReminder.evidence.includes(understanding.emotionEvidence) ||
+      !/害怕|擔心|冷靜|不要怕|陪|我在|一起|聯絡|幫忙/.test(understanding.emotionEvidence))) return result;
   const rule = literal.state.npc?.emotion || null;
   const model = ['supportive','unsupportive','neutral'].includes(understanding.emotion) &&
     typeof understanding.emotionEvidence === 'string' && understanding.emotionEvidence.trim() &&
@@ -176,6 +216,13 @@ const interpreterPrompt = `你是繁體中文防災教學模擬的語意理解�
 同伴已經停下且尚未回應情緒時，辨識玩家對同伴的回應：確認安全、冷靜說明、提供可行分工或連結支援是 supportive；空頭保證、責罵、強迫述說或丟下同伴是 unsupportive；只描述自己的操作是 neutral。附上逐字 emotionEvidence，無法確認時用 none。情緒分類與安全動作分開。
 一句同時有明確行動和問題時，可 intent=action 並填 question，交給教練回覆。若只是報告以前做過的事情，不可自動重做。
 不決定成功、失敗、資源或路線；不生成新的出口或救援。亂答保留原意、不要執行。輸出 understanding 說明你理解到什麼，question 記下實際疑問。`;
+const semanticGoalsPrompt = `若提供 semanticGoals，使用下列規則優先於前三項的數量與證據限制：
+以台灣口語的語意辨識行動和目標。安全行動的「會、要、去、打算」是承諾。「跟他或她說不能開門」是否定同伴的危險提議，請提出 npc_dissuade；就算同伴還沒開口，或已經說過，仍提出這個目標供引擎承接。只描述第三人的動作不算採取行動。
+按原文順序提議最多五個目標。每一項的 evidence 要是原文連續片段，包含必要主語及否定語意。明確對應為 high，有可能但關鍵意思不明為 medium，只有弱關聯為 low。確定關門並用濕毛巾堵縫時，提出 close 和 seal。只在放下其他事離開去找毛巾時提出危險 towel。
+一句有多件事時，各件事獨立判斷。即使後面的事地點錯誤或做不到，也必須回傳前面已說清楚的安全目標，整句 intent 仍為 action。例：學生在宿舍說「我會去把門關起來，跟室友說不能開門，再把門縫塞住，然後出去找教室的窗戶」，前面三項是高信心的 close、npc_dissuade、seal。不要因最後一項地點錯誤而把 needsClarification 設為 true。
+如果剛才已完成關門、塞縫或通報，再看到同一件事仍提出目標。讓引擎確認其已完成。玩家重提通報時可辨識已回報的欄位，但不要把「接線員已收到」猜成新的欄位。
+同伴先前說過想開門時，「堅決不能開門 等待接線員指示」前半段是延續對同伴的明確勸阻，提議高信心的 npc_dissuade 並引用「堅決不能開門」；後半段另行判斷。
+通報可一次填多項。向119說「地址跟現在遇到的情況」分別提出 address 和 smoke_report；通報的欄位可以共享逐字證據。缺少的欄位不要猜。不要把告知房內同伴的訊息算成已告知119。只提出當前目標、可先完成目標或同句前一動作完成後可做的目標。目錄中的已完成項目仍可辨識，是否需要重做由程式決定。`;
 const narratorPrompt = `以台灣繁體中文寫沉浸現場。用玩家第一人稱寫 2–4 句，建議 40–70 字、上限 120 字。從 sensoryChoices 選一個未在上一回合出現的感官細節，把其完全文字放進 reply，填入 sensoryId。不要增加其他感官事實。
 自然承接這次輸入，禁止複述玩家原句或加上引用。只要 requiredChange 非空，逐字放入這段狀態機確認的變化；其中有引號是劇本台詞，照錄即可。缺少可選感官線索時，使用 supplied 變化中的現場線索。荒謬的行動保持未發生；stopped 時交代還有哪些事未做。禁止以「我還沒決定」「還要決定」「接下來怎麼做」「在這個抉擇前又停了一會兒」等固定句收尾。
 只寫現場和當前決定。若 verifiedResult.kind 是 completed，直接呈現 requiredChange 確定的結局，切勿寫成仍等待、尚未接手或演練未完。不要教學、暗示答案、提供建議或寫保證、倒數、未驗證災況、傷勢、救援或行為。如果要加引號，裡面只能逐字引用 text 的連續片段。禁止「我收到你說的」、「你是在描述現場」、「你試圖」、「暴露於⋯風險」、「演練危急失敗」。`;
@@ -230,13 +277,13 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
           method: 'POST', signal: turnSignal ? AbortSignal.any([turnSignal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs),
           headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ model, store: false, stream:stage==='narrate', reasoning: { effort: 'none' }, max_output_tokens: 1200,
-            instructions: stage === 'interpret' ? interpreterPrompt : stage === 'quote' ? quotePrompt : narratorPrompt,
+            instructions: stage === 'interpret' ? interpreterPrompt + (payload.semanticGoals ? '\n'+semanticGoalsPrompt : '') : stage === 'quote' ? quotePrompt : narratorPrompt,
             input: JSON.stringify(payload),
             text: { format: { type: 'json_schema', name: stage, strict: true, schema } },
           }),
         });
       } catch {
-        throw signal?.aborted ? apiError('MODEL_TIMEOUT', 'GPT 暫時未回應。', 504) :
+        throw turnSignal?.aborted ? apiError('MODEL_TIMEOUT', 'GPT 暫時未回應。', 504) :
           apiError('PROVIDER_ERROR', '無法連線到 GPT 服務。', 502);
       }
       if (!response.ok) throw apiError('MODEL_UNAVAILABLE', `GPT 服務未完成請求（HTTP ${response.status}）。請檢查電腦端金鑰、額度或稍後重試。`, 502);
@@ -271,7 +318,7 @@ class ConversationCoach {
     for (const [id, s] of this.sessions) if (Date.now() - s.updatedAt > this.ttlMs && !s.busy) this.sessions.delete(id);
     if (this.sessions.size >= this.maxSessions) throw apiError('SESSION_LIMIT', '本機教練場次已滿，請重新啟動服務。', 429);
     const now = Date.now();
-    const session = { id: randomUUID(), spec, state: engine(spec).create(spec,{onlineExperience:this.onlineExperience}), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, createdAt: now, updatedAt: now, sensory:[], recentSensory:[], invalidStreak:0, hint:null };
+    const session = { id: randomUUID(), spec, state: engine(spec).create(spec,{onlineExperience:this.onlineExperience}), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, createdAt: now, updatedAt: now, sensory:[], recentSensory:[], invalidStreak:0, hint:null, pending:null };
     this.sessions.set(session.id, session);
     return this.snapshot(session);
   }
@@ -330,7 +377,19 @@ class ConversationCoach {
       if (!text) throw apiError('EMPTY_INPUT', '請先輸入想法或問題。');
       const literal = runtime.rawStep(spec,before,text,intent);
       const refused = Experience.refusal(spec,before,literal,text,intent);
-      if (before.onlineExperience && (intent==='question' ||
+      const pending = session.pending;
+      session.pending = null;
+      if (pending?.node===before.node && intent==='action' && /^(?:對(?:啊|啦|的)?|是(?:的)?|好(?:啊|啦)?|沒錯|嗯(?:嗯)?|確認|可以)[。！!\s]*$/.test(text) &&
+          !['risk','failed'].includes(literal.kind)) {
+        result = V3.formalStep(spec,before,pending.input,intent,[pending.proposal]);
+        const ids=runtime.adoptedActionIds(before,result.state);
+        const accepted=ids.length || result.state.npc.handled!==before.npc.handled;
+        Object.assign(audit,{source:'model',validation:accepted?'CONFIRMED':'CONFIRMATION_BLOCKED',
+          semantic:true,noAdvance:!accepted,
+          actionBatches:ids.map(id=>({ids:[id],source:'model'})),
+          actionValidation:[{...pending.proposal,confirmed:true,result:accepted?'ACCEPTED':'NOT_EXECUTED'}]});
+        reply=this.narrationFallback(session,result,audit,false,text);
+      } else if (before.onlineExperience && (intent==='question' ||
           (literal.kind==='question' || Experience.questionText(text)) && !V3.recognizesNpcResponse(spec,text))) {
         result = Experience.answerQuestion(spec,before,text);
         reply = result.message;
@@ -350,6 +409,7 @@ class ConversationCoach {
         const emotional = literal.state.npc?.emotion !== before.npc?.emotion;
         result = refused ? {...literal,state:before} : emotional ? runtime.settleOnline(spec,before,literal,text,intent) : settle(spec,before,literal,text,intent,audit);
         audit.noAdvance = refused;
+        audit.semantic = false;
         audit.actionBatches = [];
         audit.source = 'rule';
         audit.emotion = result.state.npc?.emotion !== before.npc?.emotion ? {category:result.state.npc.emotion,source:'rule',evidence:text} : null;
@@ -359,6 +419,14 @@ class ConversationCoach {
         audit.validation = fallbackReason;
       }
       }
+    }
+    if (audit.pending) {
+      session.pending=audit.pending;
+      const id=audit.pending.proposal.id;
+      const label=id==='npc_dissuade' ? '先勸我停下' : spec.actions.find(action=>action.id===id).label;
+      const speaker=currentNode(spec,result.state).reportSpeaker || spec.npc.name;
+      const line=`${speaker}問：「是要${label}嗎？」`;
+      reply=audit.actionBatches?.length ? reply+line : line;
     }
     reply = Presentation.sceneText(reply);
     const citations = Events.citations(spec,before,result);
@@ -379,7 +447,8 @@ class ConversationCoach {
     }
     const visibleHint = priorHint || session.hint;
     const actionIds = runtime.adoptedActionIds(before,result.state);
-    const actionBatches = audit.actionBatches?.length ? audit.actionBatches : actionIds.length ? [{ids:actionIds,source:'rule'}] : [];
+    const actionBatches = audit.semantic ? audit.actionBatches || [] :
+      audit.actionBatches?.length ? audit.actionBatches : actionIds.length ? [{ids:actionIds,source:'rule'}] : [];
     const decision = {turn:session.revision + 1, intent, actionIds:actionBatches.flatMap(batch=>batch.ids), actionBatches,
       fallbackReason:fallbackReason || null, narrationFallbackReason:audit.narrationReason || (audit.narration==='template' && !offline ? 'NARRATION_VALIDATION' : null),
       source:audit.source, validation:audit.validation, actionValidation:audit.actionValidation || [], disagreement:audit.disagreement || null,
@@ -400,7 +469,7 @@ class ConversationCoach {
       emotion_triggered:npcEvents.some(event=>event.kind==='npc_emotion_prompt'),
       emotion_result:result.state.npc.emotion
     } : null;
-    const {proposedActions,...publicAudit}=audit;
+    const {proposedActions,pending:pendingConfirmation,...publicAudit}=audit;
     const newNpcEvents = result.state.events.slice(before.events.length).filter(event=>event.kind.startsWith('npc_'));
     const npcLines = newNpcEvents.map(event=>event.kind==='npc_emotion' ? reply : event.message).filter(Boolean);
     if (session.revision===0 && before.npc?.proposal) npcLines.unshift(spec.npc.online.proposal);
@@ -492,10 +561,16 @@ class ConversationCoach {
       const authoredRule = recognized.length > 0 && recognized.every(id=>spec.actions.find(action=>action.id===id)?.ruleGrounded);
       const npcOnly = session.state.onlineExperience && !session.state.npc.handled && !recognized.length &&
         !literalDanger && V3.recognizesNpcResponse(spec,text);
-      const exact = authoredRule || npcOnly || onGround && explicitRuleAction(spec,session.state,text,intent,literal);
+      const exact = !spec.formalPractice && (authoredRule || npcOnly || onGround && explicitRuleAction(spec,session.state,text,intent,literal));
+      const semanticGoals = spec.formalPractice ? [
+        ...actions,
+        ...spec.actions.filter(action=>spec.earlyGoals?.includes(action.id) && !actions.some(item=>item.id===action.id))
+          .map(action=>({id:action.id,label:action.label,completed:Boolean(session.state.facts['goal_'+action.id])})),
+        {id:'npc_dissuade',label:`勸阻${spec.npc.name}的錯誤提議（${spec.npc.online.proposal}）`,completed:session.state.npc.handled},
+      ] : undefined;
       const interpreted = exact ? {value:{intent:'action',understanding:'',question:'',needsClarification:false,actions:[]}} :
         await generate('interpret', { scene:scene(spec,session.state), history, text, inputMode:intent,
-          actionCatalog:actions, potentialLaterActions:later }, interpretationSchema(spec));
+          actionCatalog:actions, potentialLaterActions:later, semanticGoals }, interpretationSchema(spec));
       const understanding = interpreted.value;
       if (Array.isArray(understanding?.actions)) audit.proposedActions = understanding.actions;
       const validIntents = ['action','question','emotion','off_topic','unclear','clarify'];
@@ -522,9 +597,12 @@ class ConversationCoach {
       } else {
         result = exact ? literal : selectActions(spec,session.state,text,intent,literal,understanding,audit);
         if (exact) audit.validation = 'RULE_EXACT_INPUT';
+        if (audit.pending && !audit.actionBatches.length) audit.noAdvance=true;
         result = judgeEmotion(spec,session.state,result,literal,text,intent,understanding,audit);
         result = settle(spec,session.state,result,text,intent,audit);
       }
+      if (audit.pending && !audit.actionBatches.length)
+        return {result:{...result,kind:'confirm'},reply:''};
       audit.narrationChecks = [];
       if (result.kind === 'failed') {
         const hazard = result.state.events.findLast(event=>event.kind==='hazard');
@@ -556,6 +634,13 @@ class ConversationCoach {
       const anchor = onGround && Experience.validFixedLine(grounded.change,priorLines) &&
         Experience.sharedSubstring(grounded.change,text)<=10 && Experience.size(grounded.change)<=105 ? grounded.change : '';
       if (anchor) onGround(anchor);
+      // Explicit engine outcomes already describe all adopted actions and the exact reason for any rejection.
+      if (spec.formalPractice && result.outcomes?.length && !['risk','failed','completed'].includes(result.kind)) {
+        const rendered=Experience.template(grounded,session.sensory,{terminal:false,kind:result.kind,finalMessage:result.message});
+        audit.narration='grounded_outcomes';
+        audit.sensoryIds=rendered.sensoryIds;
+        return {result,reply:rendered.reply};
+      }
       const common = {text, refused, stopped:Boolean(audit.stopped),
         understanding:{intent:understanding.intent, understanding:understanding.understanding, question:understanding.question},
         sensoryChoices:grounded.details.filter(item=>!session.sensory.includes(item.id)), requiredChange:grounded.change,

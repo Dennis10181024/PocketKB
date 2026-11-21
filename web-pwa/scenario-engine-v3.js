@@ -158,14 +158,14 @@
     const input = phrasing?.as || rawInput;
     if (!input) return result('clarify', '請描述你現在實際要採取的行動。');
     const language = typeof module === 'undefined' ? root.DrillLanguage : require('./drill-language');
-    const nonAction = language.nonAction(spec, input, intent, node);
+    const nonAction = resolved?.verifiedSafe ? null : language.nonAction(spec, input, intent, node);
     if (nonAction) return result(nonAction.kind, nonAction.message);
-    if (spec.uncertainPattern && new RegExp(spec.uncertainPattern).test(input)) return result('clarify', language.unclear(input, node.task));
+    if (!resolved?.verifiedSafe && spec.uncertainPattern && new RegExp(spec.uncertainPattern).test(input)) return result('clarify', language.unclear(input, node.task));
 
     if (resolved && (!Array.isArray(resolved.actionIds) || resolved.actionIds.some(id => !spec.actions.some(a => a.id === id))))
       return result('clarify', '這項行動不在本情境可驗證的範圍，尚未執行。');
     const owned = inputClauses(spec, input).filter(clause => clause.owned).map(clause => clause.part).join('');
-    if (!owned.trim()) return result('clarify', language.unclear(input, node.task));
+    if (!owned.trim() && !resolved?.verifiedSafe) return result('clarify', language.unclear(input, node.task));
     const literal = matchedActions(spec, owned);
     const actions = resolved ? spec.actions.filter(a => resolved.actionIds.includes(a.id)) : literal;
     if (resolved && actions.some(action => !node.available.includes(action.id)))
@@ -215,6 +215,7 @@
       if (!state.accepted.includes(action.id)) state.accepted.push(action.id);
       state.events.push({ node: node.id, action: action.id, kind: 'action' });
       applyPatch(state, node.effects?.[action.id]);
+      if (spec.earlyGoals?.includes(action.id)) state.facts['goal_'+action.id] = true;
       injury = injuryEvent(spec,state,action.id) || injury;
       if (!state.onlineExperience && action.id === spec.npc?.handleAction && !state.npc.handled) {
         state.npc.handled = true;
@@ -240,7 +241,7 @@
     }
 
     if (node.onNpcEmotion) return result('partial', fresh.at(-1).effect);
-    const missing = node.required.filter(id => ![id,...(node.alternatives?.[id] || [])].some(choice=>state.accepted.includes(choice)));
+    const missing = missingGoals(node,state);
     if (missing.length) {
       return result('partial', `已記住：${fresh.map(action => action.label).join('、')}。本階段仍有必要行動尚未完成。`);
     }
@@ -277,6 +278,160 @@
     return result('transition', node.onComplete.message);
   }
 
+  function missingGoals(node,state) {
+    return node.required.filter(id => ![id,...(node.alternatives?.[id] || [])]
+      .some(choice=>state.accepted.includes(choice) || state.facts['goal_'+choice]===true));
+  }
+
+  function dangerous(spec,node,action) {
+    return Boolean(node.hazards?.[action.id] || action.hazardMode || action.unsafeWhenBlocked ||
+      node.effects?.[action.id]?.kind==='risk' || spec.injuryEvents?.some(event=>event.action===action.id));
+  }
+
+  const nonCommitment = /[?？]|(?:如果|假如|假設|想像|幻想|萬一|要是|只是想想|以前|上次|差點|本來想)|(?:可以|能不能|可不可以|要不要|會不會).*(?:嗎|呢)|(?:怎麼辦|會怎樣|嗎|呢)[。！!]?$/;
+  const ownNegation = /(?:不會|不打算|沒有要|沒打算|不是要|並未|不想|不要|不去|不做|拒絕|別|勿|不)(?:再|先|去|要|會)?$/;
+  const attributed = /^(?:我)?(?:看見|看到|聽見|聽到|聽說|聽人說)|^(?:室友|同學|有人|他|她).{0,6}(?:說|想|要)/;
+  const formalClauses = text=>text.split(/(?:然後|接著|並(?!非|未|無)|[，,；;。！!]|(?=\s+(?:等待|保持)))/)
+    .map(clause=>clause.trim()).filter(Boolean);
+  function negatesAction(spec,text,action) {
+    const compact=text.replace(/\s/g,'');
+    return inputClauses(spec,compact).some(({part,owned})=>owned && !recognizesNpcResponse(spec,part) &&
+      [...part.matchAll(new RegExp(action.pattern,'g'))].some(match=>ownNegation.test(part.slice(0,match.index))));
+  }
+
+  function formalStep(spec,before,text,intent='action',proposals=null) {
+    const base=step(spec,before,text,intent);
+    if (intent!=='action' || !text || before.sessionStatus!=='ACTIVE' || nonCommitment.test(text) ||
+        ['risk','failed'].includes(base.kind) || /互相衝突/.test(base.message)) return base;
+    const semantic=proposals!==null;
+    const permitted=(id, fragment)=>!semantic || proposals.some(item=> {
+      if (item.id!==id) return false;
+      // Evidence may span punctuation. Run the action at the first clause of the quoted span.
+      return fragment.includes(item.evidence) || fragment.includes(formalClauses(item.evidence)[0] || item.evidence);
+    });
+    const clauses=formalClauses(text);
+    // An independent literal hazard stays authoritative before any safe proposal is considered.
+    for (const clause of clauses) {
+      if (recognizesNpcResponse(spec,clause)) continue;
+      const direct=resolveTurn(spec,before,clause,intent);
+      if (['risk','failed'].includes(direct.kind)) {
+        const hazard=spec.actions.find(action=>direct.state.events.slice(before.events.length).some(event=>event.action===action.id));
+        if (!hazard || !negatesAction(spec,text,hazard)) return direct;
+      }
+    }
+    let state=before, last=null;
+    const outcomes=[];
+    const addOutcome=(line)=>{if(line && !outcomes.includes(line))outcomes.push(line);};
+    const speakerScope = clauses[0] && /^(?:我)?跟[他她]說$/.test(clauses[0]) ? clauses.slice(0,2).join('') : text;
+    const npcAccepted=recognizesNpcResponse(spec,speakerScope) || clauses.some(clause=>recognizesNpcResponse(spec,clause));
+    if ((!semantic && npcAccepted) || semantic && permitted('npc_dissuade',text)) {
+      const npcResult=settleOnline(spec,state,{state,kind:'safe',message:''},speakerScope,intent,true);
+      state=npcResult.state;last=npcResult;
+      if (before.npc.handled) {
+        state={...state,events:[...state.events,{node:state.node,kind:'npc_acknowledged'}]};
+        addOutcome(spec.npc.online.alreadyHandled || '同伴記得我剛才的提醒。');
+      } else addOutcome(spec.npc.online.acknowledge || '我聽見同伴答應照剛才說的做。');
+    }
+    const reportNode=currentNode(spec,state);
+    if (reportNode.reportSlots && !attributed.test(text) && !/不(?:會|要|打算)?(?:打|撥|通報|回報|告知|說)|沒有要/.test(text)) {
+      let ids=reportNode.reportSlots.filter(slot=>semantic ? permitted(slot.id,text) :
+        new RegExp(slot.pattern).test(text.replace(/\s/g,''))).map(slot=>slot.id);
+      if (reportNode.reportSlots.some(slot=>slot.id==='call') && !state.accepted.includes('call') && !ids.includes('call')) ids=[];
+      if (ids.length) {
+        const confirmed=reportNode.reportSlots.filter(slot=>ids.includes(slot.id) && state.accepted.includes(slot.id));
+        for (const slot of confirmed) addOutcome(slot.already || slot.confirm);
+        if (confirmed.length) last ||= {state,kind:'safe',message:confirmed[0].already || confirmed[0].confirm};
+        const result=resolveTurn(spec,state,'回報已確認的資料',intent,{actionIds:ids,verifiedSafe:true});
+        if (!['clarify','question'].includes(result.kind)) {
+          for (const slot of reportNode.reportSlots.filter(slot=>ids.includes(slot.id)&&!state.accepted.includes(slot.id))) addOutcome(slot.confirm);
+          state=result.state;last=result;
+        }
+      }
+    }
+    for (const clause of clauses) {
+      if (state.sessionStatus!=='ACTIVE' || recognizesNpcResponse(spec,clause) || attributed.test(clause)) continue;
+      const scene=currentNode(spec,state);
+      if (spec.id==='drill_fire_dorm' && /教室.*(?:窗|門)|(?:窗|門).*教室/.test(clause)) {
+        addOutcome('我眼前的是宿舍503室；我沒有到教室開窗或處理教室的門。');
+        continue;
+      }
+      if (spec.id==='drill_fire_dorm' && /降低呼吸|減少呼吸|憋氣/.test(clause)) {
+        addOutcome('我沒有刻意憋氣或放慢呼吸來省氧。');
+        continue;
+      }
+      if (spec.id==='drill_fire_dorm' && /跟(?:裡面|房內|房裡)的人說/.test(clause)) {
+        addOutcome('我的話是對房內的人說的；電話那頭還沒聽到這段話。');
+      }
+      if (state.node!==before.node) {
+        const atNewPoint=resolveTurn(spec,state,clause,intent);
+        if (['risk','failed'].includes(atNewPoint.kind)) {
+          addOutcome(atNewPoint.message);
+          return {...atNewPoint,outcomes};
+        }
+      }
+      const literal=matchedActions(spec,clause);
+      for (const action of spec.actions.filter(item=>state.facts['goal_'+item.id] && item.already &&
+        !negatesAction(spec,text,item) && (semantic ? permitted(item.id,clause) : literal.includes(item)))) {
+        addOutcome(action.already);
+        last ||= {state,kind:'safe',message:action.already};
+      }
+      const matches=spec.actions.filter(action=>scene.available.includes(action.id) && !action.emotion && !dangerous(spec,scene,action) &&
+        !negatesAction(spec,text,action) && !contradictsAction(spec,clause,[action]) &&
+        (semantic ? permitted(action.id,clause) : literal.includes(action)));
+      if (semantic) matches.sort((left,right)=>proposals.findIndex(item=>item.id===left.id)-proposals.findIndex(item=>item.id===right.id));
+      if (!matches.length) continue;
+      for (const action of matches) {
+        const here=currentNode(spec,state);
+        if (!here.available.includes(action.id)) continue;
+        if (action.id!=='call' && here.reportSlots?.some(slot=>slot.id==='call') &&
+            here.reportSlots.some(slot=>slot.id===action.id) && !state.accepted.includes('call')) continue;
+        if (state.accepted.includes(action.id) || state.facts['goal_'+action.id]) continue;
+        const result=resolveTurn(spec,state,clause,intent,{actionIds:[action.id],verifiedSafe:true});
+        if (['clarify','question','locked'].includes(result.kind)) continue;
+        if (result.kind==='blocked') addOutcome(result.message);
+        else if (result.state.events.slice(state.events.length).some(event=>event.kind==='action'&&event.action===action.id))
+          addOutcome(action.confirm || action.effect);
+        state=result.state;last=result;
+      }
+    }
+    const pending=currentNode(spec,state);
+    const slot=pending.reportSlots?.find(field=>missingGoals(pending,state).includes(field.id));
+    if (slot) {
+      addOutcome(pending.reportSpeaker && (!pending.reportSlots.some(field=>field.id==='call') || state.accepted.includes('call'))
+        ? `${pending.reportSpeaker}問：「${slot.ask}」` : slot.ask);
+    }
+    if (!last) {
+      const mustConnect=reportNode.reportSlots?.some(field=>field.id==='call') && !before.accepted.includes('call');
+      const unexecuted=semantic || mustConnect ? {state:before,kind:'clarify',message:''} : base;
+      return outcomes.length ? {...unexecuted,outcomes} : unexecuted;
+    }
+    return {...last,state,outcomes,kind:state.sessionStatus!=='ACTIVE'?last.kind:state.node!==before.node?'transition':last.kind};
+  }
+
+  function validateSafeEvidence(spec,before,text,proposal) {
+    const evidence=proposal?.evidence;
+    if (typeof evidence!=='string' || evidence.trim().length<2 || !text.includes(evidence)) return 'MODEL_EVIDENCE';
+    if (nonCommitment.test(text)) return 'MODEL_PROTECTED_LANGUAGE';
+    if (proposal.id==='npc_dissuade') {
+      const reminder=/不行|不能|不要|別|不可|不准|不許|攔住|勸阻|制止|阻止|拉住/.test(evidence);
+      const dialogue=/^(?:我)?(?:跟|對|請|勸|攔住|阻止|告訴|提醒)|她說|他說/.test(evidence) ||
+        evidence.includes(spec.npc.name) || /^(?:堅決|絕對)(?:不能|不行|不要)/.test(evidence);
+      return reminder && dialogue && !/不要(?:去)?(?:阻止|勸)|沒有要(?:阻止|勸)|(?:不能|不行|不要)不|^(?:他|她|有人|室友|同學)(?:說|想|要)/.test(evidence)
+        ? null : 'MODEL_NPC_SUBJECT';
+    }
+    const action=spec.actions.find(item=>item.id===proposal.id);
+    if (!action || action.emotion || dangerous(spec,currentNode(spec,before),action)) return 'MODEL_UNKNOWN_ACTION';
+    const first=formalClauses(evidence)[0] || evidence;
+    const fragment=formalClauses(text).find(part=>part.includes(first)) || evidence;
+    const span=inputClauses(spec,fragment)[0];
+    if (!span?.owned || attributed.test(span.part.trim()) || /^(?:不會|不想|不要|拒絕|不打算|不能|不行|不|別|勿|沒有要)/.test(evidence))
+      return 'MODEL_PROTECTED_LANGUAGE';
+    const lead=fragment.slice(0,fragment.indexOf(first)).trim();
+    if (ownNegation.test(lead) || negatesAction(spec,text,action)) return 'MODEL_PROTECTED_LANGUAGE';
+    if (spec.id==='drill_fire_dorm' && /教室/.test(span.part) && /窗|門/.test(evidence)) return 'MODEL_OUT_OF_SCENE';
+    return null;
+  }
+
   function step(spec, before, text, intent = 'action', resolved = null) {
     const result = resolveTurn(spec,before,text,intent,resolved);
     const proposal = spec.npc?.responsePattern;
@@ -295,11 +450,11 @@
     return {...result, state:applyEmotion(spec,result.state,emotion.emotion), message:emotion.label};
   }
 
-  function settleOnline(spec, before, result, text, intent) {
+  function settleOnline(spec, before, result, text, intent, confirmedNpc = false, allowLiteralNpc = true) {
     const state = result.state;
     if (intent !== 'action' || ['observe','hint','locked','failed'].includes(result.kind) || !text) return result;
     if (!state.npc?.handled && state.sessionStatus === 'ACTIVE' && result.kind !== 'risk' &&
-        recognizesNpcResponse(spec,text)) {
+        (confirmedNpc || allowLiteralNpc && recognizesNpcResponse(spec,text))) {
       const npc = {...state.npc,handled:true,proposal:null};
       const handled = {node:state.node,kind:'npc_handled',message:spec.npc.emotionResponses.handled};
       const emotion = {node:state.node,kind:'npc_emotion_prompt',message:spec.npc.online.emotion};
@@ -312,9 +467,10 @@
     if (!spec.formalPractice || result.state.sessionStatus!=='ACTIVE' || ['risk','blocked','question'].includes(result.kind)) return result;
     const state=clone(result.state);
     let message=null;
-    for (let i=0;i<2;i++) {
+    for (let i=0;i<spec.nodes.length;i++) {
       const node=currentNode(spec,state);
-      const next=(state.npc.handled && node.onNpcHandled) || (state.npc.emotion && node.onNpcEmotion);
+      const next=(state.npc.handled && node.onNpcHandled) || (state.npc.emotion && node.onNpcEmotion) ||
+        (node.earlyCompletion && !missingGoals(node,state).length && node.onComplete);
       if (!next) break;
       applyPatch(state,next);
       state.node=next.to;state.accepted=[];state.nodeTurn=0;
@@ -334,6 +490,8 @@
   function recognizesNpcResponse(spec,text) {
     if (/如果|假設|假如|萬一|互相衝突|[?？]|可不可以|要不要|不要阻止|不要勸/.test(text)) return false;
     const direct = text.replace(/^(?:我)?(?:跟|對|請|勸|攔住|阻止|告訴|提醒)?/,'');
+    if (spec.formalPractice && spec.npc?.online?.indirectResponse &&
+        new RegExp(spec.npc.online.indirectResponse).test(text.trim())) return true;
     if (!direct.startsWith(spec.npc.name)) return false;
     const addressed = direct.slice(spec.npc.name.length).replace(/^[\s，、,:：！!]*(?:你[\s，、,:：]*)?/,'');
     const veto = addressed.match(/^(?:拜託[\s，、,:：]*)?(?:先\s*)?(?:不要|別|不行|不可以|不能)[\s，、,:：]*/);
@@ -429,6 +587,9 @@ ${list(state.injuryCauses.map(c => `${c.node}／${actionById[c.action]} · ${c.e
     return decisions.reduce((state, decision) => {
       if (decision.noAdvance) return state;
       const input = decision.controlInput || decision.npcInput || '';
+      const npcWasHandled = decision.actionValidation?.some(item=>item.id==='npc_dissuade' && item.result==='ACCEPTED');
+      const initial = npcWasHandled && !state.npc?.handled ?
+        settleOnline(spec,state,{state,kind:'safe',message:''},'已確認勸阻','action',true).state : state;
       const settle = (result,text) => {
         if (!state.onlineExperience) return events().advance(spec,result,text).state;
         const resolved = settleOnline(spec,state,result,input,decision.intent);
@@ -437,12 +598,12 @@ ${list(state.injuryCauses.map(c => `${c.node}／${actionById[c.action]} · ${c.e
       };
       if (decision.actionBatches?.length) {
         const result = decision.actionBatches.reduce((prior,batch) =>
-          step(spec,prior.state,'已確認行動',decision.intent,{actionIds:batch.ids}),{state});
+          step(spec,prior.state,'已確認行動',decision.intent,{actionIds:batch.ids}),{state:initial});
         return state.onlineExperience ? settle(result,'已確認行動') : applyEmotion(spec,events().advance(spec,result,'已確認行動').state,decision.emotion?.category);
       }
       const text = decision.actionIds.length ? '已確認行動' : decision.controlInput || '';
       const resolved = decision.actionIds.length ? {actionIds:decision.actionIds} : null;
-      const result = step(spec,state,text,decision.intent,resolved);
+      const result = npcWasHandled && !decision.actionIds.length ? {state:initial,kind:'safe',message:''} : step(spec,initial,text,decision.intent,resolved);
       if (state.onlineExperience) return settle(result,text);
       const updated = decision.emotion ? result.state : events().advance(spec,result,text).state;
       return applyEmotion(spec,updated,decision.emotion?.category);
@@ -450,9 +611,10 @@ ${list(state.injuryCauses.map(c => `${c.node}／${actionById[c.action]} · ${c.e
   }
 
   root.ScenarioEngineV3 = {
-    formalSpec, create, rawStep:step, review, validateProposal, adoptedActionIds, replayDecisions, applyEmotion, settleOnline, recognizesNpcResponse,
+    formalSpec, create, rawStep:(spec,state,text,intent,resolved)=>spec.formalPractice && !resolved ? formalStep(spec,state,text,intent) : step(spec,state,text,intent,resolved),
+    formalStep, validateSafeEvidence, review, validateProposal, adoptedActionIds, replayDecisions, applyEmotion, settleOnline, recognizesNpcResponse,
     step:(spec,state,text,intent,resolved)=> {
-      const result = step(spec,state,text,intent,resolved);
+      const result = spec.formalPractice && !resolved ? formalStep(spec,state,text,intent) : step(spec,state,text,intent,resolved);
       return events().advance(spec,state.onlineExperience ? settleOnline(spec,state,result,text,intent || 'action') : result,text,state);
     }
   };

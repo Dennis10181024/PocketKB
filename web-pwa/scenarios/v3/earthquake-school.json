@@ -449,7 +449,10 @@
           "小維靜了片刻，回了我一個字。"
         ]
       },
-      "dissuasionTarget": "(?:再)?(?:跑|衝|走)(?:出(?:去|教室|門口)|到(?:外面|走廊)|向(?:外面|門口))|(?:再)?(?:往|向)(?:外面|外|門口)(?:跑|衝)|出去"
+      "dissuasionTarget": "(?:再)?(?:跑|衝|走)(?:出(?:去|教室|門口)|到(?:外面|走廊)|向(?:外面|門口))|(?:再)?(?:往|向)(?:外面|外|門口)(?:跑|衝)|出去",
+      "indirectResponse": "(?:^|[，,；;]|並)(?:我)?(?:跟|對|告訴)(?:小維|同學|[他她])(?:說)?[，,、：:]?s*(?:絕對|堅決|先)?(?:不行|不能|不要|別)(?:往外跑|跑出去|衝出去|跑出教室)",
+      "acknowledge": "小維聽到我的聲音，留在課桌旁。",
+      "alreadyHandled": "小維記得我的提醒，仍留在掩護處。"
     }
   },
   "endingMessages": {
@@ -991,7 +994,8 @@
             "pattern": "^老師[，,]這裡有(?:一位)?同學腳踝(?:很痛|受傷)[，,]他說站不起來[，,]我(?:先)?不把他拉起來[。！!]?$",
             "as": "我告訴老師同學腳踝受傷"
           }
-        ]
+        ],
+        "earlyCompletion": true
       },
       {
         "id": "evacuate",
@@ -1052,7 +1056,9 @@
         "decisionPrompt": "我準備向老師說什麼？",
         "observation": "我到了操場的二年二班集合區。老師要同學報到，並問有沒有人受傷。",
         "required": [
-          "count_report"
+          "school_class",
+          "school_location",
+          "school_injury"
         ],
         "optional": [
           "assembly",
@@ -1067,7 +1073,10 @@
           "emotion_supportive",
           "emotion_unsupportive",
           "emotion_neutral",
-          "leave_gathering"
+          "leave_gathering",
+          "school_class",
+          "school_location",
+          "school_injury"
         ],
         "hazards": {},
         "hints": [
@@ -1099,7 +1108,31 @@
             "kind": "risk",
             "message": "老師喊住我，名冊上還找不到我的位置。"
           }
-        }
+        },
+        "reportSlots": [
+          {
+            "id": "school_class",
+            "label": "回報班級",
+            "pattern": "(?:二|2)年(?:二|2)班|我們班",
+            "confirm": "老師聽到我報出二年二班。",
+            "ask": "你是哪一班？"
+          },
+          {
+            "id": "school_location",
+            "label": "回報集合點",
+            "pattern": "操場|集合區|集合點",
+            "confirm": "老師確認我們到了操場集合區。",
+            "ask": "你們到哪個集合點了？"
+          },
+          {
+            "id": "school_injury",
+            "label": "回報受傷人數及現況",
+            "pattern": "(?:一|1)(?:位|名|個)(?:學生|同學|人)?.{0,9}(?:腳痛|腳踝|受傷|傷者)",
+            "confirm": "我回報有一位同學腳部受傷。",
+            "ask": "有幾人受傷，現在是什麼情況？"
+          }
+        ],
+        "reportSpeaker": "老師"
       },
       {
         "id": "return_choice",
@@ -1199,7 +1232,22 @@
             "我聽見老師在核對點名和受傷的同學，還沒聽到可以離開集合區的指示。"
           ]
         },
-        "decisionPrompt": "我怎麼讓老師和救護知道我在哪裡、發生了什麼？"
+        "decisionPrompt": "我怎麼讓老師和救護知道我在哪裡、發生了什麼？",
+        "reportSpeaker": "老師",
+        "reportSlots": [
+          {
+            "id": "report_handoff",
+            "pattern": "(?:我在|位於|位置是|人在).{0,12}(?:樓梯|教室|走廊|[一二三123]樓)|(?:二樓|2樓).{0,5}(?:樓梯|走廊|教室)",
+            "confirm": "我把傷者所在的樓層和位置告訴老師。",
+            "ask": "傷者現在在哪一層、哪個位置？"
+          },
+          {
+            "id": "report_injury",
+            "pattern": "回報(?:受傷|傷勢)|通報(?:受傷|傷勢)|(?:我|同學).{0,10}(?:腳踝受傷|腳痛|不能走)|腳踝受傷|腳痛|不能走",
+            "confirm": "老師聽完我回報的傷者狀況。",
+            "ask": "傷者現在能回話嗎？哪裡不舒服？"
+          }
+        ]
       }
     ],
     "actions": [
@@ -1430,6 +1478,39 @@
           "campus-evac"
         ],
         "effect": "老師尚未確認我的位置。"
+      },
+      {
+        "id": "school_class",
+        "label": "回報班級",
+        "pattern": "(?:二|2)年(?:二|2)班|我們班",
+        "confirm": "老師聽到我報出二年二班。",
+        "ask": "你是哪一班？",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "老師聽到我報出二年二班。"
+      },
+      {
+        "id": "school_location",
+        "label": "回報集合點",
+        "pattern": "操場|集合區|集合點",
+        "confirm": "老師確認我們到了操場集合區。",
+        "ask": "你們到哪個集合點了？",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "老師確認我們到了操場集合區。"
+      },
+      {
+        "id": "school_injury",
+        "label": "回報受傷人數及現況",
+        "pattern": "(?:一|1)(?:位|名|個)(?:學生|同學|人)?.{0,9}(?:腳痛|腳踝|受傷|傷者)",
+        "confirm": "我回報有一位同學腳部受傷。",
+        "ask": "有幾人受傷，現在是什麼情況？",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "我回報有一位同學腳部受傷。"
       }
     ],
     "injuryEvents": [
@@ -1671,6 +1752,9 @@
         "return_choice": "老師",
         "injury_handoff": "老師"
       }
-    }
+    },
+    "earlyGoals": [
+      "check_injured"
+    ]
   }
 }

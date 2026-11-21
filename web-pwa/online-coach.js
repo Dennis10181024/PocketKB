@@ -165,7 +165,8 @@ function localResult(session,request,reason) {
     const developments=result.state.events.slice(before.events.length)
       .filter(event=>['environment_change','npc_proposal','npc_emotion_prompt','npc_emotion'].includes(event.kind));
     const emotion=developments.find(event=>event.kind==='npc_emotion');
-    const reason=['clarify','unclear','off_topic'].includes(result.kind) && !result.sourceIds?.length ? presentation.rejectionLine(spec,result.state) : result.message;
+    const reason=result.outcomes?.length ? result.outcomes.join('') :
+      ['clarify','unclear','off_topic'].includes(result.kind) && !result.sourceIds?.length ? presentation.rejectionLine(spec,result.state) : result.message;
     result={...result,message:emotion?.message || [reason,...developments.map(event=>event.message)].filter(Boolean).join(' ')};
   }
   const state=result.state;
