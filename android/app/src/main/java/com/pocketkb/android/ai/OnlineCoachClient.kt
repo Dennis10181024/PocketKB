@@ -78,19 +78,27 @@ data class OnlineScenarioPresentation(
     val endingText: String,
     val keyDecisions: List<String>,
     val lessons: List<OnlineScenarioLesson>,
+    val status: List<String> = emptyList(),
+    val observation: String = "",
+    val endingTitle: String? = null,
 )
 
 /** Decodes verified state and the presentation of a quality-assessed turn. */
 object OnlineCoachState {
     fun qualityPresentation(value: JSONObject): OnlineScenarioPresentation? {
-        if (value.optJSONObject("state")?.optJSONObject("quality") == null) return null
-        val node = value.optJSONObject("scene")?.optJSONObject("node") ?: return null
+        val state = value.optJSONObject("state") ?: return null
+        if (state.optJSONObject("quality") == null && state.optJSONObject("director") == null) return null
+        val scene = value.optJSONObject("scene") ?: return null
+        val node = scene.optJSONObject("node") ?: return null
         val ending = value.optJSONObject("ending")
         return OnlineScenarioPresentation(
             task = node.optString("task"),
             situation = node.optString("situation"),
             endingText = ending?.optString("text").orEmpty(),
             keyDecisions = ending?.strings("decisions").orEmpty(),
+            status = scene.strings("status"),
+            observation = node.optString("observation"),
+            endingTitle = ending?.optString("type")?.takeIf { it.isNotBlank() },
             lessons = ending?.objects("lessons").orEmpty().map { lesson ->
                 OnlineScenarioLesson(
                     lesson.optString("title", "這個行動為什麼危險"),

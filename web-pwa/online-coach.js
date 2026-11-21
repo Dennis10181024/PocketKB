@@ -208,7 +208,8 @@ async function resume(snapshot,signal) {
     base={sessionId:settled.sessionId,revision:settled.revision};
     if (settled.terminal) break;
   }
-  if (settled && !settled.state.quality && presentation.resumeState(settled.state)!==presentation.resumeState(snapshot.state))
+  if (settled && !settled.state.quality && !settled.state.director &&
+      presentation.resumeState(settled.state)!==presentation.resumeState(snapshot.state))
     throw coachFailure('遠端與最後確認場景不同','CLIENT_SYNC');
   return settled || base;
 }

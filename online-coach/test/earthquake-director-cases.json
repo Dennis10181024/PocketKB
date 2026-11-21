@@ -1,0 +1,362 @@
+[
+  {
+    "draft": "A",
+    "n": 1,
+    "text": "馬上蹲低鑽到桌子底下抓緊桌腳，叫阿凱不要亂跑",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 2,
+    "text": "先把頭抱住縮進課桌下，遠離旁邊那面大窗戶",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 3,
+    "text": "阿凱你冷靜點先趴下！現在搖成這樣出去會被砸到",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 4,
+    "text": "等不搖了再說，我先用手護著後頸抓穩桌子",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 5,
+    "text": "搖停了，我抓起書包頂在頭上準備照路線撤離",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 6,
+    "text": "大家不要推不要跑，我們排隊走逃生梯下樓",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 7,
+    "text": "別管筆電了啦，命比較重要，拿著書包護頭快走樓梯",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 8,
+    "text": "走到一樓後快點去操場中間，離大樓外牆跟大樹遠一點",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 9,
+    "text": "我先躲桌底穩住，不往上看天花板以免燈管掉下來",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 10,
+    "text": "晃停了就跟著老師走樓梯下去，路上不講話不推擠",
+    "expected": "good"
+  },
+  {
+    "draft": "A",
+    "n": 11,
+    "text": "四樓不算太高，我直接從窗戶翻出去踩冷氣架下去",
+    "expected": "fatal"
+  },
+  {
+    "draft": "A",
+    "n": 12,
+    "text": "走到走廊了，樓梯太多人，我去按電梯直接下樓比較快",
+    "expected": "fatal"
+  },
+  {
+    "draft": "A",
+    "n": 13,
+    "text": "門口那條掉下來的電線擋路，我用腳把它踢開",
+    "expected": "fatal"
+  },
+  {
+    "draft": "A",
+    "n": 14,
+    "text": "教室快塌了啦，我踩上窗台往下跳到草皮上",
+    "expected": "fatal"
+  },
+  {
+    "draft": "A",
+    "n": 15,
+    "text": "反正不搖了，拉阿凱去坐升降梯省得爬四層樓",
+    "expected": "fatal"
+  },
+  {
+    "draft": "A",
+    "n": 16,
+    "text": "地上的電線好像沒火花，我用手把它移到路邊免得絆倒人",
+    "expected": "fatal"
+  },
+  {
+    "draft": "A",
+    "n": 17,
+    "text": "趁現在剛開始搖，我先衝去把教室前門打開卡住",
+    "expected": "exposure"
+  },
+  {
+    "draft": "A",
+    "n": 18,
+    "text": "我不躲桌下，改蹲在桌子旁邊的黃金三角位置",
+    "expected": "exposure"
+  },
+  {
+    "draft": "A",
+    "n": 19,
+    "text": "停震了，我趕快衝回座位把筆電跟行動電源收進包包再走",
+    "expected": "exposure"
+  },
+  {
+    "draft": "A",
+    "n": 20,
+    "text": "我邊跑邊把前面慢吞吞的同學推開，趕快衝下樓梯",
+    "expected": "exposure"
+  },
+  {
+    "draft": "A",
+    "n": 21,
+    "text": "搭電梯絕對不行，地震完坐電梯很容易卡在裡面",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 22,
+    "text": "我叫阿凱千萬不要衝去開門，也別想搭電梯",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 23,
+    "text": "剛剛差點站起來衝出去，還好忍住乖乖趴在桌下",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 24,
+    "text": "走廊有人跑去搭電梯了，我們還是乖乖走樓梯吧",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 25,
+    "text": "如果現在衝去開門會不會被天花板砸到？",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 26,
+    "text": "跳窗太扯了吧，四樓跳下去一定骨折，我才不幹",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 27,
+    "text": "我阻止阿凱回頭拿筆電，叫他直接用書包護頭走",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 28,
+    "text": "地上那條電線千萬不能碰，我們繞遠一點走",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 29,
+    "text": "老師以前不是說要躲黃金三角嗎？現在到底該躲哪？",
+    "expected": "protected"
+  },
+  {
+    "draft": "A",
+    "n": 30,
+    "text": "我本來想回去收平板，想想還是算了直接下樓",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 1,
+    "text": "先鑽到桌子底下抓緊桌腳，順便叫阿凱別亂跑",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 2,
+    "text": "靠北好晃，我馬上蹲低護住頭脖子，離玻璃遠一點",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 3,
+    "text": "我拉阿凱一起趴下躲桌下，跟他說現在別去開門",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 4,
+    "text": "等不搖了再聽老師的走樓梯下去，我先拿書包擋頭",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 5,
+    "text": "大家不要推也不要用跑的，慢慢沿著逃生梯撤到操場",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 6,
+    "text": "我躲在課桌下面死命抓著桌腳，完全不抬頭看燈管",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 7,
+    "text": "地震停了，筆電不要管了直接拿後背包護頭往樓下走",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 8,
+    "text": "我帶阿凱走樓梯到一樓，然後快步離開大樓外牆跟大樹",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 9,
+    "text": "先趴掩穩就對了啦，等晃完再疏散",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 10,
+    "text": "我用厚重的原文書頂在頭上，照老師指的路線走下去",
+    "expected": "good"
+  },
+  {
+    "draft": "B",
+    "n": 11,
+    "text": "太可怕了，我直接從四樓窗戶跨出去抓外牆水管溜下去",
+    "expected": "fatal"
+  },
+  {
+    "draft": "B",
+    "n": 12,
+    "text": "走樓梯人超多，我直接去按那台升降機下樓比較快",
+    "expected": "fatal"
+  },
+  {
+    "draft": "B",
+    "n": 13,
+    "text": "操場旁邊掉了一條電線擋路，我過去用腳把它踢開",
+    "expected": "fatal"
+  },
+  {
+    "draft": "B",
+    "n": 14,
+    "text": "反正四樓下面有遮雨棚，我乾脆往外跳算了",
+    "expected": "fatal"
+  },
+  {
+    "draft": "B",
+    "n": 15,
+    "text": "門卡住了，我們直接從窗台翻出去跳到草皮上",
+    "expected": "fatal"
+  },
+  {
+    "draft": "B",
+    "n": 16,
+    "text": "電梯門剛好還開著，我拉阿凱衝進去按一樓",
+    "expected": "fatal"
+  },
+  {
+    "draft": "B",
+    "n": 17,
+    "text": "趁還在搖我先衝去把前門打開，不然等下變形出不去",
+    "expected": "exposure"
+  },
+  {
+    "draft": "B",
+    "n": 18,
+    "text": "我躲在桌子旁邊的黃金三角，這樣砸下來才有空間",
+    "expected": "exposure"
+  },
+  {
+    "draft": "B",
+    "n": 19,
+    "text": "等一下我把桌上的 MacBook 跟充電線塞進包包再走",
+    "expected": "exposure"
+  },
+  {
+    "draft": "B",
+    "n": 20,
+    "text": "樓梯間太慢了，我直接用衝的把前面的人擠開下去",
+    "expected": "exposure"
+  },
+  {
+    "draft": "B",
+    "n": 21,
+    "text": "地震後搭電梯絕對不行，我們乖乖走樓梯",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 22,
+    "text": "阿凱你別衝去開門啦，快點躲桌下",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 23,
+    "text": "如果我現在跑出去會不會被燈管砸到？",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 24,
+    "text": "前排有同學竟然想搭電梯，但我才不會去",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 25,
+    "text": "跳窗根本找死吧，我們等搖完走逃生梯",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 26,
+    "text": "我剛才差點衝出教室，還好忍住蹲下來了",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 27,
+    "text": "我絕對不讓阿凱回頭拿筆電，直接拉他走",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 28,
+    "text": "請問現在還在搖，我可以先去把門打開嗎？",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 29,
+    "text": "黃金三角是錯的，所以我躲在桌子正下方",
+    "expected": "protected"
+  },
+  {
+    "draft": "B",
+    "n": 30,
+    "text": "外面有電線掉下來，我們繞遠路絕對不要去碰",
+    "expected": "protected"
+  }
+]

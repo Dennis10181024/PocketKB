@@ -1,5 +1,5 @@
 (function(root) {
-  const endings = {SELF_EVACUATION:'自行撤離', SAFE_RESCUE:'安全待救獲救', DELAYED_RESCUE:'延誤後獲救', CRITICAL_FAILURE:'危急失敗', EXITED:'已退出'};
+  const endings = {SELF_EVACUATION:'自行撤離', DELAYED_EVACUATION:'延誤撤離', SAFE_RESCUE:'安全待救獲救', DELAYED_RESCUE:'延誤後獲救', CRITICAL_FAILURE:'危急失敗', EXITED:'已退出'};
   const injuries = {NONE:'無傷', MILD:'輕傷', MODERATE:'中度傷勢（需送醫）', SEVERE:'重傷（需住院治療）', NOT_ASSESSED:'傷勢不評定', BASELINE:'傷勢未加重'};
   const sceneText = text => String(text || '').replace(/模擬119/g,'119').replace(/模擬通報/g,'通報').replace(/(?:模擬|演練)中/g,'現場').replace(/這段演練|此演練|本次演練/g,'目前情況').replace(/演練|模擬/g,'');
   const isConnectionFallback = reason => ['TURN_TIMEOUT','MODEL_TIMEOUT','CLIENT_TRANSPORT','CLIENT_API_ERROR','PROVIDER_ERROR','MODEL_UNAVAILABLE','MODEL_INCOMPLETE'].includes(reason);

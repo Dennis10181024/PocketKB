@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const test=require('node:test');
 const {ConversationCoach}=require('../coach');
-const Director=require('../director');
+const Director=require('../director-registry').get('drill_fire_dorm');
 
 const fire='drill_fire_dorm';
 const m=(id,evidence)=>({id,evidence});
@@ -25,7 +25,7 @@ test('the dorm fire runs in director mode with a neutral first question',()=>{
   assert.ok(s.state.director);
   assert.match(s.scene.node.task,/小岑想開門/);
   assert.doesNotMatch(s.scene.node.task,/關門|119/);
-  const other=coach.create('earthquake_school');
+  const other=coach.create('earthquake_home_trapped');
   assert.ok(!other.state.director,'other scenarios keep the existing engine');
 });
 

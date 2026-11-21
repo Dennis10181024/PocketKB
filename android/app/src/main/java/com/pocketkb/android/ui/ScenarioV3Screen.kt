@@ -196,10 +196,11 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
             review = state.scenarioReviewV3,
             narration = state.roundNarration,
             preview = state.onlinePreview,
-            observation = runtime.practiceObservation(session),
-            status = status,
+            observation = state.onlineScenarioPresentation?.observation?.takeIf { it.isNotBlank() }
+                ?: runtime.practiceObservation(session),
+            status = state.onlineScenarioPresentation?.status ?: status,
             hintOptions = state.hintOptions,
-            endingType = endingType,
+            endingType = state.onlineScenarioPresentation?.endingTitle ?: endingType,
             injury = injury,
             endingText = state.onlineScenarioPresentation?.endingText?.takeIf { it.isNotBlank() }
                 ?: runtime.spec.optJSONObject("endingMessages")?.optJSONObject(session.endingType ?: "")

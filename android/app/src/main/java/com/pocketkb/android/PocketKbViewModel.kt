@@ -181,7 +181,8 @@ class PocketKbViewModel(
                     }
                     val recovered = OnlineCoachState.v3(remote).state
                     val confirmed = checkNotNull(before.scenarioStateV3)
-                    check(remote.optJSONObject("state")?.optJSONObject("quality") != null ||
+                    val remoteState = remote.optJSONObject("state")
+                    check(remoteState?.optJSONObject("quality") != null || remoteState?.optJSONObject("director") != null ||
                         recovered.node == confirmed.node && recovered.accepted.toSet() == confirmed.accepted.toSet() &&
                         recovered.facts == confirmed.facts && recovered.resources == confirmed.resources && recovered.exposure == confirmed.exposure &&
                         recovered.endingType == confirmed.endingType && recovered.injuryLevel == confirmed.injuryLevel)

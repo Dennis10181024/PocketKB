@@ -7,7 +7,8 @@ const Events = require('../web-pwa/drill-events');
 const Presentation = require('../web-pwa/drill-presentation');
 const Experience = require('./experience');
 const Quality = require('./quality');
-const Director = require('./director');
+const directors = require('./director-registry');
+const {researchMetrics,reviewMetrics}=require('./director-engine');
 const {researchTurn} = require('./session-log');
 const directory = path.join(__dirname, '../web-pwa/scenarios');
 const specs = new Map();
@@ -26,11 +27,16 @@ function terminal(spec, state) { return state.sessionStatus !== 'ACTIVE'; }
 function scene(spec, state) {
   const node = currentNode(spec, state);
   const quality = state.quality && Quality.point(spec,state);
-  if (state.director) return { title: spec.title, opening: spec.opening, notice: spec.notice,
-    node:{...node,task:Director.question(state.director),situation:state.director.lastText || spec.opening}, state,
-    sources: spec.sources, misconceptions: spec.commonMisconceptions || [], actionRules: [], hazardRules: {},
-    physicalStatus: ['SAFE_RESCUE','DELAYED_RESCUE'].includes(state.endingType) ? 'RESCUED' : state.physicalStatus,
-    status:Presentation.status(spec,state) };
+  if (state.director) {
+    const director=directors.get(spec.id);
+    const opening=director.opening || spec.opening;
+    return {title:spec.title,opening,notice:spec.notice,
+      node:{...node,task:director.question(state.director),situation:state.director.lastText || opening,
+        observation:director.look(state.director)},state,
+      sources:director.sources || spec.sources,misconceptions:spec.commonMisconceptions || [],actionRules:[],hazardRules:{},
+      physicalStatus:['SAFE_RESCUE','DELAYED_RESCUE'].includes(state.endingType)?'RESCUED':state.physicalStatus,
+      status:director.status?.(state.director) || Presentation.status(spec,state)};
+  }
   const proposal = state.onlineExperience && state.sessionStatus==='ACTIVE' && !state.npc.handled && !state.elapsed ? spec.npc.online.proposal : '';
   return { title: spec.title, opening: spec.opening, notice: spec.notice,
     node:{...node,task:quality?.question || node.decisionPrompt || node.task,
@@ -288,7 +294,7 @@ function explicitRuleAction(spec,state,text,intent,literal) {
 function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fetch, timeoutMs = 45000 } = {}) {
   return {
     ready: Boolean(apiKey), model,
-    async generate(stage, payload, schema, turnSignal) {
+    async generate(stage, payload, schema, turnSignal, prompt) {
       if (!apiKey) throw apiError('NOT_CONFIGURED', '尚未設定 GPT API 金鑰，請在電腦啟動線上教練後重試。', 503);
       let response;
       try {
@@ -296,7 +302,7 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
           method: 'POST', signal: turnSignal ? AbortSignal.any([turnSignal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs),
           headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ model, store: false, stream:stage==='narrate', reasoning: { effort: 'none' }, max_output_tokens: 1200,
-            instructions: Director.instructions[stage] || (stage === 'assess' ? Quality.instruction : stage === 'interpret'
+            instructions: prompt || (stage === 'assess' ? Quality.instruction : stage === 'interpret'
               ? interpreterPrompt + (payload.semanticGoals ? '\n'+semanticGoalsPrompt : '') : stage === 'quote' ? quotePrompt : narratorPrompt),
             input: JSON.stringify(payload),
             text: { format: { type: 'json_schema', name: stage, strict: true, schema } },
@@ -318,7 +324,7 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
 }
 
 class ConversationCoach {
-  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, formal = false, quality = false, logText = process.env.POCKETKB_LOG_TEXT === '1', record } = {}) {
+  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, formal = false, quality = false, director = false, logText = process.env.POCKETKB_LOG_TEXT === '1', record } = {}) {
     if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs,narrationTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
     this.provider = provider; this.sessions = new Map(); this.maxSessions = maxSessions;
     this.maxTurns = maxTurns; this.maxCalls = maxCalls; this.calls = 0; this.ttlMs = ttlMs;
@@ -330,7 +336,7 @@ class ConversationCoach {
     this.onlineExperience = onlineExperience;
     this.compactNarration = compactNarration;
     this.quality=quality;
-    this.director=Boolean(arguments[1]?.director);
+    this.director=director;
     this.specs = formal ? new Map([...specs].map(([id,spec])=>{
       const formalSpec=V3.formalSpec(spec);
       return [id,quality?Quality.scenarioSpec(formalSpec):formalSpec];
@@ -344,9 +350,12 @@ class ConversationCoach {
     if (this.sessions.size >= this.maxSessions) throw apiError('SESSION_LIMIT', '本機教練場次已滿，請重新啟動服務。', 429);
     const now = Date.now();
     const session = { id: randomUUID(), spec, state: engine(spec).create(spec,{onlineExperience:this.onlineExperience}), revision: 0, history: [], decisions: [], requests: new Map(), busy: false, createdAt: now, updatedAt: now, sensory:[], recentSensory:[], invalidStreak:0, hint:null, pending:null };
-    if (this.director && scenarioId==='drill_fire_dorm') {
-      session.director=true;
-      session.state={...session.state,director:Director.start(),npc:{...session.state.npc,proposal:'想開門',handled:false}};
+    const director=this.director && directors.get(scenarioId);
+    if (director) {
+      session.director=director;
+      const directorState=director.start();
+      session.state={...session.state,director:directorState,npc:{...session.state.npc,...director.npcState(directorState)},
+        directorResearch:researchMetrics(null,directorState,director,null)};
     } else if (this.quality && spec.formalPractice && Quality.points(spec).length) session.state=Quality.start(session.state);
     this.sessions.set(session.id, session);
     return this.snapshot(session);
@@ -355,12 +364,12 @@ class ConversationCoach {
     const { spec, state } = session;
     return { sessionId: session.id, scenarioId: spec.id, version: spec.version, revision: session.revision,
       state, decisions: session.decisions.slice(), scene: scene(spec, state), terminal: terminal(spec, state),
-      review: terminal(spec, state) ? (state.director ? Director.review(state.director) : state.quality ? Quality.review(spec,state) : engine(spec).review(spec, state)) : '', model: this.provider.model,
+      review: terminal(spec, state) ? (state.director ? session.director.review(state.director)+reviewMetrics(state.directorResearch,session.director) : state.quality ? Quality.review(spec,state) : engine(spec).review(spec, state)) : '', model: this.provider.model,
       suggestions: session.hint?.options || [], hintContext:session.hint, invalidStreak:session.invalidStreak };
   }
-  async generate(stage, payload, schema, signal) {
+  async generate(stage, payload, schema, signal, prompt) {
     if (this.calls >= this.maxCalls) throw apiError('CALL_LIMIT', '本次啟動的 GPT 請求上限已用完，請在電腦端確認後重啟。', 429);
-    this.calls++; return this.provider.generate(stage, payload, schema, signal);
+    this.calls++; return this.provider.generate(stage, payload, schema, signal, prompt);
   }
   async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null, rulesOnly = false, clientFallbackReason, researchText }, onGround) {
     const session = this.sessions.get(id);
@@ -567,79 +576,92 @@ class ConversationCoach {
       result: { ...result, message: reply, reason: reply, effects: [] } };
   }
   async directorExecute(session,text,intent,{hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,replayReason,researchText,rawInput},started) {
-    const {spec}=session; const before=session.state; const d=before.director;
+    const {spec,director}=session; const before=session.state; const d=before.director;
     let kind,reply,offline=false,fallbackReason=null,assessment=null,out=null;
+    let narrationCheck=null;
     const priorHint=session.hint;
-    const questionBefore=Director.question(d);
+    const questionBefore=director.question(d);
     if (hintTrigger) {
       kind='hint'; reply='可以試著這樣說';
-      session.hint={trigger:hintTrigger,turn:session.revision+2,options:Experience.shuffled(Director.hints(d),this.random)};
+      session.hint={trigger:hintTrigger,turn:session.revision+2,options:Experience.shuffled(director.hints(d),this.random)};
     } else if (intent==='observe' || intent==='hint') {
-      kind='observe'; reply=Director.look(d);
+      kind='observe'; reply=director.look(d);
     } else {
       if (!text) throw apiError('EMPTY_INPUT', '請先輸入想法或問題。');
       const signal=AbortSignal.timeout(this.narrationTimeoutMs);
       try {
         if (replayReason) throw apiError(replayReason,'client fallback');
-        const {value}=await this.generate('direct',Director.modelInput(d,text,session.history),Director.schema,signal);
-        assessment={...Director.validate(d,text,value),source:'model'};
+        const {value}=await this.generate('direct',director.modelInput(d,text,session.history),director.schema,signal,director.instructions.direct);
+        assessment={...director.validate(d,text,value),source:'model'};
         if (assessment.pendingDanger) {
           // Rule and model disagree about a dangerous phrase: one short yes/no check. No answer means danger (fail-safe).
           let executing=true;
           try {
-            const {value:check}=await this.generate('confirm_danger',{text,behavior:Director.HAZARDS[assessment.pendingDanger.id].label},Director.confirmSchema,signal);
+            const {value:check}=await this.generate('confirm_danger',{text,behavior:director.HAZARDS[assessment.pendingDanger.id].label},director.confirmSchema,signal,director.instructions.confirm_danger);
             executing=check.executing!==false;
           } catch {}
-          assessment=Director.resolveDanger(assessment,executing);
+          assessment=director.resolveDanger(assessment,executing);
         }
       } catch(error) {
         fallbackReason=replayReason || (signal.aborted?'TURN_TIMEOUT':error instanceof CoachError?error.code:'PROVIDER_ERROR');
-        assessment={...Director.ruleAssessment(d,text),source:'rule'};
+        assessment={...director.ruleAssessment(d,text),source:'rule'};
         offline=Presentation.isConnectionFallback(fallbackReason);
       }
-      out=Director.apply(d,assessment,{question:intent==='question'});
+      out=director.apply(d,assessment,{question:intent==='question'});
       reply=out.message;
       if (!fallbackReason && !out.rewind && out.kind!=='failed') {
         // Second call: the narrator only renders what the state machine confirmed this turn.
         try {
-          const {value}=await this.generate('narrate_director',Director.narrationInput(d,out,text,session.history),Director.narrationSchema,AbortSignal.timeout(this.narrationTimeoutMs));
-          reply=Director.compose(out,typeof value?.reaction==='string'?value.reaction.trim():'');
-        } catch {}
+          const {value}=await this.generate('narrate_director',director.narrationInput(d,out,text,session.history),director.narrationSchema,AbortSignal.timeout(this.narrationTimeoutMs),director.instructions.narrate_director);
+          const reaction=typeof value?.reaction==='string'?value.reaction.trim():'';
+          const failure=director.narrationIssue(out,reaction);
+          narrationCheck={stage:'narrate_director',accepted:failure===null,reason:failure};
+          reply=director.compose(out,reaction);
+        } catch(error) {
+          narrationCheck={stage:'narrate_director',accepted:false,reason:error instanceof CoachError?error.code:'NARRATOR_ERROR',providerFailure:true};
+        }
       }
       kind=out.kind;
     }
     const state={...before,events:[...before.events,...(out?.events || [])]};
     if (out) {
-      const f=out.state.facts;
       state.director={...out.state,lastText:reply};
-      state.exposure={...(before.exposure || {}),smoke:out.state.exposure.smoke,heat:out.state.exposure.heat};
-      state.npc={...before.npc,handled:f.npcStopped,proposal:f.npcStopped?null:'想開門',emotion:f.npcCalmed?'supportive':null};
+      state.exposure={...(before.exposure || {}),...out.state.exposure};
+      state.npc={...before.npc,...director.npcState(out.state)};
       if (out.state.clock>=2 && !before.events.some(e=>e.eventId==='elapsed-1')) state.events.push({kind:'environment_change',eventId:'elapsed-1'});
       if (out.ending) {
         state.sessionStatus=out.ending.type==='CRITICAL_FAILURE'?'FAILED':'COMPLETED';
         state.endingType=out.ending.type; state.injuryLevel=out.ending.injury;
+        if (['SELF_EVACUATION','DELAYED_EVACUATION'].includes(out.ending.type)) state.physicalStatus='EVACUATED';
       }
     }
+    const action=out && !['question','observe'].includes(out.kind);
+    const firstDecision=state.directorResearch.first_decision_safe ?? (action ? !out.rewind && out.kind!=='failed' : null);
+    state.directorResearch=researchMetrics(firstDecision,state.director,director,state.endingType);
+    const sources=director.sources || spec.sources;
+    const sourceIds=new Set([...(out?.accepted || []).map(id=>director.PRINCIPLES[id].source),director.HAZARDS[assessment?.danger?.id]?.source]);
+    const citations=director.sources?sources.filter(source=>sourceIds.has(source.id)):[];
     const progressed=Boolean(out?.fresh.length);
     const isQuestion=kind==='question';
     if (out && !isQuestion && out.kind!=='observe' && !out.rewind) session.invalidStreak=progressed || out.ending ? 0 : (session.invalidStreak || 0)+1;
-    if (session.hint && (Director.question(state.director || d)!==questionBefore || progressed || out?.ending)) session.hint=null;
+    if (session.hint && (director.question(state.director || d)!==questionBefore || progressed || out?.ending)) session.hint=null;
     let hintExposure=null;
     if (!hintTrigger && session.invalidStreak>=2 && !session.hint && !out?.ending) {
-      session.hint={trigger:'invalid_streak',turn:session.revision+2,options:Experience.shuffled(Director.hints(state.director || d),this.random)};
+      session.hint={trigger:'invalid_streak',turn:session.revision+2,options:Experience.shuffled(director.hints(state.director || d),this.random)};
       hintExposure={trigger:'invalid_streak',after_turn:session.revision+1,first_eligible_turn:session.hint.turn};
     }
     if (hintTrigger) hintExposure={trigger:hintTrigger,after_turn:session.revision+1,first_eligible_turn:session.hint.turn};
     const category=!assessment ? null : assessment.danger ? 'dangerous' : isQuestion ? 'question' : out?.kind==='observe' ? 'observe' :
       progressed ? 'good' : assessment.matches.length ? 'repeat' : 'irrelevant';
-    const ending=out?.ending ? Director.ending(out.state,out.ending,reply,spec.sources) : null;
-    const decision={turn:session.revision+1,intent,actionIds:[],actionBatches:[],fallbackReason,narrationFallbackReason:null,
+    const ending=out?.ending ? director.ending(out.state,out.ending,reply,sources) : null;
+    if (ending) ending.lessons.push({title:'決策與修正',why:reviewMetrics(state.directorResearch,director).trim(),next:'',sources:[]});
+    const decision={director_research:state.directorResearch,turn:session.revision+1,intent,actionIds:[],actionBatches:[],fallbackReason,narrationFallbackReason:narrationCheck?.reason ?? null,
       source:assessment?.source || 'rule',validation:fallbackReason || (assessment?'DIRECTOR':'CONTROL'),actionValidation:[],
-      disagreement:assessment?.disagreement || null,narration_checks:[],narration:'director',emotion:null,question_answer_id:null,
+      disagreement:assessment?.disagreement || null,narration_checks:narrationCheck?[narrationCheck]:[],narration:'director',emotion:null,question_answer_id:null,
       hint_shown:Boolean(priorHint),hint_shown_turn:(priorHint || session.hint)?.turn ?? null,hint_trigger:(priorHint || session.hint)?.trigger ?? null,
       hint_selected_index:hintSelectedIndex,hint_edited_before_submit:hintSelectedIndex!==null && (hintEditedBeforeSubmit===true || text!==priorHint?.options?.[hintSelectedIndex]),
       hint_seen_before_submit:Boolean(priorHint),hint_exposure:hintExposure,
-      exposure:state.exposure,ending_type:state.endingType,injury_level:state.injuryLevel,injury_causes:[],source_ids:[],
+      exposure:state.exposure,ending_type:state.endingType,injury_level:state.injuryLevel,injury_causes:[],source_ids:citations.map(source=>source.id),
       ...(assessment ? {assessment:{category,evidence:text,matches:assessment.matches,fields:[]},quality_effect:progressed?'advanced':'stuck',
         new_principles:out.fresh,completed_points:[],
         director:{matches:assessment.matches.map(m=>({id:m.id,evidence:''})),dialed:assessment.dialed,danger:assessment.danger?{id:assessment.danger.id,evidence:''}:null,
@@ -661,7 +683,7 @@ class ConversationCoach {
     session.history=session.history.slice(-24);
     const onlineRecovered=Boolean(session.offline && !offline && !['observe','hint'].includes(intent));
     if (!['observe','hint'].includes(intent)) session.offline=offline;
-    return {...this.snapshot(session),kind,reply,citations:[],offline,fallbackReason,onlineRecovered,decision,researchRecord:clientRecord,ending,
+    return {...this.snapshot(session),kind,reply,citations,offline,fallbackReason,onlineRecovered,decision,researchRecord:clientRecord,ending,
       result:{kind,state,message:reply,reason:reply,effects:[]}};
   }
   narrationFallback(session,result,audit,refused,text) {
