@@ -71,10 +71,13 @@ class Step23LivePracticeTest {
 
     private fun finishFire(called: Boolean = false, withAid: Boolean = false) {
         if (!called) send("我撥119")
-        send("我告知地址A棟宿舍")
-        send("我回報五樓503室")
-        send("我等待救援")
-        send("我保持通訊並依消防人員指示", terminal = !withAid)
+        send("安學路100號A棟宿舍五樓503室，兩人受困，走廊都是煙")
+        if (withAid) send("小岑先不要開門")
+        send("我聽見你擔心同學我陪你留在這裡")
+        send("我到窗邊揮衣")
+        send("我塞住門縫")
+        send("我保持通話")
+        send("我依消防員指示", terminal = !withAid)
         if (withAid) send("沖脫泡蓋送", terminal = true)
     }
 

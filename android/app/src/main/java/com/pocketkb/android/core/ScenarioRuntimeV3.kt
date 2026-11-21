@@ -70,7 +70,15 @@ data class ScenarioReviewV3(
  * Language models may propose action IDs later, but only this runtime can mutate
  * scenario state or assign a terminal outcome.
  */
-class ScenarioRuntimeV3(val spec: JSONObject) {
+class ScenarioRuntimeV3(base: JSONObject, formal: Boolean = false) {
+    val spec: JSONObject = if (formal && base.has("formal")) {
+        JSONObject(base.toString()).apply {
+            val patch = getJSONObject("formal")
+            remove("formal")
+            patch.keys().forEach { put(it, patch.get(it)) }
+            put("formalPractice", true)
+        }
+    } else base
     private val actions = spec.objects("actions")
     private val nodes = spec.objects("nodes")
 
@@ -251,11 +259,14 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
     }
 
     private fun finish(state: ScenarioStateV3, failed: Boolean = false): ScenarioStateV3 {
-        val rescue = node(state).optJSONObject("terminal")?.optBoolean("rescueHandoff") == true
+        val terminal = node(state).optJSONObject("terminal")
+        val delayedHelp = terminal?.optBoolean("unhandledHandoff") == true &&
+            (state.npc?.handled != true || state.facts["npcSkipped"] == "true")
+        val rescue = terminal?.optBoolean("rescueHandoff") == true || delayedHelp
         if (!failed && state.physicalStatus == "WAITING_RESCUE" && !rescue) return state
         val type = when {
             failed -> "CRITICAL_FAILURE"
-            rescue && state.facts["delayed"] == "true" -> "DELAYED_RESCUE"
+            rescue && (state.facts["delayed"] == "true" || delayedHelp) -> "DELAYED_RESCUE"
             rescue -> "SAFE_RESCUE"
             else -> "SELF_EVACUATION"
         }
@@ -271,6 +282,7 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         val initial = spec.getJSONObject("initialState").optJSONObject("exposure").toIntMap()
         return state.copy(
             endingType = type,
+            facts = if (delayedHelp) state.facts + ("delayed" to "true") else state.facts,
             injuryLevel = level,
             injuryWorsened = if (failed) null else state.exposure.any { it.value > (initial[it.key] ?: 0) },
             events = if (rescue && !failed) state.events + ScenarioEventV3(state.node, kind = "rescue_contact", eventId = "rescue-handoff") else state.events,
@@ -309,10 +321,11 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
                     events = result.state.events + ScenarioEventV3(before.node, action.getString("id"), "npc_emotion", message),
                 )
                 result = result.copy(state = next, message = message)
-                if (before.firstAidEnabled) return result
+                if (before.firstAidEnabled) return advanceConversation(result)
             }
         }
         if (before.firstAidEnabled && result.kind == "question") return answerQuestion(before, text)
+        result = advanceConversation(result)
         if (before.firstAidEnabled && result.kind == "clarify" && !result.message.startsWith("尚未執行")) {
             val experience = node(before).getJSONObject("experience")
             val reasons = experience.strings("rejection")
@@ -338,6 +351,23 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         val next = (event?.let { patch(state,it) } ?: state).copy(elapsed = clock.elapsed, consecutiveQuestions = clock.questions,
             events = if (message == null) state.events else state.events + ScenarioEventV3(state.node, kind = "environment_change", message = message))
         return result.copy(state = next, message = if (message == null) result.message else "${result.message} $message")
+    }
+
+    private fun advanceConversation(original: ScenarioResultV3): ScenarioResultV3 {
+        if (!spec.optBoolean("formalPractice") || original.state.sessionStatus != "ACTIVE" ||
+            original.kind in setOf("risk", "blocked", "question")) return original
+        var result = original
+        repeat(2) {
+            val state = result.state
+            val here = node(state)
+            val next = (if (state.npc?.handled == true) here.optJSONObject("onNpcHandled") else null)
+                ?: (if (state.npc?.emotion != null) here.optJSONObject("onNpcEmotion") else null)
+                ?: return result
+            val advanced = patch(state, next).copy(node = next.getString("to"), accepted = emptyList(), nodeTurn = 0,
+                events = state.events + ScenarioEventV3(state.node, kind = "milestone"))
+            result = result.copy(state = advanced, kind = "transition", message = next.getString("message"))
+        }
+        return result
     }
 
     private fun recognizesNpcResponse(text: String): Boolean {
@@ -392,7 +422,9 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
             if (used < hints.size) state = state.copy(hints = state.hints + FireHint(state.node, used + 1))
             return result("hint", hints[used.coerceAtMost(hints.lastIndex)])
         }
-        val input = text.trim()
+        val rawInput = text.trim()
+        val input = node.objects("phrasing").firstOrNull { Regex(it.getString("pattern")).matches(rawInput) }
+            ?.getString("as") ?: rawInput
         if (input.isEmpty()) return result("clarify", "請描述你現在實際要採取的行動。")
         DrillLanguage.nonAction(spec, input, intent, node)?.let { (kind, message) -> return result(kind, message) }
 
@@ -506,7 +538,10 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
                 return result("risk", listOf(effect.getString("message"), action.optString("teaching")).filter(String::isNotBlank).joinToString(" "))
             }
 
-        val missing = node.strings("required").filterNot { it in state.accepted }
+        if (node.has("onNpcEmotion")) return result("partial", fresh.last().getString("effect"))
+        val missing = node.strings("required").filterNot { goal ->
+            (listOf(goal) + node.optJSONObject("alternatives")?.strings(goal).orEmpty()).any { it in state.accepted }
+        }
         if (missing.isNotEmpty()) {
             return result("partial", "已記住：${fresh.joinToString("、") { it.getString("label") }}。本階段仍有必要行動尚未完成。")
         }
@@ -518,7 +553,7 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
 
         node.optJSONObject("terminal")?.let { terminal ->
             val ignored = spec.optJSONObject("npc")?.optJSONObject("online")?.optJSONObject("unhandledRescue")
-            if (state.firstAidEnabled && state.npc?.handled == false && terminal.optBoolean("rescueHandoff") && ignored != null) {
+            if (state.firstAidEnabled && (state.npc?.handled == false || state.facts["npcSkipped"] == "true") && terminal.optBoolean("rescueHandoff") && ignored != null) {
                 state = state.copy(facts = state.facts + ("delayed" to "true"), events = state.events +
                     ScenarioEventV3(state.node, kind = "npc_proposal", eventId = "npc-unhandled-rescue", message = ignored.getString("reminder")))
             }
@@ -557,8 +592,10 @@ class ScenarioRuntimeV3(val spec: JSONObject) {
         val actionLabels = actions.associate { it.getString("id") to it.getString("label") }
         val completedIds = state.events.filter { it.kind == "action" }.mapNotNull { it.action }.distinct()
         val hazardIds = state.events.filter { it.kind == "hazard" }.mapNotNull { it.action }.distinct()
-        val requiredIds = nodes.filterNot { it.optBoolean("aftercareComplete") && it.getString("id") != state.node }
-            .flatMap { it.strings("required") }.distinct()
+        val requiredIds = nodes.filterNot { it.has("onNpcHandled") || it.optBoolean("aftercareComplete") && it.getString("id") != state.node }
+            .flatMap { node -> node.strings("required").filterNot { goal ->
+                node.optJSONObject("alternatives")?.strings(goal).orEmpty().any { it in completedIds }
+            } }.distinct()
         val missingIds = requiredIds.filterNot { it in completedIds }
         val timeline = state.events.mapNotNull { event ->
             val actionLabel = event.action?.let { actionLabels[it] ?: it }

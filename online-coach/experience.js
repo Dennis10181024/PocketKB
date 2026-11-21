@@ -82,7 +82,8 @@ function ground(spec, before, result, priorLines = []) {
     const actionBeat = spec.onlineExperience.actionBeats?.[action?.action];
     const requiredBeat = ['avoid_open','towel_face','open_window_call'].includes(action?.action) ? actionBeat : null;
     const beat = spec.onlineExperience.beats[(state.elapsed || 0) % spec.onlineExperience.beats.length];
-    const progress = state.node!==before.node && node.aftercareComplete ? result.message : null;
+    const emotionalPrompt = node.onNpcEmotion && events.some(event=>event.kind==='npc_emotion_prompt');
+    const progress = state.node!==before.node && !emotionalPrompt && (node.aftercareComplete || spec.formalPractice) ? result.message : null;
     const emotional = events.some(event=>event.kind==='npc_emotion');
     const rejected = ['clarify','unclear','off_topic','blocked'].includes(result.kind) && !emotional;
     const blocked = events.findLast(event=>event.kind==='blocked');

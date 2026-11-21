@@ -474,7 +474,7 @@
       },
       "onComplete": {
         "to": "report",
-        "message": "房門已關好。你仍受困五樓，下一步要讓外界知道你在哪裡。"
+        "message": "房門關上後，我仍在 A 棟五樓503室，手機還有訊號。"
       },
       "effects": {
         "close": {
@@ -1233,5 +1233,1703 @@
   "aftercare": {
     "injuryLevel": "MILD",
     "node": "first_aid"
+  },
+  "formal": {
+    "version": "3.2.0",
+    "nodes": [
+      {
+        "id": "isolate",
+        "title": "先隔開走廊濃煙",
+        "situation": "我從503室的門縫看見走廊有濃煙，房門仍開著一道縫。",
+        "task": "先處理眼前的房門；可以分次描述你的行動。",
+        "required": [
+          "close"
+        ],
+        "optional": [
+          "seal"
+        ],
+        "sources": [
+          "escape",
+          "nfa"
+        ],
+        "observation": "走廊濃煙已經可見，不必再開門測試。房內有完整房門、對外窗、手邊衣物與手機。窗外暫無煙，但外面是五樓高處。",
+        "answer": "這個設定的逃生路線已被濃煙阻斷。重點是隔開火煙並及早讓消防人員知道位置，不是鑽入濃煙或尋找濕毛巾。",
+        "hints": [
+          "先想：眼前哪個開口會讓走廊濃煙進來？",
+          "本情境已看到濃煙，應先關好房門，不要再進入走廊。"
+        ],
+        "choices": [
+          "我把房門關好",
+          "我要開門衝出去",
+          "我躲進浴室"
+        ],
+        "completion": "房門已關好。你仍受困五樓，下一步要讓外界知道你在哪裡。",
+        "available": [
+          "close",
+          "seal",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings",
+          "grip_hot_handle",
+          "delay_before_close",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "avoid_open",
+          "signal_window",
+          "open_window_call",
+          "towel_face"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "onComplete": {
+          "to": "report",
+          "message": "房門關上後，我仍在 A 棟五樓503室，手機還有訊號。"
+        },
+        "effects": {
+          "close": {
+            "setFacts": {
+              "doorClosed": true
+            }
+          }
+        },
+        "experience": {
+          "suggestions": [
+            "我把房門帶上，留在房裡。",
+            "我先看一眼手邊有哪些東西，再決定怎麼處理門口。",
+            "我把房門拉開一點，確認走廊現在看不看得到路。"
+          ],
+          "sensory": [
+            {
+              "id": "看見門縫外的濃煙",
+              "text": "看見門縫外的濃煙"
+            },
+            {
+              "id": "fire_window",
+              "text": "看得見對外窗"
+            },
+            {
+              "id": "摸到手邊的衣物",
+              "text": "摸到手邊的衣物"
+            }
+          ],
+          "focus": "門邊的動靜值得留意。",
+          "rejection": [
+            "房門還留著一道縫，從縫裡看不清走廊。手機還在我手邊。",
+            "我聽見警報從半開的門縫傳進來，手邊還看得見房門和手機。"
+          ]
+        },
+        "decisionPrompt": "門邊現在有什麼需要處理？"
+      },
+      {
+        "id": "report",
+        "title": "讓消防人員找到你",
+        "situation": "房門關上後，我仍在 A 棟五樓503室，手機還有訊號。",
+        "task": "聯絡119，並告知地址、棟別、樓層與房號。可以分次回報。",
+        "required": [
+          "call",
+          "address",
+          "room",
+          "headcount",
+          "smoke_report"
+        ],
+        "optional": [
+          "seal"
+        ],
+        "sources": [
+          "report",
+          "nfa"
+        ],
+        "observation": "手機有訊號；你仍在原房間。位置資料顯示：安學路100號、A棟宿舍、五樓503室。",
+        "answer": "只說『救命』不足以定位。求救需要能找到建築物與受困房間的資訊；不要為找物品而延誤聯絡。",
+        "hints": [
+          "想想接線員需要哪些資訊，才能找到你？",
+          "撥119，說明安學路100號A棟宿舍，五樓503室有人受困。"
+        ],
+        "choices": [
+          "我撥119求救",
+          "我告知地址是安學路100號A棟宿舍",
+          "我回報五樓503室有人受困"
+        ],
+        "completion": "模擬接線員已取得求救與定位資訊，請你保持聯絡。這不表示消防隊已到達。",
+        "available": [
+          "call",
+          "address",
+          "room",
+          "seal",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "avoid_open",
+          "signal_window",
+          "open_window_call",
+          "towel_face",
+          "headcount",
+          "smoke_report",
+          "turn_off_phone"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "onComplete": {
+          "to": "roommate",
+          "message": "我看見小岑把手伸向門邊。她問：「我打開一點看看走廊，好嗎？」"
+        },
+        "experience": {
+          "suggestions": [
+            "我打119，說安學路100號A棟宿舍五樓503室，兩人受困、走廊都是煙。",
+            "我先打119，把地址和棟別說清楚。",
+            "我說是宿舍火災，先關掉手機等定位。"
+          ],
+          "sensory": [
+            {
+              "id": "fire_closed_door",
+              "text": "看見緊閉的房門"
+            },
+            {
+              "id": "fire_phone_signal",
+              "text": "看見手機還有訊號"
+            },
+            {
+              "id": "fire_window",
+              "text": "看得見對外窗"
+            }
+          ],
+          "focus": "接線員需要受困的位置。",
+          "rejection": [
+            "房門已經關上，手機還在我手裡。我還得讓外面的人知道是哪一間。",
+            "我低頭看見手機亮著，門縫外仍看不清走廊。房號就在門邊。"
+          ]
+        },
+        "decisionPrompt": "手機在我手邊，我要怎麼讓外面的人知道這裡的情況？",
+        "effects": {
+          "turn_off_phone": {
+            "kind": "risk",
+            "message": "電話一斷，接線員還沒聽到完整的位置。"
+          }
+        }
+      },
+      {
+        "id": "roommate",
+        "title": "門邊的聲音",
+        "situation": "我看見小岑把手伸向門邊。她問：「我打開一點看看走廊，好嗎？」",
+        "task": "小岑提出這個想法，我怎麼回應？",
+        "decisionPrompt": "小岑提出這個想法，我怎麼回應？",
+        "observation": "我看見小岑把手伸向門邊。她問：「我打開一點看看走廊，好嗎？」",
+        "required": [
+          "skip_roommate"
+        ],
+        "optional": [
+          "avoid_open",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "skip_roommate",
+          "avoid_open",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "hints": [
+          "聽見小岑靠近房門"
+        ],
+        "onComplete": {
+          "to": "window",
+          "message": "我隔著對外窗看見樓下的燈光，沒有看到窗外飄煙。"
+        },
+        "experience": {
+          "suggestions": [
+            "小岑先不要把門打開，聽電話那頭怎麼說。",
+            "我請接線員和小岑說話。",
+            "我同意打開房門確認走廊。"
+          ],
+          "sensory": [
+            {
+              "id": "roommate-31",
+              "text": "聽見小岑靠近房門"
+            }
+          ],
+          "rejection": [
+            "我看見小岑把手伸向門邊。她問：「我打開一點看看走廊，好嗎？」"
+          ],
+          "focus": ""
+        },
+        "onNpcHandled": {
+          "to": "feelings",
+          "message": "我聽見小岑說，她擔心其他同學還在走廊。"
+        },
+        "effects": {
+          "skip_roommate": {
+            "setFacts": {
+              "npcSkipped": true,
+              "delayed": true
+            }
+          }
+        }
+      },
+      {
+        "id": "feelings",
+        "title": "室友的擔憂",
+        "situation": "我聽見小岑說，她擔心其他同學還在走廊。",
+        "task": "我想怎麼回應她？",
+        "decisionPrompt": "我想怎麼回應她？",
+        "observation": "我聽見小岑說，她擔心其他同學還在走廊。",
+        "required": [],
+        "optional": [
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "hints": [
+          "聽見她的聲音變輕"
+        ],
+        "experience": {
+          "suggestions": [
+            "我知道你擔心他們，小岑，我可以留在這裡陪你並向接線員回報。",
+            "我先告訴小岑我在她旁邊。",
+            "小岑，放心，我保證大家都沒事。"
+          ],
+          "sensory": [
+            {
+              "id": "feelings-31",
+              "text": "聽見她的聲音變輕"
+            }
+          ],
+          "rejection": [
+            "我聽見小岑說，她擔心其他同學還在走廊。"
+          ],
+          "focus": ""
+        },
+        "onNpcEmotion": {
+          "to": "window",
+          "message": "我隔著對外窗看見樓下的燈光，沒有看到窗外飄煙。"
+        }
+      },
+      {
+        "id": "window",
+        "title": "窗邊的光",
+        "situation": "我隔著對外窗看見樓下的燈光，沒有看到窗外飄煙。",
+        "task": "我如何利用眼前的窗戶？",
+        "decisionPrompt": "我如何利用眼前的窗戶？",
+        "observation": "我隔著對外窗看見樓下的燈光，沒有看到窗外飄煙。",
+        "required": [
+          "signal_window"
+        ],
+        "optional": [
+          "inspect_window",
+          "open_window_call",
+          "wait",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "signal_window",
+          "inspect_window",
+          "open_window_call",
+          "wait",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "hints": [
+          "看得見窗外的燈光"
+        ],
+        "onComplete": {
+          "to": "smoke_gap",
+          "message": "我聞到門底傳進焦味，手邊有一條布。窗邊比較看得清楚。"
+        },
+        "experience": {
+          "suggestions": [
+            "我到窗邊揮衣服，從房內向外示意。",
+            "我先確認窗外有沒有煙。",
+            "我從五樓窗戶翻爬出去讓人看見。"
+          ],
+          "sensory": [
+            {
+              "id": "window-31",
+              "text": "看得見窗外的燈光"
+            }
+          ],
+          "rejection": [
+            "我隔著對外窗看見樓下的燈光，沒有看到窗外飄煙。"
+          ],
+          "focus": ""
+        },
+        "alternatives": {
+          "signal_window": [
+            "open_window_call"
+          ]
+        }
+      },
+      {
+        "id": "smoke_gap",
+        "title": "門縫的煙",
+        "situation": "我聞到門底傳進焦味，手邊有一條布。窗邊比較看得清楚。",
+        "task": "門邊的變化出現後，我打算做什麼？",
+        "decisionPrompt": "門邊的變化出現後，我打算做什麼？",
+        "observation": "我聞到門底傳進焦味，手邊有一條布。窗邊比較看得清楚。",
+        "required": [
+          "seal"
+        ],
+        "optional": [
+          "limit_smoke",
+          "wait",
+          "towel_face",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "seal",
+          "limit_smoke",
+          "wait",
+          "towel_face",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "hints": [
+          "聞到從門底進來的焦味"
+        ],
+        "onComplete": {
+          "to": "battery",
+          "message": "我看見手機跳出低電量提示，電話那頭仍在確認房內狀況。",
+          "adjust": {
+            "battery": -86
+          }
+        },
+        "experience": {
+          "suggestions": [
+            "我用手邊的布塞住已關好的門底縫。",
+            "我移到屋內煙較少的窗邊，回報接線員。",
+            "我去找濕毛巾再回來處理門縫。"
+          ],
+          "sensory": [
+            {
+              "id": "smoke_gap-31",
+              "text": "聞到從門底進來的焦味"
+            }
+          ],
+          "rejection": [
+            "我聞到門底傳進焦味，手邊有一條布。窗邊比較看得清楚。"
+          ],
+          "focus": ""
+        },
+        "alternatives": {
+          "seal": [
+            "limit_smoke"
+          ]
+        }
+      },
+      {
+        "id": "battery",
+        "title": "亮起的電量圖示",
+        "situation": "我看見手機跳出低電量提示，電話那頭仍在確認房內狀況。",
+        "task": "我怎麼安排手上的手機？",
+        "decisionPrompt": "我怎麼安排手上的手機？",
+        "observation": "我看見手機跳出低電量提示，電話那頭仍在確認房內狀況。",
+        "required": [
+          "hold_line"
+        ],
+        "optional": [
+          "smoke_report",
+          "wait",
+          "turn_off_phone",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "hold_line",
+          "smoke_report",
+          "wait",
+          "turn_off_phone",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "hints": [
+          "看見電池圖示剩一格"
+        ],
+        "onComplete": {
+          "to": "wait",
+          "message": "我聽見消防員喊出503，電話裡請我們留在房內回應。"
+        },
+        "experience": {
+          "suggestions": [
+            "我關閉不用的背景程式，保持通話。",
+            "我先回報走廊濃煙，人在房間出不去。",
+            "我把手機關掉，留電等救援到場。"
+          ],
+          "sensory": [
+            {
+              "id": "battery-31",
+              "text": "看見電池圖示剩一格"
+            }
+          ],
+          "rejection": [
+            "我看見手機跳出低電量提示，電話那頭仍在確認房內狀況。"
+          ],
+          "focus": ""
+        },
+        "effects": {
+          "turn_off_phone": {
+            "kind": "risk",
+            "message": "接線員的聲音中斷；目前仍需要能聯絡外面的手機。"
+          }
+        },
+        "phrasing": [
+          {
+            "pattern": "^(?:手機(?:快)?沒電[，,])?我先關掉(?:不用的)?背景(?:程式|應用)[，,](?:我)?(?:先)?(?:不要|不|別)掛(?:電話|通話)[。！!]?$",
+            "as": "我關掉不用的背景程式並保持通話"
+          }
+        ]
+      },
+      {
+        "id": "wait",
+        "title": "房號被喊到",
+        "situation": "我聽見消防員喊出503，電話裡請我們留在房內回應。",
+        "task": "我現在怎麼配合？",
+        "decisionPrompt": "我現在怎麼配合？",
+        "observation": "我聽見消防員喊出503，電話裡請我們留在房內回應。",
+        "required": [
+          "handoff_fire"
+        ],
+        "optional": [
+          "wait",
+          "contact",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "handoff_fire",
+          "wait",
+          "contact",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "elevator",
+          "jump",
+          "climb_window",
+          "smoke",
+          "bathroom",
+          "open",
+          "rush_hall",
+          "towel",
+          "collect_belongings"
+        ],
+        "hazards": {
+          "elevator": {
+            "terminal": true,
+            "message": "搭電梯",
+            "physicalStatus": "CRITICAL"
+          },
+          "jump": {
+            "terminal": true,
+            "message": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "climb_window": {
+            "terminal": true,
+            "message": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+            "physicalStatus": "CRITICAL"
+          },
+          "smoke": {
+            "terminal": true,
+            "message": "穿越濃煙",
+            "physicalStatus": "CRITICAL"
+          },
+          "bathroom": {
+            "terminal": false,
+            "message": "躲進浴室"
+          },
+          "open": {
+            "terminal": false,
+            "message": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。"
+          },
+          "rush_hall": {
+            "terminal": false,
+            "message": "你嘗試衝向濃煙走廊，系統攔下這個選擇。"
+          },
+          "towel": {
+            "terminal": false,
+            "message": "你打算花時間找濕毛巾，系統攔下這個選擇。"
+          },
+          "collect_belongings": {
+            "terminal": false,
+            "message": "你打算先整理或回拿財物，系統攔下這個選擇。"
+          }
+        },
+        "hints": [
+          "聽見消防員喊出房號"
+        ],
+        "experience": {
+          "suggestions": [
+            "我回應消防員並配合消防人員的指示。",
+            "我先留在房內等待，手機還在手上。",
+            "我跳窗到外面讓消防員找到我。"
+          ],
+          "sensory": [
+            {
+              "id": "wait-31",
+              "text": "聽見消防員喊出房號"
+            }
+          ],
+          "rejection": [
+            "我聽見消防員喊出503，電話裡請我們留在房內回應。"
+          ],
+          "focus": ""
+        },
+        "terminal": {
+          "sessionStatus": "COMPLETED",
+          "completionKind": "SURVIVAL_STABILIZED",
+          "physicalStatus": "WAITING_RESCUE",
+          "message": "你完成本次待救決策練習；模擬到此結束，不代表真實救援已完成。",
+          "rescueHandoff": true
+        }
+      },
+      {
+        "id": "first_aid",
+        "title": "救援接手後",
+        "situation": "我已由救援人員接手。救護人員確認我的手有輕度燒燙傷，身旁有清水和乾淨覆蓋物。",
+        "task": "我會怎麼處理手上的燙傷？",
+        "decisionPrompt": "救護人員詢問燙傷急救的順序，我會怎麼回答？",
+        "required": [
+          "first_aid_burn"
+        ],
+        "optional": [],
+        "available": [
+          "first_aid_burn"
+        ],
+        "hazards": {},
+        "aftercareComplete": true,
+        "experience": {
+          "sensory": [
+            {
+              "id": "care_water",
+              "text": "看見身旁有清水"
+            },
+            {
+              "id": "care_cover",
+              "text": "看到手邊有乾淨覆蓋物"
+            }
+          ],
+          "focus": "我已在救護人員身邊，現在要把處理順序說清楚。",
+          "suggestions": [
+            "我先用流動清水降溫，再依序處理衣物、浸泡、覆蓋和送醫。",
+            "我先用流動清水冷卻，請救護人員接手。",
+            "我打算先蓋住，再處理其他步驟。"
+          ],
+          "rejection": [
+            "救護人員指了指清水和乾淨的覆蓋物，等我說明會先用哪一樣。"
+          ]
+        }
+      }
+    ],
+    "actions": [
+      {
+        "id": "close",
+        "label": "關好房門",
+        "pattern": "關(?:上|閉|好)?(?:房)?門|把(?:房)?門關(?:上|閉|好|緊)?|(?:房)?門(?:關上|關好|關閉|關緊)|(?:把|將)(?:房)?門閉上|把(?:房)?門拉(?:回來|過來)?關(?:好|緊|上)",
+        "effect": "你把房門關好，隔開走廊的熱煙；這不代表危險已經解除。",
+        "sourceIds": [
+          "nfa"
+        ]
+      },
+      {
+        "id": "call",
+        "label": "撥119求救",
+        "pattern": "(?:打|撥)(?:電話)?(?:給)?119|(?:打電話|報案)(?:給)?(?:消防|119)|聯絡消防|向消防報案",
+        "effect": "模擬119接線員已接通，正在確認你的受困位置。",
+        "sourceIds": [
+          "report"
+        ]
+      },
+      {
+        "id": "address",
+        "label": "告知地址與棟別",
+        "pattern": "(?:告訴|告知|說明|回報|報出|提供).*地址.*(?:棟別|[Aa]棟)|安學路100號.*[Aa]棟",
+        "effect": "接線員記下校園地址與A棟宿舍。",
+        "sourceIds": [
+          "report"
+        ]
+      },
+      {
+        "id": "room",
+        "label": "告知樓層與房號",
+        "pattern": "(?:告訴|告知|說明|回報|報出|提供).*(?:樓層.*房號|五樓.*503|5樓.*503)|(?:五樓|5樓).*503",
+        "effect": "接線員記下五樓503室，知道你仍受困房內。",
+        "sourceIds": [
+          "report"
+        ]
+      },
+      {
+        "id": "wait",
+        "label": "留在房內等待救援",
+        "pattern": "等待(?:消防)?救援|留在(?:原地|房內|房間|室內)(?:待救)?|原地待救|等(?:待)?消防(?:人員)?(?:來)?救援",
+        "effect": "你留在已回報的位置等待，不再進入走廊濃煙。",
+        "sourceIds": [
+          "nfa"
+        ]
+      },
+      {
+        "id": "contact",
+        "label": "保持通訊並依消防指示",
+        "pattern": "保持(?:電話)?(?:通訊|聯絡|聯繫)|維持(?:通訊|聯絡)|(?:聽從|依照|遵從|配合|聽)(?:現場)?(?:消防|119|接線員).*(?:指示|指揮)|回報(?:現場|房內|情況|變化)",
+        "effect": "你保持聯絡，準備回報環境變化並依消防人員指示行動。",
+        "sourceIds": [
+          "nfa"
+        ]
+      },
+      {
+        "id": "seal",
+        "label": "使用手邊衣物阻隔門縫",
+        "pattern": "塞(?:住)?門縫|堵(?:住)?(?:門縫|縫隙)|(?:衣物|衣服|布).*(?:塞|堵).*(?:縫)|(?:濕毛巾|毛巾|布).*(?:堵|塞)(?:住)?門口",
+        "effect": "你使用手邊物品阻隔門縫，沒有離開去找水或濕毛巾。這是輔助措施，不取代求救。",
+        "sourceIds": [
+          "nfa",
+          "window-guide"
+        ],
+        "requires": {
+          "facts": {
+            "doorClosed": true
+          }
+        },
+        "blockedMessage": "我把毛巾湊近門口，門扇和門框之間仍張著一截，布料貼不住開口。小岑望向還在進煙的那條縫。",
+        "ruleGrounded": true
+      },
+      {
+        "id": "elevator",
+        "label": "搭電梯",
+        "pattern": "(?:搭|坐|乘)(?:乘)?電梯|坐(?:升降機|電梯)|搭升降機",
+        "fatal": true,
+        "source": "safety",
+        "sourceIds": [
+          "safety"
+        ],
+        "hazardMode": "IMMEDIATE",
+        "consequenceTemplate": "走廊的煙遮住了前方，電梯也可能停駛，我無法確定自己還能離開。",
+        "teaching": "火災時不要搭電梯。若走廊已有濃煙阻斷，本情境應先關門阻煙、打119通報位置並等待救援。"
+      },
+      {
+        "id": "jump",
+        "label": "跳窗",
+        "pattern": "跳窗|跳樓|從(?:窗戶|窗子).*跳",
+        "fatal": true,
+        "source": "safety",
+        "sourceIds": [
+          "safety"
+        ],
+        "consequence": "你嘗試從宿舍窗口跳下，暴露於高處墜落風險。",
+        "teaching": "高處跳下可能重傷；受困時依劇本在房內隔煙並求救。",
+        "examples": [
+          "我從窗戶跳下去"
+        ],
+        "hazardMode": "IMMEDIATE",
+        "consequenceTemplate": "我選擇從宿舍窗戶跳下。窗外離地很高，我可能墜落。"
+      },
+      {
+        "id": "climb_window",
+        "label": "翻爬到窗外",
+        "pattern": "翻(?:出|越)窗|爬出窗|從(?:窗戶|窗子).*(?:翻|爬)",
+        "fatal": true,
+        "source": "safety",
+        "sourceIds": [
+          "safety"
+        ],
+        "consequence": "你嘗試翻爬到窗外，暴露於高處墜落風險。",
+        "teaching": "窗外不是已確認的逃生路線；受困時依劇本隔煙並求救。",
+        "examples": [
+          "我爬出窗戶"
+        ],
+        "hazardMode": "IMMEDIATE",
+        "consequenceTemplate": "我選擇翻到宿舍窗外。窗外沒有已確認能站穩的地方，我可能從高處墜落。"
+      },
+      {
+        "id": "smoke",
+        "label": "穿越濃煙",
+        "pattern": "(?:衝進|穿越|穿過|走進|進入)濃煙",
+        "fatal": true,
+        "source": "escape",
+        "sourceIds": [
+          "escape"
+        ],
+        "hazardMode": "IMMEDIATE",
+        "consequenceTemplate": "煙遮住了前方，我無法確認路線還能不能通行。",
+        "teaching": "不要穿越濃煙。本情境的走廊已遭濃煙阻斷，可回到仍能關門隔煙的位置，打119通報位置。"
+      },
+      {
+        "id": "bathroom",
+        "label": "躲進浴室",
+        "pattern": "(?:躲|逃|跑|進)(?:進|到)?(?:浴室|廁所)",
+        "fatal": false,
+        "source": "nfa",
+        "sourceIds": [
+          "nfa"
+        ],
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "open",
+        "label": "打開房門",
+        "pattern": "(?:打)?開(?:啟|了)?(?:房)?門|把(?:房)?門打開|(?:把|將)(?:房)?門.{0,3}(?:拉開|推開)|(?:拉開|推開)(?:房)?門",
+        "fatal": false,
+        "source": "escape",
+        "sourceIds": [
+          "escape"
+        ],
+        "consequence": "你嘗試打開通向濃煙走廊的房門，系統攔下這個選擇。",
+        "teaching": "開門會破壞隔煙；保持房門關閉。",
+        "examples": [
+          "我要打開房門"
+        ],
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "rush_hall",
+        "label": "衝入走廊",
+        "pattern": "衝出去|跑出去|(?:跑|衝)(?:進|入|向)走廊",
+        "fatal": false,
+        "source": "escape",
+        "sourceIds": [
+          "escape"
+        ],
+        "consequence": "你嘗試衝向濃煙走廊，系統攔下這個選擇。",
+        "teaching": "已有濃煙的走廊不能視為安全通道；依受困流程隔煙求救。",
+        "examples": [
+          "我要衝出去"
+        ],
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "towel",
+        "label": "找濕毛巾",
+        "pattern": "找濕毛巾|去弄濕毛巾",
+        "fatal": false,
+        "source": "nfa",
+        "sourceIds": [
+          "nfa"
+        ],
+        "consequence": "你打算花時間找濕毛巾，系統攔下這個選擇。",
+        "teaching": "尋找濕毛巾會延誤求救；優先依受困流程隔煙求救。",
+        "examples": [
+          "我要去找濕毛巾"
+        ],
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "collect_belongings",
+        "label": "整理或回拿財物",
+        "pattern": "回去拿(?:行李|東西)|收拾行李",
+        "fatal": false,
+        "source": "nfa",
+        "sourceIds": [
+          "nfa"
+        ],
+        "consequence": "你打算先整理或回拿財物，系統攔下這個選擇。",
+        "teaching": "財物不應延誤隔煙與通報。",
+        "examples": [
+          "我要收拾行李"
+        ],
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "grip_hot_handle",
+        "label": "徒手抓住熱門把",
+        "pattern": "(?:我)?(?:用)?(?:裸手|徒手)(?:一直)?(?:抓握|抓住|握住)(?:發熱的|很燙的|熱)?門把",
+        "sourceIds": [
+          "safety"
+        ],
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "delay_before_close",
+        "label": "先等一下",
+        "pattern": "^(?:我)?(?:先等一下|先等一輪|再觀察門外|延後關門)$",
+        "sourceIds": [
+          "safety"
+        ],
+        "repeatable": true,
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "emotion_supportive",
+        "label": "我聽見小岑回了一聲，表示已聽見。",
+        "pattern": "(?:^(?:我聽見你擔心同學我陪你留在這裡|你先念房號我能負責模擬通報|你擔心他們我知道我能代你回報我們的位置)$)|^(?:我知道你擔心他們小岑我可以留在這裡陪你並向接線員回報)$",
+        "sourceIds": [
+          "pfa"
+        ],
+        "emotion": "supportive",
+        "wholeInput": true
+      },
+      {
+        "id": "emotion_unsupportive",
+        "label": "我聽見小岑說，還想確認接下來怎麼聯絡。",
+        "pattern": "(?:^(?:放心我保證大家都會沒事|你怎麼這麼膽小閉嘴|你先把剛才每一聲拍門都講清楚不准漏)$)|^(?:小岑放心我保證大家都沒事)$",
+        "sourceIds": [
+          "pfa"
+        ],
+        "emotion": "unsupportive",
+        "wholeInput": true
+      },
+      {
+        "id": "emotion_neutral",
+        "label": "我聽見小岑的聲音，情況仍未改變。",
+        "pattern": "(?:^(?:我聽到走廊有聲音|我現在在房裡)$)|^(?:我先告訴小岑我在她旁邊)$",
+        "sourceIds": [
+          "pfa"
+        ],
+        "emotion": "neutral",
+        "wholeInput": true
+      },
+      {
+        "id": "avoid_open",
+        "label": "不再拉開房門",
+        "pattern": "(?:我)?(?:選擇|決定|先)?不(?:再)?(?:把房門打開|開門|打開房門|把門拉開)",
+        "sourceIds": [
+          "nfa"
+        ],
+        "effect": "我的手從門把旁收回。門仍開著一道縫，走廊的煙還隔不住。",
+        "ruleGrounded": true
+      },
+      {
+        "id": "signal_window",
+        "label": "在室內靠窗查看或揮衣求援",
+        "pattern": "(?:靠|走到|移到|找(?:到)?)(?:近|向)?(?:對外)?窗(?:邊|戶|旁|台)?(?:看看|查看|揮手|揮衣|求救|打119)?|(?:窗邊|窗口).*(?:揮|求援)",
+        "sourceIds": [
+          "nfa",
+          "window-guide"
+        ],
+        "effect": "我從屋內走到窗邊，窗外目前看不見煙，窗台外是五樓高處。",
+        "ruleGrounded": true
+      },
+      {
+        "id": "open_window_call",
+        "label": "確認窗外可用後在室內開窗呼救",
+        "pattern": "(?:對外)?窗(?:戶|邊)?.{0,5}打開.*(?:呼救|求救)|(?:打開|開)(?:對外)?窗(?:戶)?.{0,5}(?:呼救|求救|喊救命)",
+        "sourceIds": [
+          "nfa",
+          "window-guide"
+        ],
+        "effect": "我留在室內，開窗向外呼救。窗外目前沒有煙，我還需要讓接線員知道受困位置。",
+        "requires": {
+          "facts": {
+            "doorClosed": true,
+            "windowOutsideClear": true
+          }
+        },
+        "blockedMessage": "我還不能把窗打開。門縫和窗外煙況會影響這間房能不能隔煙；我先留在室內，看清門和窗的狀況。",
+        "ruleGrounded": true,
+        "blockedByFact": {
+          "doorClosed": "房門還開著，房間還隔不住走廊的煙。我停在窗邊，看見窗外目前沒有煙。",
+          "windowOutsideClear": "我無法確認窗外有沒有煙，先留下關著的窗。手機仍在我手邊。"
+        }
+      },
+      {
+        "id": "towel_face",
+        "label": "用濕毛巾遮住口鼻（無防煙效果）",
+        "pattern": "(?:濕)?毛巾.{0,8}(?:遮|摀|捂|掩)(?:住)?(?:口鼻|嘴鼻|嘴巴和鼻子)|(?:遮|摀|捂)(?:住)?口鼻.{0,6}(?:濕)?毛巾",
+        "sourceIds": [
+          "wet-towel",
+          "nfa"
+        ],
+        "effect": "濕毛巾貼上口鼻，我仍不能靠它避開煙裡的有毒氣體。小岑拿著手機等我開口。",
+        "ruleGrounded": true
+      },
+      {
+        "id": "first_aid_burn",
+        "label": "完成燒燙傷急救順序",
+        "pattern": "沖.{0,20}脫.{0,20}泡.{0,20}蓋.{0,20}送|(?:沖水|流動清水|降溫|冷卻).{0,20}(?:脫|移除|處理衣物).{0,20}(?:泡|浸).{0,20}(?:蓋|覆蓋).{0,20}(?:送醫|就醫)",
+        "sourceIds": [
+          "burn-aid"
+        ],
+        "effect": "救護人員接過我的手，依序確認冷卻、鬆除未黏住的物品、視情況浸泡、覆蓋和送醫評估。"
+      },
+      {
+        "id": "headcount",
+        "label": "回報兩人在房內",
+        "pattern": "(?:兩|二|2)(?:個)?人|我和小岑都在",
+        "sourceIds": [
+          "report-content"
+        ],
+        "effect": "回報兩人在房內。"
+      },
+      {
+        "id": "smoke_report",
+        "label": "回報濃煙與受困現況",
+        "pattern": "(?:(?:房內|宿舍|房間|503室|我們|走廊).{0,12}(?:受困|有濃煙|煙很大|都是煙)|(?:濃煙|煙很大|都是煙).{0,16}(?:困住|受困|出不去)|(?:受困|出不去).{0,16}(?:濃煙|煙很大|都是煙))",
+        "sourceIds": [
+          "report-content"
+        ],
+        "effect": "回報濃煙與受困現況。"
+      },
+      {
+        "id": "skip_roommate",
+        "label": "請接線員對室友喊話",
+        "pattern": "(?:請|讓).{0,3}接線員.{0,12}(?:小岑|室友)|我只顧自己",
+        "sourceIds": [
+          "nfa"
+        ],
+        "effect": "請接線員對室友喊話。"
+      },
+      {
+        "id": "inspect_window",
+        "label": "查看窗外煙況",
+        "pattern": "(?:看|確認|檢查).{0,6}窗外.{0,6}(?:煙|情況)",
+        "sourceIds": [
+          "window-guide"
+        ],
+        "effect": "查看窗外煙況。"
+      },
+      {
+        "id": "limit_smoke",
+        "label": "移到房內少煙處並回報",
+        "pattern": "(?:往|移到|退到|靠近|挪到).{0,12}(?:煙少|煙比較少|煙較少|離門遠|離門較遠|窗邊).{0,12}(?:告訴|回報|通報|跟接線員說)",
+        "sourceIds": [
+          "nfa"
+        ],
+        "effect": "移到房內少煙處並回報。"
+      },
+      {
+        "id": "hold_line",
+        "label": "保存電力、保持聯絡",
+        "pattern": "(?:保持|維持).{0,8}(?:通話|通訊|聯絡)|(?:開|切換|啟用).{0,4}省電|(?:關閉|關掉).{0,8}(?:不用的|背景).{0,4}(?:程式|應用)|(?:不要掛|不掛|別掛).{0,4}(?:電話|通話)",
+        "sourceIds": [
+          "report-content"
+        ],
+        "effect": "保存電力、保持聯絡。"
+      },
+      {
+        "id": "turn_off_phone",
+        "label": "關掉手機",
+        "pattern": "(?:關掉|關閉|關掉電源).{0,4}(?:手機|電話)|手機關機|把(?:我的)?(?:手機|電話)(?:關上|關掉|關閉)",
+        "sourceIds": [
+          "report-content"
+        ],
+        "effect": "關掉手機。"
+      },
+      {
+        "id": "handoff_fire",
+        "label": "回應位置並依消防員指示",
+        "pattern": "(?:照|依照|聽從|配合|依).{0,6}(?:消防員|消防人員|消防隊).{0,5}(?:指示|指揮|引導)|(?:回應|回答).{0,5}(?:消防員|消防人員|房號)|(?:消防員|消防人員).{0,6}(?:叫我|叫到|喊).{0,8}(?:回應|回答|回一聲)",
+        "sourceIds": [
+          "nfa",
+          "report-content"
+        ],
+        "effect": "回應位置並依消防員指示。"
+      }
+    ],
+    "sources": [
+      {
+        "id": "safety",
+        "title": "臺北市消防局：火災發生時之逃生狀況及方法（電梯、濃煙與跳樓禁忌）",
+        "url": "https://www.119.gov.taipei/News_Content.aspx?n=6EEFD6ACA51B8E33&s=6FB1F286840AC217&sms=87415A8B9CE81B16",
+        "checked": "2026-09-12",
+        "agency": "臺北市政府消防局"
+      },
+      {
+        "id": "escape",
+        "title": "臺北市消防局防災科學教育館：逃生情境模擬",
+        "url": "https://fsm.119.gov.taipei/w/fsm119/Fire_21103023325036374",
+        "checked": "2026-09-12",
+        "agency": "臺北市政府消防局"
+      },
+      {
+        "id": "report",
+        "title": "臺北市消防局防災科學教育館：報案時機",
+        "url": "https://fsm.119.gov.taipei/w/fsm119/Fire_21103023504653530",
+        "checked": "2026-09-12",
+        "agency": "臺北市政府消防局"
+      },
+      {
+        "id": "nfa",
+        "title": "消防署：火災不可躲廁所，受困請關門、靠窗打119求救",
+        "url": "https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113",
+        "checked": "2026-09-12",
+        "agency": "內政部消防署"
+      },
+      {
+        "id": "window-guide",
+        "title": "火場受困與開窗條件",
+        "url": "https://www.ttfd.gov.tw/userUpload/176/208/a1.pdf",
+        "agency": "臺東縣消防局",
+        "checked": "2026-11-21"
+      },
+      {
+        "id": "wet-towel",
+        "title": "濕毛巾無法過濾火場毒氣",
+        "url": "https://www.epb.taichung.gov.tw/3178451/post",
+        "agency": "臺中市政府環境保護局（資料來自消防防災館）",
+        "checked": "2026-11-21"
+      },
+      {
+        "id": "burn-aid",
+        "title": "防災手冊的燙傷急救",
+        "url": "https://www.ttfd.gov.tw/userUpload/294/607/%E8%87%BA%E6%9D%B1%E7%B8%A3%E9%98%B2%E7%81%BD%E6%89%8B%E5%86%8A%28%E5%85%92%E7%AB%A5%E7%89%88%29.pdf",
+        "agency": "臺東縣消防局",
+        "checked": "2026-11-21"
+      },
+      {
+        "id": "report-content",
+        "title": "臺北市消防局：119 通報資訊",
+        "agency": "臺北市政府消防局",
+        "url": "https://www.119.gov.taipei/News_Content.aspx?n=0EDB9C505FE8B199&s=524EE8B46A93F890&sms=18AF49168D1E8B97"
+      },
+      {
+        "id": "pfa",
+        "title": "WHO 心理急救指南",
+        "agency": "世界衛生組織",
+        "url": "https://www.who.int/publications/i/item/9789241548205"
+      }
+    ],
+    "onlineExperience": {
+      "questions": [
+        {
+          "id": "battery31",
+          "pattern": "電量|省電|手機快沒電",
+          "nodes": [
+            "battery"
+          ],
+          "answer": "手機顯示電量低，接線員還在線；讓電話保持可用。",
+          "sourceIds": [
+            "report-content"
+          ]
+        },
+        {
+          "id": "burn_first_aid",
+          "pattern": "燙傷|沖脫|燒傷|急救",
+          "nodes": [
+            "first_aid"
+          ],
+          "answer": "先冷卻，依序沖、脫、泡、蓋、送。衣物若黏住，不要強行撕除；由救護人員接手。",
+          "sourceIds": [
+            "burn-aid"
+          ]
+        },
+        {
+          "id": "call_possible",
+          "pattern": "(?:打|撥|接通).{0,6}119.{0,14}(?:來得及|可以|來不來得及|行不行)|(?:可以|能不能|來得及).{0,8}(?:打|撥).{0,6}119",
+          "sourceIds": [
+            "report",
+            "nfa"
+          ],
+          "variants": [
+            {
+              "whenActions": [
+                "call"
+              ],
+              "answer": "119已接通，電話先別掛；還有沒說的位置就接著告訴接線員。"
+            }
+          ],
+          "answer": "手機現在還能用，現在就能打119。接通後說明地址、棟別、樓層和房號。"
+        },
+        {
+          "id": "report_status",
+          "pattern": "(?:通報|報案|位置|房號|地址|119).{0,9}(?:完成|好了|收到|了沒|成功|了嗎)|(?:有沒有|已經|還沒|還缺).{0,8}(?:通報|報案|房號|地址|打119)|(?:還要|還需要|再|重複).{0,16}(?:說|報|告訴).{0,9}(?:位置|房號|地址)",
+          "sourceIds": [
+            "report"
+          ],
+          "variants": [
+            {
+              "whenActions": [
+                "call",
+                "address",
+                "room"
+              ],
+              "answer": "我們已接通119，地址、棟別、樓層和房號都報過了。"
+            },
+            {
+              "whenActions": [
+                "call",
+                "address"
+              ],
+              "withoutActions": [
+                "room"
+              ],
+              "answer": "地址和棟別已報過了，接線員還在等樓層和房號。"
+            },
+            {
+              "whenActions": [
+                "call",
+                "room"
+              ],
+              "withoutActions": [
+                "address"
+              ],
+              "answer": "樓層和房號已報過了，接線員還在等地址和棟別。"
+            },
+            {
+              "whenActions": [
+                "call"
+              ],
+              "answer": "119已接通，接線員還需要知道地址、棟別、樓層和房號。"
+            }
+          ],
+          "answer": "手機在手邊，還沒有接通119。"
+        },
+        {
+          "id": "where_to_wait",
+          "pattern": "去哪|往哪裡|換地方|留在房|待在這",
+          "sourceIds": [
+            "nfa",
+            "report"
+          ],
+          "variants": [
+            {
+              "whenActions": [
+                "call",
+                "address",
+                "room"
+              ],
+              "whenFacts": {
+                "doorClosed": true,
+                "hallSmoke": true
+              },
+              "answer": "我們已收到房號；走廊還有濃煙，留在這間房、保持通話。"
+            },
+            {
+              "whenFacts": {
+                "doorClosed": false,
+                "hallSmoke": true
+              },
+              "answer": "我看見走廊仍有濃煙，房門也還沒關。先隔開走廊的煙，讓外面知道我們在哪裡。"
+            },
+            {
+              "whenFacts": {
+                "doorClosed": true,
+                "hallSmoke": true
+              },
+              "answer": "走廊還是看不清，先留在關好門的房間，用手機回報位置。"
+            }
+          ]
+        },
+        {
+          "id": "window_safety",
+          "pattern": "窗戶|窗子|開窗|對外窗|窗外",
+          "sourceIds": [
+            "nfa",
+            "window-guide"
+          ],
+          "variants": [
+            {
+              "whenFacts": {
+                "windowOutsideClear": false
+              },
+              "answer": "我看見窗外有煙，窗戶保持關閉。還能用手機聯絡外面。"
+            },
+            {
+              "whenFacts": {
+                "windowOutsideClear": true,
+                "doorClosed": false
+              },
+              "answer": "窗外現在看不見煙，但房門還留著一道縫。先隔開走廊的煙，再考慮開窗求救。"
+            },
+            {
+              "whenFacts": {
+                "windowOutsideClear": true,
+                "doorClosed": true
+              },
+              "answer": "窗外現在看不見煙，房門也關好了。可以從房內開窗向外呼救，別翻出窗外。"
+            },
+            {
+              "whenFacts": {
+                "windowOutsideClear": true
+              },
+              "answer": "我現在看不見窗外有煙，不過還看不清房門是否關好，暫時別開窗。"
+            }
+          ],
+          "answer": "從這裡看不清楚窗外，先不要開窗。"
+        },
+        {
+          "id": "door_state",
+          "pattern": "(?:房門|門縫|那扇門|門).{0,9}(?:關了|關好|關上|關起來|還開|半開|開著)|(?:關好|關上|關了).{0,8}(?:房門|門)嗎",
+          "sourceIds": [
+            "nfa",
+            "safety"
+          ],
+          "variants": [
+            {
+              "whenFacts": {
+                "doorClosed": true
+              },
+              "answer": "房門已經關好，門扇現在貼著門框。"
+            },
+            {
+              "whenFacts": {
+                "doorClosed": false
+              },
+              "answer": "房門還半開，我看見門扇和門框之間留著一道縫。"
+            }
+          ],
+          "answer": "從這個角度，我看不清房門有沒有關上。"
+        },
+        {
+          "id": "smoky_stairs",
+          "pattern": "樓梯|下樓",
+          "answer": "通往樓梯的走廊有濃煙，沒有確認可以走，不要穿越濃煙。",
+          "sourceIds": [
+            "nfa",
+            "safety"
+          ]
+        },
+        {
+          "id": "door",
+          "pattern": "(?:開|推|拉).{0,4}(?:房)?門|看.{0,5}(?:走廊|門外)|(?:走廊|門外).{0,6}(?:有煙|有沒有煙|濃煙|煙還在)",
+          "answer": "房門外是濃煙，走廊沒有確認可通行。開門會失去房門對煙的阻隔。",
+          "sourceIds": [
+            "nfa",
+            "safety"
+          ],
+          "variants": [
+            {
+              "whenFacts": {
+                "doorClosed": true,
+                "hallSmoke": true
+              },
+              "answer": "房門已關，門外仍有濃煙。開門會讓走廊的煙進來。"
+            },
+            {
+              "whenFacts": {
+                "doorClosed": false,
+                "hallSmoke": true
+              },
+              "answer": "房門還開著一道縫，門外都是濃煙。再拉開，煙就更容易進來。"
+            }
+          ]
+        },
+        {
+          "id": "lift",
+          "pattern": "電梯|升降機",
+          "answer": "這個情境沒有可確認安全的電梯動線，搭電梯可能受困。",
+          "sourceIds": [
+            "safety"
+          ]
+        },
+        {
+          "id": "report",
+          "pattern": "119|地址|房號|求救|通報",
+          "answer": "演練中手機可用。模擬通報的位置是安學路100號、A棟宿舍五樓503室。",
+          "sourceIds": [
+            "report"
+          ]
+        },
+        {
+          "id": "wait",
+          "pattern": "等待|等.{0,4}救|窗外",
+          "answer": "房間仍可與外界聯絡，窗外是五樓高處，走廊仍有濃煙。",
+          "sourceIds": [
+            "safety",
+            "report"
+          ]
+        }
+      ],
+      "beats": [
+        "我把視線移回門邊。",
+        "我轉向手機的位置。",
+        "我把注意力移到房外的動靜。",
+        "我留心房間和走廊之間的阻隔。",
+        "我轉向房內可以聯絡外界的位置。"
+      ],
+      "actionBeats": {
+        "close": "我聽見門板扣上，房間與走廊之間多了一道阻隔。",
+        "seal": "我把手移離已塞好的縫隙，房門保持關閉。",
+        "call": "我從通訊端聽見模擬接線員的聲音。",
+        "address": "我把棟別報給接線員，聽見對方繼續核對所在樓層。",
+        "room": "我說完房間的位置，聽見對方把它記下。",
+        "wait": "我留在已通報的房間裡，把通訊設備放在手邊。",
+        "avoid_open": "我的手從門把旁收回。門仍開著一道縫，走廊的煙還隔不住。",
+        "signal_window": "我從屋內走到窗邊，窗外目前看不見煙，窗台外是五樓高處。",
+        "open_window_call": "我留在室內，開窗向外呼救。窗外目前沒有煙，我還需要讓接線員知道受困位置。",
+        "towel_face": "濕毛巾貼上口鼻，我仍不能靠它避開煙裡的有毒氣體。小岑拿著手機等我開口。",
+        "first_aid_burn": "救護人員接過我的手，依序確認冷卻、鬆除未黏住的物品、視情況浸泡、覆蓋和送醫評估。"
+      },
+      "questionSpeaker": {
+        "isolate": "小岑",
+        "report": "接線員",
+        "wait": "接線員",
+        "first_aid": "救護人員",
+        "roommate": "接線員",
+        "feelings": "小岑",
+        "window": "接線員",
+        "smoke_gap": "接線員",
+        "battery": "接線員"
+      },
+      "unknownAnswer": "我留在房內，從這裡看不清外頭的情況。"
+    },
+    "initialState": {
+      "physicalStatus": "EXPOSED",
+      "resources": {
+        "battery": 100
+      },
+      "facts": {
+        "doorClosed": false,
+        "playerInside": true,
+        "hallSmoke": true,
+        "hotHandle": true,
+        "windowOutsideClear": true
+      },
+      "exposure": {
+        "heat": 0,
+        "smoke": 0
+      }
+    }
   }
 }

@@ -135,6 +135,34 @@ class DiagnosisRegressionTest {
         assertEquals("SAFE_RESCUE", actions.fold(handled) { state, text -> runtime.step(state, text).state }.endingType)
     }
 
+    @Test fun formalPracticeAdvancesBothScenarioGraphs() {
+        val fire = ScenarioRuntimeV3(spec("v3/fire-dorm.json"), formal = true)
+        val school = ScenarioRuntimeV3(spec("v3/earthquake-school.json"), formal = true)
+        val exercises = listOf(
+            Triple(fire, "SAFE_RESCUE", listOf(
+                "我關門", "我打119，安學路100號A棟宿舍五樓503室，兩人受困，走廊都是煙",
+                "小岑不要把門打開", "我聽見你擔心同學我陪你留在這裡", "我到窗邊揮衣", "我塞住門縫",
+                "手機快沒電，我先關掉不用的背景程式，不要掛電話", "我依消防員指示",
+            )),
+            Triple(school, "SELF_EVACUATION", listOf(
+                "我趴低鑽到桌底下，抓著桌腳不放", "小維不要往外跑", "我知道你擔心家人等老師確認動線後我陪你聽指示",
+                "我等待地震停止", "我重新趴下躲到桌下抓穩", "我告訴老師同學腳踝受傷", "我依照老師走樓梯",
+                "我回報二年二班在操場有一位同學腳踝受傷", "我留在集合點等消息",
+            )),
+        )
+        for ((runtime, ending, actions) in exercises) {
+            val nodes = mutableListOf<String>()
+            val final = actions.fold(runtime.create(firstAidEnabled = true)) { state, text ->
+                nodes += state.node
+                runtime.step(state, text).state
+            }
+            assertEquals("3.2.0", final.version)
+            assertEquals(actions.size, nodes.distinct().size)
+            assertEquals(ending, final.endingType)
+            assertEquals("NONE", final.injuryLevel)
+        }
+    }
+
     @Test fun researchPrivacyRemovesCredentialsAndPreservesOnlyOptedInText() {
         val key = listOf("sk", "test", "research_dummy_00000000000").joinToString("-")
         val record = JSONObject().put("input_text", "原文 $key 192.0.2.1 [2001:db8::98]")

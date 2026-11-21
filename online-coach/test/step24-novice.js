@@ -5,11 +5,11 @@ const readline = require('node:readline');
 const {ConversationCoach,createOpenAIProvider} = require('../coach');
 const {createSessionWriter} = require('../session-log');
 
-async function main(output, scenarioByRun = {}) {
+async function main(output, scenarioByRun = {}, formal = false) {
   if (!output || !process.env.OPENAI_API_KEY) throw new Error('請提供輸出路徑與環境金鑰。');
   const fd = fs.openSync(output,'wx');
   const coach = new ConversationCoach(createOpenAIProvider({apiKey:process.env.OPENAI_API_KEY,model:process.env.OPENAI_MODEL}),
-    {maxCalls:Object.keys(scenarioByRun).length ? 100 : 150,record:createSessionWriter()});
+    {formal,maxCalls:formal || !Object.keys(scenarioByRun).length ? 150 : 100,record:createSessionWriter()});
   const sessions = new Map();
   const publish = data=>{const line=JSON.stringify(data);fs.writeSync(fd,line+'\n');console.log(line);};
   const input = readline.createInterface({input:process.stdin,terminal:false});
@@ -39,5 +39,7 @@ async function main(output, scenarioByRun = {}) {
     }
   } finally {publish({calls:coach.calls,model:coach.provider.model});fs.closeSync(fd);}
 }
-const scenarios = process.argv[3] === 'step25' ? {A:'drill_fire_dorm',B:'drill_fire_dorm',C:'earthquake_school'} : undefined;
-main(process.argv[2], scenarios).catch(error=>{console.error(error.code || error.message);process.exitCode=1;});
+const formal = process.argv[3] === 'step31';
+const scenarios = formal ? {A:'drill_fire_dorm',B:'drill_fire_dorm',C:'earthquake_school',D:'earthquake_school'} :
+  process.argv[3] === 'step25' ? {A:'drill_fire_dorm',B:'drill_fire_dorm',C:'earthquake_school'} : undefined;
+main(process.argv[2], scenarios, formal).catch(error=>{console.error(error.code || error.message);process.exitCode=1;});

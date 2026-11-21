@@ -4,6 +4,11 @@
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
+  function formalSpec(spec) {
+    if (!spec.formal) return spec;
+    const {formal,...baseline}=spec;
+    return {...baseline,...formal,formalPractice:true};
+  }
 
   function create(spec, {onlineExperience = false} = {}) {
     return {
@@ -88,7 +93,9 @@
   }
 
   function finish(spec, state, failed = false) {
-    const rescued = currentNode(spec,state).terminal?.rescueHandoff === true;
+    const terminal = currentNode(spec,state).terminal;
+    const rescued = terminal?.rescueHandoff === true || terminal?.unhandledHandoff === true && (!state.npc?.handled || state.facts.npcSkipped);
+    if (terminal?.unhandledHandoff && rescued) state.facts.delayed = true;
     if (!failed && state.physicalStatus === 'WAITING_RESCUE' && !rescued) return null;
     state.endingType = failed ? 'CRITICAL_FAILURE' : rescued
       ? (state.facts.delayed ? 'DELAYED_RESCUE' : 'SAFE_RESCUE') : 'SELF_EVACUATION';
@@ -146,7 +153,9 @@
       if (used < node.hints.length) state.hints.push({ node: node.id, level: used + 1 });
       return result('hint', node.hints[Math.min(used, node.hints.length - 1)]);
     }
-    const input = String(text || '').trim();
+    const rawInput = String(text || '').trim();
+    const phrasing = node.phrasing?.find(item=>new RegExp(item.pattern).test(rawInput));
+    const input = phrasing?.as || rawInput;
     if (!input) return result('clarify', '請描述你現在實際要採取的行動。');
     const language = typeof module === 'undefined' ? root.DrillLanguage : require('./drill-language');
     const nonAction = language.nonAction(spec, input, intent, node);
@@ -230,7 +239,8 @@
       return result('risk', riskEffect.message + (action?.teaching ? ' '+action.teaching : ''));
     }
 
-    const missing = node.required.filter(id => !state.accepted.includes(id));
+    if (node.onNpcEmotion) return result('partial', fresh.at(-1).effect);
+    const missing = node.required.filter(id => ![id,...(node.alternatives?.[id] || [])].some(choice=>state.accepted.includes(choice)));
     if (missing.length) {
       return result('partial', `已記住：${fresh.map(action => action.label).join('、')}。本階段仍有必要行動尚未完成。`);
     }
@@ -241,7 +251,7 @@
     }
 
     if (node.terminal) {
-      const ignored = state.onlineExperience && !state.npc?.handled && spec.npc?.online?.unhandledRescue;
+      const ignored = state.onlineExperience && (!state.npc?.handled || state.facts.npcSkipped) && spec.npc?.online?.unhandledRescue;
       if (ignored && node.terminal.rescueHandoff) {
         state.facts.delayed = true;
         state.events.push({node:state.node,kind:'npc_proposal',eventId:'npc-unhandled-rescue',message:ignored.reminder});
@@ -293,9 +303,25 @@
       const npc = {...state.npc,handled:true,proposal:null};
       const handled = {node:state.node,kind:'npc_handled',message:spec.npc.emotionResponses.handled};
       const emotion = {node:state.node,kind:'npc_emotion_prompt',message:spec.npc.online.emotion};
-      return {...result,kind:['clarify','question'].includes(result.kind) ? 'safe' : result.kind,state:{...state,npc,events:[...state.events,handled,emotion]}};
+      return advanceConversation(spec,{...result,kind:['clarify','question'].includes(result.kind) ? 'safe' : result.kind,state:{...state,npc,events:[...state.events,handled,emotion]}});
     }
-    return result;
+    return advanceConversation(spec,result);
+  }
+
+  function advanceConversation(spec,result) {
+    if (!spec.formalPractice || result.state.sessionStatus!=='ACTIVE' || ['risk','blocked','question'].includes(result.kind)) return result;
+    const state=clone(result.state);
+    let message=null;
+    for (let i=0;i<2;i++) {
+      const node=currentNode(spec,state);
+      const next=(state.npc.handled && node.onNpcHandled) || (state.npc.emotion && node.onNpcEmotion);
+      if (!next) break;
+      applyPatch(state,next);
+      state.node=next.to;state.accepted=[];state.nodeTurn=0;
+      state.events.push({node:node.id,kind:'milestone',to:next.to});
+      message=next.message;
+    }
+    return message ? {...result,state,kind:'transition',message} : result;
   }
 
   function applyEmotion(spec, before, category) {
@@ -327,8 +353,8 @@
     const completedIds = [...new Set(state.events.filter(event => event.kind === 'action').map(event => event.action))];
     const hazardIds = [...new Set(state.events.filter(event => event.kind === 'hazard').map(event => event.action))];
     const requiredIds = [...new Set(spec.nodes
-      .filter(node => !node.aftercareComplete || state.node === node.id)
-      .flatMap(node => node.required || []))];
+      .filter(node => (!node.aftercareComplete || state.node === node.id) && !node.onNpcHandled)
+      .flatMap(node => (node.required || []).filter(id=>!(node.alternatives?.[id] || []).some(choice=>completedIds.includes(choice)))))];
     const missingIds = requiredIds.filter(id => !completedIds.includes(id));
     const list = values => values.length ? values.map(value => `- ${value}`).join('\n') : '- 無';
     return [
@@ -406,7 +432,7 @@ ${list(state.injuryCauses.map(c => `${c.node}／${actionById[c.action]} · ${c.e
       const settle = (result,text) => {
         if (!state.onlineExperience) return events().advance(spec,result,text).state;
         const resolved = settleOnline(spec,state,result,input,decision.intent);
-        if (decision.emotion) return applyEmotion(spec,resolved.state,decision.emotion.category);
+        if (decision.emotion) return advanceConversation(spec,{...resolved,state:applyEmotion(spec,resolved.state,decision.emotion.category)}).state;
         return events().advance(spec,resolved,text,state).state;
       };
       if (decision.actionBatches?.length) {
@@ -424,7 +450,7 @@ ${list(state.injuryCauses.map(c => `${c.node}／${actionById[c.action]} · ${c.e
   }
 
   root.ScenarioEngineV3 = {
-    create, rawStep:step, review, validateProposal, adoptedActionIds, replayDecisions, applyEmotion, settleOnline, recognizesNpcResponse,
+    formalSpec, create, rawStep:step, review, validateProposal, adoptedActionIds, replayDecisions, applyEmotion, settleOnline, recognizesNpcResponse,
     step:(spec,state,text,intent,resolved)=> {
       const result = step(spec,state,text,intent,resolved);
       return events().advance(spec,state.onlineExperience ? settleOnline(spec,state,result,text,intent || 'action') : result,text,state);

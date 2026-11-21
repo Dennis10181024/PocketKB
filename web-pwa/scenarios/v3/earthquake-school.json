@@ -581,5 +581,1096 @@
       "evacuate": "老師",
       "injury_handoff": "老師"
     }
+  },
+  "formal": {
+    "version": "3.2.0",
+    "nodes": [
+      {
+        "id": "shaking",
+        "title": "強震當下",
+        "situation": "搖晃仍在持續，立刻移動會暴露於掉落物與跌倒風險。",
+        "task": "先保護頭頸並等待主要搖晃停止。",
+        "required": [
+          "drop_cover_hold"
+        ],
+        "optional": [],
+        "available": [
+          "drop_cover_hold",
+          "wait_stop",
+          "run_elevator",
+          "run_outside",
+          "jump_window",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "padding_head"
+        ],
+        "hazards": {
+          "run_elevator": {
+            "terminal": true,
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "message": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。"
+          },
+          "jump_window": {
+            "message": "三樓窗戶不是疏散路線。跳下會暴露於高處墜落風險。",
+            "terminal": true,
+            "physicalStatus": "CRITICAL"
+          }
+        },
+        "onComplete": {
+          "to": "classmate",
+          "message": "我還感覺得到地板在晃。小維撐住桌緣喊：「我想現在跑出去！」"
+        },
+        "experience": {
+          "suggestions": [
+            "我趴下躲到桌下護住頭頸，抓住桌腳，等搖晃停了再動。",
+            "我先鑽到桌下抓住桌腳，等老師說話。",
+            "我趁還能走的時候先跑到戶外空地。"
+          ],
+          "sensory": [
+            {
+              "id": "school_shaking",
+              "text": "感覺教室仍在搖晃"
+            },
+            {
+              "id": "看得見近處的課桌",
+              "text": "看得見近處的課桌"
+            }
+          ],
+          "focus": "目前仍在搖晃階段，留意自己和同伴的位置。",
+          "rejection": [
+            "我的鞋底還感覺得到地板在晃，桌腳也在動。小維的視線還停在門口。",
+            "我聽見桌椅碰撞的聲音，老師還在教室，門外也還沒有疏散的訊號。"
+          ]
+        },
+        "decisionPrompt": "教室開始晃動，我眼前要做什麼？",
+        "phrasing": [
+          {
+            "pattern": "^我(?:先)?(?:趴低|趴下|蹲低)(?:鑽到|躲到)(?:桌底下|桌子底下|桌下)[，,](?:雙手|用手)?(?:抓著|抓住|握住)桌腳不放[。！!]?$",
+            "as": "我趴下躲到桌下抓穩桌腳"
+          },
+          {
+            "pattern": "^我(?:先)?用(?:手邊)?書包(?:擋住|護住)頭(?:部)?[，,](?:蹲低|趴低)(?:不要|不)站(?:著|起來)[。！!]?$",
+            "as": "我用書包護住頭部"
+          }
+        ]
+      },
+      {
+        "id": "classmate",
+        "title": "桌子另一側",
+        "situation": "我還感覺得到地板在晃。小維撐住桌緣喊：「我想現在跑出去！」",
+        "task": "小維喊了這句話，我怎麼回應？",
+        "decisionPrompt": "小維喊了這句話，我怎麼回應？",
+        "observation": "我還感覺得到地板在晃。小維撐住桌緣喊：「我想現在跑出去！」",
+        "required": [
+          "leave_teacher"
+        ],
+        "optional": [
+          "padding_head",
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "leave_teacher",
+          "padding_head",
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "run_elevator",
+          "jump_window"
+        ],
+        "hazards": {
+          "run_elevator": {
+            "terminal": true,
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "message": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。"
+          },
+          "jump_window": {
+            "message": "三樓窗戶不是疏散路線。跳下會暴露於高處墜落風險。",
+            "terminal": true,
+            "physicalStatus": "CRITICAL"
+          }
+        },
+        "hints": [
+          "聽見小維在桌子另一側喊話"
+        ],
+        "onComplete": {
+          "to": "main_stop",
+          "message": "桌腳的聲音變小，但吊燈仍在動。老師還沒叫大家起身。"
+        },
+        "experience": {
+          "suggestions": [
+            "小維不要往外跑，先在那邊穩住。",
+            "我請老師先攔小維，自己留在桌下。",
+            "我趁搖晃中跑到戶外叫其他人。"
+          ],
+          "sensory": [
+            {
+              "id": "classmate-31",
+              "text": "聽見小維在桌子另一側喊話"
+            }
+          ],
+          "rejection": [
+            "我還感覺得到地板在晃。小維撐住桌緣喊：「我想現在跑出去！」"
+          ],
+          "focus": ""
+        },
+        "onNpcHandled": {
+          "to": "worry",
+          "message": "我聽見小維顫著聲說，他擔心家人還沒收到消息。"
+        },
+        "effects": {
+          "leave_teacher": {
+            "setFacts": {
+              "npcSkipped": true
+            }
+          }
+        }
+      },
+      {
+        "id": "worry",
+        "title": "隔著課桌",
+        "situation": "我聽見小維顫著聲說，他擔心家人還沒收到消息。",
+        "task": "我怎麼回應他？",
+        "decisionPrompt": "我怎麼回應他？",
+        "observation": "我聽見小維顫著聲說，他擔心家人還沒收到消息。",
+        "required": [],
+        "optional": [
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "run_elevator",
+          "jump_window"
+        ],
+        "hazards": {
+          "run_elevator": {
+            "terminal": true,
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "message": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。"
+          },
+          "jump_window": {
+            "message": "三樓窗戶不是疏散路線。跳下會暴露於高處墜落風險。",
+            "terminal": true,
+            "physicalStatus": "CRITICAL"
+          }
+        },
+        "hints": [
+          "聽見小維說話的聲音發緊"
+        ],
+        "experience": {
+          "suggestions": [
+            "小維，我知道你擔心家人，等老師確認動線後我陪你聽指示。",
+            "我先用聲音回應小維，讓他知道我在這裡。",
+            "小維，我保證你家人都不會有事。"
+          ],
+          "sensory": [
+            {
+              "id": "worry-31",
+              "text": "聽見小維說話的聲音發緊"
+            }
+          ],
+          "rejection": [
+            "我聽見小維顫著聲說，他擔心家人還沒收到消息。"
+          ],
+          "focus": ""
+        },
+        "onNpcEmotion": {
+          "to": "main_stop",
+          "message": "桌腳的聲音變小，但吊燈仍在動。老師還沒叫大家起身。"
+        }
+      },
+      {
+        "id": "main_stop",
+        "title": "晃動減弱",
+        "situation": "桌腳的聲音變小，但吊燈仍在動。老師還沒叫大家起身。",
+        "task": "我現在打算怎麼做？",
+        "decisionPrompt": "我現在打算怎麼做？",
+        "observation": "桌腳的聲音變小，但吊燈仍在動。老師還沒叫大家起身。",
+        "required": [
+          "wait_stop"
+        ],
+        "optional": [
+          "padding_head",
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "wait_stop",
+          "padding_head",
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "run_elevator",
+          "jump_window"
+        ],
+        "hazards": {
+          "run_elevator": {
+            "terminal": true,
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "message": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。"
+          },
+          "jump_window": {
+            "message": "三樓窗戶不是疏散路線。跳下會暴露於高處墜落風險。",
+            "terminal": true,
+            "physicalStatus": "CRITICAL"
+          }
+        },
+        "hints": [
+          "聽見桌腳碰撞"
+        ],
+        "onComplete": {
+          "to": "aftershock",
+          "message": "我正準備起身，桌腳又敲了一下地板，老師示意先停住。"
+        },
+        "experience": {
+          "suggestions": [
+            "我留在掩護處等搖晃停止。",
+            "我先護住頭頸，聽老師接著說什麼。",
+            "我趁地震還在搖晃，先跑到戶外。"
+          ],
+          "sensory": [
+            {
+              "id": "main_stop-31",
+              "text": "聽見桌腳碰撞"
+            }
+          ],
+          "rejection": [
+            "桌腳的聲音變小，但吊燈仍在動。老師還沒叫大家起身。"
+          ],
+          "focus": ""
+        }
+      },
+      {
+        "id": "aftershock",
+        "title": "又一次晃動",
+        "situation": "我正準備起身，桌腳又敲了一下地板，老師示意先停住。",
+        "task": "這一陣動靜改變了什麼？",
+        "decisionPrompt": "這一陣動靜改變了什麼？",
+        "observation": "我正準備起身，桌腳又敲了一下地板，老師示意先停住。",
+        "required": [
+          "aftershock_cover"
+        ],
+        "optional": [
+          "padding_head",
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "aftershock_cover",
+          "padding_head",
+          "run_outside",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "run_elevator",
+          "jump_window"
+        ],
+        "hazards": {
+          "run_elevator": {
+            "terminal": true,
+            "sessionStatus": "FAILED",
+            "physicalStatus": "CRITICAL",
+            "message": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。"
+          },
+          "jump_window": {
+            "message": "三樓窗戶不是疏散路線。跳下會暴露於高處墜落風險。",
+            "terminal": true,
+            "physicalStatus": "CRITICAL"
+          }
+        },
+        "hints": [
+          "感到地板又晃了一下"
+        ],
+        "onComplete": {
+          "to": "injured",
+          "setFacts": {
+            "shaking": false,
+            "stairsChecked": true
+          },
+          "message": "我聽見老師說這一側暫時安全，有一位同學清醒，坐在旁邊說腳踝很痛。"
+        },
+        "experience": {
+          "suggestions": [
+            "我重新趴下躲到桌下抓住桌腳，等餘震停止。",
+            "我用手上書包遮住頭頸。",
+            "我趁地還在晃跑出教室。"
+          ],
+          "sensory": [
+            {
+              "id": "aftershock-31",
+              "text": "感到地板又晃了一下"
+            }
+          ],
+          "rejection": [
+            "我正準備起身，桌腳又敲了一下地板，老師示意先停住。"
+          ],
+          "focus": ""
+        }
+      },
+      {
+        "id": "injured",
+        "title": "同學叫了一聲",
+        "situation": "我聽見老師說這一側暫時安全，有一位同學清醒，坐在旁邊說腳踝很痛。",
+        "task": "我怎麼回應身旁的同學？",
+        "decisionPrompt": "我怎麼回應身旁的同學？",
+        "observation": "我聽見老師說這一側暫時安全，有一位同學清醒，坐在旁邊說腳踝很痛。",
+        "required": [
+          "check_injured"
+        ],
+        "optional": [
+          "padding_head",
+          "drag_injured",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "check_injured",
+          "padding_head",
+          "drag_injured",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "hazards": {},
+        "hints": [
+          "聽見同學說腳踝疼"
+        ],
+        "onComplete": {
+          "to": "evacuate",
+          "message": "我聽見老師說前方動線有落物，另一側指定樓梯已確認，老師正帶隊。"
+        },
+        "experience": {
+          "suggestions": [
+            "我問他哪裡痛，告訴老師同學腳踝痛，先不搬他。",
+            "我先確認他有沒有回應，請老師過來。",
+            "我硬拉同學站起來，把他帶往門口。"
+          ],
+          "sensory": [
+            {
+              "id": "injured-31",
+              "text": "聽見同學說腳踝疼"
+            }
+          ],
+          "rejection": [
+            "我聽見老師說這一側暫時安全，有一位同學清醒，坐在旁邊說腳踝很痛。"
+          ],
+          "focus": ""
+        },
+        "effects": {
+          "drag_injured": {
+            "kind": "risk",
+            "message": "同學喊痛，老師伸手請我先停下來，等校護過來。"
+          }
+        },
+        "phrasing": [
+          {
+            "pattern": "^我(?:先)?問他腳怎麼了[，,](?:告訴|回報)老師(?:同學|那位同學)腳踝(?:很痛|受傷)(?:[，,]需要(?:人)?幫忙)?[。！!]?$",
+            "as": "我告訴老師同學腳踝受傷"
+          },
+          {
+            "pattern": "^老師[，,]這裡有(?:一位)?同學腳踝(?:很痛|受傷)[，,]他說站不起來[，,]我(?:先)?不把他拉起來[。！!]?$",
+            "as": "我告訴老師同學腳踝受傷"
+          }
+        ]
+      },
+      {
+        "id": "evacuate",
+        "title": "樓梯口",
+        "situation": "我聽見老師說前方動線有落物，另一側指定樓梯已確認，老師正帶隊。",
+        "task": "我要選哪一條路？",
+        "decisionPrompt": "我要選哪一條路？",
+        "observation": "我聽見老師說前方動線有落物，另一側指定樓梯已確認，老師正帶隊。",
+        "required": [
+          "follow_stairs"
+        ],
+        "optional": [
+          "walk_steadily",
+          "return_bag",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "follow_stairs",
+          "walk_steadily",
+          "return_bag",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "hazards": {},
+        "hints": [
+          "看見指定樓梯上的隊伍"
+        ],
+        "onComplete": {
+          "to": "assembly",
+          "message": "我到了操場的二年二班集合區。老師要同學報到，並問有沒有人受傷。"
+        },
+        "experience": {
+          "suggestions": [
+            "我跟隨老師走指定的樓梯疏散。",
+            "我先保持隊伍間距，等老師示意。",
+            "我先返回教室拿書包再下樓。"
+          ],
+          "sensory": [
+            {
+              "id": "evacuate-31",
+              "text": "看見指定樓梯上的隊伍"
+            }
+          ],
+          "rejection": [
+            "我聽見老師說前方動線有落物，另一側指定樓梯已確認，老師正帶隊。"
+          ],
+          "focus": ""
+        }
+      },
+      {
+        "id": "assembly",
+        "title": "集合區",
+        "situation": "我到了操場的二年二班集合區。老師要同學報到，並問有沒有人受傷。",
+        "task": "我準備向老師說什麼？",
+        "decisionPrompt": "我準備向老師說什麼？",
+        "observation": "我到了操場的二年二班集合區。老師要同學報到，並問有沒有人受傷。",
+        "required": [
+          "count_report"
+        ],
+        "optional": [
+          "assembly",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "leave_gathering"
+        ],
+        "available": [
+          "count_report",
+          "assembly",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "leave_gathering"
+        ],
+        "hazards": {},
+        "hints": [
+          "聽見老師喊班級和名字"
+        ],
+        "onComplete": {
+          "to": "return_choice",
+          "message": "我聽見廣播說教室尚未開放，有同學問能不能回去拿自己的東西。"
+        },
+        "experience": {
+          "suggestions": [
+            "我回報二年二班在操場，有一位同學腳踝受傷。",
+            "我到操場集合點點名，再看老師還缺什麼資訊。",
+            "我先離開操場去找朋友，晚點再報到。"
+          ],
+          "sensory": [
+            {
+              "id": "assembly-31",
+              "text": "聽見老師喊班級和名字"
+            }
+          ],
+          "rejection": [
+            "我到了操場的二年二班集合區。老師要同學報到，並問有沒有人受傷。"
+          ],
+          "focus": ""
+        },
+        "effects": {
+          "leave_gathering": {
+            "kind": "risk",
+            "message": "老師喊住我，名冊上還找不到我的位置。"
+          }
+        }
+      },
+      {
+        "id": "return_choice",
+        "title": "還沒解封",
+        "situation": "我聽見廣播說教室尚未開放，有同學問能不能回去拿自己的東西。",
+        "task": "我接下來打算怎麼做？",
+        "decisionPrompt": "我接下來打算怎麼做？",
+        "observation": "我聽見廣播說教室尚未開放，有同學問能不能回去拿自己的東西。",
+        "required": [
+          "stay_assembly"
+        ],
+        "optional": [
+          "return_bag",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "available": [
+          "stay_assembly",
+          "return_bag",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral"
+        ],
+        "hazards": {},
+        "hints": [
+          "聽見廣播說教室還沒開放"
+        ],
+        "experience": {
+          "suggestions": [
+            "我留在集合點等返班通知，物品的事先回報老師。",
+            "我問老師什麼時候可以回教室。",
+            "我先返回教室拿手機再回集合點。"
+          ],
+          "sensory": [
+            {
+              "id": "return_choice-31",
+              "text": "聽見廣播說教室還沒開放"
+            }
+          ],
+          "rejection": [
+            "我聽見廣播說教室尚未開放，有同學問能不能回去拿自己的東西。"
+          ],
+          "focus": ""
+        },
+        "terminal": {
+          "sessionStatus": "COMPLETED",
+          "physicalStatus": "EVACUATED",
+          "completionKind": "SAFE_AREA_REACHED",
+          "message": "我留在集合區等候。老師確認大家的位置後，完成了班級撤離。",
+          "unhandledHandoff": true
+        }
+      },
+      {
+        "id": "injury_handoff",
+        "title": "回報位置並等待救援",
+        "situation": "我在可通訊的位置，聽見老師回應。",
+        "task": "回報受傷情況與所在位置。",
+        "required": [
+          "report_handoff",
+          "report_injury"
+        ],
+        "available": [
+          "report_injury",
+          "emotion_supportive",
+          "emotion_unsupportive",
+          "emotion_neutral",
+          "tell_teacher_support",
+          "report_handoff"
+        ],
+        "hazards": {},
+        "terminal": {
+          "sessionStatus": "COMPLETED",
+          "physicalStatus": "WAITING_RESCUE",
+          "completionKind": "SURVIVAL_STABILIZED",
+          "message": "救援人員完成接手。",
+          "rescueHandoff": true
+        },
+        "experience": {
+          "suggestions": [
+            "我向老師回報我在二樓走廊，腳踝受傷，需要協助。",
+            "我先告訴老師我腳痛，再說我在哪裡。",
+            "我先自己回教室拿東西，晚點再回報。"
+          ],
+          "sensory": [
+            {
+              "id": "teacher_voice",
+              "text": "聽見老師回應"
+            },
+            {
+              "id": "injury_handoff_position",
+              "text": "意識到自己還在可以聯絡老師的位置"
+            }
+          ],
+          "focus": "目前要讓在場的老師知道受傷者的位置。",
+          "rejection": [
+            "我聽見老師在核對點名和受傷的同學，還沒聽到可以離開集合區的指示。"
+          ]
+        },
+        "decisionPrompt": "我怎麼讓老師和救護知道我在哪裡、發生了什麼？"
+      }
+    ],
+    "actions": [
+      {
+        "id": "drop_cover_hold",
+        "label": "趴下、掩護、穩住",
+        "pattern": "趴下.*(?:桌下|掩護).*(?:頭頸|頭部|抓穩|穩住)|躲到桌下.*保護.*(?:頭|頸)|(?:鑽|躲|蹲|趴).{0,7}(?:桌子底下|桌底下|桌底|課桌下).{0,8}(?:抓|握|護)",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "wait_stop",
+        "label": "等待主要搖晃停止",
+        "pattern": "等待.*(?:搖晃|地震).*(?:停止|結束)|搖晃停止.*再",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "run_elevator",
+        "label": "搖晃時衝向電梯",
+        "pattern": "衝去搭電梯|(?:跑|衝|奔).*(?:升降機|電梯)",
+        "sourceIds": [
+          "source-0"
+        ],
+        "consequence": "你在搖晃時衝向電梯。演練因掉落物、跌倒與受困風險結束。",
+        "teaching": "正在搖晃時先保護頭頸並依老師指示，等主要搖晃停止。",
+        "examples": [
+          "我衝去搭電梯"
+        ],
+        "hazardMode": "IMMEDIATE",
+        "consequenceTemplate": "我在搖晃中往電梯跑。身邊仍在晃，我可能跌倒、被掉落物砸到，也可能困在電梯裡。"
+      },
+      {
+        "id": "run_outside",
+        "label": "搖晃中跑到戶外",
+        "pattern": "(?:搖晃|地震).*(?:衝|跑).*(?:外面|戶外)|(?:地在晃|還在搖).*(?:跑出|衝出)|(?:地|地板|教室).{0,3}(?:還在|仍在|又在)?(?:晃|搖).{0,8}(?:跑|衝)(?:出|向|到)",
+        "sourceIds": [
+          "source-0"
+        ],
+        "consequence": "你在搖晃仍持續時跑向戶外。演練因移動時的掉落物與跌倒風險結束。",
+        "teaching": "主要搖晃停止前先就地保護頭頸，之後依老師指示疏散。",
+        "examples": [
+          "我在搖晃時跑到外面"
+        ],
+        "hazardMode": "EXPOSURE"
+      },
+      {
+        "id": "follow_stairs",
+        "label": "依教師指示走安全樓梯疏散",
+        "pattern": "(?:聽從|依照|跟隨).*(?:老師|教師|校方).*(?:樓梯|疏散)|走樓梯.*疏散|(?:跟著|跟|跟上|聽).{0,4}老師.{0,12}(?:樓梯|帶隊|疏散)",
+        "requires": {
+          "facts": {
+            "shaking": false,
+            "stairsChecked": true
+          }
+        },
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "assembly",
+        "label": "至集合點點名且不返回",
+        "pattern": "(?:到|前往).*(?:集合點|操場).*(?:點名|清點)|集合點.*不返回",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "return_bag",
+        "label": "返回教室拿物品",
+        "pattern": "返回.*教室.*(?:拿|找).*(?:手機|書包|東西)",
+        "sourceIds": [
+          "source-0"
+        ],
+        "unsafeWhenBlocked": true,
+        "blockedMessage": "我留在老師帶隊的路線，返回教室的動作被攔下。",
+        "hazardMode": "EXPOSURE",
+        "blockedAfterInjury": "S1"
+      },
+      {
+        "id": "jump_window",
+        "label": "從高樓窗戶跳下",
+        "pattern": "(?:從|自).*(?:窗戶|窗子).*(?:跳|翻)|跳窗|跳樓",
+        "sourceIds": [
+          "source-0"
+        ],
+        "hazardMode": "IMMEDIATE",
+        "consequenceTemplate": "我選擇從三樓窗戶跳下。窗外離地很遠，我可能從高處墜落。"
+      },
+      {
+        "id": "emotion_supportive",
+        "label": "我聽見小維回了一聲，表示已聽見。",
+        "pattern": "(?:^(?:我聽到了我在附近我們先在各自的位置護住頭頸|我知道你擔心家人等老師確認動線後我陪你聽指示|我會用聲音回應你到集合點後我可以陪你向老師報到)$)|^(?:小維我知道你擔心家人等老師確認動線後我陪你聽指示)$",
+        "sourceIds": [
+          "pfa"
+        ],
+        "emotion": "supportive",
+        "wholeInput": true
+      },
+      {
+        "id": "emotion_unsupportive",
+        "label": "我聽見小維說，還想確認接下來怎麼聯絡。",
+        "pattern": "(?:^(?:不可能受傷我保證|別哭了大家都在看你|你先把剛才怎麼被嚇到的經過全部說出來)$)|^(?:小維我保證你家人都不會有事)$",
+        "sourceIds": [
+          "pfa"
+        ],
+        "emotion": "unsupportive",
+        "wholeInput": true
+      },
+      {
+        "id": "emotion_neutral",
+        "label": "我聽見小維的聲音，情況仍未改變。",
+        "pattern": "(?:^(?:我聽見桌腳在響|老師在教室裡)$)|^(?:我先用聲音回應小維讓他知道我在這裡)$",
+        "sourceIds": [
+          "pfa"
+        ],
+        "emotion": "neutral",
+        "wholeInput": true
+      },
+      {
+        "id": "report_injury",
+        "label": "回報受傷位置並等待協助",
+        "pattern": "回報(?:受傷|傷勢)|通報(?:受傷|傷勢)|119|(?:我|同學).{0,10}(?:腳踝受傷|腳痛|不能走)|腳踝受傷|腳痛|不能走",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "padding_head",
+        "label": "用手邊物品護住頭頸",
+        "pattern": "用(?:手邊|手上)?(?:書包|防災頭套|軟墊).*(?:護|遮).*(?:頭|頸)",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "我把手邊的緩衝物靠近頭頸，仍留在目前的位置。"
+      },
+      {
+        "id": "walk_steadily",
+        "label": "依隊伍步行且避免推擠",
+        "pattern": "(?:不推擠|不推不跑|依序步行|排隊慢慢走|保持隊伍間距)",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "我把步伐放慢，和前面的人保持間距。"
+      },
+      {
+        "id": "tell_teacher_support",
+        "label": "告知老師需要協助的人",
+        "pattern": "(?:向|叫|告訴|通知|通報|回報).{0,5}老師.{0,10}(?:有人需要幫忙|有人需要協助|同學行動不便)",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "我告訴老師哪裡有人需要協助，由他協調同學和引導人員。"
+      },
+      {
+        "id": "leave_teacher",
+        "label": "等待老師代為勸阻",
+        "pattern": "(?:請|讓).{0,3}老師.{0,8}(?:小維|同學)|我只保護自己",
+        "sourceIds": [
+          "source-0"
+        ],
+        "effect": "等待老師代為勸阻。"
+      },
+      {
+        "id": "aftershock_cover",
+        "label": "餘震掩護直到停止",
+        "pattern": "(?:重新|再|繼續|先)?.{0,4}(?:趴下|鑽到|躲到).{0,10}(?:桌下|桌底|掩護).{0,12}(?:穩住|抓|保護|護住)",
+        "sourceIds": [
+          "source-0"
+        ],
+        "effect": "餘震掩護直到停止。"
+      },
+      {
+        "id": "check_injured",
+        "label": "由安全處回報老師，先不搬動傷者",
+        "pattern": "(?:告訴|通報|通知|回報|找|請).{0,6}(?:老師|校護).{0,12}(?:腳痛|腳踝|傷|不能走|需要幫助)|(?:問|確認).{0,10}(?:受傷|腳痛).{0,12}(?:回報|老師|校護)",
+        "sourceIds": [
+          "first-aid",
+          "campus-evac"
+        ],
+        "effect": "由安全處回報老師，先不搬動傷者。"
+      },
+      {
+        "id": "drag_injured",
+        "label": "沒有立即危險仍強拉傷者",
+        "pattern": "(?:硬拉|拖|揹|背|搬|抱).{0,5}(?:傷者|受傷的同學|同學|他)",
+        "sourceIds": [
+          "first-aid"
+        ],
+        "effect": "沒有立即危險仍強拉傷者。"
+      },
+      {
+        "id": "count_report",
+        "label": "回報班級、集合位置與傷者人數",
+        "pattern": "(?=.*(?:[一二三123]年[一二三123]班|二年二班|我們班))(?=.*(?:操場|集合點|集合區))(?=.*(?:一|1)(?:位|名|個)?(?:同學|學生|人)?.{0,8}(?:腳痛|腳踝|受傷|傷者))[^。]+",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "回報班級、集合位置與傷者人數。"
+      },
+      {
+        "id": "stay_assembly",
+        "label": "留在集合點等待返班許可",
+        "pattern": "(?:留|待|等).{0,7}(?:集合點|操場|集合區)|(?:先|暫時)?不(?:回|返回)(?:教室|班上)",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "留在集合點等待返班許可。"
+      },
+      {
+        "id": "report_handoff",
+        "label": "回報傷者目前位置",
+        "pattern": "(?:我在|位於|位置是|人在).{0,12}(?:樓梯|教室|走廊|[一二三123]樓)|(?:二樓|2樓).{0,5}(?:樓梯|走廊|教室)",
+        "sourceIds": [
+          "first-aid",
+          "campus-evac"
+        ],
+        "effect": "老師知道傷者的位置。"
+      },
+      {
+        "id": "leave_gathering",
+        "label": "未點名離開集合區",
+        "pattern": "(?:離開|溜出|走出).{0,4}(?:操場|集合區|集合點)",
+        "sourceIds": [
+          "campus-evac"
+        ],
+        "effect": "老師尚未確認我的位置。"
+      }
+    ],
+    "injuryEvents": [
+      {
+        "id": "S1",
+        "node": "shaking",
+        "action": "run_outside",
+        "facts": {
+          "shaking": true
+        },
+        "exposure": "trauma",
+        "delta": 2,
+        "message": "我急著往外跑時，腳下一絆。",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "S1",
+        "node": "classmate",
+        "action": "run_outside",
+        "facts": {
+          "shaking": true
+        },
+        "exposure": "trauma",
+        "delta": 2,
+        "message": "我急著往外跑時，腳下一絆。",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "S1",
+        "node": "worry",
+        "action": "run_outside",
+        "facts": {
+          "shaking": true
+        },
+        "exposure": "trauma",
+        "delta": 2,
+        "message": "我急著往外跑時，腳下一絆。",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "S1",
+        "node": "main_stop",
+        "action": "run_outside",
+        "facts": {
+          "shaking": true
+        },
+        "exposure": "trauma",
+        "delta": 2,
+        "message": "我急著往外跑時，腳下一絆。",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "S1",
+        "node": "aftershock",
+        "action": "run_outside",
+        "facts": {
+          "shaking": true
+        },
+        "exposure": "trauma",
+        "delta": 2,
+        "message": "我急著往外跑時，腳下一絆。",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "S2",
+        "node": "evacuate",
+        "action": "return_bag",
+        "facts": {
+          "shaking": false,
+          "returnClearance": false
+        },
+        "unless": "S1",
+        "exposure": "trauma",
+        "delta": 3,
+        "delayed": true,
+        "to": "injury_handoff",
+        "message": "我回教室拿包時，聽見餘震中的落物聲。",
+        "sourceIds": [
+          "source-0"
+        ]
+      },
+      {
+        "id": "S2",
+        "node": "return_choice",
+        "action": "return_bag",
+        "facts": {
+          "shaking": false,
+          "returnClearance": false
+        },
+        "unless": "S1",
+        "exposure": "trauma",
+        "delta": 3,
+        "delayed": true,
+        "to": "injury_handoff",
+        "message": "我回教室拿包時，聽見餘震中的落物聲。",
+        "sourceIds": [
+          "source-0"
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "agency": "內政部消防署",
+        "title": "地震防災須知",
+        "url": "https://www.nfa.gov.tw/pro/index.php?act=article&article_id=587&code=print&ids=113",
+        "id": "source-0"
+      },
+      {
+        "id": "campus-evac",
+        "title": "校園地震避難掩護疏散流程",
+        "url": "https://www.hs.ntnu.edu.tw/static/webroot/G162269152981136/application/NW175800402062082.pdf",
+        "agency": "國立臺灣師範大學附屬高級中學",
+        "checked": "2026-11-21"
+      },
+      {
+        "id": "first-aid",
+        "title": "全民安全指引：傷患處理",
+        "agency": "全民安全指引",
+        "url": "https://prepare.mnd.gov.tw/casualty-care-procedures"
+      },
+      {
+        "id": "pfa",
+        "title": "WHO 心理急救指南",
+        "agency": "世界衛生組織",
+        "url": "https://www.who.int/publications/i/item/9789241548205"
+      }
+    ],
+    "endingMessages": {
+      "SELF_EVACUATION": {
+        "NONE": "我跟著確認過的動線走到集合點。老師喊到我的名字，我回了一聲，也把同學的狀況報給老師。",
+        "MILD": "我急著往外跑時，腳下一絆。到了集合點，我把剛才跌倒和輕傷的情況告訴老師。"
+      },
+      "DELAYED_RESCUE": {
+        "MODERATE": "我回去拿包時，才聽見餘震帶來的落物聲。救護人員找到我後，評估我需要送醫。",
+        "NONE": "我留在操場；老師另外確認小維也到了，才完成班級清點並帶我們到安全區。",
+        "MILD": "我在操場停下來。老師確認小維也到了，校護接著檢查了我的輕傷。"
+      }
+    },
+    "onlineExperience": {
+      "questions": [
+        {
+          "id": "lift",
+          "pattern": "電梯",
+          "sourceIds": [
+            "source-0"
+          ],
+          "variants": [],
+          "answer": "校方指定的疏散路線是確認後的樓梯，沒有安排搭電梯。"
+        },
+        {
+          "id": "outside",
+          "pattern": "跑|衝|出去|戶外",
+          "answer": "主要搖晃時離開掩護，可能遇到掉落物或跌倒。演練的指定疏散動線由校方確認。",
+          "sourceIds": [
+            "source-0"
+          ],
+          "variants": [
+            {
+              "whenFacts": {
+                "shaking": true
+              },
+              "answer": "教室還在晃，先留在能護住頭頸的位置；老師還沒帶隊下樓。"
+            },
+            {
+              "whenFacts": {
+                "shaking": false,
+                "stairsChecked": true
+              },
+              "answer": "主要搖晃已停，指定樓梯已確認；跟著老師的隊伍到集合區。"
+            }
+          ]
+        },
+        {
+          "id": "bag",
+          "pattern": "拿|書包|回教室|手機",
+          "answer": "回到教室拿物品會重新進入未確認安全的區域。",
+          "sourceIds": [
+            "source-0"
+          ]
+        },
+        {
+          "id": "route",
+          "pattern": "樓梯|集合|疏散|撤離|點名|搖晃",
+          "answer": "演練以主要搖晃停止、教師確認動線作為進入疏散階段的條件。",
+          "sourceIds": [
+            "source-0"
+          ],
+          "variants": [
+            {
+              "whenFacts": {
+                "shaking": true
+              },
+              "answer": "教室還在晃，先留在能護住頭頸的位置；老師還沒帶隊下樓。"
+            },
+            {
+              "whenFacts": {
+                "shaking": false,
+                "stairsChecked": true
+              },
+              "answer": "主要搖晃已停，指定樓梯已確認；跟著老師的隊伍到集合區。"
+            }
+          ]
+        }
+      ],
+      "beats": [
+        "我把視線從出口收回近處。",
+        "我轉而留意教室裡的動靜。",
+        "我把注意力轉向老師的位置。",
+        "我留意隊伍與自己之間的距離。",
+        "我轉頭找老師聲音的方向。"
+      ],
+      "actionBeats": {
+        "drop_cover_hold": "我把頭頸縮進掩護範圍，手抓穩身邊的支撐物。",
+        "wait_stop": "地面漸穩，我聽見老師確認指定樓梯可以通行。",
+        "follow_stairs": "我跟上往下疏散的隊伍，腳下換成一階階的踏面。",
+        "padding_head": "我把手邊的緩衝物靠近頭頸，仍留在目前的位置。",
+        "walk_steadily": "我把步伐放慢，和前面的人保持間距。",
+        "tell_teacher_support": "我告訴老師哪裡有人需要協助，由他協調同學和引導人員。"
+      },
+      "questionSpeaker": {
+        "shaking": "老師",
+        "classmate": "老師",
+        "worry": "老師",
+        "main_stop": "老師",
+        "aftershock": "老師",
+        "injured": "老師",
+        "evacuate": "老師",
+        "assembly": "老師",
+        "return_choice": "老師",
+        "injury_handoff": "老師"
+      }
+    }
   }
 }

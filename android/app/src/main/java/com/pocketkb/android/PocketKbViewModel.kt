@@ -104,7 +104,7 @@ class PocketKbViewModel(
         "barrier-lake-downstream.json",
     )
     private val scenarioRuntimesV3 = scenarioV3Files.associate { file ->
-        val runtime = ScenarioRuntimeV3(JSONObject(application.assets.open("v3/$file").bufferedReader(Charsets.UTF_8).use { it.readText() }))
+        val runtime = ScenarioRuntimeV3(JSONObject(application.assets.open("v3/$file").bufferedReader(Charsets.UTF_8).use { it.readText() }), formal = true)
         runtime.spec.getString("id") to runtime
     }
     val scenarios = scenarioRuntimesV3.values.map { it.scenario() } +

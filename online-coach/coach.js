@@ -251,7 +251,7 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
 }
 
 class ConversationCoach {
-  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, logText = process.env.POCKETKB_LOG_TEXT === '1', record } = {}) {
+  constructor(provider, { maxSessions = 100, maxTurns = 80, maxCalls = 500, ttlMs = 4 * 60 * 60 * 1000, turnTimeoutMs = 8000, narrationTimeoutMs = 15000, random = Math.random, onlineExperience = true, compactNarration = true, formal = false, logText = process.env.POCKETKB_LOG_TEXT === '1', record } = {}) {
     if (![maxSessions, maxTurns, maxCalls, ttlMs, turnTimeoutMs,narrationTimeoutMs].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Coach limits must be positive integers');
     this.provider = provider; this.sessions = new Map(); this.maxSessions = maxSessions;
     this.maxTurns = maxTurns; this.maxCalls = maxCalls; this.calls = 0; this.ttlMs = ttlMs;
@@ -262,10 +262,11 @@ class ConversationCoach {
     this.random = random;
     this.onlineExperience = onlineExperience;
     this.compactNarration = compactNarration;
+    this.specs = formal ? new Map([...specs].map(([id,spec])=>[id,V3.formalSpec(spec)])) : specs;
   }
-  catalog() { return [...specs.values()].map(s => ({ id: s.id, title: s.title, opening: s.opening, version: s.version, spec: s })); }
+  catalog() { return [...this.specs.values()].map(({formal,...s}) => ({ id: s.id, title: s.title, opening: s.opening, version: s.version, spec: s })); }
   create(scenarioId) {
-    const spec = specs.get(scenarioId);
+    const spec = this.specs.get(scenarioId);
     if (!spec) throw apiError('UNKNOWN_SCENARIO', '此劇本尚未支援線上演練。');
     for (const [id, s] of this.sessions) if (Date.now() - s.updatedAt > this.ttlMs && !s.busy) this.sessions.delete(id);
     if (this.sessions.size >= this.maxSessions) throw apiError('SESSION_LIMIT', '本機教練場次已滿，請重新啟動服務。', 429);
@@ -347,7 +348,7 @@ class ConversationCoach {
         ({result, reply} = await this.modelTurn(session, text, intent, signal, audit, literal, refused, onGround));
       } catch (error) {
         const emotional = literal.state.npc?.emotion !== before.npc?.emotion;
-        result = refused ? {...literal,state:before} : emotional ? literal : settle(spec,before,literal,text,intent,audit);
+        result = refused ? {...literal,state:before} : emotional ? runtime.settleOnline(spec,before,literal,text,intent) : settle(spec,before,literal,text,intent,audit);
         audit.noAdvance = refused;
         audit.actionBatches = [];
         audit.source = 'rule';
