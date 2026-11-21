@@ -33,8 +33,9 @@ test('the authored points have unique IDs, two to four sourced principles and tw
   }
 });
 
-test('D1 keeps the call and seal; one phone follow-up, compounds and quality replay reach the same ending',async()=>{
+test('D1 keeps the call and seal; escalations still happen, repeats are not graded, replay reaches the same ending',async()=>{
   const d=inputs.D.inputs.map(item=>item.text);
+  const extra={'我再把毛巾壓緊':['seal_gap'],'我先看窗外有沒有煙':['check_window'],'電話不要掛，保持通話':['keep_contact']};
   const model=({text})=>{
     if(text===d[0]) return {...proposal(text,[]),matches:[
       {id:'stop_roommate',evidence:'跟小岑說千萬不能開門'},{id:'barrier',evidence:'把門關緊'},
@@ -43,6 +44,8 @@ test('D1 keeps the call and seal; one phone follow-up, compounds and quality rep
     if(text===d[1]) return {...proposal(text,[]),matches:[{id:'ground',evidence:'先顧好自己'}],
       fields:[{id:'condition',evidence:'外面有濃煙'}]};
     if(text===d[4]) return proposal(text,['handoff','keep_contact'],['room'],'acceptable');
+    if(extra[text]) return proposal(text,extra[text],[],'good');
+    if(text===d[6]) return proposal(text,['seal_gap'],[],'good');
     return proposal(text,['wait_inside'],[],'acceptable');
   };
   const rows=[];
@@ -52,20 +55,29 @@ test('D1 keeps the call and seal; one phone follow-up, compounds and quality rep
   assert.equal(s.state.quality.met.dial,'isolate');
   assert.equal(s.state.quality.met.seal_gap,'isolate');
   assert.match(s.reply,/接線員問.*樓層和房號.*受困人數/);
+  assert.match(s.reply,/房門/);
   assert.equal(rows[0].assessment.matches[0].evidence,'[redacted]');
   s=await submit(coach,s,d[1]);
-  assert.equal(s.state.node,'wait');
-  assert.ok(s.decision.completed_points.some(p=>p.node==='smoke_gap'&&p.remembered));
-  assert.doesNotMatch(s.reply,/接線員問/);
-  assert.match(s.scene.node.task,/503有人嗎/);
+  assert.equal(s.state.node,'smoke_gap','the smoke escalation still happens after early preparation');
+  assert.ok(s.decision.completed_points.some(p=>p.node==='feelings'&&p.remembered),'an emotion answered after the NPC spoke is remembered');
+  assert.match(s.reply,/毛巾塞得夠緊/);
+  assert.doesNotMatch(s.reply,/我記得剛才|接線員已收到|接線員問/);
+  s=await submit(coach,s,d[6]);
+  assert.equal(s.decision.assessment.category,'repeat','repeating the seal is not graded');
+  assert.equal(s.state.node,'battery','the window signal from the first turn is remembered; low battery still happens');
+  assert.match(s.reply,/毛巾/);
+  assert.match(s.reply,/低電量|電量/);
   s=await submit(coach,s,d[4]);
   assert.equal(s.state.quality.report.room,true);
   assert.equal(s.terminal,false,'a room number never confirms rescue handoff');
-  assert.equal(s.decision.assessment.matches.length,0);
+  assert.match(s.reply,/樓層和房號/);
+  s=await submit(coach,s,'電話不要掛，保持通話');
+  assert.equal(s.state.node,'wait');
   s=await submit(coach,s,d[8]);
   assert.equal(s.terminal,true);
   assert.equal(s.state.endingType,'SAFE_RESCUE');
   assert.ok(s.ending.lessons.some(item=>item.sources.length));
+  assert.ok(!s.state.quality.history.some(h=>h.category==='suboptimal'),'correct partial answers are never 次佳');
   assert.deepEqual(Quality.replay(coach.specs.get(fire),rows),s.state);
 });
 

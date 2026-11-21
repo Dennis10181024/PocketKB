@@ -432,6 +432,7 @@ class ConversationCoach {
         }
         offline=Presentation.isConnectionFallback(fallbackReason);
         result=Quality.apply(spec,before,assessment);
+        if (result.repeatOnly) assessment={...assessment,category:'repeat'};
         reply=result.kind==='failed'?this.endingQuote(session,result,text,'',audit):result.message;
         if (onGround && reply) onGround(reply);
         Object.assign(audit,{assessment,source:assessment.source,validation:fallbackReason || 'QUALITY_ASSESSED',
