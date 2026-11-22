@@ -19,13 +19,16 @@ function scrub(text) {
 }
 
 function researchTurn(session, decision, kind, text, timing, {logText=false,reply='',suggestions=[],npcLines=[],proposals=[]}={}) {
-  const {controlInput, npcInput, actionValidation, emotion, disagreement, assessment, ...fields} = decision;
+  const {controlInput, npcInput, actionValidation, emotion, disagreement, assessment, director, ...fields} = decision;
   const ids = values=>(values || []).filter(id=>session.spec.actions.some(action=>action.id===id));
   const evidence = value => logText ? scrub(typeof value==='string' ? value : '') : '[redacted]';
   return {schema:'2.2',sessionId:session.id,scenarioId:session.spec.id,version:session.spec.version,
     startedAt:new Date(session.createdAt).toISOString(),recordedAt:new Date().toISOString(),kind,inputLength:[...text].length,...fields,
     ...(controlInput !== undefined ? {controlInput:evidence(controlInput)} : {}),
     ...(npcInput !== undefined ? {npcInput:evidence(npcInput)} : {}),
+    ...(director ? {director:{...director,inputEvidence:evidence(director.inputEvidence),dialEvidence:evidence(director.dialEvidence),
+      matches:director.matches.map(item=>({...item,evidence:evidence(item.evidence)})),
+      danger:director.danger?{...director.danger,evidence:evidence(director.danger.evidence)}:null}} : {}),
     ...(assessment ? {assessment:{...assessment,evidence:evidence(assessment.evidence),
       matches:assessment.matches.map(item=>({...item,evidence:evidence(item.evidence)})),
       fields:assessment.fields.map(item=>({...item,evidence:evidence(item.evidence)})),

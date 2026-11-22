@@ -8,7 +8,7 @@ const Presentation = require('../web-pwa/drill-presentation');
 const Experience = require('./experience');
 const Quality = require('./quality');
 const directors = require('./director-registry');
-const {researchMetrics,reviewMetrics}=require('./director-engine');
+const {researchMetrics}=require('./director-engine');
 const {researchTurn} = require('./session-log');
 const directory = path.join(__dirname, '../web-pwa/scenarios');
 const specs = new Map();
@@ -353,9 +353,15 @@ class ConversationCoach {
     const director=this.director && directors.get(scenarioId);
     if (director) {
       session.director=director;
+      session.attempt=1;
+      session.firstChoices={};
+      session.turningPoint=null;
+      session.positiveTurningPoint=null;
+      session.fatalCount=0;
+      session.totalFatalCount=0;
       const directorState=director.start();
       session.state={...session.state,director:directorState,npc:{...session.state.npc,...director.npcState(directorState)},
-        directorResearch:researchMetrics(null,directorState,director,null)};
+        directorResearch:researchMetrics({},1,0,null)};
     } else if (this.quality && spec.formalPractice && Quality.points(spec).length) session.state=Quality.start(session.state);
     this.sessions.set(session.id, session);
     return this.snapshot(session);
@@ -363,8 +369,11 @@ class ConversationCoach {
   snapshot(session) {
     const { spec, state } = session;
     return { sessionId: session.id, scenarioId: spec.id, version: spec.version, revision: session.revision,
+      ...(session.director?{directorMode:true,attempt:session.attempt,canRetry:Boolean(session.retryPoint)}:{}),
       state, decisions: session.decisions.slice(), scene: scene(spec, state), terminal: terminal(spec, state),
-      review: terminal(spec, state) ? (state.director ? session.director.review(state.director)+reviewMetrics(state.directorResearch,session.director) : state.quality ? Quality.review(spec,state) : engine(spec).review(spec, state)) : '', model: this.provider.model,
+      review: terminal(spec, state) ? (state.director ? (session.lastEnding?.lessons || []).map(lesson=>
+        [lesson.title,lesson.why,lesson.next,...lesson.sources.map(source=>source.title)].filter(Boolean).join('\n')).join('\n\n') :
+        state.quality ? Quality.review(spec,state) : engine(spec).review(spec, state)) : '', model: this.provider.model,
       suggestions: session.hint?.options || [], hintContext:session.hint, invalidStreak:session.invalidStreak };
   }
   async generate(stage, payload, schema, signal, prompt) {
@@ -374,7 +383,7 @@ class ConversationCoach {
   async turn(id, { requestId, revision, text = '', intent = 'action', hintTrigger = null, hintSelectedIndex = null, hintEditedBeforeSubmit = null, rulesOnly = false, clientFallbackReason, researchText }, onGround) {
     const session = this.sessions.get(id);
     if (!session || Date.now() - session.updatedAt > this.ttlMs) throw apiError('SESSION_EXPIRED', '演練連線已過期，請另開一次練習。', 410);
-    if (typeof requestId !== 'string' || requestId.length < 8 || requestId.length > 100 || !Number.isInteger(revision) || typeof text !== 'string' || text.length > 2000 || !['action','question','observe','hint'].includes(intent))
+    if (typeof requestId !== 'string' || requestId.length < 8 || requestId.length > 100 || !Number.isInteger(revision) || typeof text !== 'string' || text.length > 2000 || !['action','question','observe','hint','retry_decision'].includes(intent))
       throw apiError('INVALID_INPUT', '請用2000字以內描述問題或行動。');
     if ((hintTrigger !== null && (!['idle','button'].includes(hintTrigger) || intent !== 'hint')) ||
         (hintSelectedIndex !== null && (!Number.isInteger(hintSelectedIndex) || hintSelectedIndex < 0 || hintSelectedIndex > 2 || intent !== 'action')) ||
@@ -387,7 +396,9 @@ class ConversationCoach {
       return prior.promise;
     }
     if (session.busy || session.revision !== revision) throw apiError('STALE_TURN', '上一個回答仍在處理，或畫面版本已更新。', 409);
-    if (terminal(session.spec, session.state)) throw apiError('SESSION_LOCKED', '本次演練已結束，請另開新紀錄。', 409);
+    if (intent==='retry_decision' && (!session.retryPoint || !terminal(session.spec,session.state)))
+      throw apiError('RETRY_UNAVAILABLE','這場目前沒有可以重來的決定。',409);
+    if (intent!=='retry_decision' && terminal(session.spec, session.state)) throw apiError('SESSION_LOCKED', '本次演練已結束，請另開新紀錄。', 409);
     if (session.revision >= this.maxTurns) throw apiError('TURN_LIMIT', '這次對話已達回合上限，請保存回顧或另開演練。', 429);
     if (hintSelectedIndex !== null && !session.hint) throw apiError('INVALID_HINT', '目前沒有顯示的建議句。');
     session.busy = true;
@@ -581,9 +592,36 @@ class ConversationCoach {
     let narrationCheck=null;
     const priorHint=session.hint;
     const questionBefore=director.question(d);
-    if (hintTrigger) {
+    if (intent==='retry_decision') {
+      const checkpoint=session.retryPoint;
+      session.attempt++;
+      session.firstChoices={...checkpoint.firstChoices};
+      session.turningPoint=checkpoint.priorTurningPoint;
+      session.positiveTurningPoint=checkpoint.priorPositiveTurningPoint;
+      session.retryPoint=null;
+      session.lastEnding=null;
+      session.state={...checkpoint.state,directorResearch:researchMetrics(session.firstChoices,session.attempt,0,null,null,session.totalFatalCount)};
+      session.fatalCount=0;
+      session.history=checkpoint.history;
+      session.decisions=session.decisions.slice(0,checkpoint.decisions);
+      session.hint=null;
+      session.invalidStreak=0;
+      session.offline=false;
+      session.lastDisplayedReply=checkpoint.reply;
+      session.revision++;
+      session.updatedAt=Date.now();
+      const decision={turn:session.revision,intent,source:'rule',actionValidation:[],director_research:session.state.directorResearch,
+        retry_from_turn:checkpoint.revision,previous_attempt:session.attempt-1};
+      const context={reply:checkpoint.reply};
+      const record=researchTurn(session,decision,'retry_decision','',Date.now()-started,{...context,logText:this.logText});
+      this.record?.(record);
+      const clientRecord=typeof researchText==='boolean' && researchText!==this.logText ?
+        researchTurn(session,decision,'retry_decision','',Date.now()-started,{...context,logText:researchText}) : record;
+      return {...this.snapshot(session),kind:'retry_decision',reply:checkpoint.reply,researchRecord:clientRecord};
+    }
+    if (hintTrigger==='button') {
       kind='hint'; reply='可以試著這樣說';
-      session.hint={trigger:hintTrigger,turn:session.revision+2,options:Experience.shuffled(director.hints(d),this.random)};
+      session.hint={trigger:hintTrigger,turn:session.revision+2,options:[questionBefore]};
     } else if (intent==='observe' || intent==='hint') {
       kind='observe'; reply=director.look(d);
     } else {
@@ -600,6 +638,7 @@ class ConversationCoach {
             const {value:check}=await this.generate('confirm_danger',{text,behavior:director.HAZARDS[assessment.pendingDanger.id].label},director.confirmSchema,signal,director.instructions.confirm_danger);
             executing=check.executing!==false;
           } catch {}
+          if (assessment.pendingDanger.soft && !/(?:就|照樣|還是|決定|打算|會先|要先).{0,10}/.test(text)) executing=false;
           assessment=director.resolveDanger(assessment,executing);
         }
       } catch(error) {
@@ -609,7 +648,7 @@ class ConversationCoach {
       }
       out=director.apply(d,assessment,{question:intent==='question'});
       reply=out.message;
-      if (!fallbackReason && !out.rewind && out.kind!=='failed') {
+      if (!fallbackReason && out.kind!=='failed' && !out.consequences.length && out.kind!=='question') {
         // Second call: the narrator only renders what the state machine confirmed this turn.
         try {
           const {value}=await this.generate('narrate_director',director.narrationInput(d,out,text,session.history),director.narrationSchema,AbortSignal.timeout(this.narrationTimeoutMs),director.instructions.narrate_director);
@@ -636,25 +675,37 @@ class ConversationCoach {
       }
     }
     const action=out && !['question','observe'].includes(out.kind);
-    const firstDecision=state.directorResearch.first_decision_safe ?? (action ? !out.rewind && out.kind!=='failed' : null);
-    state.directorResearch=researchMetrics(firstDecision,state.director,director,state.endingType);
+    const fatal=out?.ending?.type==='CRITICAL_FAILURE';
+    if (action) {
+      const checkpoint={state:before,history:session.history.slice(),decisions:session.decisions.length,
+        revision:session.revision,reply:session.lastDisplayedReply || d.lastText || spec.opening,
+        firstChoices:{...session.firstChoices},priorTurningPoint:session.turningPoint,
+        priorPositiveTurningPoint:session.positiveTurningPoint};
+      session.firstChoices[questionBefore] ??= !assessment.danger && !out.consequences.length && out.accepted.length>0;
+      if (fatal || (!session.turningPoint && out.consequences.length)) session.turningPoint=checkpoint;
+      const priorities=out.fresh.filter(id=>director.PRINCIPLES[id].why && out.state.evidence?.[id])
+        .map(id=>director.PRINCIPLES[id].priority || 0);
+      if (priorities.length && Math.max(...priorities)>(session.positiveTurningPoint?.priority ?? -1))
+        session.positiveTurningPoint={...checkpoint,priority:Math.max(...priorities)};
+      if (fatal) {session.fatalCount++;session.totalFatalCount++;}
+      if (out.ending) session.retryPoint=session.turningPoint || session.positiveTurningPoint;
+    }
+    state.directorResearch=researchMetrics(session.firstChoices,session.attempt,session.fatalCount,state.endingType,state.injuryLevel,session.totalFatalCount);
     const sources=director.sources || spec.sources;
-    const sourceIds=new Set([...(out?.accepted || []).map(id=>director.PRINCIPLES[id].source),director.HAZARDS[assessment?.danger?.id]?.source]);
+    const sourceIds=new Set([...(out?.accepted || []).map(id=>director.PRINCIPLES[id].source),
+      ...(out?.consequences || []).map(item=>item.source),director.HAZARDS[assessment?.danger?.id]?.source,
+      ...(kind==='question'?[...sources].slice(0,1).map(source=>source.id):[])]);
     const citations=director.sources?sources.filter(source=>sourceIds.has(source.id)):[];
     const progressed=Boolean(out?.fresh.length);
     const isQuestion=kind==='question';
-    if (out && !isQuestion && out.kind!=='observe' && !out.rewind) session.invalidStreak=progressed || out.ending ? 0 : (session.invalidStreak || 0)+1;
+    if (out && !isQuestion && out.kind!=='observe') session.invalidStreak=progressed || out.ending ? 0 : (session.invalidStreak || 0)+1;
     if (session.hint && (director.question(state.director || d)!==questionBefore || progressed || out?.ending)) session.hint=null;
     let hintExposure=null;
-    if (!hintTrigger && session.invalidStreak>=2 && !session.hint && !out?.ending) {
-      session.hint={trigger:'invalid_streak',turn:session.revision+2,options:Experience.shuffled(director.hints(state.director || d),this.random)};
-      hintExposure={trigger:'invalid_streak',after_turn:session.revision+1,first_eligible_turn:session.hint.turn};
-    }
-    if (hintTrigger) hintExposure={trigger:hintTrigger,after_turn:session.revision+1,first_eligible_turn:session.hint.turn};
+    if (hintTrigger==='button') hintExposure={trigger:hintTrigger,after_turn:session.revision+1,first_eligible_turn:session.hint.turn};
     const category=!assessment ? null : assessment.danger ? 'dangerous' : isQuestion ? 'question' : out?.kind==='observe' ? 'observe' :
       progressed ? 'good' : assessment.matches.length ? 'repeat' : 'irrelevant';
-    const ending=out?.ending ? director.ending(out.state,out.ending,reply,sources) : null;
-    if (ending) ending.lessons.push({title:'決策與修正',why:reviewMetrics(state.directorResearch,director).trim(),next:'',sources:[]});
+    const ending=out?.ending ? director.ending(out.state,out.ending,reply) : null;
+    if (ending) session.lastEnding=ending;
     const decision={director_research:state.directorResearch,turn:session.revision+1,intent,actionIds:[],actionBatches:[],fallbackReason,narrationFallbackReason:narrationCheck?.reason ?? null,
       source:assessment?.source || 'rule',validation:fallbackReason || (assessment?'DIRECTOR':'CONTROL'),actionValidation:[],
       disagreement:assessment?.disagreement || null,narration_checks:narrationCheck?[narrationCheck]:[],narration:'director',emotion:null,question_answer_id:null,
@@ -664,9 +715,12 @@ class ConversationCoach {
       exposure:state.exposure,ending_type:state.endingType,injury_level:state.injuryLevel,injury_causes:[],source_ids:citations.map(source=>source.id),
       ...(assessment ? {assessment:{category,evidence:text,matches:assessment.matches,fields:[]},quality_effect:progressed?'advanced':'stuck',
         new_principles:out.fresh,completed_points:[],
-        director:{matches:assessment.matches.map(m=>({id:m.id,evidence:''})),dialed:assessment.dialed,danger:assessment.danger?{id:assessment.danger.id,evidence:''}:null,
+        director:{matches:assessment.matches,inputEvidence:assessment.inputEvidence,dialEvidence:assessment.dialEvidence,
+          dialed:assessment.dialed,danger:assessment.danger?{id:assessment.danger.id,evidence:assessment.danger.evidence}:null,
           isQuestion:isQuestion,isObservation:Boolean(assessment.isObservation),cues:assessment.cues || {},confirmed:assessment.confirmed ?? null,
-          rewind:Boolean(out.rewind),clock:out.state.clock,beats:out.state.beats.slice(d.beats.length).map(b=>b.id)}} : {}),
+          rewind:false,clock:out.state.clock,beats:out.state.beats.slice(d.beats.length).map(b=>b.id),
+          beat_variants:out.state.beats.slice(d.beats.length).filter(b=>b.variantId).map(({id,variantId})=>({id,variantId})),
+          consequences:out.consequences.map(({id,source,t})=>({id,source,t}))}} : {}),
       ...(isQuestion || !assessment ? {noAdvance:true} : {}),onlineExperience:true,
       npc_state:{proposal_shown:true,handled:state.npc.handled,emotion_triggered:Boolean(state.director?.facts?.npcVoiced),emotion_result:state.npc.emotion}};
     const displayed=kind==='hint' ? session.lastDisplayedReply || spec.opening : ending?.text || reply;
@@ -678,8 +732,7 @@ class ConversationCoach {
     session.decisions.push(decision);
     session.lastDisplayedReply=displayed;
     session.state=state; session.revision++; session.updatedAt=Date.now();
-    // A rewound choice is taken back, so it stays out of the context the models see next turn.
-    if (!out?.rewind) session.history.push({role:'user',content:text || intent},{role:'assistant',content:reply});
+    session.history.push({role:'user',content:text || intent},{role:'assistant',content:reply});
     session.history=session.history.slice(-24);
     const onlineRecovered=Boolean(session.offline && !offline && !['observe','hint'].includes(intent));
     if (!['observe','hint'].includes(intent)) session.offline=offline;

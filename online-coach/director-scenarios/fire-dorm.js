@@ -1,4 +1,5 @@
 'use strict';
+const {sources}=require('../../web-pwa/scenarios/v3/fire-dorm.json');
 const HAZARDS = {
   elevator:{kind:'fatal',label:'搭電梯',pattern:/(?:搭|坐|乘|按)(?:乘)?電梯|電梯下樓|坐(?:升降機|電梯)|搭升降機/,
     text:'我朝電梯走去，走廊的煙立刻遮住前方。電梯可能停在半路，我也可能被困在煙裡。'},
@@ -33,6 +34,17 @@ const PRINCIPLES = {
   cloth_limit:{label:'知道濕毛巾擋不住有毒煙氣',source:'wet-towel',bonus:true},
 };
 const ids = Object.keys(PRINCIPLES);
+const teaching={
+  barrier:[10,'關門能隔開走廊濃煙，替受困者爭取時間。','走廊已滿是煙時，先把房門關緊，減少煙進入房間。',f=>!f.firefightersHere],
+  stop_roommate:[7,'先說明門外煙況，可避免同伴再打開房門。','室友想開門查看時，從室內提醒她門外已有濃煙，避免煙一下灌入。',f=>!f.firefightersHere&&!f.npcStopped],
+  seal_gap:[9,'門關緊後塞住縫隙可減少煙滲入。','關門後用手邊可取得的濕布塞住門縫，不為找布離開房間。',f=>f.doorClosed&&!f.firefightersHere],
+  dial:[8,'打 119 直接聯絡消防救援。','發現受困後儘早打 119，說清楚所在位置和現況。',f=>!f.firefightersHere],
+  room:[8,'樓層房號能幫消防員縮小搜尋範圍。','接上 119 後先報出樓層、房號與受困人數，讓消防員找得到我。',f=>f.called&&!f.firefightersHere],
+  signal:[6,'窗邊的聲音或醒目衣物能讓外面的人找到位置。','確認窗邊狀況後，從室內向外示意，讓人辨認所在的房間。',f=>!f.firefightersHere],
+  handoff:[8,'回應門外呼喊能讓消防員知道房內有人。','聽到消防員敲門喊話時，從房內回應位置和人數，讓消防員接手。',f=>f.firefightersHere],
+};
+for(const [id,[priority,why,tip,eligible]] of Object.entries(teaching))
+  Object.assign(PRINCIPLES[id],{priority,why,tip,eligibleWhen:({facts})=>eligible(facts)});
 
 const ACK = {
   barrier:'我把房門推緊，門鎖喀一聲扣上，走廊的煙被擋在外面。',
@@ -136,27 +148,6 @@ const ENDING_TEXT = {
 const TYPE = {SAFE_RESCUE:'安全待救獲救',DELAYED_RESCUE:'延誤後獲救',CRITICAL_FAILURE:'危急失敗'};
 const INJURY = {NONE:'無傷',MILD:'輕傷',MODERATE:'中度（需送醫）',SEVERE:'重傷（需住院）',NOT_ASSESSED:'傷勢不評定'};
 
-function lessons(state, sources) {
-  const src = id => sources.filter(s => s.id === id);
-  const done = ids.filter(id => state.met[id] && !PRINCIPLES[id].bonus);
-  const missed = ids.filter(id => !state.met[id] && !PRINCIPLES[id].bonus && id !== 'handoff');
-  const out = [];
-  if (done.length) out.push({title:'做得好的地方',why:done.map(id => PRINCIPLES[id].label).join('、')+'。',next:'',sources:[]});
-  for (const id of missed) out.push({title:'可以再補上的',why:PRINCIPLES[id].label+'。',next:'',sources:src(PRINCIPLES[id].source)});
-  if (state.wrongNumber) out.push({title:'報案號碼',why:'這次先撥了110。火災、受困要撥119，消防隊才能直接派車。',next:'',sources:src('report')});
-  if (state.exposure.smoke >= 2) out.push({title:'為什麼吸到煙',why:'房門開著或門縫沒塞住的時間越久，飄進房間的煙越多。越早關門、塞門縫，吸入的煙越少。',next:'',sources:src('nfa')});
-  for (const id of state.hazards || []) if (HAZARDS[id].kind === 'fatal')
-    out.push({title:'危險的選擇：'+HAZARDS[id].label,why:'火災時'+HAZARDS[id].label+'可能直接造成嚴重傷亡。受困時應關門、塞門縫、打119報位置、靠窗求救。',next:'',sources:src('safety')});
-  return out;
-}
-function review(state) {
-  const done = ids.filter(id => state.met[id]).map(id => PRINCIPLES[id].label);
-  const missed = ids.filter(id => !state.met[id] && !PRINCIPLES[id].bonus && id !== 'handoff').map(id => PRINCIPLES[id].label);
-  const risky = [...new Set((state.hazards || []).filter(id => HAZARDS[id].kind === 'fatal'))].map(id => HAZARDS[id].label);
-  return `做得好：${done.join('、') || '—'}\n可以再補上：${missed.join('、') || '—（這次做得很完整）'}` +
-    (state.wrongNumber ? '\n報案號碼：火災要撥119，不是110。' : '') +
-    (risky.length ? `\n曾經選擇的危險做法：${risky.join('、')}（已回到當下重新決定）` : '');
-}
 function narrationInput(before, out, text, history) {
   const f = out.state.facts;
   return {player:text, history:history.slice(-4), question:out.kind === 'question' ? text : '',
@@ -192,6 +183,11 @@ Object.assign(PRINCIPLES.keep_contact,{requires:{called:true},effect:{facts:{kee
 PRINCIPLES.cloth_limit.validate=text=>/擋不住|擋不了|沒(?:有)?用|無效|不能(?:過濾|擋)|過濾不了|還是有毒/.test(text);
 
 for(const id of Object.keys(TEACH)) HAZARDS[id].teach=TEACH[id];
+for(const hazard of Object.values(HAZARDS)) hazard.source='safety';
+HAZARDS.elevator.text='我進了電梯，門一關，轎廂突然停住。警報聲隔著門傳進來，我按了開門鍵，門沒有動。';
+HAZARDS.smoke.text='濃煙撲到我臉上，連手邊的牆都看不清。我蹲下摸索，回頭時也找不到原來的房門。';
+HAZARDS.jump.text='我翻過窗台，落到下方的平台。耳邊還聽得到警報，我試著起身，卻沒辦法站起來。';
+HAZARDS.climb_window.text='我沿外牆往下爬，手滑落到下方的平台。原本的窗戶離我更遠，我無法回到房內。';
 Object.assign(HAZARDS.open,{when:f=>!f.firefightersHere,effect:{facts:{doorClosed:false,sealed:false},exposure:{smoke:2},
   lines:['門一打開，濃煙一下子灌進房裡，我和小岑都嗆得咳個不停。']}});
 Object.assign(HAZARDS.bathroom,{when:(_,text)=>!/毛巾|沾水|弄濕|浸濕|打濕|裝水/.test(text),modelWhen:()=>true,
@@ -200,9 +196,9 @@ Object.assign(HAZARDS.smoke,{when:(f,text)=>!(f.firefightersHere && /(?:跟|隨)
 HAZARDS.collect.effect=({facts})=>({exposure:facts.sealed?{}:{smoke:1},lines:['我花時間收東西，回過神來，門縫飄進來的煙更多了。']});
 HAZARDS.hot_handle.effect={exposure:{heat:2},lines:['門把燙得我立刻縮手，掌心一陣刺痛。']};
 
-const phone={correct:['119'],principle:'dial',effect:{facts:{called:true}},
-  wrong:{110:{lines:['電話那頭說：「這裡是110。火災請改撥119，消防隊才能直接派車。」'],
-    notDone:['撥的是110，不是119，消防隊還沒接到通報']}},
+const phone={channels:{119:{purpose:'消防救援及救護',principle:'dial',effect:{facts:{called:true}}},
+  110:{purpose:'警察報案',wrong:{lines:['電話那頭說：「這裡是110，119 的消防救援尚未接到這通電話。」'],
+    notDone:['撥的是110，不是119，消防隊還沒接到通報']}}},
   other:{notDone:['打的不是119，消防隊還沒接到通報']},
   normalize(text,dialed,matches) {
     const said110=[...text.matchAll(/1\s*1\s*0/g)].some(m=>!/(?:不要|別|不是|不用|不能|不可以)(?:再)?(?:打|撥)?(?:給)?\s*$/.test(text.slice(Math.max(0,m.index-6),m.index)));
@@ -224,21 +220,23 @@ const operations=['barrier','stop_roommate','seal_gap','@phone',...fields,
 ];
 const beat=(id,at,when,text,extra={})=>({id,at,when,normal:{text},...extra});
 const beats=[
-  beat('npc_opens',2,({facts:f})=>!f.doorClosed&&!f.npcStopped,'小岑把門又拉開了一點，濃煙一下子灌進來，我們都嗆得咳起來。',{repeat:true,effects:{exposure:{smoke:2}}}),
+  beat('npc_opens',2,({facts:f})=>!f.doorClosed&&!f.npcStopped,
+    ({seen,clock})=>seen('npc_opens')?.t<clock?'門仍開著，警報聲一下變得很近。小岑退離門邊，咳得叫不出我的名字。':
+      '小岑把門又拉開了一點，濃煙一下子灌進來，我們都嗆得咳起來。',{repeat:true,effects:{exposure:{smoke:2}}}),
   beat('smoke_in',0,({facts:f,clock})=>!f.doorClosed && (f.npcStopped||clock<2),'門縫一直飄進煙，房裡開始有焦味。',{repeat:true,effects:{exposure:{smoke:1}}}),
-  beat('npc_insists',2,({facts:f})=>f.doorClosed&&!f.npcStopped,'小岑又走到門邊，手放在門把上：「我還是想開一點點看看外面。」'),
-  beat('npc_fear',0,({facts:f})=>f.npcStopped&&!f.npcVoiced,'小岑把手縮回來，聲音發抖：「我很怕其他同學還在走廊……」',{effects:{facts:{npcVoiced:true}}}),
+  beat('npc_insists',2,({facts:f})=>f.doorClosed&&!f.npcStopped,'小岑又走到門邊，手放在門把上：「我還是想開一點點看看外面。」',{decision:true}),
+  beat('npc_fear',0,({facts:f})=>f.npcStopped&&!f.npcVoiced,'小岑把手縮回來，聲音發抖：「我很怕其他同學還在走廊……」',{decision:true,effects:{facts:{npcVoiced:true}}}),
   // On the first seep turn the repeat branch is excluded, even on an even clock.
   {id:'seep_more',at:4,repeat:true,when:({facts:f,clock})=>f.doorClosed&&!f.sealed&&f.seepShown&&clock%2===0,
     normal:{text:'門底的煙越來越濃，喉嚨一陣乾癢。',effects:{exposure:{smoke:1}}}},
   {id:'seep',at:3,when:({facts:f})=>f.doorClosed&&!f.seepShown,effects:{facts:{seepShown:true}},
-    normal:{text:'門底的縫開始飄進焦味，房裡的空氣變嗆了。',effects:{exposure:{smoke:1}}},
+    normal:{text:'門底的縫開始飄進焦味。'},
     prevented:{id:'seep_mild',when:({facts:f})=>f.sealed,text:'門底又飄進一絲焦味，還好毛巾塞得夠緊，煙只滲進一點點。'}},
   beat('nudge',3,({facts:f})=>!f.called&&!f.nudged,'小岑抓著手機看我：「我們要不要打電話求救？」',{effects:{facts:{nudged:true}}}),
   beat('dispatcher_ask',0,({facts:f})=>f.called&&fields.some(id=>!f[id])&&f.askedReport===0,
-    '接線員問：「請告訴我地址、樓層房號、有幾個人，還有現在的狀況。」',{effects:{facts:{askedReport:1}}}),
+    '接線員問：「請告訴我地址、樓層房號、有幾個人，還有現在的狀況。」',{decision:true,effects:{facts:{askedReport:1}}}),
   beat('dispatcher_again',0,({facts:f,clock,seen})=>f.called&&!f.room&&f.askedReport===1&&clock>=(seen('dispatcher_ask')?.t||0)+2,
-    '接線員又問了一次：「你們在幾樓、哪一間？」',{effects:{facts:{askedReport:2}}}),
+    '接線員又問了一次：「你們在幾樓、哪一間？」',{decision:true,effects:{facts:{askedReport:2}}}),
   beat('seen',0,({facts:f})=>f.signaled,'樓下有人抬頭，朝我們的窗戶揮手大喊：「看到你們了！」'),
   beat('battery',5,({facts:f})=>f.called&&!f.phoneLow,'手機跳出低電量提示，電量只剩一格。',{effects:{facts:{phoneLow:true}}}),
   {id:'plan_arrival',hidden:true,repeat:true,when:({facts:f})=>!f.firefightersHere,effects:({facts:f,clock:t})=>{
@@ -252,10 +250,22 @@ const beats=[
   beat('arrival',0,({facts:f,clock:t})=>f.arriveAt!==null&&t>=f.arriveAt&&!f.firefightersHere,
     ({facts:f})=>f.locatedAt!==null?'我聽見消防員隔著房門大喊：「503有人嗎？」':
       '走廊傳來消防員一間一間敲門的聲音，接著有人敲我們的門：「裡面有人嗎？」',
-    {effects:({clock})=>({facts:{firefightersHere:true,arrivedAt:clock}})}),
+    {decision:true,effects:({clock})=>({facts:{firefightersHere:true,arrivedAt:clock}})}),
+];
+const consequences=[
+  {id:'npc_opened_closed_door',source:'nfa',when:({facts:f,clock,seen})=>!f.npcStopped&&f.doorClosed&&!f.firefightersHere&&
+    Boolean(seen('npc_insists'))&&clock>seen('npc_insists').t,
+    text:'小岑把門拉開，濃煙撲進房裡。她彎下腰咳得說不出話。',effect:{facts:{doorClosed:false,sealed:false,npcSmoke:true},exposure:{smoke:2}},
+    tip:PRINCIPLES.stop_roommate.tip},
+  {id:'left_barrier_open',source:'nfa',when:({facts:f,clock})=>!f.doorClosed&&!f.firefightersHere&&clock===1,
+    text:'煙從半開的門一路湧過來，我眨了幾次眼還是覺得刺。',tip:PRINCIPLES.barrier.tip},
+  {id:'unsealed_gap',source:'nfa',when:({facts:f,clock})=>f.doorClosed&&!f.sealed&&!f.seepShown&&!f.firefightersHere&&clock>=3,
+    text:'房裡的空氣一陣比一陣嗆，我聞到焦味就開始咳。',effect:{exposure:{smoke:1}},tip:PRINCIPLES.seal_gap.tip},
+  {id:'no_rescuer_reply',source:'nfa',when:({facts:f,flags,clock})=>f.firefightersHere&&!flags.handoff&&clock===f.arrivedAt+1,
+    text:'門外的消防員等不到回音，腳步聲停了幾秒。',tip:PRINCIPLES.handoff.tip},
 ];
 function settle({facts:f,clock,flags,assessment}) {
-  if (flags.handoff) return {ending:{type:f.arriveAt!==null&&f.arriveAt<=7?'SAFE_RESCUE':'DELAYED_RESCUE'},
+  if (flags.handoff) return {ending:{type:f.arriveAt!==null&&f.arriveAt<=7&&!f.npcSmoke?'SAFE_RESCUE':'DELAYED_RESCUE'},
     text:'門外傳來回應：「收到，我們進來了！」消防員拉開門，用手電筒照著我們，一個一個把我們帶出去。'};
   if (!f.firefightersHere || f.arrivedAt===null || assessment.danger) return null;
   if (clock===f.arrivedAt+1) return {hold:true,text:'門外又大聲喊了一次：「裡面有人嗎？有人就回答！」'};
@@ -264,17 +274,22 @@ function settle({facts:f,clock,flags,assessment}) {
 }
 const questions=Object.entries(HINTS).map(([text,hints])=>({text,hints,when:({state})=>question(state)===text}));
 const confirmInstruction = `判斷玩家這句話裡，是不是玩家「自己打算去做」指定的危險行為。以下算 true：玩家說要做；條件式的計畫（「如果煙變大我就跳窗」）；提出自己的做法並問可不可以（「我去搭電梯可以嗎？」）。以下算 false：拒絕或不做、單純問結果的假設（「如果搭電梯會怎樣？」）、警告或勸阻別人、描述別人、已經忍住沒做。只回傳 executing。`;
-module.exports={actor:/(?:有人|別人|室友|小岑|她|他|同學)(?:正在|在|要|想)?$/,id:'drill_fire_dorm',facts:freshFacts(),exposure:{smoke:0,heat:0},lastQuestion:'door',
+module.exports={id:'drill_fire_dorm',sources,consequences,facts:freshFacts(),exposure:{smoke:0,heat:0},lastQuestion:'door',
   npc:{name:'小岑',mistake:'想開門',emotion:'我很怕其他同學還在走廊……'},
   npcState:f=>({handled:f.npcStopped,proposal:f.npcStopped?null:'想開門',emotion:f.npcCalmed?'supportive':null}),
-  principles:PRINCIPLES,hazards:HAZARDS,phone,operations,beats,settle,questions,look,review,fallback,modelInput,
-  observationPrinciples:['check_window'],questionOverridesDanger:true,
+  principles:PRINCIPLES,hazards:HAZARDS,phone,operations,beats,settle,questions,look,fallback,modelInput,
+  observationPrinciples:['check_window'],
   cues:text=>({dispatcher:/接線員|電話那頭/.test(text),respond:/有人|這裡|在這|配合|聽.*指示|回應|回答/.test(text)}),
   instructions:{direct:instruction,narrate_director:narratorInstruction,confirm_danger:confirmInstruction},
   narrationFacts:state=>narrationInput(null,{state,accepted:[]},'',[]).facts,checkReaction,
   idle:()=>'我停了一下，聽見警報還在響，房裡的空氣越來越悶。',
-  answer:()=>'從這裡看，門外是濃煙，窗外目前沒有煙。',
+  answer:()=>'從這裡看，門外是濃煙，窗戶外面沒有煙。',
   injury:{thresholds:[1,3,5]},
-  ending:{types:TYPE,injuries:INJURY,text:ENDING_TEXT,lessons,
+  reflectionPrompt:'如果換成租屋處，能說出哪幾項位置資訊，讓消防員從街上就知道該找哪扇窗？',
+  ending:{types:TYPE,injuries:INJURY,text:ENDING_TEXT,
+    label:(state,info)=>info.hazard?'未能脫離險境':info.injury==='MODERATE'||info.injury==='SEVERE'?'獲救後需送醫':undefined,
+    summary:(state,info)=>info.hazard?'選擇的路線使我無法繼續脫困。':
+      state.facts.npcSmoke?'房門再次打開，煙進入房間，救援前暴露增加。':
+      info.type==='SAFE_RESCUE'?'隔開濃煙並提供位置，消防員找到受困房間。':'搜尋或確認受困者位置花了更久。',
     causes:state=>state.exposure.smoke>=2?['房門或門縫沒有及早隔住，吸入了煙']:[]},
 };

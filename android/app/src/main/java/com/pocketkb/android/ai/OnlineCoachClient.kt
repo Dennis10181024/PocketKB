@@ -81,6 +81,8 @@ data class OnlineScenarioPresentation(
     val status: List<String> = emptyList(),
     val observation: String = "",
     val endingTitle: String? = null,
+    val directorMode: Boolean = false,
+    val canRetry: Boolean = false,
 )
 
 /** Decodes verified state and the presentation of a quality-assessed turn. */
@@ -99,6 +101,8 @@ object OnlineCoachState {
             status = scene.strings("status"),
             observation = node.optString("observation"),
             endingTitle = ending?.optString("type")?.takeIf { it.isNotBlank() },
+            directorMode = value.optBoolean("directorMode"),
+            canRetry = value.optBoolean("canRetry"),
             lessons = ending?.objects("lessons").orEmpty().map { lesson ->
                 OnlineScenarioLesson(
                     lesson.optString("title", "這個行動為什麼危險"),

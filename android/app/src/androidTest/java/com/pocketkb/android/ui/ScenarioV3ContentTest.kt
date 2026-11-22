@@ -106,6 +106,24 @@ class ScenarioV3ContentTest {
     }
 
     @Test
+    fun directorDebriefRoutesRetryToTheSameDecisionInsteadOfStartingANewSession() {
+        var retries = 0
+        var newSessions = 0
+        composeRule.setContent {
+            PocketKbTheme {
+                ScenarioV3Content(
+                    model = terminalModel(physicalStatus = "CRITICAL", outcomeTitle = "搭乘電梯後受困")
+                        .copy(directorMode = true, canRetry = true),
+                    onLeave = {}, onObserve = {}, onSubmit = { _, _ -> },
+                    onRestart = { newSessions++ }, onOpenSource = {}, onRetryDecision = { retries++ },
+                )
+            }
+        }
+        composeRule.onNodeWithTag("scenario_review_retry_decision").performScrollTo().performClick()
+        composeRule.runOnIdle { check(retries == 1 && newSessions == 0) }
+    }
+
+    @Test
     fun waitingForRescueIsNeverPresentedAsEvacuatedOrRescued() {
         composeRule.setContent {
             PocketKbTheme {

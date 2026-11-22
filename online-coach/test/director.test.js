@@ -86,33 +86,33 @@ test('good choices in any order lead to a quick, uninjured rescue; prepared esca
   assert.equal(s.terminal,true);
   assert.equal(s.state.endingType,'SAFE_RESCUE');
   assert.equal(s.state.injuryLevel,'NONE');
-  assert.ok(s.ending.lessons.some(l=>l.title==='做得好的地方'));
+  assert.ok(s.ending.lessons.some(l=>l.title==='你做對的關鍵決定'));
   const replayed=Director.replay(s.decisions);
   const {lastText,...live}=s.state.director;
   assert.deepEqual(replayed,live,'outcomes replay from logged assessments');
 });
 
-test('fatal choices rewind to that moment (ending only after repeated attempts); warnings, refusals and questions do not',async()=>{
+test('fatal choices directly end the session; warnings, refusals and questions do not',async()=>{
   const coach=make({},{},{confirm:{'如果我搭電梯會怎樣？':false}});
   let s=await say(coach,coach.create(fire),'我去搭電梯');
-  assert.equal(s.terminal,false,'the player gets to go back and choose again');
-  assert.equal(s.kind,'rewind');
-  assert.match(s.reply,/電梯.*回到剛才那一刻/s);
-  assert.equal(s.state.director.clock,0,'rewinding costs no time');
-  for (let i=0;i<3;i++) s=await say(coach,s,'我去搭電梯');
+  assert.equal(s.terminal,true);
+  assert.equal(s.kind,'failed');
+  assert.match(s.reply,/轎廂突然停住/);
+  assert.doesNotMatch(s.reply,/回到當下|回到剛才|真的這樣做|你應該/);
+  assert.equal(s.state.director.clock,0);
   assert.equal(s.state.endingType,'CRITICAL_FAILURE');
   assert.equal(s.ending.injury,'傷勢不評定');
   for (const text of ['跑出去很危險，我們留在房間','跟小岑說千萬不能開門','我不會搭電梯','如果我搭電梯會怎樣？','有人在搭電梯']) {
     const t=await say(coach,coach.create(fire),text);
-    assert.notEqual(t.kind,'rewind',text);
+    assert.notEqual(t.kind,'failed',text);
   }
   const lied=make({'我把門關好':{danger:'jump',dangerEvidence:'不存在的原文',dangerIntent:'execute'}});
   const safe=await say(lied,lied.create(fire),'我把門關好');
-  assert.notEqual(safe.kind,'rewind','model danger needs real evidence');
+  assert.notEqual(safe.kind,'failed','model danger needs real evidence');
   const edge='我才不要搭電梯咧，樓梯比較快';
   const asked=make({[edge]:{danger:'elevator',dangerEvidence:'搭電梯',dangerIntent:'refuse'}},{},{confirm:{[edge]:false}});
   const kept=await say(asked,asked.create(fire),edge);
-  assert.notEqual(kept.kind,'rewind','a rule hit the model reads as refusal is confirmed with a yes/no check');
+  assert.notEqual(kept.kind,'failed','a rule hit the model reads as refusal is confirmed with a yes/no check');
 });
 
 test('a narrator sentence that contradicts the facts is replaced by our own acknowledgement',async()=>{

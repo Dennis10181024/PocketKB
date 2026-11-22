@@ -50,8 +50,8 @@ function records() {
 }
 function save(result,exited=false) {
   const rows=records();
-  if (rows.some(row=>row.sessionId===result.sessionId)) return;
-  rows.unshift({sessionId:result.sessionId,title:result.scene.title,
+  if (rows.some(row=>row.sessionId===result.sessionId && (row.attempt || 1)===(result.attempt || 1))) return;
+  rows.unshift({sessionId:result.sessionId,attempt:result.attempt || 1,title:result.scene.title,
     ending_type:exited?'EXITED':result.state.endingType,injury_level:result.state.injuryLevel,
     ending:result.ending ? {type:result.ending.type,injury:result.ending.injury} : null,
     decisions:result.decisions.map(({turn,actionIds,source,validation,fallbackReason,npc_state})=>
@@ -68,7 +68,7 @@ function suspendIdle(reset=false) {
 }
 function syncIdle() {
   suspendIdle();
-  if (document.hidden || online.busy || idle.composing || online.draft.length || !online.session || online.session.terminal || online.session.suggestions?.length) return;
+  if (document.hidden || online.busy || idle.composing || online.draft.length || !online.session || online.session.directorMode || online.session.terminal || online.session.suggestions?.length) return;
   idle.started=performance.now();
   idle.timer=setTimeout(()=>{
     idle.timer=null;
@@ -92,10 +92,11 @@ function render() {
       ${presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered) ? `<p role="status">${esc(presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered))}</p>` : ''}
       ${s.terminal ? `<section class="fire-review drill-panel" aria-live="polite">
         <h3>${esc(s.ending?.type)}</h3><p class="drill-notice">${esc(s.ending?.injury)}</p><p class="online-reply">${esc(s.ending?.text)}</p>
-        <h3>簡單回顧</h3><p>結果：${esc(s.ending?.type)} · ${esc(s.ending?.injury)}</p>
-        ${s.ending?.decisions.length ? `<h4>關鍵決策</h4><ul>${s.ending.decisions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
-        ${s.ending?.causes.length ? `<h4>造成傷勢的步驟</h4><ul>${s.ending.causes.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
-        ${(s.ending?.lessons || []).map(lesson=>`<h4>${esc(lesson.title || '這個行動為什麼危險')}</h4><p>${esc(lesson.why)}</p><h4>下次可以怎麼做</h4><p>${esc(lesson.next)}</p>${lesson.sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a>`).join('')}`).join('')}
+        <h3>回顧</h3>
+        ${!s.directorMode && s.ending?.decisions.length ? `<h4>關鍵決策</h4><ul>${s.ending.decisions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
+        ${!s.directorMode && s.ending?.causes.length ? `<h4>造成傷勢的步驟</h4><ul>${s.ending.causes.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
+        ${(s.ending?.lessons || []).map(lesson=>`<h4>${esc(lesson.title || '這個行動為什麼危險')}</h4>${lesson.why ? `<p>${esc(lesson.why).replaceAll('\n','<br>')}</p>` : ''}${lesson.next ? `<p>${esc(lesson.next)}</p>` : ''}${lesson.sources.map(source=>`<p><a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a></p>`).join('')}`).join('')}
+        ${s.canRetry ? `<button class="primary" id="onlineRetryDecision" ${disabled}>從這個決定重來</button>` : ''}
       </section>` : `
       <section class="task-box drill-panel" ${online.timing ? `data-first-ms="${online.timing.first}" data-complete-ms="${online.timing.complete}"` : ''}>
         <h3>現在發生什麼</h3>
@@ -112,7 +113,7 @@ function render() {
           <button class="primary" id="onlineSend" ${disabled}>${online.busy?'正在處理這次決定':'送出'}</button>
         </div>
         ${online.observation?`<p class="drill-observation">${esc(presentation.sceneText(node.observation || node.situation))}</p>`:''}
-        ${s.suggestions?.length?`<div class="drill-hints"><h3>可以試著這樣說</h3>${s.suggestions.map((text,index)=>`<button class="ghost" data-hint="${index}" ${disabled}>${esc(text)}</button>`).join('')}</div>`:''}
+        ${s.suggestions?.length?`<div class="drill-hints"><h3>${s.directorMode?'情境提示':'可以試著這樣說'}</h3>${s.suggestions.map((text,index)=>s.directorMode?`<p>${esc(text)}</p>`:`<button class="ghost" data-hint="${index}" ${disabled}>${esc(text)}</button>`).join('')}</div>`:''}
       </section>`}
       ${s.citations?.length?`<details><summary>本回合來源</summary>${s.citations.map(item=>`<p><a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a></p>`).join('')}</details>`:''}
     `}
@@ -129,6 +130,7 @@ function render() {
   document.querySelector('#onlineSend')?.addEventListener('click',()=>send(online.draft));
   document.querySelector('#onlineObserve')?.addEventListener('click',()=>{online.observation=!online.observation;render();document.querySelector('#onlineObserve')?.focus();});
   document.querySelector('#onlineHint')?.addEventListener('click',()=>send('','hint','button'));
+  document.querySelector('#onlineRetryDecision')?.addEventListener('click',()=>send('','retry_decision'));
   document.querySelectorAll('[data-hint]').forEach(button=>button.addEventListener('click',()=>{
     online.choice=Number(button.dataset.hint);
     online.edited=false;online.draft=s.suggestions[online.choice];
@@ -216,7 +218,7 @@ async function resume(snapshot,signal) {
 
 async function send(text,intent='action',hintTrigger) {
   const snapshot=online.session;
-  if (online.busy || !snapshot || snapshot.terminal || (intent==='action'&&!text.trim()) || (intent==='hint'&&snapshot.suggestions?.length)) return;
+  if (online.busy || !snapshot || (snapshot.terminal && intent!=='retry_decision') || (intent==='action'&&!text.trim()) || (intent==='hint'&&snapshot.suggestions?.length)) return;
   const request={requestId:crypto.randomUUID(),revision:snapshot.revision,text,intent,hintTrigger,
     hintSelectedIndex:intent==='action'?online.choice:null,
     hintEditedBeforeSubmit:intent==='action'&&online.choice!==null?Boolean(online.edited):null};
@@ -229,7 +231,7 @@ async function send(text,intent='action',hintTrigger) {
     let result;
     try {
       const base = snapshot.localOnly ? await resume(snapshot,controller.signal) : snapshot;
-      result=base.terminal ? base : await streamTurn(base.sessionId,{...request,revision:base.revision},part=>{
+      result=base.terminal && intent!=='retry_decision' ? base : await streamTurn(base.sessionId,{...request,revision:base.revision},part=>{
         if (controller.signal.aborted || intent==='hint') return;
         preview+=part;
         const output=document.querySelector('#currentNarration .online-reply');
@@ -238,6 +240,7 @@ async function send(text,intent='action',hintTrigger) {
       if (snapshot.offline) result.onlineRecovered = !result.offline;
     } catch (error) {
       if (controller.signal.aborted) return;
+      if (intent==='retry_decision') throw coachFailure('目前無法連線重來，請恢復連線後再試。',fallbackReason(error));
       result=localResult(snapshot,request,fallbackReason(error));
     }
     if (controller.signal.aborted || online.session?.sessionId!==snapshot.sessionId) return;

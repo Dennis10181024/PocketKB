@@ -121,6 +121,8 @@ internal data class ScenarioV3UiModel(
     val connectionNotice: String = "",
     val criticalLessons: List<ScenarioLessonUiModel> = emptyList(),
     val firstDecision: Boolean = true,
+    val directorMode: Boolean = false,
+    val canRetry: Boolean = false,
 )
 
 @Composable
@@ -212,6 +214,9 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
             roundStartedAt = state.roundStartedAt,
             connectionNotice = state.connectionNotice,
             firstDecision = runtime.nodeIndex(session) == 0,
+            directorMode = state.onlineScenarioPresentation?.directorMode
+                ?: (state.onlineEnabled && session.scenarioId in setOf("drill_fire_dorm", "earthquake_school")),
+            canRetry = state.onlineScenarioPresentation?.canRetry == true,
             criticalLessons = state.onlineScenarioPresentation?.lessons?.map { lesson ->
                 ScenarioLessonUiModel(lesson.why, lesson.next, lesson.sources.map {
                     ScenarioSourceUiModel(it.agency, it.title, it.url)
@@ -233,6 +238,7 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
         onOpenSource = uri::openUri,
         onHint = actions::requestPracticeHints,
         onPracticeSubmit = actions::submitPractice,
+        onRetryDecision = actions::retryPracticeDecision,
     )
 }
 
@@ -247,6 +253,7 @@ internal fun ScenarioV3Content(
     modifier: Modifier = Modifier,
     onHint: (String) -> Unit = {},
     onPracticeSubmit: ((String, Int?, Boolean) -> Unit)? = null,
+    onRetryDecision: () -> Unit = {},
 ) {
     var input by rememberSaveable(model.sessionId, stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue()) }
     var showObservation by rememberSaveable(model.sessionId, model.task) { mutableStateOf(false) }
@@ -280,8 +287,8 @@ internal fun ScenarioV3Content(
             showObservation = false
         }
     }
-    LaunchedEffect(remaining, foreground, model.active, model.isGenerating, model.hintOptions.isEmpty(), input.text, input.composition) {
-        if (!foreground || !model.active || model.isGenerating || model.hintOptions.isNotEmpty() || input.text.isNotEmpty() || input.composition != null) return@LaunchedEffect
+    LaunchedEffect(remaining, foreground, model.active, model.isGenerating, model.hintOptions.isEmpty(), input.text, input.composition, model.directorMode) {
+        if (model.directorMode || !foreground || !model.active || model.isGenerating || model.hintOptions.isNotEmpty() || input.text.isNotEmpty() || input.composition != null) return@LaunchedEffect
         val started = android.os.SystemClock.elapsedRealtime()
         try {
             delay(remaining.longValue)
@@ -338,9 +345,10 @@ internal fun ScenarioV3Content(
             ) { Text(if (model.isGenerating) "正在處理這次決定" else "送出") }
             if (showObservation) Text(sceneWords(model.observation.ifBlank { model.situation }), style = MaterialTheme.typography.bodyLarge)
             if (model.hintOptions.isNotEmpty()) {
-                Text("可以試著這樣說", Modifier.semantics { heading() })
+                Text(if (model.directorMode) "情境提示" else "可以試著這樣說", Modifier.semantics { heading() })
                 model.hintOptions.forEachIndexed { index, suggestion ->
-                    OutlinedButton(onClick = { input = TextFieldValue(suggestion); hintIndex = index; edited = false }, enabled = !model.isGenerating,
+                    if (model.directorMode) Text(suggestion)
+                    else OutlinedButton(onClick = { input = TextFieldValue(suggestion); hintIndex = index; edited = false }, enabled = !model.isGenerating,
                         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("scenario_hint_$index")) { Text(suggestion) }
                 }
             }
@@ -355,21 +363,20 @@ internal fun ScenarioV3Content(
                         else model.review?.outcomeExplanation.orEmpty()
                     }
                     Text(sceneWords(ending), style = MaterialTheme.typography.bodyLarge)
-                    Text("簡單回顧", Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium)
-                    Text("結果：$outcome" + (model.injury?.let { " · $it" } ?: ""))
-                    if (model.keyDecisions.isNotEmpty()) {
+                    Text("回顧", Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium)
+                    if (!model.directorMode) Text("結果：$outcome" + (model.injury?.let { " · $it" } ?: ""))
+                    if (!model.directorMode && model.keyDecisions.isNotEmpty()) {
                         Text("關鍵決策", fontWeight = FontWeight.Bold)
                         model.keyDecisions.take(3).forEach { Text(it) }
                     }
-                    if (model.causes.isNotEmpty()) {
+                    if (!model.directorMode && model.causes.isNotEmpty()) {
                         Text("造成傷勢的步驟", fontWeight = FontWeight.Bold)
                         model.causes.forEach { Text(it) }
                     }
                     model.criticalLessons.forEach { (why, next, sources, title) ->
                         Text(title, fontWeight = FontWeight.Bold)
-                        Text(sceneWords(why))
-                        Text("下次可以怎麼做", fontWeight = FontWeight.Bold)
-                        Text(sceneWords(next))
+                        if (why.isNotBlank()) Text(sceneWords(why))
+                        if (next.isNotBlank()) Text(sceneWords(next))
                         sources.forEach { source ->
                             TextButton(onClick = { onOpenSource(source.url) }, modifier = Modifier.heightIn(min = 48.dp)) {
                                 Text(source.title)
@@ -377,6 +384,10 @@ internal fun ScenarioV3Content(
                         }
                     }
                 }
+            }
+            if (model.canRetry) Button(onClick = onRetryDecision, enabled = !model.isGenerating,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("scenario_review_retry_decision")) {
+                Text("從這個決定重來")
             }
             Button(onClick = { confirmRestart = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("scenario_review_restart")) {
                 Text("另開一次練習")

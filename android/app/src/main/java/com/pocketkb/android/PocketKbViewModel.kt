@@ -191,7 +191,7 @@ class PocketKbViewModel(
                 }
                 val request = outgoing.put("revision", remote.getInt("revision")).also { pendingOnline = it }
                 var firstAt: Long? = null
-                val value = if (remote.optBoolean("terminal")) remote else onlineCoach.turn(remote.getString("sessionId"), request) { part ->
+                val value = if (remote.optBoolean("terminal") && intent != "retry_decision") remote else onlineCoach.turn(remote.getString("sessionId"), request) { part ->
                     if (intent != "hint") _uiState.update {
                         if (it.activeSessionId == localId) {
                             if (firstAt == null) firstAt = android.os.SystemClock.elapsedRealtime()
@@ -225,13 +225,23 @@ class PocketKbViewModel(
                     onlineRevision = if (intent in setOf("observe", "hint")) it.onlineRevision else it.onlineRevision + 1,
                     onlineLocalOnly = false, onlineFallbackReason = null, connectionNotice = if (intent == "hint") it.connectionNotice else connectionNotice(fallback, recoveredOnline),
                     onlineStatus = if (value.optBoolean("offline")) "目前使用離線判讀" else "GPT 線上教練", onlineError = "") }
-                if (intent != "hint") {
+                if (intent == "retry_decision" && v3Result != null) {
+                    finishedSessions.remove(localId)
+                    _uiState.update { it.copy(
+                        scenarioStateV3 = v3Result.state, scenarioReviewV3 = null, lastReport = "",
+                        drillStep = it.drillStep.copy(outcome = DrillOutcome.CONTINUE),
+                    ) }
+                } else if (intent != "hint") {
                     if (fireResult != null) sendFireInteraction(text, intent, fireResult)
                     if (v3Result != null) sendScenarioV3Interaction(text, intent, v3Result)
                 }
-            }, offline = { reason ->
+            }, offline = offline@{ reason ->
                 if (_uiState.value.activeSessionId == localId) {
                     pendingOnline = null
+                    if (intent == "retry_decision") {
+                        _uiState.update { it.copy(isGenerating = false, onlinePreview = "", onlineError = "目前無法連線重來，請恢復連線後再試。") }
+                        return@offline
+                    }
                     offlineTurns.add(outgoing.put("clientFallbackReason", reason))
                     applyOfflineTurn(before, text, intent, trigger, hintIndex, edited, reason)
                 }
@@ -582,6 +592,10 @@ class PocketKbViewModel(
         _uiState.update { it.copy(onlineRevision = it.onlineRevision + 1) }
         updateLocalRound(before, result, text, null, hintIndex, edited)
         sendScenarioV3Interaction(text, onlineResult = result)
+    }
+
+    fun retryPracticeDecision() {
+        if (_uiState.value.onlineScenarioPresentation?.canRetry == true) sendOnlineInteraction("", "retry_decision")
     }
 
     fun requestPracticeHints(trigger: String) {
