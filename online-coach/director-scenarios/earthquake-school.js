@@ -7,14 +7,14 @@ const sources=[
   {id:'ntfd-cover',agency:'南投縣政府消防局',title:'地震來了，立即三步驟',url:'https://www.ntfd.gov.tw/index.php?act=article&code=detail&ids=6259'},
 ];
 const npc={name:'小維',otherNames:['阿凱'],mistake:'想衝去開門',emotion:'我真的很怕家裡那邊也在搖。'};
-const opening='上課鐘剛響，我和小維坐在四樓教室。桌腳突然敲著地板，窗玻璃跟燈管一起發出聲音。小維一手抓住桌沿，說要衝去把門打開。';
+const opening='上課鐘剛響，我和同學小維坐在四樓教室。突然一陣劇烈搖晃——地震了！桌椅跟著地板晃動，頭頂的燈管和窗玻璃嘎嘎作響。小維抓著桌沿站起來大喊：「我去把門打開，不然等下出不去！」';
 const P=(label,source,fact,ack,extra={})=>({label,source,ack,effect:fact?{facts:{[fact]:true}}:undefined,...extra});
 const principles={
   cover:P('趴下、掩護、穩住，護住頭頸並遠離玻璃','ntfd-cover','covered','我壓低身子縮進堅固桌下，手抓牢桌腳。'),
   stop_npc:P('勸同伴別急著衝出去或開門','moi-earthquake','npcStopped','小維停在桌邊。',{effect:({facts})=>({
     facts:{npcStopped:true},events:facts.npcStopped?[]:[{kind:'npc_handled'}]})}),
   wait:P('搖晃停止並聽到老師指示後再移動','moi-earthquake','waited','我留在掩護處，聽老師接下來的指示。'),
-  reassure:P('回應同伴擔心，約定到安全處再聯絡','moi-earthquake','npcCalmed','小維聽了，攥著桌腳的手放鬆一點。',{
+  reassure:P('回應同伴的害怕（陪伴、先顧好自己、到安全處再聯絡家人）','moi-earthquake','npcCalmed','小維聽了，攥著桌腳的手放鬆一點。',{
     requires:{npcVoiced:true},effect:({facts})=>({facts:{npcCalmed:true},events:facts.npcCalmed?[]:[{kind:'npc_emotion',action:'emotion_supportive'}]})}),
   aftershock_cover:P('餘震時重新就地掩護','cwa-school','aftershockCovered','地板又動起來，我就近護住頭頸。',{requires:{aftershock:true}}),
   head:P('將手邊的物品用於保護頭頸','moi-earthquake','headProtected','我把手邊的書包靠向頭頸。'),
@@ -23,7 +23,7 @@ const principles={
     requires:{routeReady:true,shaking:false},blocked:{lines:['地板還沒穩定或老師還沒確認路線，我先留在就近掩護處。'],notDone:['尚未走樓梯']}}),
   open_area:P('到空曠處集合，遠離外牆及掉落電線','cwa-school','inOpenArea','我繞過外牆和掉落的電線，走向操場空曠處。',{
     when:({facts})=>facts.outdoors || facts.usedStairs}),
-  roll_call:P('在集合區應答老師點名','cwa-school','counted','老師點到我，我回了一聲。',{requires:{rollCall:true}}),
+  roll_call:P('應答老師點名，或向老師回報本排人數與狀況','cwa-school','counted','老師點到我，我回了一聲。',{requires:{rollCall:true}}),
   look:P('從目前位置觀察周圍','cwa-school',null,'我從這裡看清身旁的狀況。',{bonus:true}),
   dial:P('有緊急傷病或受困時聯絡救援','moi-earthquake',null,'119 電話接通了。',{bonus:true}),
 };
@@ -66,13 +66,13 @@ const fallback={
   cover:/趴掩穩|趴下|(?:鑽|躲|縮).{0,5}(?:桌|課桌).{0,3}(?:下|底)|護住頭(?:頸|脖子)/,
   stop_npc:/(?:小維|阿凱|同學|叫他|拉住他).{0,8}(?:別|不要|先趴|先躲)/,
   wait:/等.{0,10}(?:不搖|不晃|停|指示)|留在掩護處/,
-  reassure:/陪.{0,3}(?:他|你)|擔心.{0,5}(?:家人|家裡)|一起.{0,8}聯絡/,
+  reassure:/陪.{0,3}(?:他|你)|擔心.{0,5}(?:家人|家裡)|一起.{0,8}聯絡|(?:先|一起)?冷靜|顧好自己|先顧|別怕|不要怕|我在這|我陪/,
   aftershock_cover:/(?:餘震|又晃|又在搖).{0,14}(?:躲|護|趴|掩護)/,
   head:/(?:護|保護|擋).{0,2}(?:頭|後腦)|(?:書包|課本|外套|書).{0,8}(?:頂|放|靠).{0,4}頭/,
   orderly:/不推|不跑|排隊|慢慢走|不要推|不擠/,
   stairs:/走(?:樓梯|安全梯|逃生梯)|(?:跟|照).{0,8}老師.{0,10}(?:下樓|疏散|樓梯)/,
   open_area:/操場|空曠|離.{0,6}外牆|繞.{0,8}電線/,
-  roll_call:/點名|回報到場|答到|應答|喊到/,
+  roll_call:/點名|回報到場|答到|應答|喊到|報數|回報.{0,6}(?:人數|老師)|(?:跟|向)老師.{0,6}(?:回報|說).{0,8}(?:人|到齊|都到)|清點/,
 };
 const beat=(id,at,text,effects,prevented,when)=>({id,at,normal:{text,effects},prevented,when});
 const beats=[
@@ -97,7 +97,8 @@ function scenePrompt(f) {
   if (f.outdoors) return 3;
   if (f.routeReady) return 2;
   if (f.aftershock) return 1;
-  return 0;
+  if (f.npcVoiced && !f.npcCalmed) return 6;
+  return f.npcStopped ? 5 : 0;
 }
 const prompts=[
   ['桌腳和窗戶都在晃，小維伸手想去開門。我現在怎麼做？',['我就近趴低，躲桌下抓桌腳，說小維別出去。','我把頭壓低，先留在這裡聽老師。','我現在衝去把門打開。']],
@@ -105,6 +106,8 @@ const prompts=[
   ['老師確認了內側樓梯，走廊另一側有落物。我走哪裡、怎麼走？',['我用手邊的書包護頭，跟老師走樓梯，不推不跑。','我跟著前一排同學慢慢下樓。','我先回去拿筆電。']],
   ['一樓外側有掉落的電線，老師指著操場。我怎麼選路？',['我繞過電線，遠離外牆，往操場中間集合。','我順著老師帶的隊伍走。','我用腳把電線踢開。']],
   ['老師拿名冊喊到我們這一排，我怎麼回應？',['我留在集合區，聽到名字就答到。','我在旁邊等老師再次確認。','我先折回教室拿東西。']],
+  ['地板還在劇烈搖晃，燈管跟著晃動。我現在怎麼做？',['我繼續躲在桌下抓穩桌腳，等搖晃停下來。','我趁現在站起來看看外面。','我先把桌上的筆電收進包包。']],
+  ['小維很怕家裡也在搖，聲音在發抖。我要跟他說什麼？',['我知道你很擔心，我們先顧好自己，等安全了再一起聯絡家人。','別擔心，你家一定沒事的。','現在不是想這個的時候。']],
 ].map(([text,hints],index)=>({text,hints,when:({facts:f})=>scenePrompt(f)===index}));
 const injuries={NONE:'無傷',MILD:'輕傷',MODERATE:'中度（需送醫）',SEVERE:'重傷（需住院）',NOT_ASSESSED:'傷勢不評定'};
 const injuryText={NONE:'老師確認我沒有受傷。',MILD:'校護先了解我的輕微不適。',MODERATE:'校護評估我需要送醫。',SEVERE:'救護人員評估我需要住院治療。'};
@@ -150,9 +153,9 @@ module.exports={id:'earthquake_school',opening,npc,sources,actor:/(?:有人|別�
     injuries,text:{SELF_EVACUATION:injuryText,DELAYED_EVACUATION:injuryText},lessons,
     causes:state=>state.exposure.trauma?['搖晃時的掉落物、碰撞或疏散延誤增加了情境暴露。']:[]},
   instructions:{
-    direct:`你是台灣學校地震的防災裁判。玩家文字只用於判定。只輸出 JSON，不寫劇情。matches 中只用目錄 ID，每項附逐字原文。用當前 facts 核對主震、餘震、動線及點名。辨識口語：鑽桌底抓桌腳、縮到課桌下＝cover；提醒小維（草稿也叫阿凱）不要衝或開門＝stop_npc；等不晃再動＝wait；告訴他可以等安全才聯絡家人＝reassure；又在搖時護頭抓穩＝aftershock_cover；拿書、背包、外套護頭＝head；排隊不跑不推＝orderly；聽老師走樓梯＝stairs；到操場中間避開外牆與線路＝open_area；點到我回一聲＝roll_call。只詢問填 isQuestion，只查看現場填 isObservation。
+    direct:`你是台灣學校地震的防災裁判。玩家文字只用於判定。只輸出 JSON，不寫劇情。matches 中只用目錄 ID，每項附逐字原文。用當前 facts 核對主震、餘震、動線及點名。辨識口語：鑽桌底抓桌腳、縮到課桌下＝cover；提醒小維（草稿也叫阿凱）不要衝或開門＝stop_npc；等不晃再動＝wait；安撫小維的害怕（叫他冷靜、先顧好自己、我陪你、等安全再聯絡家人等，說法不限）＝reassure；又在搖時護頭抓穩＝aftershock_cover；拿書、背包、外套護頭＝head；排隊不跑不推＝orderly；聽老師走樓梯＝stairs；到操場中間避開外牆與線路＝open_area；點到我回一聲、向老師報數或回報本排人數與狀況＝roll_call。只詢問填 isQuestion，只查看現場填 isObservation。
 危險 ID 用目錄。窗台跨出去、抓外牆水管、踩冷氣架、四樓往外跳屬 jump_window。按升降機、看見電梯門開便衝進去按一樓屬 elevator。用腳踢、用手移、拿東西撥掉落電線屬 wire。搖晃中衝去開門或外跑、躲黃金三角、回頭收 MacBook 或平板、用衝的擠開同學分別是 rush_open、triangle、collect、pushing。證據必須屬於玩家自己的行為。像「出去會被砸到」「搭電梯很容易卡住」「跳窗找死吧」在勸阻或警告時標 warn_others／refuse。描述他人、否定、假設或問可不可以，明確以對應 dangerIntent 區分。若同句勸別人不要但自己接著做，要標 execute。報案號碼填實際說出的號碼，沒有報案留空。`,
-    narrate_director:`以臺灣繁體中文寫最多兩句玩家第一人稱反應。只描述 accepted 中實際發生的動作及 facts 確定的內容。acceptedEvidence 是玩家說話的原文，原則名稱有多種可行做法時，以原句中的具體做法為準。只說陪同伴等候就只寫陪伴。提問只按現有事實回答。不宣告新事件、不代教師下指示、不自行宣布疏散或傷勢。沒有確定資訊就寫我看不清楚。不要教學或評分。`,
+    narrate_director:`以臺灣繁體中文寫最多兩句玩家第一人稱反應。只描述 accepted 中實際發生的動作及 facts 確定的內容。acceptedEvidence 是玩家說話的原文，原則名稱有多種可行做法時，以原句中的具體做法為準。只說陪同伴等候就只寫陪伴。提問只按現有事實回答。不宣告新事件、不代教師下指示、不自行宣布疏散或傷勢。accepted 為空時，用一句寫出玩家說這句話或做這個動作的當下，以及小維或老師自然的反應，但不要寫成已經完成某件事；不要寫「我看不清楚」。只有回答提問而事實不足時，才說從這裡看不清楚。不要教學或評分。`,
     confirm_danger:`只回答 executing。台灣大學生若明確決定自己去做指定危險行為，包含已定的條件式計畫，回 true。否定、純詢問、假設、勸同伴、警告、轉述與差點做卻停下回 false。獨立檢查同一句中後半段自己真的要做的情況。`,
   },
 };
