@@ -169,8 +169,9 @@ function createDirector(script) {
       if (line) ctx.out.beatLines.push(line);
     }
   }
-  function noteConsequence(ctx,{id,text,source,evidence='',effect}) {
-    const entry={id,text,source,evidence,t:ctx.clock};
+  function noteConsequence(ctx,{id,text,source,evidence='',matched='',effect}) {
+    const injury=Object.entries(effect?.exposure || {}).reduce((sum,[key,value])=>key==='separation'?sum:sum+Math.max(0,value),0);
+    const entry={id,text,source,evidence,matched,injury,t:ctx.clock};
     (ctx.state.consequences ||= []).push(entry);
     ctx.out.consequences.push(entry);
     update(ctx,effect);
@@ -187,7 +188,11 @@ function createDirector(script) {
       if (blocked.has(id)) return;
       out.accepted.push(id);
       const evidence=assessment.matches.find(match=>match.id===id)?.evidence || assessment.dialEvidence;
-      if (!state.met[id]) {state.met[id]=state.clock+1;out.fresh.push(id);}
+      if (!state.met[id]) {
+        state.met[id]=state.clock+1;
+        out.fresh.push(id);
+        if (assessment.inputEvidence) (state.decisionText ||= {})[id]=assessment.inputEvidence;
+      }
       if (evidence) (state.evidence ||= {})[id] ||= evidence;
     };
     if (!hazard && (assessment.isQuestion || question)) {
@@ -199,8 +204,9 @@ function createDirector(script) {
       const id=assessment.danger.id;
       state.hazards=[...(state.hazards || []),id];
       out.events.push({kind:'hazard',action:id});
-      noteConsequence(ctx,{id,text:hazard.text,source:hazard.source,evidence:assessment.inputEvidence || assessment.danger.evidence});
-      out.programLines.push(hazard.text);
+      noteConsequence(ctx,{id,text:hazard.text,source:hazard.source,evidence:assessment.inputEvidence || assessment.danger.evidence,
+        matched:assessment.danger.evidence});
+      out.programLines.push(hazard.text,...(hazard.endingLine?[hazard.endingLine]:[]));
       out.kind='failed';
       out.ending={type:'CRITICAL_FAILURE',injury:hazard.injury || 'NOT_ASSESSED',hazard:id};
       return done();
@@ -208,7 +214,7 @@ function createDirector(script) {
     if (hazard) {
       const effect=typeof hazard.effect==='function'?hazard.effect(ctx):hazard.effect;
       noteConsequence(ctx,{id:assessment.danger.id,text:effect?.lines?.join('') || hazard.text,source:hazard.source,
-        evidence:assessment.danger.evidence,effect});
+        evidence:assessment.inputEvidence || assessment.danger.evidence,matched:assessment.danger.evidence,effect});
       out.events.push({kind:'hazard',action:assessment.danger.id});
       out.kind='risk';
     }
@@ -233,7 +239,7 @@ function createDirector(script) {
       if (allowed) {update(ctx,p.effect);credit(operation);}
       else update(ctx,p.blocked);
     }
-    out.ackLines=[...new Set(out.accepted)].map(id=>principles[id].ack).filter(Boolean).slice(0,3);
+    out.ackLines=out.fresh.map(id=>principles[id].ack).filter(Boolean).slice(0,3);
     if (script.narrationEvidence) out.acceptedEvidence=assessment.matches.filter(item=>out.accepted.includes(item.id));
     if (assessment.isObservation) {out.kind='observe';return done();}
     ctx.clock=++state.clock;
@@ -282,6 +288,7 @@ function createDirector(script) {
   function compose(out,reaction) {
     const ok=!narrationIssue(out,reaction);
     const head=ok?[reaction]:out.kind==='question'?[]:out.ackLines.length?out.ackLines:
+      out.accepted.length && !out.fresh.length && !out.programLines.length?['我維持剛才的做法。']:
       !out.programLines.length && !out.beatLines.length && !out.endLines.length?[script.idle(out.state)]:[];
     return [...head,...out.programLines.filter(()=>!(ok && out.kind==='question')),...out.beatLines,...out.endLines].join('');
   }
@@ -303,10 +310,35 @@ function createDirector(script) {
   const limitText=(value,max)=>[...value].slice(0,max).join('');
   const quote=(text,max)=>text && text!=='[redacted]' ?
     '「'+limitText(text,max)+([...text].length>max?'…':'')+'」' : '';
+  function decisionQuote(text,matched) {
+    if (!text || text==='[redacted]') return '';
+    const chars=[...text];
+    if (chars.length<=40) return quote(text,40);
+    const index=text.indexOf(matched || '');
+    const focus=[...text.slice(0,Math.max(0,index))].length;
+    const end=Math.min(chars.length,Math.max(focus+Math.min([...matched].length,20)+5,39));
+    const start=Math.max(0,end-38);
+    return '「'+(start?'…':'')+chars.slice(start,end).join('')+(end<chars.length?'…':'')+'」';
+  }
   function review(state,info) {
     const good=Object.entries(principles).filter(([id,p])=>!p.bonus && state.met[id] && state.evidence?.[id] && p.why)
       .sort((a,b)=>(b[1].priority || 0)-(a[1].priority || 0));
-    const missing=Object.entries(principles).filter(([id,p])=>!p.bonus && !state.met[id] && state.opportunities?.[id] && p.tip)
+    const impacts=(state.consequences || []).map(item=>{
+      const authored=script.debrief[item.id];
+      return {...item,...(typeof authored==='function'?authored(item):authored),fatal:hazards[item.id]?.kind==='fatal'};
+    });
+    const ranked=impacts.slice().sort((a,b)=>Number(b.fatal)-Number(a.fatal) || b.injury-a.injury ||
+      Number(Boolean(b.companion))-Number(Boolean(a.companion)) || Number(Boolean(b.matched))-Number(Boolean(a.matched)) || a.t-b.t);
+    const featured=[];
+    const prioritized=[ranked.find(item=>item.fatal),ranked.find(item=>item.injury>0),ranked.find(item=>item.companion),...ranked];
+    for(const item of prioritized){
+      if(!item || featured.some(previous=>previous===item || previous.t===item.t && previous.evidence===item.evidence)) continue;
+      featured.push(item);
+      if(featured.length===3) break;
+    }
+    const turning=impacts.findLast(item=>item.fatal) || impacts.find(item=>item.source);
+    const discussed=new Set([...featured,turning].map(item=>item?.principle));
+    const missing=Object.entries(principles).filter(([id,p])=>!discussed.has(id) && !p.bonus && !state.met[id] && state.opportunities?.[id] && p.tip)
       .sort((a,b)=>(b[1].priority || 0)-(a[1].priority || 0)).slice(0,2);
     const selected=[];
     const positive=[];
@@ -316,23 +348,24 @@ function createDirector(script) {
       positive.push(quote(state.evidence[id],Math.min(36,60-[...p.why].length))+' '+p.why);
       if (positive.length===3) break;
     }
-    const impacts=state.consequences || [];
+    const lessonText=item=>[decisionQuote(item.evidence,item.matched),item.outcome,
+      item.tip || principles[item.principle]?.tip || hazards[item.id]?.teach].filter(Boolean).join(' → ');
     const lessons=[{title:'結果',why:limitText(info.reason || script.ending.summary(state,info),40),next:'',sources:[]}];
     if (positive.length) lessons.push({title:'你做對的關鍵決定',why:positive.join('\n'),next:'',sources:[]});
     if (missing.length) lessons.push({title:'下次可以補上的',why:missing.map(([,p])=>limitText(p.tip,75)).join('\n'),next:'',sources:[]});
-    if (impacts.length) lessons.push({title:'這次的危險選擇與後果',
-      why:impacts.map(item=>[quote(item.evidence,36),item.text, hazards[item.id]?.teach].filter(Boolean).join(' ')).join('\n'),
-      next:'',sources:[]});
-    const turning=impacts.findLast(item=>hazards[item.id]?.kind==='fatal') || impacts.find(item=>item.source);
+    if (featured.length) {
+      const summary=impacts.length>3?script.debriefSummary(impacts,info):'';
+      lessons.push({title:'這次的危險選擇與後果',why:[summary,...featured.map(lessonText)].filter(Boolean).join('\n'),next:'',sources:[]});
+    }
     if (turning) lessons.push({title:'關鍵轉折',
-      why:[quote(turning.evidence,36),turning.text,...impacts.filter(item=>item.t>turning.t).slice(-2).map(item=>item.text)].filter(Boolean).join(' '),
-      next:hazards[turning.id]?.teach || script.consequences?.find(item=>item.id===turning.id)?.tip || missing[0]?.[1].tip || '',
-      sources:[]});
+      why:lessonText(turning),next:'',sources:[]});
     else if (good.length) {
       const [id,principle]=good[0];
-      lessons.push({title:'關鍵轉折',why:quote(state.evidence[id],36)+' '+principle.why,next:principle.tip,sources:[]});
+      const text=state.decisionText?.[id] || state.evidence[id];
+      lessons.push({title:'關鍵轉折',why:[decisionQuote(text,state.evidence[id]),principle.outcome || principle.why,principle.tip].filter(Boolean).join(' → '),
+        next:'',sources:[]});
     }
-    const references=new Set([...impacts.map(item=>item.source),...missing.map(([,p])=>p.source),
+    const references=new Set([...featured.map(item=>item.source),turning?.source,...missing.map(([,p])=>p.source),
       ...good.filter(([id])=>selected.includes(state.evidence[id])).map(([,p])=>p.source)]);
     const sources=script.sources.filter(source=>references.has(source.id))
       .sort((a,b)=>Number(b.id===turning?.source)-Number(a.id===turning?.source)).slice(0,3);
@@ -342,7 +375,7 @@ function createDirector(script) {
     return lessons;
   }
   function ending(state,info,reply) {
-    const injury=script.ending.injuries[info.injury];
+    const injury=info.injury==='NOT_ASSESSED'?null:script.ending.injuries[info.injury];
     return {type:script.ending.label?.(state,info) || script.ending.types[info.type],injury,
       text:info.type==='CRITICAL_FAILURE'?reply:reply+(script.ending.text[info.type]?.[info.injury] || ''),
       decisions:ids.filter(id=>state.met[id] && !principles[id].bonus).slice(0,3).map(id=>principles[id].label),

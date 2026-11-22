@@ -91,7 +91,7 @@ function render() {
       ${s.offline?'<p class="offline-label">目前使用離線判讀</p>':''}
       ${presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered) ? `<p role="status">${esc(presentation.fallbackNotice(s.fallbackReason,s.onlineRecovered))}</p>` : ''}
       ${s.terminal ? `<section class="fire-review drill-panel" aria-live="polite">
-        <h3>${esc(s.ending?.type)}</h3><p class="drill-notice">${esc(s.ending?.injury)}</p><p class="online-reply">${esc(s.ending?.text)}</p>
+        <h3>${esc(s.ending?.type)}</h3>${s.ending?.injury ? `<p class="drill-notice">${esc(s.ending.injury)}</p>` : ''}<p class="online-reply">${esc(s.ending?.text)}</p>
         <h3>回顧</h3>
         ${!s.directorMode && s.ending?.decisions.length ? `<h4>關鍵決策</h4><ul>${s.ending.decisions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}
         ${!s.directorMode && s.ending?.causes.length ? `<h4>造成傷勢的步驟</h4><ul>${s.ending.causes.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>` : ''}

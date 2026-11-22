@@ -185,6 +185,7 @@ PRINCIPLES.cloth_limit.validate=text=>/擋不住|擋不了|沒(?:有)?用|無效
 for(const id of Object.keys(TEACH)) HAZARDS[id].teach=TEACH[id];
 for(const hazard of Object.values(HAZARDS)) hazard.source='safety';
 HAZARDS.elevator.text='我進了電梯，門一關，轎廂突然停住。警報聲隔著門傳進來，我按了開門鍵，門沒有動。';
+HAZARDS.elevator.endingLine='救難人員須先確認樓內的火煙和通行狀況，救援還需要時間。';
 HAZARDS.smoke.text='濃煙撲到我臉上，連手邊的牆都看不清。我蹲下摸索，回頭時也找不到原來的房門。';
 HAZARDS.jump.text='我翻過窗台，落到下方的平台。耳邊還聽得到警報，我試著起身，卻沒辦法站起來。';
 HAZARDS.climb_window.text='我沿外牆往下爬，手滑落到下方的平台。原本的窗戶離我更遠，我無法回到房內。';
@@ -264,6 +265,21 @@ const consequences=[
   {id:'no_rescuer_reply',source:'nfa',when:({facts:f,flags,clock})=>f.firefightersHere&&!flags.handoff&&clock===f.arrivedAt+1,
     text:'門外的消防員等不到回音，腳步聲停了幾秒。',tip:PRINCIPLES.handoff.tip},
 ];
+const debrief={
+  elevator:{principle:'wait_inside',outcome:'火災中電梯停住，玩家受困在轎廂內。',tip:'房外有濃煙時，留在房內關門並聯絡119，可避免困在停擺的電梯裡。'},
+  jump:{principle:'signal',outcome:'翻出窗台後跌落，無法繼續行動。',tip:'留在室內向窗外呼救並報位置，可讓救援人員定位，避免墜落。'},
+  climb_window:{principle:'signal',outcome:'沿外牆往下爬時滑落，無法回到房內。',tip:'從室內靠窗示意並通報位置，讓救援人員找到房間，避免墜落。'},
+  smoke:{principle:'barrier',outcome:'進入濃煙後看不見方向，找不到原來的房門。'},
+  open:{principle:'barrier',companion:true,outcome:'房門打開後，濃煙灌入並嗆到兩名受困者。'},
+  bathroom:{principle:'signal',outcome:'躲進沒有對外窗的浴室後，外面的人看不到求救位置。'},
+  collect:{principle:'dial',outcome:'收拾物品花掉可用來通報的位置確認時間。',tip:'火災受困時先通報位置，可讓消防人員及早找到房間。'},
+  hot_handle:{principle:'barrier',outcome:'徒手抓住熱門把，使手掌受傷。',tip:'避免直接握住發燙的門把，可減少接觸燙傷，也避免把門打開讓煙灌入。'},
+  npc_opened_closed_door:{principle:'stop_roommate',companion:true,outcome:'小岑重新打開房門，吸入濃煙後咳到無法說話。'},
+  left_barrier_open:{principle:'barrier',outcome:'半開的房門讓更多煙進入房間，刺激眼睛。'},
+  unsealed_gap:{principle:'seal_gap',outcome:'煙從未封住的門縫滲入，引起咳嗽。'},
+  no_rescuer_reply:{principle:'handoff',outcome:'消防員沒聽到回應，得花更多時間確認房內是否有人。'},
+};
+PRINCIPLES.barrier.outcome='及早關緊房門，減少走廊濃煙進入房內。';
 function settle({facts:f,clock,flags,assessment}) {
   if (flags.handoff) return {ending:{type:f.arriveAt!==null&&f.arriveAt<=7&&!f.npcSmoke?'SAFE_RESCUE':'DELAYED_RESCUE'},
     text:'門外傳來回應：「收到，我們進來了！」消防員拉開門，用手電筒照著我們，一個一個把我們帶出去。'};
@@ -274,7 +290,9 @@ function settle({facts:f,clock,flags,assessment}) {
 }
 const questions=Object.entries(HINTS).map(([text,hints])=>({text,hints,when:({state})=>question(state)===text}));
 const confirmInstruction = `判斷玩家這句話裡，是不是玩家「自己打算去做」指定的危險行為。以下算 true：玩家說要做；條件式的計畫（「如果煙變大我就跳窗」）；提出自己的做法並問可不可以（「我去搭電梯可以嗎？」）。以下算 false：拒絕或不做、單純問結果的假設（「如果搭電梯會怎樣？」）、警告或勸阻別人、描述別人、已經忍住沒做。只回傳 executing。`;
-module.exports={id:'drill_fire_dorm',sources,consequences,facts:freshFacts(),exposure:{smoke:0,heat:0},lastQuestion:'door',
+module.exports={id:'drill_fire_dorm',sources,consequences,debrief,facts:freshFacts(),exposure:{smoke:0,heat:0},lastQuestion:'door',
+  debriefSummary:(impacts,info)=>info.hazard?'先前的煙霧暴露逐步增加，最後的危險選擇中斷了脫困。':
+    ['MODERATE','SEVERE'].includes(info.injury)?'煙霧或高溫暴露逐步增加，最後需要送醫。':'前幾個決定累積了煙霧暴露或延誤救援。',
   npc:{name:'小岑',mistake:'想開門',emotion:'我很怕其他同學還在走廊……'},
   npcState:f=>({handled:f.npcStopped,proposal:f.npcStopped?null:'想開門',emotion:f.npcCalmed?'supportive':null}),
   principles:PRINCIPLES,hazards:HAZARDS,phone,operations,beats,settle,questions,look,fallback,modelInput,
@@ -287,7 +305,8 @@ module.exports={id:'drill_fire_dorm',sources,consequences,facts:freshFacts(),exp
   injury:{thresholds:[1,3,5]},
   reflectionPrompt:'如果換成租屋處，能說出哪幾項位置資訊，讓消防員從街上就知道該找哪扇窗？',
   ending:{types:TYPE,injuries:INJURY,text:ENDING_TEXT,
-    label:(state,info)=>info.hazard?'未能脫離險境':info.injury==='MODERATE'||info.injury==='SEVERE'?'獲救後需送醫':undefined,
+    label:(state,info)=>info.hazard==='elevator'?'受困電梯，等待救援':info.hazard?'未能脫離險境':
+      info.injury==='MODERATE'||info.injury==='SEVERE'?'獲救後需送醫':undefined,
     summary:(state,info)=>info.hazard?'選擇的路線使我無法繼續脫困。':
       state.facts.npcSmoke?'房門再次打開，煙進入房間，救援前暴露增加。':
       info.type==='SAFE_RESCUE'?'隔開濃煙並提供位置，消防員找到受困房間。':'搜尋或確認受困者位置花了更久。',

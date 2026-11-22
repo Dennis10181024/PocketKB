@@ -4,7 +4,8 @@ const assert=require('node:assert/strict');
 const directors=require('../director-registry');
 const school=directors.get('earthquake_school');
 const fire=directors.get('drill_fire_dorm');
-const {ConversationCoach}=require('../coach');
+const {ConversationCoach,createOpenAIProvider}=require('../coach');
+const {correct}=require('./step42-live');
 
 test('a rejected danger confirmation restores the question without spending a turn',()=>{
   const state=school.start();
@@ -57,9 +58,84 @@ test('rough play causes escalating consequences, including harm to a persuaded c
   const last=advance('繼續不回話');
   const ending=school.ending(state,last.ending,last.message);
   assert.match(ending.type,/需送醫/);
-  assert.ok(ending.lessons.find(l=>l.title==='關鍵轉折')?.next);
+  const turning=ending.lessons.find(l=>l.title==='關鍵轉折');
+  assert.equal(turning.why.split(' → ').length,3);
+  assert.match(turning.why,/^「感覺超好玩 趕緊衝出去拍個限動」/);
+  assert.doesNotMatch(turning.why,/名冊|我一離開桌下|教職員在隊伍邊找到我/);
+  const dangers=ending.lessons.find(l=>l.title==='這次的危險選擇與後果').why.split('\n');
+  assert.equal(dangers.length,4);
+  assert.match(dangers[0],/逐步累積/);
+  assert.ok(dangers.slice(1).every(line=>line.split(' → ').length===3));
+  assert.match(dangers.join('\n'),/餘震有甚麼好怕 超小的 直接衝出去/);
+  assert.match(dangers.join('\n'),/跟他說來一起拍限動 超好玩/);
+  const missing=ending.lessons.find(l=>l.title==='下次可以補上的')?.why || '';
+  for(const line of dangers.slice(1)) assert.ok(!missing.includes(line.split(' → ')[2]));
   assert.ok(ending.lessons.find(l=>l.title==='官方依據').sources.length);
   assert.doesNotMatch(last.message,/這樣很危險|你應該|回到當下/);
+});
+
+test('seven correct rule turns narrate each fixed action only when fresh and finish at roll call',()=>{
+  let state=school.start();
+  let ending;
+  const lines=Object.values(school.PRINCIPLES).map(p=>p.ack).filter(Boolean);
+  const observed=new Set();
+  assert.equal(correct.length,7);
+  for(const [index,input] of correct.entries()){
+    const out=school.apply(state,school.ruleAssessment(state,input));
+    for(const line of lines.filter(line=>out.message.includes(line))){
+      assert.ok(!observed.has(line),`turn ${index+1} repeated ${line}`);
+      observed.add(line);
+    }
+    if(index===3) assert.doesNotMatch(out.message,/我在原地護住頭頸|我壓低身子縮進/);
+    if(index<6) assert.equal(out.ending,null);
+    state=out.state;
+    ending=out.ending;
+  }
+  assert.equal(ending.type,'SELF_EVACUATION');
+  assert.equal(ending.injury,'NONE');
+  assert.ok(state.facts.counted);
+  const initial=fire.start();
+  const assessment=fire.ruleAssessment(initial,'我先把門關緊');
+  const once=fire.apply(initial,assessment);
+  const twice=fire.apply(once.state,assessment);
+  assert.match(twice.message,/我維持剛才的做法/);
+  assert.ok(!twice.message.includes(fire.PRINCIPLES.barrier.ack));
+});
+
+test('elevator endings hide unassessed injury and use a single quote from the relevant decision in both scenarios',()=>{
+  for(const director of [school,fire]){
+    const state=director.start();
+    const prefix='我先說明狀況'.repeat(15);
+    const text=prefix+'，我決定搭電梯';
+    const out=director.apply(state,director.ruleAssessment(state,text));
+    assert.equal(out.ending.injury,'NOT_ASSESSED');
+    const end=director.ending(out.state,out.ending,out.message);
+    assert.equal(end.type,'受困電梯，等待救援');
+    assert.equal(end.injury,null);
+    assert.match(end.text,/救援還需要時間/);
+    const turning=end.lessons.find(l=>l.title==='關鍵轉折');
+    const [quote,consequence,tip]=turning.why.split(' → ');
+    assert.match(quote,/我決定搭電梯/);
+    assert.ok([...quote.slice(1,-1)].length<=40);
+    assert.match(consequence,/受困在轎廂內/);
+    assert.ok(tip);
+  }
+});
+
+test('429 diagnostics record only provider type and code, even with research text off',async()=>{
+  for(const detail of [{type:'insufficient_quota',code:'credit_balance_exhausted'},
+    {type:'rate_limit_error',code:'rate_limit_exceeded'}]){
+    const key='unit-test-private-key';
+    const provider=createOpenAIProvider({apiKey:key,fetchImpl:async()=>new Response(
+      JSON.stringify({error:{...detail,message:'private '+key,headers:{Authorization:key}}}),{status:429})});
+    const records=[];
+    const coach=new ConversationCoach(provider,{director:true,logText:false,record:row=>records.push(row)});
+    const s=coach.create('earthquake_school');
+    const turn=await coach.turn(s.sessionId,{requestId:'rate-limit-test',revision:0,text:'我躲在桌下'});
+    assert.equal(turn.fallbackReason,'MODEL_UNAVAILABLE');
+    assert.deepEqual(records[0].provider_errors,[{stage:'direct',http_status:429,error_type:detail.type,error_code:detail.code}]);
+    assert.doesNotMatch(JSON.stringify(records),/unit-test-private-key|Authorization|headers/);
+  }
 });
 
 test('a dangerous interruption blocks the call and the declared principles in the same turn',()=>{

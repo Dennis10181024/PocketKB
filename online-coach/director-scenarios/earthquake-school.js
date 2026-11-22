@@ -149,6 +149,31 @@ const consequences=[
     ({state})=>state.exposure.trauma?'教職員在隊伍邊找到我，看到我走路吃力，就呼叫校護過來。我是最後才被找到的。':
       '教職員在隊伍邊找到我。我是最後才確認位置的人，其他同學一直留在集合區等著。',0,{assisted:true},principles.roll_call.tip),
 ];
+const debrief={
+  jump_window:{principle:'stairs',outcome:'翻出窗台後跌落，無法繼續撤離。',tip:'搖晃停穩後走老師確認的路線，可避開高處墜落。'},
+  elevator:{principle:'stairs',outcome:'地震後電梯停止，玩家受困在轎廂內。',tip:'等老師確認樓梯可通行再疏散，可避開電梯停擺受困。'},
+  wire:{principle:'open_area',outcome:'碰觸掉落電線後倒地，無法繼續撤離。',tip:'繞開電線和碰到電線的物體，可避免感電。'},
+  rush_open:item=>item.injury>1
+    ? {principle:'aftershock_cover',outcome:'餘震時離開掩護，小腿被滑動的桌腳撞傷。'}
+    : {principle:'cover',outcome:'主震時衝向門邊，手臂被掉落的燈罩擦傷。'},
+  triangle:{principle:'cover',outcome:'躲在桌旁時，頭頸仍暴露在落物下。'},
+  collect:{principle:'stairs',outcome:'回頭收東西使玩家落在疏散隊伍後面。'},
+  pushing:{principle:'orderly',outcome:'在樓梯上嬉戲或搶快，使玩家踩空扭傷腳踝。'},
+  missed_cover:{principle:'cover',outcome:'主震中留在無掩護處，手臂遭落物擦傷。'},
+  invited_npc:{principle:'stop_npc',companion:true,outcome:'小維跟著靠近門邊，手被掉落的碎片傷到。'},
+  missed_npc:{principle:'stop_npc',companion:true,outcome:'小維走到門邊，手遭碎片擦傷。'},
+  missed_main_cover_again:{principle:'cover',outcome:'主震中仍未掩護，手又被燈管碎片劃傷。'},
+  missed_aftershock:{principle:'aftershock_cover',outcome:'餘震時沒重新掩護，小腿被桌腳撞傷。'},
+  missed_stairs:{principle:'stairs',outcome:'未跟上走樓梯的隊伍，玩家與本班走散。'},
+  missed_order:{principle:'orderly',outcome:'下樓時沒留間距，前方同學一停，玩家扭傷腳踝。'},
+  missed_route:{principle:'open_area',outcome:'未選擇遠離外牆與電線的路線，讓玩家停留在落物範圍。'},
+  left_group:{principle:'stay_group',outcome:'離開本班集合區，使老師無法確認玩家位置。'},
+  missed_group:{principle:'stay_group',outcome:'未留在本班集合區，老師一時找不到玩家。'},
+  missed_roll_call:{principle:'roll_call',outcome:'點名時沒有應答，老師把玩家記為尚未確認。'},
+  search_delay:{principle:'roll_call',outcome:'教職員需要另行找人，最後才確認玩家的位置。'},
+};
+Object.assign(principles.cover,{outcome:'主震時在原地建立掩護，避開本回合的掉落物。'});
+hazards.elevator.endingLine='救難人員須先確認整棟樓的狀況，救援還需要時間。';
 function scenePrompt(f) {
   if (f.rollCall) return 4;
   if (f.assembly) return 7;
@@ -170,7 +195,10 @@ const prompts=[
 ].map(([text,hints],index)=>({text,hints,when:({facts:f})=>scenePrompt(f)===index}));
 const injuries={NONE:'無傷',MILD:'輕傷',MODERATE:'中度（需送醫）',SEVERE:'重傷（需住院）',NOT_ASSESSED:'傷勢不評定'};
 const injuryText={NONE:'老師確認我沒有受傷。',MILD:'校護先了解我的輕微不適。',MODERATE:'校護評估我需要送醫。',SEVERE:'救護人員評估我需要住院治療。'};
-module.exports={id:'earthquake_school',opening,npc,sources,consequences,
+module.exports={id:'earthquake_school',opening,npc,sources,consequences,debrief,
+  debriefSummary:(impacts,info)=>info.hazard?'搖晃中接連受傷或走散，最後的危險選擇使撤離中斷。':
+    ['MODERATE','SEVERE'].includes(info.injury)?'從主震到疏散，落物、撞擊或踩空帶來的傷勢逐步累積，最後需要'+(info.injury==='SEVERE'?'住院。':'送醫。'):
+      impacts.some(item=>item.injury>0)?'從搖晃時到集合，受傷和走散讓撤離一再延誤。':'走散和未應答讓老師花更多時間確認位置。',
   facts:{mainShake:true,shaking:true,covered:false,npcStopped:false,npcVoiced:false,npcCalmed:false,waited:false,aftershock:false,
     aftershockCovered:false,headProtected:false,orderly:false,routeReady:false,usedStairs:false,outdoors:false,inOpenArea:false,
     rollCall:false,counted:false,delayed:false,called:false},
@@ -206,7 +234,7 @@ module.exports={id:'earthquake_school',opening,npc,sources,consequences,
   injury:{thresholds:[0,2,4],score:exposure=>exposure.trauma},
   reflectionPrompt:'如果地震時我人在圖書館，第一個掩護點在哪？震後要怎麼跟同伴確認彼此的位置？',
   ending:{types:{SELF_EVACUATION:'安全撤離',DELAYED_EVACUATION:'延誤撤離',CRITICAL_FAILURE:'危急失敗'},
-    label:(state,info)=>info.hazard==='elevator'?'搭乘電梯後受困':info.hazard?'未能安全撤離':
+    label:(state,info)=>info.hazard==='elevator'?'受困電梯，等待救援':info.hazard?'未能安全撤離':
       info.injury==='MODERATE'||info.injury==='SEVERE'?'延誤並受傷，需送醫':
       state.facts.assisted?(info.injury==='MILD'?'受傷後由教職員協助撤離':'延誤後由教職員協助撤離'):
       info.injury==='MILD'?'撤離但受傷':undefined,

@@ -1,5 +1,6 @@
 'use strict';
 const { randomUUID } = require('node:crypto');
+const { AsyncLocalStorage } = require('node:async_hooks');
 const fs = require('node:fs');
 const path = require('node:path');
 const V3 = require('../web-pwa/scenario-engine-v3');
@@ -21,6 +22,7 @@ class CoachError extends Error {
   constructor(code, message, status = 400) { super(message); this.code = code; this.status = status; }
 }
 function apiError(code, message, status) { return new CoachError(code, message, status); }
+const providerDiagnostics=new AsyncLocalStorage();
 function engine() { return V3; }
 function currentNode(spec, state) { return spec.nodes.find(n => n.id === state.node); }
 function terminal(spec, state) { return state.sessionStatus !== 'ACTIVE'; }
@@ -312,7 +314,17 @@ function createOpenAIProvider({ apiKey, model = 'gpt-6.1-terra', fetchImpl = fet
         throw turnSignal?.aborted ? apiError('MODEL_TIMEOUT', 'GPT 暫時未回應。', 504) :
           apiError('PROVIDER_ERROR', '無法連線到 GPT 服務。', 502);
       }
-      if (!response.ok) throw apiError('MODEL_UNAVAILABLE', `GPT 服務未完成請求（HTTP ${response.status}）。請檢查電腦端金鑰、額度或稍後重試。`, 502);
+      if (!response.ok) {
+        const error=apiError('MODEL_UNAVAILABLE', `GPT 服務未完成請求（HTTP ${response.status}）。請檢查電腦端金鑰、額度或稍後重試。`, 502);
+        if (response.status===429) {
+          const body=await response.json().catch(()=>null);
+          const safe=value=>typeof value==='string' && /^[a-z][a-z0-9_-]{0,63}$/i.test(value) &&
+            !/^sk-/i.test(value) && !value.includes(apiKey)?value:null;
+          error.providerDiagnostic={stage,http_status:429,error_type:safe(body?.error?.type),error_code:safe(body?.error?.code)};
+          providerDiagnostics.getStore()?.push(error.providerDiagnostic);
+        }
+        throw error;
+      }
       const data = await completedResponse(response);
       if (data.status !== 'completed') throw apiError('MODEL_INCOMPLETE', 'GPT 回覆未完成，行動尚未執行，請重試。', 502);
       const raw = (data.output || []).filter(item => item.type === 'message').flatMap(item => item.content || []).filter(item => item.type === 'output_text').map(item => item.text).join('');
@@ -403,7 +415,9 @@ class ConversationCoach {
     if (hintSelectedIndex !== null && !session.hint) throw apiError('INVALID_HINT', '目前沒有顯示的建議句。');
     session.busy = true;
     const replayReason = rulesOnly === true ? (['CLIENT_API_ERROR','CLIENT_SYNC'].includes(clientFallbackReason) ? clientFallbackReason : 'CLIENT_TRANSPORT') : null;
-    const promise = this.execute(session, text.trim(), intent, {hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason,researchText,rawInput:text}).finally(() => { session.busy = false; });
+    const promise = providerDiagnostics.run([],()=>this.execute(session, text.trim(), intent, {
+      hintTrigger,hintSelectedIndex,hintEditedBeforeSubmit,onGround,replayReason,researchText,rawInput:text,
+    })).finally(() => { session.busy = false; });
     session.requests.set(requestId, { fingerprint, promise });
     // Failed attempts remain uncommitted; clients may safely retry the same request.
     promise.catch(() => { session.requests.delete(requestId); });
@@ -524,6 +538,7 @@ class ConversationCoach {
     const actionBatches = audit.semantic ? audit.actionBatches || [] :
       audit.actionBatches?.length ? audit.actionBatches : actionIds.length ? [{ids:actionIds,source:'rule'}] : [];
     const decision = {turn:session.revision + 1, intent, actionIds:actionBatches.flatMap(batch=>batch.ids), actionBatches,
+      provider_errors:providerDiagnostics.getStore()?.slice() || [],
       fallbackReason:fallbackReason || null, narrationFallbackReason:audit.narrationReason || (audit.narration==='template' && !offline ? 'NARRATION_VALIDATION' : null),
       source:audit.source, validation:audit.validation, actionValidation:audit.actionValidation || [], disagreement:audit.disagreement || null,
       narration_checks:audit.narrationChecks || [], narration:audit.narration || 'control', emotion:audit.emotion || null,
@@ -707,6 +722,7 @@ class ConversationCoach {
     const ending=out?.ending ? director.ending(out.state,out.ending,reply) : null;
     if (ending) session.lastEnding=ending;
     const decision={director_research:state.directorResearch,turn:session.revision+1,intent,actionIds:[],actionBatches:[],fallbackReason,narrationFallbackReason:narrationCheck?.reason ?? null,
+      provider_errors:providerDiagnostics.getStore()?.slice() || [],
       source:assessment?.source || 'rule',validation:fallbackReason || (assessment?'DIRECTOR':'CONTROL'),actionValidation:[],
       disagreement:assessment?.disagreement || null,narration_checks:narrationCheck?[narrationCheck]:[],narration:'director',emotion:null,question_answer_id:null,
       hint_shown:Boolean(priorHint),hint_shown_turn:(priorHint || session.hint)?.turn ?? null,hint_trigger:(priorHint || session.hint)?.trigger ?? null,

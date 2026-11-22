@@ -151,7 +151,7 @@ fun ScenarioV3Screen(state: PocketKbUiState, actions: PocketKbViewModel, onLeave
         else -> null
     }
     val injury = when (session.injuryLevel) {
-        "NOT_ASSESSED" -> "傷勢不評定"
+        "NOT_ASSESSED" -> if (state.onlineScenarioPresentation?.directorMode == true) null else "傷勢不評定"
         "NONE" -> "無傷"
         "MILD" -> "輕傷"
         "MODERATE" -> "中度傷勢（需送醫）"

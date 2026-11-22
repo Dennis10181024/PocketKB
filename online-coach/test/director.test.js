@@ -101,7 +101,8 @@ test('fatal choices directly end the session; warnings, refusals and questions d
   assert.doesNotMatch(s.reply,/回到當下|回到剛才|真的這樣做|你應該/);
   assert.equal(s.state.director.clock,0);
   assert.equal(s.state.endingType,'CRITICAL_FAILURE');
-  assert.equal(s.ending.injury,'傷勢不評定');
+  assert.equal(s.ending.injury,null);
+  assert.equal(s.state.injuryLevel,'NOT_ASSESSED');
   for (const text of ['跑出去很危險，我們留在房間','跟小岑說千萬不能開門','我不會搭電梯','如果我搭電梯會怎樣？','有人在搭電梯']) {
     const t=await say(coach,coach.create(fire),text);
     assert.notEqual(t.kind,'failed',text);
