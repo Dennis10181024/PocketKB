@@ -168,3 +168,29 @@ select:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
 .choice-status, .choice-grade { font-weight: 700; }
 .choice-inspection:empty { margin: 0; }
 .choice-stop { margin-top: .75rem; }
+
+.choice-play {
+  width: min(100%, 44rem);
+  margin: 0 auto;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1.75rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.choice-play-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .45rem 1rem;
+  align-items: baseline;
+  border-bottom: 1px solid #69829a;
+  padding-block: .35rem .7rem;
+}
+.choice-play-header span { font-weight: 800; letter-spacing: .04em; }
+.choice-play-header p { margin: 0; color: #c0dbec; }
+.choice-play .choice-drill { width: 100%; min-width: 0; padding: .6rem 0 0; }
+.choice-play .choice-drill h2 { line-height: 1.25; margin-block: .65rem; }
+.choice-play .choice-drill button { font-size: 1rem; line-height: 1.45; max-width: 100%; white-space: normal; }
+.choice-play .choice-tools button { flex: 1 1 9rem; }
+.choice-play .choice-review a { color: #b6e5ff; text-decoration: underline; }
+.choice-play .choice-option:focus-visible { outline-color: #ffcf9b; }

@@ -39,12 +39,12 @@
       (review.sources.length?'<h4>官方依據</h4>'+duties(review.sources,row=>'<a href="'+esc(row.url)+'" target="_blank" rel="noopener noreferrer">'+esc(row.title)+'</a>'):'')+
       '<h4>帶走一個思考題</h4><p>'+esc(review.reflection)+'</p></div>';
   }
-  function create(rerender){
+  function create(rerender,{choiceOnly=false}={}){
     let catalog=null, runtime=null, session=null, view=null, review=null, selected=null;
     let info='', error='', loading=false, openedAt=0;
     let showLegacy=false;
     let showDrafts=false;
-    try{showLegacy=localStorage.getItem(storageKey)==='1';}catch{}
+    try{showLegacy=!choiceOnly&&localStorage.getItem(storageKey)==='1';}catch{}
     function refresh(focus=false){
       rerender();
       if(focus)document.querySelector('#choice-heading')?.focus();
@@ -68,7 +68,9 @@
       refresh();
       try{
         const [bytes,schema]=await Promise.all([request(selected.file,'arrayBuffer'),request('schema-v1.json','json')]);
-        const pack=await root.PocketChoicePack.loadVerifiedPack(bytes,selected.sha256,schema);
+        const digestApi=choiceOnly&&!root.crypto?.subtle&&root.sha256?
+          {digest:(_algorithm,buffer)=>root.sha256.arrayBuffer(buffer)}:undefined;
+        const pack=await root.PocketChoicePack.loadVerifiedPack(bytes,selected.sha256,schema,digestApi);
         if(pack.meta.id!==selected.id||pack.meta.title!==selected.title||
           pack.meta.status!==selected.status||pack.meta.contentNotice!==selected.contentNotice)throw new Error('Pack identity mismatch');
         runtime=root.PocketChoiceRuntime.createRuntime(pack);
@@ -116,7 +118,7 @@
             '<button type="button" class="choice-option" data-choice-pack="'+esc(row.id)+'">'+esc((row.status==='draft'?'草稿・':'')+row.title)+'</button>').join('')||
           (error?button('choice-refresh','重新載入'):'<p role="status">正在讀取情境清單。</p>'))+'</div>'+
           '<details class="choice-stop" '+(showLegacy||showDrafts?'open':'')+'><summary>演練設定</summary>'+
-          '<label class="choice-setting"><input id="choice-legacy" type="checkbox" '+(showLegacy?'checked':'')+'>顯示舊版對話劇本</label>'+
+          (choiceOnly?'':'<label class="choice-setting"><input id="choice-legacy" type="checkbox" '+(showLegacy?'checked':'')+'>顯示舊版對話劇本</label>')+
           (catalog?.some(row=>row.status==='draft')?'<label class="choice-setting"><input id="choice-drafts" type="checkbox" '+(showDrafts?'checked':'')+'>顯示草稿情境</label>':'')+
           (showLegacy?duties(legacyScenarios,([id,title])=>'<a href="./online.html?scenario='+esc(id)+'">'+esc(title)+'</a>')+
             '<p>舊版對話劇本需啟動線上教練服務。</p>':'')+'</details>';
