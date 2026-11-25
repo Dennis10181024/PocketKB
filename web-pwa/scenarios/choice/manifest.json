@@ -5,19 +5,19 @@
       "id": "drill_fire_dorm",
       "title": "宿舍火災",
       "file": "fire-dorm.json",
-      "sha256": "d4249168c1b9139903edc7353c35ba17b5b05f8a808c74d99853029012956d27"
+      "sha256": "00acd14fdbfbd74a2d79c6a7de63226e70dcf2ecf8df0f79e552b6a4bf5e6f05"
     },
     {
       "id": "earthquake_school",
       "title": "學校地震",
       "file": "earthquake-school.json",
-      "sha256": "2b5cf838c79ee322775e859627a85caa9b74c07618009497f8a8d6f16d209d87"
+      "sha256": "f27ebe7919da90b32937a1ef127bf15ea51e7f87e1c842816852ac1f011c6a36"
     },
     {
       "id": "metro_attack_draft",
       "title": "板南線車廂的突發騷動",
       "file": "metro-attack-draft.json",
-      "sha256": "dc1cda300ad75691915c974202d9bfce85ef911f84d1e06092af2d4d7980da96",
+      "sha256": "7ff626f977229c843960e434b654bd5b9c6bb79663f2ff22a25a3f68934fecd7",
       "status": "draft",
       "contentNotice": "這一場包含突發攻擊、人群恐慌與非血腥受傷描述。可跳過，或隨時停止。"
     },
@@ -25,14 +25,14 @@
       "id": "flood_low_home_draft",
       "title": "一樓住家的水聲",
       "file": "flood-low-home-draft.json",
-      "sha256": "0c9307bf4411501a9feabd548a12f2061de16dcedfc59e28929dfde83f26c902",
+      "sha256": "c4602fd5be0820b13530c807b8d5cefe97387a3c58de7a895858eb207d4e7788",
       "status": "draft"
     },
     {
       "id": "typhoon_outage_draft",
       "title": "颱風夜，租屋處停電",
       "file": "typhoon-outage-draft.json",
-      "sha256": "19671e3eecbfc20ec71907c0dda0b7b955116bcaf5e126eef1fd5c4eddb29fe2",
+      "sha256": "7c4a6ddb6989ca4bb9ebd1bcaa751b15bbf4956dcd562a42301e089d31321199",
       "status": "draft"
     }
   ]

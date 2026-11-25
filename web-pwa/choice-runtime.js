@@ -106,6 +106,13 @@
       }
       function consequenceResult(tier){return pick(tier.cases,ctx)?.result||tier.result;}
       function ending(rule,hazardId=null){
+        if(rule.injury==='fromInjuries'){
+          const level=state.injuries.filter(item=>item.subject==='player')
+            .reduce((peak,item)=>severity[item.severity]>severity[peak]?item.severity:peak,'NONE');
+          state.ending={id:rule.id,type:rule.type,injury:level,hazardId};
+          say(rule.narration);
+          return;
+        }
         const injuryScore=rule.injury==='fromThresholds'?evaluate(pack.injury.score,ctx):0;
         if(!bounded(injuryScore))throw new TypeError('Invalid injury score');
         const levels=pack.injury;
@@ -325,8 +332,9 @@
       const ctx=context(state);
       const steps=history.flatMap(row=>row.impacts.map(impact=>({...impact,optionText:row.text})));
       const injuries=state.injuries.map(item=>({...item,subjectName:item.subject==='player'?'本人':state.npc[item.subject].name}));
-      const severe=injuries.reduce((level,item)=>severity[item.severity]>severity[level]?item.severity:level,'NONE');
-      const worstInjury=injuries.find(item=>item.severity===severe);
+      const playerInjuries=injuries.filter(item=>item.subject==='player');
+      const severe=playerInjuries.reduce((level,item)=>severity[item.severity]>severity[level]?item.severity:level,'NONE');
+      const worstInjury=playerInjuries.find(item=>item.severity===severe);
       const delays=[...new Set(history.filter(row=>row.safety==='unsafe').flatMap(row=>row.delays)
         .map(item=>item.reason))].slice(0,2);
       const point=turningPoint(history);
@@ -409,16 +417,26 @@
       data.lines=['我回到剛才做決定之前。'];
       return snapshot(session);
     }
-    function verifyReachability({maxStates=50000}={}){
+    function verifyReachability({maxStates=50000,consistentInjury=false}={}){
       const seen=new Set(), visitedDecisions=new Set(), visitedEndings=new Set();
       const sorted=values=>Object.entries(values).sort(([a],[b])=>a<b?-1:a>b?1:0);
       const stack=[initialState()];
       while(stack.length){
         const state=stack.pop();
-        if(state.ending){visitedEndings.add(state.ending.id);continue;}
+        if(state.ending){
+          if(consistentInjury){
+            const highest=state.injuries.filter(item=>item.subject==='player')
+              .reduce((peak,item)=>severity[item.severity]>severity[peak]?item.severity:peak,'NONE');
+            const expected=state.ending.type==='CRITICAL_FAILURE'?'NOT_ASSESSED':highest;
+            if(state.ending.injury!==expected)throw new TypeError('Inconsistent ending injury: '+state.ending.id);
+          }
+          visitedEndings.add(state.ending.id);
+          continue;
+        }
         const {clock,decisionId,facts,npc,exposure,met,counters,beats,injuries}=state;
         // Ignore text and review history, which the DSL cannot read.
-        const key=JSON.stringify([clock,decisionId,facts,npc,exposure,Object.keys(met).sort(),sorted(counters),beats,injuries.length>0]);
+        const peak=consistentInjury?Math.max(0,...injuries.filter(item=>item.subject==='player').map(item=>severity[item.severity])):null;
+        const key=JSON.stringify([clock,decisionId,facts,npc,exposure,Object.keys(met).sort(),sorted(counters),beats,injuries.length>0,peak]);
         if(seen.has(key))continue;
         seen.add(key);
         if(seen.size>maxStates)throw new TypeError('Reachability capacity exceeded');

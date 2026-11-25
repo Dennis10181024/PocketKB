@@ -3,7 +3,7 @@
   "meta": {
     "id": "earthquake_school",
     "title": "學校地震",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "hazard": "earthquake",
     "skeletonVersion": "director-4.2b",
     "sources": [
@@ -106,9 +106,9 @@
     {"id":"jump_window_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_jump_window_fatal","labels":[{"when":{"always":true},"text":"墜落後無法自行撤離"}],"summaries":[{"when":{"always":true},"text":"我跨出窗台後失去支撐，落到下方，已無法自行移動。"}]},
     {"id":"elevator_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_elevator_fatal","labels":[{"when":{"always":true},"text":"受困電梯，等待救援"}],"summaries":[{"when":{"always":true},"text":"電梯停在樓層之間，門打不開。"}]},
     {"id":"wire_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_wire_fatal","labels":[{"when":{"always":true},"text":"接觸掉落電線，撤離中斷"}],"summaries":[{"when":{"always":true},"text":"我碰到下垂電線，隨即倒下，無法繼續走。"}]},
-    {"id":"safe_exit","type":"SELF_EVACUATION","phase":"afterBeats","when":{"all":[{"fact":"counted","eq":true},{"not":{"fact":"delayed","eq":true}},{"fact":"group","eq":true},{"fact":"openArea","eq":true}]},"injury":"fromThresholds","narration":"end_safe_exit","labels":[{"when":{"always":true},"text":"安全撤離"}],"summaries":[{"when":{"always":true},"text":"我跟隊到集合處並完成點名。"}]},
-    {"id":"delayed_exit","type":"DELAYED_EVACUATION","phase":"afterBeats","when":{"fact":"counted","eq":true},"injury":"fromThresholds","narration":"end_delayed_exit","labels":[{"when":{"always":true},"text":"延誤撤離"}],"summaries":[{"when":{"always":true},"text":"老師重新核對人員後才完成清點。"}]},
-    {"id":"assisted_exit","type":"DELAYED_EVACUATION","phase":"afterBeats","when":{"clock":{"gte":8}},"injury":"fromThresholds","narration":"end_assisted_exit","labels":[{"when":{"always":true},"text":"延誤後由老師協助撤離"}],"summaries":[{"when":{"always":true},"text":"未回應點名，老師另外花時間查找。"}]}
+    {"id":"safe_exit","type":"SELF_EVACUATION","phase":"afterBeats","when":{"all":[{"fact":"counted","eq":true},{"not":{"fact":"delayed","eq":true}},{"fact":"group","eq":true},{"fact":"openArea","eq":true}]},"injury":"fromInjuries","narration":"end_safe_exit","labels":[{"when":{"always":true},"text":"安全撤離"}],"summaries":[{"when":{"always":true},"text":"我跟隊到集合處並完成點名。"}]},
+    {"id":"delayed_exit","type":"DELAYED_EVACUATION","phase":"afterBeats","when":{"fact":"counted","eq":true},"injury":"fromInjuries","narration":"end_delayed_exit","labels":[{"when":{"always":true},"text":"延誤撤離"}],"summaries":[{"when":{"always":true},"text":"老師重新核對人員後才完成清點。"}]},
+    {"id":"assisted_exit","type":"DELAYED_EVACUATION","phase":"afterBeats","when":{"clock":{"gte":8}},"injury":"fromInjuries","narration":"end_assisted_exit","labels":[{"when":{"always":true},"text":"延誤後由老師協助撤離"}],"summaries":[{"when":{"always":true},"text":"未回應點名，老師另外花時間查找。"}]}
   ],
   "injury": {
     "score": {

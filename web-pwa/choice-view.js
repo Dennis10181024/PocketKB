@@ -105,6 +105,7 @@
       }else if(selected){
         content='<h2 id="choice-heading" tabindex="-1">'+esc(selected.title)+'</h2>'+
           '<p>演練中可能出現受傷的結果，你可以隨時停止。</p>'+
+          '<p>劇情與評分為草稿，待人工審查。</p>'+
           (selected.contentNotice?'<p>'+esc(selected.contentNotice)+'</p>':'')+
           '<p>點選一個做法就會送出。「先看看四周」和「問同伴」可先取得線索。</p>'+
           '<div class="choice-tools"><button type="button" class="primary" id="choice-start" '+(loading?'disabled':'')+'>'+(loading?'正在載入':'開始演練')+'</button>'+

@@ -65,7 +65,7 @@ for(const scenario of vectors.scenarios){
   const pack=readPack(scenario.file);
   const find=id=>scenario.cases.find(row=>row.id===id);
   test(scenario.file+' has no unreachable decision or ending or invalid path',()=>{
-    const result=createRuntime(validatePack(pack,schema)).verifyReachability();
+    const result=createRuntime(validatePack(pack,schema)).verifyReachability({consistentInjury:true});
     assert.equal(result.decisions,pack.decisions.length);
     assert.equal(result.endings,pack.endings.length);
   });

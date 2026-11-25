@@ -27,25 +27,25 @@
 | metro_distance／騷動在後方，前面車廂仍能走。小宇轉身想看，我怎麼做？ | 我靠扶手，拿手機拍下後方。 | 迷思 | 13 | 2 | metro_distance_act_myth | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_distance／騷動在後方，前面車廂仍能走。小宇轉身想看，我怎麼做？ | 我朝騷動走去，想先讓衝突停下來。 | 危險／延誤 | 16 | 1 | metro_distance_act_risk | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_distance 字差 | — | — | 3 | — | — | — |
-| metro_intercom／前方稍安靜，我身邊有緊急對講機。誰能協助處理列車內的情況？ | 我用對講機回報車廂位置與現況。 | 正確 | 15 | 1 | metro_intercom_act_ok | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
-| metro_intercom／前方稍安靜，我身邊有緊急對講機。誰能協助處理列車內的情況？ | 我傳影片給朋友，等他來回報。 | 迷思 | 14 | 2 | metro_intercom_act_myth | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
-| metro_intercom／前方稍安靜，我身邊有緊急對講機。誰能協助處理列車內的情況？ | 我往車廂後方走，大聲找人幫忙通報。 | 危險／延誤 | 17 | 2 | metro_intercom_act_risk | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
+| metro_intercom／前一節車廂的聲音小了一些。門旁有緊急設備，我手上還握著手機。我要怎麼讓別人知道情況？ | 我用對講機回報車廂位置與現況。 | 正確 | 15 | 1 | metro_intercom_act_ok | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
+| metro_intercom／前一節車廂的聲音小了一些。門旁有緊急設備，我手上還握著手機。我要怎麼讓別人知道情況？ | 我傳影片給朋友，等他來回報。 | 迷思 | 14 | 2 | metro_intercom_act_myth | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
+| metro_intercom／前一節車廂的聲音小了一些。門旁有緊急設備，我手上還握著手機。我要怎麼讓別人知道情況？ | 我往車廂後方走，大聲找人幫忙通報。 | 危險／延誤 | 17 | 2 | metro_intercom_act_risk | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
 | metro_intercom 字差 | — | — | 3 | — | — | — |
-| metro_doors／列車正減速，廣播請旅客等停車指示。車門前開始有人往前擠，我怎麼做？ | 我留在原位等停車廣播指示。 | 正確 | 13 | 1 | metro_doors_act_ok | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
-| metro_doors／列車正減速，廣播請旅客等停車指示。車門前開始有人往前擠，我怎麼做？ | 我握欄杆，卡在門邊等開門。 | 迷思 | 13 | 2 | metro_doors_act_myth | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
-| metro_doors／列車正減速，廣播請旅客等停車指示。車門前開始有人往前擠，我怎麼做？ | 我想自行開車門，從軌道旁繞過。 | 危險／延誤 | 15 | 2 | metro_doors_act_risk | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
+| metro_doors／列車速度慢下來，車門邊有人移動。我站在扶手旁，聽到廣播聲。這時我怎麼做？ | 我留在原位等停車廣播指示。 | 正確 | 13 | 1 | metro_doors_act_ok | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
+| metro_doors／列車速度慢下來，車門邊有人移動。我站在扶手旁，聽到廣播聲。這時我怎麼做？ | 我握欄杆，卡在門邊等開門。 | 迷思 | 13 | 2 | metro_doors_act_myth | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
+| metro_doors／列車速度慢下來，車門邊有人移動。我站在扶手旁，聽到廣播聲。這時我怎麼做？ | 我想自行開車門，從軌道旁繞過。 | 危險／延誤 | 15 | 2 | metro_doors_act_risk | [metro](https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D) |
 | metro_doors 字差 | — | — | 2 | — | — | — |
 | metro_platform／車門已開。小宇的耳機掉在門邊，後面的人正往月台移動。我要怎麼走？ | 我叫小宇順著人流走到月台。 | 正確 | 13 | 2 | metro_platform_act_ok | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_platform／車門已開。小宇的耳機掉在門邊，後面的人正往月台移動。我要怎麼走？ | 我停下，幫小宇撿耳機再走。 | 迷思 | 13 | 3 | metro_platform_act_myth | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_platform／車門已開。小宇的耳機掉在門邊，後面的人正往月台移動。我要怎麼走？ | 我擠到前排，推開比較慢的人先出去。 | 危險／延誤 | 17 | 2 | metro_platform_act_risk | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_platform 字差 | — | — | 4 | — | — | — |
-| metro_hide／前方出口被堵住，旁邊有可暫時掩蔽的厚牆。後方聲音接近，我怎麼做？ | 我退到厚牆後，關手機保持安靜。 | 正確 | 15 | 2 | metro_hide_act_ok | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
-| metro_hide／前方出口被堵住，旁邊有可暫時掩蔽的厚牆。後方聲音接近，我怎麼做？ | 我靠牆開擴音，再請旁人報案。 | 迷思 | 14 | 3 | metro_hide_act_myth | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
-| metro_hide／前方出口被堵住，旁邊有可暫時掩蔽的厚牆。後方聲音接近，我怎麼做？ | 我擠往樓梯口，請人群讓出一條路。 | 危險／延誤 | 16 | 2 | metro_hide_act_risk | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
+| metro_hide／樓梯前的人停住了，旁邊有牆和轉角。後方的聲音傳了過來，我可以怎麼做？ | 我退到厚牆後，關手機保持安靜。 | 正確 | 15 | 2 | metro_hide_act_ok | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
+| metro_hide／樓梯前的人停住了，旁邊有牆和轉角。後方的聲音傳了過來，我可以怎麼做？ | 我靠牆開擴音，再請旁人報案。 | 迷思 | 14 | 3 | metro_hide_act_myth | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
+| metro_hide／樓梯前的人停住了，旁邊有牆和轉角。後方的聲音傳了過來，我可以怎麼做？ | 我擠往樓梯口，請人群讓出一條路。 | 危險／延誤 | 16 | 2 | metro_hide_act_risk | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_hide 字差 | — | — | 2 | — | — | — |
-| metro_barrier／依站務指示轉移途中，前方又堵住，近處也無可用的厚牆或房間。我怎麼保護彼此？ | 我和旁人一起用包包保持距離。 | 正確 | 14 | 1 | metro_barrier_act_ok | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
-| metro_barrier／依站務指示轉移途中，前方又堵住，近處也無可用的厚牆或房間。我怎麼保護彼此？ | 我放下包包，側身往堵住的出口擠去。 | 迷思 | 17 | 2 | metro_barrier_act_myth | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
-| metro_barrier／依站務指示轉移途中，前方又堵住，近處也無可用的厚牆或房間。我怎麼保護彼此？ | 我朝聲音走去，想喊話叫停。 | 危險／延誤 | 13 | 2 | metro_barrier_act_risk | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
+| metro_barrier／我跟著站務人員走到轉角，前方再次停住，附近沒有能遮住身體的空間。我怎麼做？ | 我和旁人一起用包包保持距離。 | 正確 | 14 | 1 | metro_barrier_act_ok | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
+| metro_barrier／我跟著站務人員走到轉角，前方再次停住，附近沒有能遮住身體的空間。我怎麼做？ | 我放下包包，側身往堵住的出口擠去。 | 迷思 | 17 | 2 | metro_barrier_act_myth | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
+| metro_barrier／我跟著站務人員走到轉角，前方再次停住，附近沒有能遮住身體的空間。我怎麼做？ | 我朝聲音走去，想喊話叫停。 | 危險／延誤 | 13 | 2 | metro_barrier_act_risk | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_barrier 字差 | — | — | 4 | — | — | — |
 | metro_report／站務人員引導我到站外安全區，小宇也到了。接下來我向誰回報？ | 我打110，回報站名和現場的情況。 | 正確 | 17 | 2 | metro_report_act_ok | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
 | metro_report／站務人員引導我到站外安全區，小宇也到了。接下來我向誰回報？ | 我先上傳影片，等轉發的人幫忙。 | 迷思 | 15 | 2 | metro_report_act_myth | [npa](https://www.npa.gov.tw/ch/app/data/doc?detailNo=1402849470051258368&module=wg071&type=s) |
@@ -102,7 +102,7 @@
 
 #### 結果
 
-延誤後在站務協助下撤離。最嚴重的傷勢為肩膀撞傷。本人傷勢分級為重傷・需住院。撤離或救援延誤：停留拍攝耽誤離開、等朋友代報延誤行控通知。
+延誤後在站務協助下撤離。最嚴重的傷勢為肩膀撞傷。本人傷勢分級為輕傷。撤離或救援延誤：停留拍攝耽誤離開、等朋友代報延誤行控通知。
 
 最早因停留拍攝耽誤離開造成延誤，過程中出現肩膀撞傷。
 
@@ -164,13 +164,13 @@
 
 | 決策點／問題 | 選項 | 判定 | 字數 | 動作數 | 採用 ID | 來源 |
 |---|---|---|---:|---:|---|---|
-| flood_power／門外水在升，屋內、手部與電箱旁目前是乾的。總開關在眼前，我怎麼安排？ | 我確認動線乾燥，再切斷屋內總電源。 | 正確 | 17 | 1 | flood_power_act_ok | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
-| flood_power／門外水在升，屋內、手部與電箱旁目前是乾的。總開關在眼前，我怎麼安排？ | 我搬高延長線，再整理桌上的插頭。 | 迷思 | 16 | 2 | flood_power_act_myth | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
-| flood_power／門外水在升，屋內、手部與電箱旁目前是乾的。總開關在眼前，我怎麼安排？ | 我開著電器收拾物品，等水進來再處理。 | 危險／延誤 | 18 | 2 | flood_power_act_risk | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
+| flood_power／雨水升到門口。屋內地面和我的手都乾燥，設備旁的走道還能通過。我先處理什麼？ | 我確認動線乾燥，再切斷屋內總電源。 | 正確 | 17 | 1 | flood_power_act_ok | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
+| flood_power／雨水升到門口。屋內地面和我的手都乾燥，設備旁的走道還能通過。我先處理什麼？ | 我搬高延長線，再整理桌上的插頭。 | 迷思 | 16 | 2 | flood_power_act_myth | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
+| flood_power／雨水升到門口。屋內地面和我的手都乾燥，設備旁的走道還能通過。我先處理什麼？ | 我開著電器收拾物品，等水進來再處理。 | 危險／延誤 | 18 | 2 | flood_power_act_risk | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
 | flood_power 字差 | — | — | 2 | — | — | — |
-| flood_wet_panel／水已漫過玄關和去電箱的地板，樓梯另一側還乾，我現在怎麼做？ | 我沿乾的樓梯上樓，避開電箱附近。 | 正確 | 16 | 1 | flood_wet_panel_act_ok | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
-| flood_wet_panel／水已漫過玄關和去電箱的地板，樓梯另一側還乾，我現在怎麼做？ | 我在玄關鋪毛巾，再拿拖把吸水。 | 迷思 | 15 | 2 | flood_wet_panel_act_myth | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
-| flood_wet_panel／水已漫過玄關和去電箱的地板，樓梯另一側還乾，我現在怎麼做？ | 我踩水走到電箱，伸手確認開關位置。 | 危險／延誤 | 17 | 2 | flood_wet_panel_act_risk、flood_wet_panel_slip | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html)、[wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
+| flood_wet_panel／玄關和電箱前已經進水，另一側還有一段樓梯看得清楚。接下來我怎麼做？ | 我沿乾的樓梯上樓，避開電箱附近。 | 正確 | 16 | 1 | flood_wet_panel_act_ok | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
+| flood_wet_panel／玄關和電箱前已經進水，另一側還有一段樓梯看得清楚。接下來我怎麼做？ | 我在玄關鋪毛巾，再拿拖把吸水。 | 迷思 | 15 | 2 | flood_wet_panel_act_myth | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
+| flood_wet_panel／玄關和電箱前已經進水，另一側還有一段樓梯看得清楚。接下來我怎麼做？ | 我踩水走到電箱，伸手確認開關位置。 | 危險／延誤 | 17 | 2 | flood_wet_panel_act_risk、flood_wet_panel_slip | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html)、[wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
 | flood_wet_panel 字差 | — | — | 2 | — | — | — |
 | flood_basement／地下車庫坡道開始進水。阿哲拿著車鑰匙，提議下去移車，我怎麼回他？ | 我勸阿哲放下車鑰匙，一起走上樓梯。 | 正確 | 17 | 2 | flood_basement_act_ok | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
 | flood_basement／地下車庫坡道開始進水。阿哲拿著車鑰匙，提議下去移車，我怎麼回他？ | 我留在梯口，請阿哲看看水深。 | 迷思 | 14 | 2 | flood_basement_act_myth | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
@@ -184,12 +184,12 @@
 | flood_call／我已在二樓乾處；外面水流切斷離開的路。手機有訊號，我怎麼求助？ | 我拍下樓梯水位，傳給房東再打電話。 | 迷思 | 17 | 3 | flood_call_act_myth | [call-flood](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
 | flood_call／我已在二樓乾處；外面水流切斷離開的路。手機有訊號，我怎麼求助？ | 我拍下積水，貼社群再標地標。 | 危險／延誤 | 14 | 3 | flood_call_act_risk | [call-flood](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
 | flood_call 字差 | — | — | 4 | — | — | — |
-| flood_signal／外面看得到二樓窗邊，但樓梯下方水流還急。我在哪裡等待接應？ | 我留在高處窗內示意，等候人員接應。 | 正確 | 17 | 2 | flood_signal_act_ok | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
-| flood_signal／外面看得到二樓窗邊，但樓梯下方水流還急。我在哪裡等待接應？ | 我往樓下移動，揮手讓救援看見。 | 迷思 | 15 | 2 | flood_signal_act_myth | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
-| flood_signal／外面看得到二樓窗邊，但樓梯下方水流還急。我在哪裡等待接應？ | 我往地面入口移動，想在門邊迎接救援。 | 危險／延誤 | 18 | 3 | flood_signal_act_risk | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
+| flood_signal／我在二樓聽見外面有人喊話，樓下仍有水聲。我怎麼讓對方確認我的位置？ | 我留在高處窗內示意，等候人員接應。 | 正確 | 17 | 2 | flood_signal_act_ok | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
+| flood_signal／我在二樓聽見外面有人喊話，樓下仍有水聲。我怎麼讓對方確認我的位置？ | 我往樓下移動，揮手讓救援看見。 | 迷思 | 15 | 2 | flood_signal_act_myth | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
+| flood_signal／我在二樓聽見外面有人喊話，樓下仍有水聲。我怎麼讓對方確認我的位置？ | 我往地面入口移動，想在門邊迎接救援。 | 危險／延誤 | 18 | 3 | flood_signal_act_risk | [wet-flood](https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D) |
 | flood_signal 字差 | — | — | 3 | — | — | — |
 | flood_recovery／水開始退，但一樓的插座和電器曾泡到水。有人提議試電，我該如何處理？ | 我保持設備原狀，等專業人員檢查。 | 正確 | 16 | 1 | flood_recovery_act_ok | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
-| flood_recovery／水開始退，但一樓的插座和電器曾泡到水。有人提議試電，我該如何處理？ | 我擦乾插座外側，再接小電器試看看。 | 迷思 | 17 | 2 | flood_recovery_act_myth | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
+| flood_recovery／水開始退，但一樓的插座和電器曾泡到水。有人提議試電，我該如何處理？ | 我看插座已乾，請房東先恢復供電。 | 迷思 | 16 | 2 | flood_recovery_act_myth | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
 | flood_recovery／水開始退，但一樓的插座和電器曾泡到水。有人提議試電，我該如何處理？ | 我把潮濕的延長線插回，想測樓下電力。 | 危險／延誤 | 18 | 2 | flood_recovery_act_risk | [power-flood](https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html) |
 | flood_recovery 字差 | — | — | 2 | — | — | — |
 
@@ -243,7 +243,7 @@
 
 #### 結果
 
-延誤後由救援人員協助。最嚴重的傷勢為小腿撞傷。本人傷勢分級為重傷・需住院。撤離或救援延誤：整理插頭耽擱乾燥時斷電、在玄關清水錯過及早上樓。
+延誤後由救援人員協助。最嚴重的傷勢為小腿撞傷。本人傷勢分級為中度傷勢・需送醫。撤離或救援延誤：整理插頭耽擱乾燥時斷電、在玄關清水錯過及早上樓。
 
 最早因整理插頭耽擱乾燥時斷電造成延誤，過程中出現小腿撞傷。
 
@@ -294,8 +294,8 @@
 
 | 檢查 | 數據 |
 |---|---|
-| 最長＝正確（標點計入） | 1/7（14.3%） |
-| 最長＝正確（忽略標點） | 1/7（14.3%） |
+| 最長＝正確（標點計入） | 2/7（28.6%） |
+| 最長＝正確（忽略標點） | 2/7（28.6%） |
 | 動作最多＝正確 | 0/7（0.0%） |
 | 最短＝正確（標點計入） | 1/7（14.3%） |
 | 最短＝正確（忽略標點） | 1/7（14.3%） |
@@ -306,14 +306,14 @@
 
 | 決策點／問題 | 選項 | 判定 | 字數 | 動作數 | 採用 ID | 來源 |
 |---|---|---|---:|---:|---|---|
-| typhoon_light／室內突然變暗，手電筒和蠟燭就在桌上。我要怎麼在室內照明？ | 我開手電筒，先照亮眼前的通道。 | 正確 | 15 | 2 | typhoon_light_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
-| typhoon_light／室內突然變暗，手電筒和蠟燭就在桌上。我要怎麼在室內照明？ | 我點一支蠟燭照走廊，再回房找東西。 | 迷思 | 17 | 3 | typhoon_light_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
-| typhoon_light／室內突然變暗，手電筒和蠟燭就在桌上。我要怎麼在室內照明？ | 我摸黑走進走廊，找應急燈。 | 危險／延誤 | 13 | 2 | typhoon_light_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_light／室內突然變暗。桌邊放著平常用的東西，走道比房內更暗。我怎麼處理照明？ | 我開手電筒，先照亮眼前的通道。 | 正確 | 15 | 2 | typhoon_light_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_light／室內突然變暗。桌邊放著平常用的東西，走道比房內更暗。我怎麼處理照明？ | 我點一支蠟燭照走廊，再回房找東西。 | 迷思 | 17 | 3 | typhoon_light_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_light／室內突然變暗。桌邊放著平常用的東西，走道比房內更暗。我怎麼處理照明？ | 我摸黑走進走廊，找應急燈。 | 危險／延誤 | 13 | 2 | typhoon_light_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
 | typhoon_light 字差 | — | — | 4 | — | — | — |
-| typhoon_plugs／乾燥室內的電暖器和吹風機仍插著。我和小晴要離開這個房間，應怎麼處理？ | 我拔下乾燥處的電暖器與吹風機插頭。 | 正確 | 17 | 1 | typhoon_plugs_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
-| typhoon_plugs／乾燥室內的電暖器和吹風機仍插著。我和小晴要離開這個房間，應怎麼處理？ | 我關掉電暖器，整理電線後把它移到牆邊。 | 迷思 | 19 | 3 | typhoon_plugs_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
-| typhoon_plugs／乾燥室內的電暖器和吹風機仍插著。我和小晴要離開這個房間，應怎麼處理？ | 我留著暖器加熱檔，用外套蓋住。 | 危險／延誤 | 15 | 2 | typhoon_plugs_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
-| typhoon_plugs 字差 | — | — | 4 | — | — | — |
+| typhoon_plugs／我和小晴準備移到隔壁房間。剛才使用過的家電還留在原處，附近地面乾燥。我先怎麼處理？ | 我拔下乾燥處的電暖器與吹風機插頭。 | 正確 | 17 | 1 | typhoon_plugs_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_plugs／我和小晴準備移到隔壁房間。剛才使用過的家電還留在原處，附近地面乾燥。我先怎麼處理？ | 我關掉暖器，把吹風機留著等復電。 | 迷思 | 16 | 2 | typhoon_plugs_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_plugs／我和小晴準備移到隔壁房間。剛才使用過的家電還留在原處，附近地面乾燥。我先怎麼處理？ | 我留著暖器加熱檔，用外套蓋住。 | 危險／延誤 | 15 | 2 | typhoon_plugs_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_plugs 字差 | — | — | 2 | — | — | — |
 | typhoon_fumes／屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？ | 我選常溫備糧，和小晴待在安全處。 | 正確 | 16 | 2 | typhoon_fumes_act_ok | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
 | typhoon_fumes／屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？ | 我在客廳用卡式爐煮一點熱食。 | 迷思 | 14 | 1 | typhoon_fumes_act_myth | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
 | typhoon_fumes／屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？ | 我把發電機放在窗邊，啟動來接電扇。 | 危險／延誤 | 17 | 3 | typhoon_fumes_act_risk | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
@@ -323,13 +323,13 @@
 | typhoon_outage／透過窗看見附近街廓也停電，眼前沒有火煙或傷者。要回報給誰？ | 我打119查復電，再請他轉報。 | 迷思 | 15 | 2 | typhoon_outage_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
 | typhoon_outage／透過窗看見附近街廓也停電，眼前沒有火煙或傷者。要回報給誰？ | 我到大門口察看，再問鄰居是否有人報修。 | 危險／延誤 | 19 | 3 | typhoon_outage_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
 | typhoon_outage 字差 | — | — | 4 | — | — | — |
-| typhoon_help／隔戶有人說頭暈、站不穩，屋內正在用燃料設備。我在安全通風的樓梯口，要怎麼求助？ | 我在安全處撥119，回報位置與不適。 | 正確 | 18 | 2 | typhoon_help_act_ok | [urgent](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
-| typhoon_help／隔戶有人說頭暈、站不穩，屋內正在用燃料設備。我在安全通風的樓梯口，要怎麼求助？ | 我先打1911問停電狀況，再找人求助。 | 迷思 | 19 | 3 | typhoon_help_act_myth | [urgent](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
-| typhoon_help／隔戶有人說頭暈、站不穩，屋內正在用燃料設備。我在安全通風的樓梯口，要怎麼求助？ | 我進隔戶查看，再把住戶帶出來。 | 危險／延誤 | 15 | 2 | typhoon_help_act_risk | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
+| typhoon_help／隔戶有人喊頭暈，說自己站不穩。我站在屋外的樓梯口，屋內還有機器運轉的聲音。我要怎麼做？ | 我在安全處撥119，回報位置與不適。 | 正確 | 18 | 2 | typhoon_help_act_ok | [urgent](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
+| typhoon_help／隔戶有人喊頭暈，說自己站不穩。我站在屋外的樓梯口，屋內還有機器運轉的聲音。我要怎麼做？ | 我先打1911問停電狀況，再找人求助。 | 迷思 | 19 | 3 | typhoon_help_act_myth | [urgent](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
+| typhoon_help／隔戶有人喊頭暈，說自己站不穩。我站在屋外的樓梯口，屋內還有機器運轉的聲音。我要怎麼做？ | 我進隔戶查看，再把住戶帶出來。 | 危險／延誤 | 15 | 2 | typhoon_help_act_risk | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
 | typhoon_help 字差 | — | — | 4 | — | — | — |
-| typhoon_fridge／我回到安全處，冰箱已停電一段時間，桌上有常溫備糧。一盒牛奶摸起來已回到室溫。我要怎麼安排食物？ | 我關好冰箱，改吃常溫保存的備糧。 | 正確 | 16 | 2 | typhoon_fridge_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
-| typhoon_fridge／我回到安全處，冰箱已停電一段時間，桌上有常溫備糧。一盒牛奶摸起來已回到室溫。我要怎麼安排食物？ | 我打開冰箱逐層查看，先挑冷飲補充水分。 | 迷思 | 19 | 3 | typhoon_fridge_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
-| typhoon_fridge／我回到安全處，冰箱已停電一段時間，桌上有常溫備糧。一盒牛奶摸起來已回到室溫。我要怎麼安排食物？ | 我聞聞回溫牛奶，喝幾口確認味道。 | 危險／延誤 | 16 | 2 | typhoon_fridge_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_fridge／我回到屋內，冰箱停電一段時間了。桌上的食物有些原本需要冷藏，有些不用。我接下來怎麼安排？ | 我關好冰箱，改吃常溫保存的備糧。 | 正確 | 16 | 2 | typhoon_fridge_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_fridge／我回到屋內，冰箱停電一段時間了。桌上的食物有些原本需要冷藏，有些不用。我接下來怎麼安排？ | 我打開冰箱逐層查看，先挑冷飲補充水分。 | 迷思 | 19 | 3 | typhoon_fridge_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_fridge／我回到屋內，冰箱停電一段時間了。桌上的食物有些原本需要冷藏，有些不用。我接下來怎麼安排？ | 我聞聞回溫牛奶，喝幾口確認味道。 | 危險／延誤 | 16 | 2 | typhoon_fridge_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
 | typhoon_fridge 字差 | — | — | 3 | — | — | — |
 | typhoon_wire／從室內看到巷口一條電線掉下來，旁邊仍有風雨，暫時沒人靠近。最後我要怎麼處理？ | 我留在安全處打1911，報電線位置。 | 正確 | 18 | 2 | typhoon_wire_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
 | typhoon_wire／從室內看到巷口一條電線掉下來，旁邊仍有風雨，暫時沒人靠近。最後我要怎麼處理？ | 我到門外拍照，傳給鄰居確認是哪一條。 | 迷思 | 18 | 3 | typhoon_wire_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
@@ -386,9 +386,9 @@
 
 #### 結果
 
-延誤後完成應變交接。最嚴重的傷勢為小晴的手指燙傷。本人傷勢分級為輕傷。撤離或救援延誤：為處理明火反覆往返、整理電器後須折返確認插頭。
+延誤後完成應變交接。本人傷勢分級為無傷。撤離或救援延誤：為處理明火反覆往返、整理電器後須折返確認插頭。
 
-最早因為處理明火反覆往返造成延誤，過程中出現手指燙傷。
+最早因為處理明火反覆往返造成延誤。
 
 #### 做對的決定
 
@@ -402,7 +402,7 @@
 #### 這次的危險選擇與後果
 
 - 第 1 回合「我點一支蠟燭照走廊，再回房找東西。」 蠟燭留在走道，小晴挪它時手指被燙到（本回合傷勢：手指燙傷）。 走道用手電筒照明，避免無人照看的火源。
-- 第 2 回合「我關掉電暖器，整理電線後把它移到牆邊。」 我移好電暖器，插頭仍接著，稍後還得返回確認。 插座與手部乾燥時拔下插頭。
+- 第 2 回合「我關掉暖器，把吹風機留著等復電。」 暖器已關，但吹風機還接著電。 插座與手部乾燥時拔下插頭。
 - 第 3 回合「我叫小晴等一下，去翻櫃子再找晚餐。」 我留在昏暗的收納間翻找，耽擱了留意屋外狀況。 優先取用在手邊且無需用火的備糧。
 
 #### 關鍵轉折
@@ -423,6 +423,6 @@
 | 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
 |---|---|---|---|
 | 第 1 回合 | 我點一支蠟燭照走廊，再回房找東西。 | typhoon_light_act_myth | 手指燙傷（同伴） |
-| 第 2 回合 | 我關掉電暖器，整理電線後把它移到牆邊。 | typhoon_plugs_act_myth | — |
+| 第 2 回合 | 我關掉暖器，把吹風機留著等復電。 | typhoon_plugs_act_myth | — |
 | 第 3 回合 | 我叫小晴等一下，去翻櫃子再找晚餐。 | typhoon_fumes_act_other | — |
 | 關鍵轉折 | 我點一支蠟燭照走廊，再回房找東西。 | typhoon_light_act_myth | 手指燙傷（同伴） |

@@ -384,7 +384,7 @@
     "visibleActions": 1
   },
   "flood_recovery_myth": {
-    "text": "我擦乾插座外側，再接小電器試看看。",
+    "text": "我看插座已乾，請房東先恢復供電。",
     "visibleActions": 2
   },
   "flood_recovery_risk": {
@@ -408,8 +408,8 @@
     "visibleActions": 1
   },
   "typhoon_plugs_myth": {
-    "text": "我關掉電暖器，整理電線後把它移到牆邊。",
-    "visibleActions": 3
+    "text": "我關掉暖器，把吹風機留著等復電。",
+    "visibleActions": 2
   },
   "typhoon_plugs_risk": {
     "text": "我留著暖器加熱檔，用外套蓋住。",

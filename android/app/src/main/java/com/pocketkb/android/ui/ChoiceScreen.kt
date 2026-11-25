@@ -173,6 +173,7 @@ internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, mo
             }
             state.preview != null -> item {
                 Text("演練中可能出現受傷的結果，你可以隨時停止。")
+                Text("劇情與評分為草稿，待人工審查。")
                 (state.preview?.get("contentNotice") as? String)?.let { Text(it) }
                 Text("點一個做法就會送出。想先取得線索，可以看看四周或問同伴。")
                 Button(onClick = model::start, enabled = !state.busy, modifier = Modifier.testTag("choice_start").heightIn(min = 48.dp)) { Text("開始演練") }

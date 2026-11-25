@@ -186,7 +186,10 @@ internal class ChoiceRuntime(
 
         fun end(rule: PackObject, hazard: String? = null) {
             val thresholds = rules.getValue("injury").obj()
-            val level = if (rule["injury"] != "fromThresholds") rule["injury"] else {
+            val level = if (rule["injury"] == "fromInjuries") {
+                state.rows("injuries").filter { it["subject"] == "player" }
+                    .maxByOrNull { severity.getValue(it.text("severity")) }?.get("severity") ?: "NONE"
+            } else if (rule["injury"] != "fromThresholds") rule["injury"] else {
                 val score = ctx.eval(thresholds["score"]) as Int
                 require(score >= 0)
                 when {
@@ -433,7 +436,7 @@ internal class ChoiceRuntime(
             val subject = if (it["subject"] == "player") "本人" else state.getValue("npc").obj().getValue(it.text("subject")).obj().text("name")
             it + ("subjectName" to subject)
         }
-        val worst = injuries.maxByOrNull { severity.getValue(it.text("severity")) }
+        val worst = injuries.filter { it["subject"] == "player" }.maxByOrNull { severity.getValue(it.text("severity")) }
         val delays = history.filter { it["safety"] == "unsafe" }.flatMap { it.rows("delays") }.map { it.text("reason") }.distinct().take(2)
         val featured = history.filter { it["safety"] == "unsafe" }.flatMap { row ->
             row.rows("impacts").filter { it.flag("direct") }.map { row to it }

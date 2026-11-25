@@ -75,7 +75,7 @@ async function main(){
     await page.locator('#choice-reset').click();
     await open('earthquake_school');
     await play('earthquake-school.json','reckless');
-    assert.match(await page.locator('.choice-grade').innerText(),/需住院/);
+    assert.match(await page.locator('.choice-grade').innerText(),/中度傷勢・需送醫/);
     for(const line of ['手臂擦傷','小腿撞傷','腳踝扭傷','小維｜手腕受傷'])
       assert.ok((await page.locator('.choice-drill').innerText()).includes(line));
     assert.deepEqual(pageErrors,[]);

@@ -3,7 +3,7 @@
   "scenarios": [
     {
       "file": "fire-dorm.json",
-      "packSha256": "d4249168c1b9139903edc7353c35ba17b5b05f8a808c74d99853029012956d27",
+      "packSha256": "00acd14fdbfbd74a2d79c6a7de63226e70dcf2ecf8df0f79e552b6a4bf5e6f05",
       "cases": [
         {
           "id": "all-correct",
@@ -152,7 +152,7 @@
     },
     {
       "file": "earthquake-school.json",
-      "packSha256": "2b5cf838c79ee322775e859627a85caa9b74c07618009497f8a8d6f16d209d87",
+      "packSha256": "f27ebe7919da90b32937a1ef127bf15ea51e7f87e1c842816852ac1f011c6a36",
       "cases": [
         {
           "id": "all-correct",
@@ -198,7 +198,7 @@
           "expected": {
             "clock": 8,
             "ending": "DELAYED_EVACUATION",
-            "injury": "SEVERE",
+            "injury": "MODERATE",
             "exposure": {
               "trauma": 9,
               "separation": 5
@@ -304,7 +304,7 @@
     },
     {
       "file": "metro-attack-draft.json",
-      "packSha256": "dc1cda300ad75691915c974202d9bfce85ef911f84d1e06092af2d4d7980da96",
+      "packSha256": "7ff626f977229c843960e434b654bd5b9c6bb79663f2ff22a25a3f68934fecd7",
       "cases": [
         {
           "id": "all-correct",
@@ -341,7 +341,7 @@
           "expected": {
             "clock": 7,
             "ending": "DELAYED_EVACUATION",
-            "injury": "SEVERE",
+            "injury": "MILD",
             "exposure": {
               "harm": 4,
               "delay": 7
@@ -405,7 +405,7 @@
     },
     {
       "file": "flood-low-home-draft.json",
-      "packSha256": "0c9307bf4411501a9feabd548a12f2061de16dcedfc59e28929dfde83f26c902",
+      "packSha256": "c4602fd5be0820b13530c807b8d5cefe97387a3c58de7a895858eb207d4e7788",
       "cases": [
         {
           "id": "all-correct",
@@ -442,7 +442,7 @@
           "expected": {
             "clock": 7,
             "ending": "DELAYED_RESCUE",
-            "injury": "SEVERE",
+            "injury": "MODERATE",
             "exposure": {
               "harm": 4,
               "delay": 7
@@ -548,7 +548,7 @@
     },
     {
       "file": "typhoon-outage-draft.json",
-      "packSha256": "19671e3eecbfc20ec71907c0dda0b7b955116bcaf5e126eef1fd5c4eddb29fe2",
+      "packSha256": "7c4a6ddb6989ca4bb9ebd1bcaa751b15bbf4956dcd562a42301e089d31321199",
       "cases": [
         {
           "id": "all-correct",
@@ -585,7 +585,7 @@
           "expected": {
             "clock": 7,
             "ending": "DELAYED_RESCUE",
-            "injury": "MILD",
+            "injury": "NONE",
             "exposure": {
               "harm": 1,
               "delay": 7
