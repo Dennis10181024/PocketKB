@@ -7,12 +7,12 @@ const {readJson,validatePack}=require('../../web-pwa/choice-pack');
 const {createRuntime}=require('../../web-pwa/choice-runtime');
 const dir=path.resolve(__dirname,'../../web-pwa/scenarios/choice');
 const schema=require(path.join(dir,'schema-v1.json'));
-const {file,audit,safe,rough,fatalRuns,extraCases=[]}=JSON.parse(fs.readFileSync(0,'utf8'));
+const {file,audit,safe,rough,fatalRuns,roughInjury,extraCases=[]}=JSON.parse(fs.readFileSync(0,'utf8'));
 if(!/^[a-z][a-z0-9-]+-draft\.json$/.test(file))throw Error('Expected draft filename');
 const bytes=fs.readFileSync(path.join(dir,file));
 const pack=validatePack(readJson(bytes.toString('utf8')),schema);
 if(pack.meta.status!=='draft')throw Error('Expected draft status');
-createRuntime(pack).verifyReachability();
+createRuntime(pack).verifyReachability({consistentInjury:true});
 const sha256=createHash('sha256').update(bytes).digest('hex');
 const manifestFile=path.join(dir,'manifest.json');
 const vectorsFile=path.join(dir,'test-vectors.json');
@@ -32,9 +32,12 @@ const harm=rough.reduce((sum,id,index)=>{
   return sum+(pack.catalog.hazards.find(a=>a.id===hazard).normal.effect.add?.['exposure.harm']||0);
 },0);
 const expected=(clock,ending,injury,exposure)=>({clock,ending,injury,exposure});
+const delayed=pack.endings.find(e=>e.id==='delayed');
+if(delayed.injury==='fromInjuries'&&!['NONE','MILD','MODERATE','SEVERE'].includes(roughInjury))
+  throw Error('Specify expected worst player injury for the reckless vector');
 const cases=[
   {id:'all-correct',choices:safe,expected:expected(clock,pack.endings.find(e=>e.id==='safe').type,'NONE',{harm:0,delay:0})},
-  {id:'reckless',choices:rough,expected:expected(clock,pack.endings.find(e=>e.id==='delayed').type,injuryFor(harm),{harm,delay:clock})},
+  {id:'reckless',choices:rough,expected:expected(clock,delayed.type,roughInjury??injuryFor(harm),{harm,delay:clock})},
 ];
 for(const [index,fatal] of fatalRuns.entries()){
   const prefix=fatal.prefix||safe.slice(0,fatal.at);

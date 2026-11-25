@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('node:fs');
+const path = require('node:path');
+const { isDeepStrictEqual } = require('node:util');
+const { createHash } = require('node:crypto');
+const { readJson, validatePack } = require('../web-pwa/choice-pack');
+const { createRuntime } = require('../web-pwa/choice-runtime');
+const { optionAudit } = require('../online-coach/test/step51b-report');
+
+const root = path.resolve(__dirname, '../web-pwa/scenarios/choice');
+const read = file => readJson(fs.readFileSync(path.join(root, file), 'utf8'));
+const solutionCue = /正確選項|最佳選項|正確做法(?:是|為)|最安全的選項|應該選|答案是|建議選|別忘了先|我得先/u;
+const items = ['房門', '門縫', '電梯', '樓梯', '窗台', '玻璃', '桌腳', '外牆', '電線', '對講機',
+  '出口', '手機', '總開關', '電箱', '地下室', '蠟燭', '手電筒', '發電機', '冰箱', '里長', '廣播', '毛巾', '水位'];
+const clean = text => text.replace(/[\s\p{P}]/gu, '');
+const requiredVectors = ['all-correct', 'reckless', 'fatal', 'retry'];
+
+function promptReview(row) {
+  const found = items.filter(term => row.prompt.includes(term));
+  const correct = row.options.filter(item => item.class === 'correct');
+  const distractors = row.options.filter(item => item.class !== 'correct');
+  const exclusive = found.filter(term =>
+    correct.some(option => option.text.includes(term)) && distractors.every(option => !option.text.includes(term)));
+  const duplicated = correct.some(option => {
+    const answer = clean(option.text).replace(/^我/u, '');
+    return answer.length >= 7 && clean(row.prompt).includes(answer);
+  });
+  return { found, exclusive, duplicated, explicit: solutionCue.test(row.prompt) };
+}
+
+function auditChoices(pack, rows) {
+  const errors = [], reviews = [];
+  for (const row of rows) {
+    const prefix = row.id + '｜';
+    const options = row.options;
+    const classes = new Set(options.map(option => option.class));
+    if (!['correct', 'misconception', 'risk_or_delay'].every(item => classes.has(item))) {
+      errors.push(prefix + '需有正確、迷思與危險或延誤選項。');
+    }
+    if (options.filter(option => option.class === 'correct').length !== 1) {
+      errors.push(prefix + '需明確指定一個最佳選項。');
+    }
+    if (row.spread > 4 || row.significantSpread > 4) errors.push(prefix + '選項最大字差超過 4。');
+    if (new Set(options.map(option => clean(option.text))).size !== options.length) {
+      errors.push(prefix + '有文字相同的選項。');
+    }
+    for (const item of options) {
+      if (!/^我/u.test(item.text)) errors.push(prefix + item.id + ' 未用第一人稱。');
+      if (item.negative) errors.push(prefix + item.id + ' 含自我否定用語。');
+      if (item.class === 'partial' && !item.missingStep) errors.push(prefix + item.id + ' 缺回顧要補上的步驟。');
+    }
+    const cue = promptReview(row);
+    if (cue.explicit || cue.duplicated) errors.push(prefix + '題幹直接交代了答案或做法。');
+    const keys = cue.found.length ? cue.found.join('、') : '未比對到詞表內物品';
+    const unique = cue.exclusive.length ? '；人工核對是否提示：' + cue.exclusive.join('、') : '';
+    reviews.push(prefix + '字差 ' + row.spread + '／實字差 ' + row.significantSpread +
+      '；題幹物品 ' + keys + '；干擾選項 ' + (options.length - 1) + ' 個' + unique);
+  }
+  const amounts = {};
+  for (const flag of ['lengthBias', 'significantBias', 'actionBias', 'shortestBias', 'shortestSignificantBias']) {
+    amounts[flag] = rows.filter(row => row[flag]).length;
+  }
+  if (pack.meta.status === 'draft') {
+    for (const metric of Object.keys(amounts)) {
+      if (amounts[metric] / rows.length > 0.35) errors.push(pack.meta.id + '｜' + describe[metric] + ' 超過 35%。');
+    }
+  }
+  return { errors, reviews, amounts };
+}
+
+const describe = { lengthBias: '最長為正確', significantBias: '實字最多為正確',
+  actionBias: '可見動作最多為正確', shortestBias: '最短為正確', shortestSignificantBias: '實字最少為正確' };
+
+function choices(sequence, engine, session) {
+  let view = engine.snapshot(session);
+  for (const optionId of sequence) {
+    if (!view.decision) throw new Error('終局後仍有選擇：' + optionId);
+    view = engine.submitChoice(session, { optionId, revision: view.revision, decisionId: view.decision.id,
+      inputId: 'check-' + view.revision });
+  }
+  return view;
+}
+
+function compareEnd(state, expected) {
+  if (!expected || state.ending?.type !== expected.ending || state.ending?.injury !== expected.injury ||
+      state.clock !== expected.clock || !isDeepStrictEqual(state.exposure, expected.exposure)) {
+    throw new Error('終局、傷勢、時序或暴露值與預期不一致');
+  }
+  if (Object.entries(expected.facts ?? {}).some(([key, value]) => state.facts[key] !== value)) {
+    throw new Error('終局事實與預期不一致');
+  }
+}
+
+function verifyVectors(pack, vectors) {
+  for (const id of requiredVectors) if (!vectors.cases.some(item => item.id === id)) throw new Error('缺共用向量：' + id);
+  const core = createRuntime(pack, { random: () => 0.5 });
+  for (const id of requiredVectors) {
+    const item = vectors.cases.find(candidate => candidate.id === id);
+    const session = core.start();
+    const view = choices(item.choices, core, session);
+    if (id !== 'retry') compareEnd(view.state, item.expected);
+    else {
+      if (view.state.ending?.type !== 'CRITICAL_FAILURE') throw new Error('重來向量須從危急終局開始');
+      const restart = core.retry(session);
+      if (restart.decision.id !== item.retry.decisionId || restart.state.clock !== item.retry.clock ||
+          restart.sessionId !== view.sessionId || restart.attempt !== 2) throw new Error('重來沒有回到指定轉折');
+      compareEnd(choices(item.resume, core, session).state, vectors.cases.find(row => row.id === item.sameAs)?.expected);
+    }
+  }
+}
+
+function lint() {
+  const schema = read('schema-v1.json');
+  const manifest = read('manifest.json');
+  const vectors = read('test-vectors.json');
+  const errors = [], results = [], base = [];
+  const seen = new Set();
+  if (manifest.schemaVersion !== 1 || !manifest.packs?.length) throw new Error('目錄版號或資料不合法');
+  for (const entry of manifest.packs) {
+    try {
+      if (!/^[a-z0-9-]+\.json$/.test(entry.file)) throw new Error('情境檔名不合法');
+      const digest = createHash('sha256').update(fs.readFileSync(path.join(root, entry.file))).digest('hex');
+      if (digest !== entry.sha256) throw new Error('情境檔 SHA-256 和目錄不一致');
+      const pack = validatePack(read(entry.file), schema);
+      if (pack.meta.id !== entry.id || pack.meta.title !== entry.title || pack.meta.status !== entry.status ||
+          pack.meta.contentNotice !== entry.contentNotice || seen.has(entry.id)) throw new Error('情境目錄身分缺漏或重複');
+      seen.add(entry.id);
+      const pathCheck = createRuntime(pack).verifyReachability({ consistentInjury: true });
+      const evidence = vectors.scenarios.find(row => row.file === entry.file);
+      if (evidence?.packSha256 !== digest) throw new Error('共用向量與包摘要不一致');
+      verifyVectors(pack, evidence);
+      const rows = optionAudit([pack]);
+      const audit = auditChoices(pack, rows);
+      errors.push(...audit.errors.map(message => entry.file + '｜' + message));
+      if (pack.meta.status !== 'draft') base.push(...rows);
+      results.push({ pack, pathCheck, rows, ...audit });
+    } catch (error) {
+      errors.push(entry.file + '｜' + error.message);
+    }
+  }
+  if (base.length) for (const name of ['lengthBias', 'significantBias', 'actionBias']) {
+    if (base.filter(row => row[name]).length / base.length > .35) errors.push('基準情境合計｜' + describe[name] + ' 超過 35%。');
+  }
+  const all = results.flatMap(item => item.rows);
+  if (all.length) for (const name of ['lengthBias', 'significantBias', 'actionBias']) {
+    if (all.filter(row => row[name]).length / all.length > .35) errors.push('全部情境合計｜' + describe[name] + ' 超過 35%。');
+  }
+  return { errors, results };
+}
+
+if (require.main === module) {
+  try {
+    const result = lint();
+    console.log('PocketKB 情境檢查 · 草稿，待人工審查');
+    for (const item of result.results) {
+      console.log('\n' + item.pack.meta.title + '：' + item.pathCheck.decisions + ' 題、' + item.pathCheck.endings +
+        ' 個可達結局。Schema、語意、傷勢、共用向量通過。');
+      console.log(Object.entries(item.amounts).map(([name, count]) =>
+        describe[name] + ' ' + count + '／' + item.rows.length).join('；'));
+      for (const review of item.reviews) console.log('  ' + review);
+    }
+    if (result.errors.length) {
+      console.error('\n' + result.errors.join('\n'));
+      process.exitCode = 1;
+    } else console.log('\n自動檢查通過。情境與干擾項的合理性仍需人工審查。');
+  } catch (error) {
+    console.error('無法執行情境檢查：' + error.message);
+    process.exitCode = 1;
+  }
+}
+module.exports = { lint, promptReview };

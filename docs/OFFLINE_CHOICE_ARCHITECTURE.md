@@ -18,7 +18,7 @@ Android 是正式執行端。斷網、無模型時可開始、完成、回顧和
 | `decisions` | 第一個符合 `when` 的決策點有優先權。每題有 `prompt` 與 3–4 個計分選項。選項用穩定 ID，保存來源、教學類型、獨立安全標記、按順序執行的 catalog 參照及已審的額外效果。單題可覆寫反思問題。 |
 | `beats`、`phaseRules` | 時間軸事件用 `at`、`after`、`when`、`repeat`。先選變體，再執行基礎及該變體效果。 `prevented` 有自己的 ID。 `overrides` 支援其他有序變體。決策事件可指出要展示哪一題。階段規則表示先結算定位、等待或暫緩事件。 |
 | `consequences` | `missed`、`reckless`、`world` 各用明確條件。符合且真的結算時累計該規則的觸發次數，選取 `fromCount` 最大且不超過次數的階層。階層可改 facts、暴露與 NPC 狀態，並選對應旁白；階層的 `cases` 可依條件改用其他已審效果／旁白。第一階必從 1 起，後續嚴格遞增。 |
-| `endings`、`injury`、`limits` | 同一階段依陣列順序取第一個符合的結局。致命結局的傷勢預設明定 `NOT_ASSESSED`，UI 隱藏傷勢欄。其他結局以包內傷勢分數與門檻推導，分別是 ≤ `noneMax`、≤ `mildMax`、≤ `moderateMax` 和以上，門檻單調遞增。上限必有確定的劇本收場規則，缺少就拒裝。 |
+| `endings`、`injury`、`limits` | 同一階段依陣列順序取第一個符合的結局。致命結局的傷勢預設明定 `NOT_ASSESSED`，UI 隱藏傷勢欄。目前情境包以 `fromInjuries` 換算本人傷勢，取已結算的最高等級，同伴獨立列出。保留 `fromThresholds` 供既有資料，依單調的暴露門檻換算。上限必有確定的劇本收場規則，缺少就拒裝。 |
 | `review`、`presentation`、`assets` | 事件與動作由 `why/tip/eligibleWhen` 及來源做回顧。每個可見旁白 ID 至少含兩種作者核准的寫法。靜態圖片用封包內相對路徑、hash、MIME、替代文字。純文字也能完成演練。 |
 
 ### 條件與值 DSL 完整清單
