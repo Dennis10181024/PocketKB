@@ -1,0 +1,226 @@
+{
+  "answer_rescuer": {
+    "text": "我大聲回報房號人數，留在門內等候指示。",
+    "visibleActions": 2
+  },
+  "wait_rescuer": {
+    "text": "我貼近門邊聽清楚，再示意小岑安靜等候。",
+    "visibleActions": 3
+  },
+  "pack_rescuer": {
+    "text": "我拿起房卡和手機，收好物品再回應。",
+    "visibleActions": 3
+  },
+  "close_warn": {
+    "text": "我關緊房門，提醒小岑留在房裡。",
+    "visibleActions": 2
+  },
+  "peek": {
+    "text": "我拉開房門看看，想找煙比較淡的路。",
+    "visibleActions": 1
+  },
+  "elevator": {
+    "text": "我看電梯燈還亮著，出門去搭電梯下樓。",
+    "visibleActions": 2
+  },
+  "close_only": {
+    "text": "我關緊房門，拿起手機準備通報。",
+    "visibleActions": 2
+  },
+  "help_roommate": {
+    "text": "我請小岑留在房裡，陪我核對房號。",
+    "visibleActions": 2
+  },
+  "open_together": {
+    "text": "我請小岑開門一點，再對隔壁喊一聲。",
+    "visibleActions": 2
+  },
+  "bathroom": {
+    "text": "我叫小岑留在門邊，自己進浴室避煙。",
+    "visibleActions": 2
+  },
+  "warn_only": {
+    "text": "我提醒小岑別開門，拿起房卡做準備。",
+    "visibleActions": 2
+  },
+  "full_call": {
+    "text": "我打119，報地址、房號、人數和煙況。",
+    "visibleActions": 2
+  },
+  "signal_only": {
+    "text": "我走到窗邊揮衣，再喊樓下幫忙報案。",
+    "visibleActions": 3
+  },
+  "pack_first": {
+    "text": "我翻出房卡和證件，整理好再拿手機。",
+    "visibleActions": 3
+  },
+  "partial_call": {
+    "text": "我打119，說宿舍的地址和受困人數。",
+    "visibleActions": 2
+  },
+  "seal_gap": {
+    "text": "我把門帶緊，用手邊的布塞住門縫。",
+    "visibleActions": 2
+  },
+  "grab_handle": {
+    "text": "我握住門把試著拉緊，再摸門底找漏縫。",
+    "visibleActions": 3
+  },
+  "reopen": {
+    "text": "我把房門開一點，探頭找煙是從哪來的。",
+    "visibleActions": 2
+  },
+  "close_again": {
+    "text": "我把房門拉緊，退到窗邊留意外面。",
+    "visibleActions": 2
+  },
+  "window_signal": {
+    "text": "我看清窗外煙況，在窗內揮衣呼救。",
+    "visibleActions": 2
+  },
+  "climb_out": {
+    "text": "我踩上窗外的架子，再向樓下揮手大喊。",
+    "visibleActions": 3
+  },
+  "jump_out": {
+    "text": "我往窗下的平台跳，避開走廊的煙。",
+    "visibleActions": 1
+  },
+  "look_window": {
+    "text": "我靠窗看看煙飄向哪，找樓下人影。",
+    "visibleActions": 2
+  },
+  "keep_line": {
+    "text": "我打119補報房號，保持這支電話暢通。",
+    "visibleActions": 2
+  },
+  "phone_only": {
+    "text": "我把手機調暗、關程式，再把手機收起來。",
+    "visibleActions": 3
+  },
+  "bathroom_phone": {
+    "text": "我帶手機進浴室關門，找訊號再打電話。",
+    "visibleActions": 3
+  },
+  "keep_room": {
+    "text": "我留在房內，關掉耗電的程式省電。",
+    "visibleActions": 2
+  },
+  "stay_ready": {
+    "text": "我關緊房門，在房裡留意救援喊聲。",
+    "visibleActions": 2
+  },
+  "bathroom_wait": {
+    "text": "我進浴室把門關上，靠牆等走廊的煙退。",
+    "visibleActions": 3
+  },
+  "walk_smoke": {
+    "text": "我趁外面安靜開門，沿牆去找樓梯。",
+    "visibleActions": 2
+  },
+  "stay_still": {
+    "text": "我待在房內窗旁，仔細聽門外動靜。",
+    "visibleActions": 2
+  },
+  "take_cover": {
+    "text": "我趴到桌下護頭頸，牢牢抓穩桌腳。",
+    "visibleActions": 2
+  },
+  "use_triangle": {
+    "text": "我蹲進櫃子旁的空隙，扶著櫃子穩住。",
+    "visibleActions": 2
+  },
+  "rush_door": {
+    "text": "我扶著桌沿站起來，趁門開著跑到走廊。",
+    "visibleActions": 3
+  },
+  "cover_only": {
+    "text": "我縮進桌下，雙手抱住頭頸擋落物。",
+    "visibleActions": 2
+  },
+  "reassure_peer": {
+    "text": "我請小維留在桌下，陪他等搖晃停止。",
+    "visibleActions": 2
+  },
+  "wait_peer": {
+    "text": "我叫小維先走到門邊，扶住門框等開門。",
+    "visibleActions": 3
+  },
+  "watch_door": {
+    "text": "我招手叫小維跟來，跑到門邊看隔壁班。",
+    "visibleActions": 3
+  },
+  "stop_peer": {
+    "text": "我示意小維回桌下，自己也留在桌邊。",
+    "visibleActions": 2
+  },
+  "cover_aftershock": {
+    "text": "我趴回桌下護頭頸，抓牢桌腳等震動過去。",
+    "visibleActions": 2
+  },
+  "stand_by_desk": {
+    "text": "我移到櫃旁蹲低，扶櫃等搖晃變小。",
+    "visibleActions": 3
+  },
+  "rush_aftershock": {
+    "text": "我扶著桌沿起身，趁空檔跑出教室。",
+    "visibleActions": 3
+  },
+  "climb_window": {
+    "text": "我踩上窗台，伸腳往外牆找落腳點。",
+    "visibleActions": 3
+  },
+  "orderly_stairs": {
+    "text": "我護好頭頸，留出距離跟隊走樓梯。",
+    "visibleActions": 3
+  },
+  "rush_stairs": {
+    "text": "我貼著扶手快步下樓，趕在後隊之前。",
+    "visibleActions": 2
+  },
+  "take_elevator": {
+    "text": "我改走電梯，按一樓去外面找隊伍。",
+    "visibleActions": 3
+  },
+  "stairs_only": {
+    "text": "我跟著班級走樓梯，和前面留好距離。",
+    "visibleActions": 2
+  },
+  "avoid_wire": {
+    "text": "我繞開外牆和電線，往操場空地走。",
+    "visibleActions": 2
+  },
+  "follow_wall": {
+    "text": "我貼著外牆走，順著牆繞開正前方的線。",
+    "visibleActions": 2
+  },
+  "move_wire": {
+    "text": "我走上前抓住電線，挪開替同學開路。",
+    "visibleActions": 3
+  },
+  "join_class": {
+    "text": "我找到本班老師，回到原班位置等候。",
+    "visibleActions": 2
+  },
+  "join_other_class": {
+    "text": "我先到朋友班上，站到隊尾等老師點名。",
+    "visibleActions": 3
+  },
+  "retrieve_phone": {
+    "text": "我先回教室找手機，拿到後趕回操場。",
+    "visibleActions": 3
+  },
+  "answer_roll": {
+    "text": "我應聲確認到場，回報小維的位置和傷勢。",
+    "visibleActions": 2
+  },
+  "wait_roll": {
+    "text": "我跟同學核對名單，等老師再叫一次。",
+    "visibleActions": 2
+  },
+  "go_back_after_roll": {
+    "text": "我離開隊伍找小維，想和他一起回報。",
+    "visibleActions": 2
+  }
+}

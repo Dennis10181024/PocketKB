@@ -282,6 +282,8 @@
         provenance(option.sourceIds);
         narration(option.narration);
         text(option.text);
+        if(option.missingStep)text(option.missingStep);
+        if(option.class!=='partial'&&option.missingStep)fail('Only partial options may specify a missing step');
         effect(option.effect,false);
         if(!option.steps.some(action=>action.kind!=='channel'))fail('Option needs a principle or hazard: '+option.id);
         if(option.class==='correct' && (option.safety!=='safe'||option.steps.some(action=>action.kind==='hazard')||

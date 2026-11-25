@@ -9,6 +9,7 @@ const {createRuntime}=require('../../web-pwa/choice-runtime');
 const schema=require('../../web-pwa/scenarios/choice/schema-v1.json');
 const manifest=require('../../web-pwa/scenarios/choice/manifest.json');
 const vectors=require('../../web-pwa/scenarios/choice/test-vectors.json');
+const {optionAudit,run}=require('./step51b-report');
 const readPack=file=>readJson(readFileSync(join(__dirname,'../../web-pwa/scenarios/choice',file),'utf8'));
 
 test('published packs load by pinned digest and a changed byte is rejected',async()=>{
@@ -80,6 +81,12 @@ for(const scenario of vectors.scenarios){
         assert.ok(Math.max(...Object.values(counters))>=2);
       }
       if(row.id==='fatal')assert.equal(debrief.injury,null);
+    }else if(row.checkpoint){
+      const view=play(runtime,session,row.choices);
+      assert.equal(view.state.clock,row.checkpoint.clock);
+      for(const [id,value] of Object.entries(row.checkpoint.facts))assert.equal(view.state.facts[id],value);
+      if(row.checkpoint.hazards)assert.deepEqual(runtime.records(session).at(-1).hazards,row.checkpoint.hazards);
+      if(row.checkpoint.event)assert.ok(view.state.events.some(event=>event.id===row.checkpoint.event));
     }else if(row.retry){
       const terminal=play(runtime,session,row.choices);
       assert.equal(terminal.state.ending.type,'CRITICAL_FAILURE');
@@ -118,3 +125,46 @@ for(const scenario of vectors.scenarios){
     }
   });
 }
+
+test('option length, visible actions and negative wording do not leak the answer',()=>{
+  const rows=optionAudit(manifest.packs.map(entry=>readPack(entry.file)));
+  for(const key of ['lengthBias','significantBias','actionBias'])assert.ok(rows.filter(row=>row[key]).length/rows.length<=0.35,key);
+  for(const row of rows){
+    assert.ok(row.spread<=4&&row.significantSpread<=4,row.id+' length spread');
+    for(const option of row.options){
+      assert.equal(option.negative,false,option.id);
+      if(option.class==='partial')assert.ok(option.missingStep,option.id);
+    }
+  }
+});
+
+test('each rough debrief uses the cited choice’s direct events and at most two actual delays',()=>{
+  for(const scenario of vectors.scenarios){
+    const pack=readPack(scenario.file);
+    const sample=scenario.cases.find(row=>row.id==='reckless');
+    const {state,records,review}=run(pack,sample.choices);
+    assert.equal(new Set(review.dangers.map(item=>item.tip)).size,review.dangers.length);
+    for(const item of [...review.dangers,review.turning]){
+      const row=records.find(row=>row.optionId===item.optionId&&row.impacts.some(impact=>impact.id===item.eventId&&
+        (item.at===undefined||item.at===impact.at)));
+      assert.notEqual(item.outcome,review.type);
+      const direct=row.impacts.filter(impact=>impact.direct);
+      assert.ok(direct.some(impact=>impact.id===item.eventId));
+      for(const impact of direct)assert.ok(item.outcome.includes(impact.outcome.replace(/。$/u,'')));
+      for(const impact of row.impacts.filter(impact=>!impact.direct))assert.ok(!item.outcome.includes(impact.outcome));
+    }
+    assert.equal(review.delays.length,2);
+    assert.ok(review.delays.every(reason=>state.delays.some(item=>item.reason===reason)));
+    assert.deepEqual(records.flatMap(row=>row.delays),state.delays);
+    const goodTexts=pack.decisions.flatMap(d=>d.options.filter(o=>o.class==='correct').map(o=>o.text));
+    assert.ok(review.good.every(item=>goodTexts.includes(item.optionText)));
+    if(scenario.file==='fire-dorm.json'){
+      assert.match(review.dangers.find(item=>item.optionId==='bathroom').outcome,/浴室.*煙/);
+      assert.match(review.dangers.find(item=>item.optionId==='grab_handle').outcome,/掌心接觸燙傷/);
+      assert.match(review.improvements.find(item=>item.id==='close_only').text,/小岑/);
+    }else{
+      assert.match(review.dangers.find(item=>item.optionId==='rush_aftershock').outcome,/小腿撞傷/);
+      assert.match(review.dangers.find(item=>item.optionId==='watch_door').outcome,/手腕受傷/);
+    }
+  }
+});

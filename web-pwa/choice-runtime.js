@@ -57,13 +57,16 @@
       const turn={hazards:[],principles:[],cues:option.cues,channelId:null,nextClock:state.clock+1};
       const ctx=context(state,turn);
       const lines=[];
+      const actionLines=[];
       const impacts=[];
       const delta=(kind,amount)=>state.exposure[kind]=(state.exposure[kind]||0)+amount;
       function say(id){
         const variants=pack.presentation.narration[id];
         const count=state.narrationCounts[id]||0;
         state.narrationCounts[id]=count+1;
-        lines.push(variants[count%variants.length]);
+        const line=variants[count%variants.length];
+        lines.push(line);
+        return line;
       }
       function credit(id){
         if(!turn.principles.includes(id))turn.principles.push(id);
@@ -91,11 +94,13 @@
         if(effect.delay)state.delays.push({reason:effect.delay,at:turn.nextClock,decisionId:decision.id,optionId:option.id});
         if(injuryContext)injuryContext.severity=Math.max(0,...(effect.injuries||[]).map(entry=>severity[entry.severity]));
       }
-      function impact(id,definition,result,fatal=false){
+      function impact(id,definition,result,{fatal=false,direct=true}={}){
         const entry={id,decisionId:decision.id,optionId:option.id,at:fatal?state.clock:turn.nextClock,fatal,
           companion:Boolean(definition.review.companion||(result.effect.injuries||[]).some(i=>i.subject!=='player')),
-          severity:0,delay:result.effect.delay??null,review:definition.review,sourceIds:definition.sourceIds};
-        apply(result.effect,{injuryContext:entry});say(result.narration);
+          direct,severity:0,delay:result.effect.delay??null,review:definition.review,sourceIds:definition.sourceIds,
+          injuries:result.effect.injuries||[]};
+        apply(result.effect,{injuryContext:entry});
+        entry.outcome=say(result.narration);
         state.events.push({id,at:entry.at});
         impacts.push(entry);
       }
@@ -112,7 +117,7 @@
       function selectedResult(rule){return pick(rule.cases,ctx)?.result||rule.normal;}
       function projected(){
         return {state,lines:lines.length?lines:[pack.presentation.narration[pick(pack.presentation.idle,ctx).narration][0]],
-          impacts,principles:turn.principles,hazards:turn.hazards};
+          impacts,actionLines,principles:turn.principles,hazards:turn.hazards};
       }
 
       // Guard hazards and teaching opportunities against the pre-choice state.
@@ -122,7 +127,7 @@
         const rule=actions.hazard.get(fatal.id);
         turn.nextClock=state.clock;
         turn.hazards.push(fatal.id);
-        impact(fatal.id,rule,selectedResult(rule),true);
+        impact(fatal.id,rule,selectedResult(rule),{fatal:true});
         const fatalEnding=endings.get(rule.fatalEndingId);
         if(!matches(fatalEnding.when,ctx))throw new TypeError('Fatal ending guard is false');
         ending(fatalEnding,fatal.id);
@@ -159,9 +164,17 @@
         if(fresh && result.narration!==option.narration)say(result.narration);
       }
       if(allStepsApplied){
-        apply(option.effect);
-        if(!lines.length)say(option.narration);
+        if(option.effect.delay){
+          const correction=decision.options.find(candidate=>candidate.class==='correct');
+          impact(option.id,{sourceIds:option.sourceIds,review:{tip:'當時可改選「'+correction.text+'」'}},
+            {narration:option.narration,effect:option.effect});
+        }else{
+          apply(option.effect);
+          if(!lines.length)say(option.narration);
+        }
       }
+      const actionText=lines.filter(line=>!impacts.some(item=>item.outcome===line));
+      actionLines.push(...actionText);
 
       function phase(name){
         let skip=false;
@@ -179,7 +192,7 @@
         if(rule.decisionId!==null&&rule.decisionId!==decision.id || !matches(rule.when,ctx))continue;
         const count=(state.counters[rule.id]||0)+1;
         state.counters[rule.id]=count;
-        impact(rule.id,rule,consequenceResult(rule.tiers.findLast(tier=>tier.fromCount<=count)));
+        impact(rule.id,rule,consequenceResult(rule.tiers.findLast(tier=>tier.fromCount<=count)),{direct:rule.decisionId===decision.id});
       }
       const skipBeats=phase('beforeBeats');
       const before=pack.endings.find(rule=>rule.phase==='beforeBeats'&&matches(rule.when,ctx));
@@ -270,7 +283,9 @@
       const row={sessionId:session.id,scenarioId:pack.meta.id,packVersion:pack.meta.version,inputSource:'choice',
         attempt:data.attempt,decisionId,occurrence,optionId,optionClass:option.class,text:option.text,displayOrderOptionIds:[...data.order],
         responseTimeMs,sourceIds:option.sourceIds,safety:option.safety,fatal:result.impacts.some(impact=>impact.fatal),
-        ending:result.state.ending,clock:result.state.clock,principles:result.principles,hazards:result.hazards,impacts:result.impacts,before};
+        ending:result.state.ending,clock:result.state.clock,principles:result.principles,hazards:result.hazards,
+        actionLines:result.actionLines,impacts:result.impacts,
+        delays:result.state.delays.slice(before.delays.length),before};
       data.history.push(row);
       const {before:discard,...record}=row;
       data.log.push(record);
@@ -283,8 +298,24 @@
       return copy(view);
     }
     function turningPoint(history){
-      return history.findLast(row=>row.fatal)||history.find(row=>row.impacts.some(i=>i.severity||i.delay))||
-        history.find(row=>row.safety==='unsafe')||history[0];
+      return history.findLast(row=>row.fatal)||
+        history.find(row=>row.safety==='unsafe'&&row.impacts.some(i=>i.direct&&(i.severity||i.delay)))||
+        history.find(row=>row.safety==='unsafe'&&row.impacts.some(i=>i.direct))||
+        history.find(row=>row.actionLines.length)||history[0];
+    }
+    function impactPriority(a,b){
+      return Number(b.fatal)-Number(a.fatal)||Number(b.companion)-Number(a.companion)||
+        b.severity-a.severity||Number(Boolean(b.delay))-Number(Boolean(a.delay));
+    }
+    function directReview(row,impact){
+      const events=row.impacts.filter(item=>item.direct);
+      const outcomes=events.map(item=>{
+        const recorded=item.injuries.map(injury=>injury.label).filter(label=>!item.outcome.includes(label));
+        return item.outcome.replace(/。$/u,'')+(recorded.length?'（本回合傷勢：'+recorded.join('、')+'）':'')+'。';
+      });
+      return {at:impact.at,decisionId:row.decisionId,optionId:row.optionId,eventId:impact.id,optionText:row.text,
+        eventIds:events.map(item=>item.id),outcome:[...new Set(outcomes)].join(''),
+        tip:impact.review.tip,principleId:impact.review.principleId,sourceIds:[...new Set(events.flatMap(item=>item.sourceIds))]};
     }
     function debrief(session){
       const {state,history,attempt}=current(session);
@@ -296,25 +327,54 @@
       const injuries=state.injuries.map(item=>({...item,subjectName:item.subject==='player'?'本人':state.npc[item.subject].name}));
       const severe=injuries.reduce((level,item)=>severity[item.severity]>severity[level]?item.severity:level,'NONE');
       const worstInjuries=injuries.filter(item=>item.severity===severe);
-      const delays=[...new Set(state.delays.map(item=>item.reason))];
-      const featured=[...steps].sort((a,b)=>Number(b.fatal)-Number(a.fatal)||b.severity-a.severity||Number(b.companion)-Number(a.companion));
-      const selection=new Set(featured.slice(0,3));
-      const selected=steps.filter(item=>selection.has(item));
-      const riskIdeas=new Set(selected.map(item=>item.review.principleId));
+      const delays=[];
+      // Choose concrete, attributable causes first. Keep all events in records.
+      const delayEvidence=steps.filter(item=>item.direct&&item.delay).sort(impactPriority);
+      for(const reason of [...delayEvidence.map(item=>item.delay),...state.delays.map(item=>item.reason)]){
+        if(!delays.includes(reason))delays.push(reason);
+        if(delays.length===2)break;
+      }
+      const featured=history.filter(row=>row.safety==='unsafe').flatMap(row=>
+        row.impacts.filter(item=>item.direct).map(impact=>({row,impact}))).sort((a,b)=>impactPriority(a.impact,b.impact));
+      const selected=[];
+      const seenOptions=new Set(), seenTips=new Set();
+      for(const {row,impact} of featured){
+        if(seenOptions.has(row.optionId)||seenTips.has(impact.review.tip))continue;
+        seenOptions.add(row.optionId);
+        seenTips.add(impact.review.tip);
+        selected.push(directReview(row,impact));
+        if(selected.length===3)break;
+      }
+      selected.sort((a,b)=>a.at-b.at);
+      const riskIdeas=new Set(selected.map(item=>item.principleId));
       const encountered=new Set(history.map(row=>row.decisionId));
       const delayIdeas=[...new Set(steps.filter(i=>i.delay&&i.review.principleId).map(i=>i.review.principleId))];
-      const improvements=[...actions.principle.values()].filter(p=>state.opportunities[p.id]&&!Object.hasOwn(state.met,p.id)&&!riskIdeas.has(p.id))
+      const decisionOption=row=>decisions.get(row.decisionId).options.find(o=>o.id===row.optionId);
+      const partialRows=history.filter(row=>row.optionClass==='partial');
+      const improvements=[...new Map(partialRows.map(row=>[row.optionId,row])).values()].map(row=>{
+        const option=decisionOption(row);
+        return option.missingStep&&{id:row.optionId,optionText:row.text,text:option.missingStep,sourceIds:option.sourceIds};
+      }).filter(Boolean).slice(0,2);
+      const otherImprovements=[...actions.principle.values()].filter(p=>state.opportunities[p.id]&&!Object.hasOwn(state.met,p.id)&&!riskIdeas.has(p.id))
         .sort((a,b)=>Number(delayIdeas.includes(b.id))-Number(delayIdeas.includes(a.id))||b.review.priority-a.review.priority)
-        .slice(0,2).map(p=>({id:p.id,text:p.review.tip,sourceIds:p.sourceIds}));
+        .slice(0,2-improvements.length).map(p=>({id:p.id,text:p.review.tip,sourceIds:p.sourceIds}));
+      improvements.push(...otherImprovements);
       const point=turningPoint(history);
-      const pointImpact=point?.impacts.find(i=>i.fatal)||point?.impacts.find(i=>i.severity||i.delay)||point?.impacts[0];
+      const pointImpact=point?.impacts.filter(i=>i.direct).sort(impactPriority)[0];
       const good=[];
       for(const row of history){
         const principle=row.principles.map(id=>actions.principle.get(id)).find(p=>!p.bonus);
-        if(row.safety==='safe'&&principle&&good.length<3&&!good.some(item=>item.id===principle.id))
+        if(row.optionClass==='correct'&&principle&&good.length<3&&!good.some(item=>item.id===principle.id))
           good.push({id:principle.id,optionText:row.text,why:principle.review.why,sourceIds:principle.sourceIds});
       }
       const first=point?.principles.map(id=>actions.principle.get(id))[0];
+      const better=point&&decisions.get(point.decisionId).options.find(option=>option.class==='correct');
+      const alternative=better&&better.steps.find(step=>step.kind==='principle'&&!point.principles.includes(step.id));
+      const reason=pointImpact?.review.tip||(point&&decisionOption(point).missingStep)||
+        (alternative&&actions.principle.get(alternative.id).review.why)||first?.review.why;
+      const turning=point&&better&&{decisionId:point.decisionId,optionId:point.optionId,eventId:pointImpact?.id??null,optionText:point.text,
+        outcome:pointImpact?directReview(point,pointImpact).outcome:point.actionLines[0],
+        tip:(better.id===point.optionId?'可以維持「':'可改選「')+better.text+'」'+(reason?' '+reason:'')};
       const type=pick(rule.labels,ctx)?.text||labels[ending.type];
       const result=[type+'。',
         worstInjuries.length?'最嚴重的傷勢為'+[...new Set(worstInjuries.map(i=>i.subject==='player'?i.label:i.subjectName+'的'+i.label))].join('、')+'。':'',
@@ -328,11 +388,10 @@
       }
       const sourceIds=new Set([...selected.flatMap(x=>x.sourceIds),...improvements.flatMap(x=>x.sourceIds),...good.flatMap(x=>x.sourceIds),
         ...(pointImpact?.sourceIds||point?.sourceIds||[])]);
-      return copy({attempt,type,injury:ending.injury==='NOT_ASSESSED'?null:grades[ending.injury],injuries,
+      return copy({attempt,type,injury:ending.injury==='NOT_ASSESSED'?null:grades[ending.injury],injuries,delays,
         result,summary:parts.length?parts.join('，').replace(/。$/,'')+'。':pick(rule.summaries,ctx)?.text||'本場未記錄傷勢或延誤。',
-        good,improvements,encountered:[...encountered],dangers:selected.map(x=>({at:x.at,optionText:x.optionText,outcome:x.review.outcome||x.review.why,tip:x.review.tip})),
-        turning:point&&{decisionId:point.decisionId,optionText:point.text,outcome:pointImpact?.review.outcome||first?.review.outcome||first?.review.why||type,
-          tip:pointImpact?.review.tip||first?.review.tip||'重看當時可用的選項。'},
+        good,improvements,encountered:[...encountered],dangers:selected,
+        turning:turning?.outcome?turning:null,
         sources:[...sourceIds].map(id=>sources.get(id)),reflection:decisions.get(point?.decisionId)?.reflectionPrompt||pack.review.reflectionPrompt,
         canRetry:Boolean(point)});
     }

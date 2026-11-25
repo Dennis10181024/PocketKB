@@ -31,7 +31,8 @@
     return '<div class="choice-review">'+
       '<h4>結果</h4><p>'+esc(review.result)+'</p><p>'+esc(review.summary)+'</p>'+
       (review.good.length?'<h4>做對的決定</h4>'+duties(review.good,row=>'「'+esc(row.optionText)+'」'+esc(row.why)):'')+
-      (review.improvements.length?'<h4>下次可以補上的</h4>'+duties(review.improvements,row=>esc(row.text)):'')+
+      (review.improvements.length?'<h4>下次可以補上的</h4>'+duties(review.improvements,row=>
+        (row.optionText?'「'+esc(row.optionText)+'」<br>':'')+esc(row.text)):'')+
       (review.dangers.length?'<h4>這次的危險選擇與後果</h4>'+duties(review.dangers,row=>
         '「'+esc(row.optionText)+'」<br>'+esc(row.outcome)+'<br>'+esc(row.tip)):'')+
       (review.turning?'<h4>關鍵轉折</h4><p>「'+esc(review.turning.optionText)+'」<br>'+esc(review.turning.outcome)+'<br>'+esc(review.turning.tip)+'</p>':'')+
