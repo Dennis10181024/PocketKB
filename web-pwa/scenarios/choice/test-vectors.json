@@ -3,7 +3,7 @@
   "scenarios": [
     {
       "file": "fire-dorm.json",
-      "packSha256": "7c6ede891c439f9b38b93af463857d2713ca8d9dd2b6780225f4ef403c151923",
+      "packSha256": "d4249168c1b9139903edc7353c35ba17b5b05f8a808c74d99853029012956d27",
       "cases": [
         {"id":"all-correct","choices":["close_warn","help_roommate","full_call","seal_gap","window_signal","keep_line","stay_ready","answer_rescuer"],"expected":{"clock":8,"ending":"SAFE_RESCUE","injury":"NONE","exposure":{"smoke":1,"heat":0},"facts":{"doorClosed":true,"room":true,"sealed":true,"handedOff":true}}},
         {"id":"reckless","choices":["close_only","bathroom","pack_first","grab_handle","look_window","phone_only","bathroom_wait","bathroom_wait","bathroom_wait","bathroom_wait","bathroom_wait","wait_rescuer","wait_rescuer"],"expected":{"clock":13,"ending":"DELAYED_RESCUE","injury":"SEVERE","exposure":{"smoke":21,"heat":2},"facts":{"called":false,"handedOff":false},"injuries":["npc_smoke","smoke_mild","smoke_moderate","hand_burn","smoke_severe"]}},
@@ -17,7 +17,7 @@
     },
     {
       "file": "earthquake-school.json",
-      "packSha256": "6511a844e9e243cbf94aa293c3ffdb7fd04274b19a584e0098e812424124d3dc",
+      "packSha256": "2b5cf838c79ee322775e859627a85caa9b74c07618009497f8a8d6f16d209d87",
       "cases": [
         {"id":"all-correct","choices":["take_cover","reassure_peer","cover_aftershock","orderly_stairs","avoid_wire","join_class","answer_roll"],"expected":{"clock":7,"ending":"SELF_EVACUATION","injury":"NONE","exposure":{"trauma":0,"separation":0},"facts":{"covered":true,"afterCovered":true,"stairs":true,"openArea":true,"group":true,"counted":true}}},
         {"id":"reckless","choices":["rush_door","watch_door","rush_aftershock","rush_stairs","follow_wall","join_other_class","wait_roll","wait_roll"],"expected":{"clock":8,"ending":"DELAYED_EVACUATION","injury":"SEVERE","exposure":{"trauma":9,"separation":5},"facts":{"counted":false,"delayed":true},"injuries":["arm_scrape","falling_debris","peer_wrist","leg_bruise","ankle_sprain"]}},

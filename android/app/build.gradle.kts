@@ -5,6 +5,16 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+val syncScenarioAssets by tasks.registering(Sync::class) {
+    from("../../web-pwa/scenarios") { exclude("choice/**") }
+    from("../../web-pwa/scenarios/choice") {
+        exclude("test-vectors.json", "parity-v1.json")
+        into("packs")
+    }
+    into(layout.buildDirectory.dir("generated/scenario-assets"))
+}
+tasks.named("preBuild") { dependsOn(syncScenarioAssets) }
+
 android {
     namespace = "com.pocketkb.android"
     compileSdk = 36
@@ -58,7 +68,7 @@ android {
     }
 
     // One versioned scenario source, served directly by the PWA and bundled offline in APK.
-    sourceSets.getByName("main").assets.srcDir("../../web-pwa/scenarios")
+    sourceSets.getByName("main").assets.srcDir(syncScenarioAssets.map { it.destinationDir })
     sourceSets.getByName("test").resources.srcDir("../../web-pwa/scenarios")
 
     externalNativeBuild {

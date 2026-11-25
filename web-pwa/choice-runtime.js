@@ -315,7 +315,7 @@
       });
       return {at:impact.at,decisionId:row.decisionId,optionId:row.optionId,eventId:impact.id,optionText:row.text,
         eventIds:events.map(item=>item.id),outcome:[...new Set(outcomes)].join(''),
-        tip:impact.review.tip,principleId:impact.review.principleId,sourceIds:[...new Set(events.flatMap(item=>item.sourceIds))]};
+        tip:impact.review.tip,principleId:impact.review.principleId??null,sourceIds:[...new Set(events.flatMap(item=>item.sourceIds))]};
     }
     function debrief(session){
       const {state,history,attempt}=current(session);
@@ -326,16 +326,13 @@
       const steps=history.flatMap(row=>row.impacts.map(impact=>({...impact,optionText:row.text})));
       const injuries=state.injuries.map(item=>({...item,subjectName:item.subject==='player'?'本人':state.npc[item.subject].name}));
       const severe=injuries.reduce((level,item)=>severity[item.severity]>severity[level]?item.severity:level,'NONE');
-      const worstInjuries=injuries.filter(item=>item.severity===severe);
-      const delays=[];
-      // Choose concrete, attributable causes first. Keep all events in records.
-      const delayEvidence=steps.filter(item=>item.direct&&item.delay).sort(impactPriority);
-      for(const reason of [...delayEvidence.map(item=>item.delay),...state.delays.map(item=>item.reason)]){
-        if(!delays.includes(reason))delays.push(reason);
-        if(delays.length===2)break;
-      }
+      const worstInjury=injuries.find(item=>item.severity===severe);
+      const delays=[...new Set(history.filter(row=>row.safety==='unsafe').flatMap(row=>row.delays)
+        .map(item=>item.reason))].slice(0,2);
+      const point=turningPoint(history);
       const featured=history.filter(row=>row.safety==='unsafe').flatMap(row=>
-        row.impacts.filter(item=>item.direct).map(impact=>({row,impact}))).sort((a,b)=>impactPriority(a.impact,b.impact));
+        row.impacts.filter(item=>item.direct).map(impact=>({row,impact}))).sort((a,b)=>
+          Number(b.row===point)-Number(a.row===point)||impactPriority(a.impact,b.impact));
       const selected=[];
       const seenOptions=new Set(), seenTips=new Set();
       for(const {row,impact} of featured){
@@ -359,7 +356,6 @@
         .sort((a,b)=>Number(delayIdeas.includes(b.id))-Number(delayIdeas.includes(a.id))||b.review.priority-a.review.priority)
         .slice(0,2-improvements.length).map(p=>({id:p.id,text:p.review.tip,sourceIds:p.sourceIds}));
       improvements.push(...otherImprovements);
-      const point=turningPoint(history);
       const pointImpact=point?.impacts.filter(i=>i.direct).sort(impactPriority)[0];
       const good=[];
       for(const row of history){
@@ -377,14 +373,14 @@
         tip:(better.id===point.optionId?'可以維持「':'可改選「')+better.text+'」'+(reason?' '+reason:'')};
       const type=pick(rule.labels,ctx)?.text||labels[ending.type];
       const result=[type+'。',
-        worstInjuries.length?'最嚴重的傷勢為'+[...new Set(worstInjuries.map(i=>i.subject==='player'?i.label:i.subjectName+'的'+i.label))].join('、')+'。':'',
+        worstInjury?'最嚴重的傷勢為'+(worstInjury.subject==='player'?worstInjury.label:worstInjury.subjectName+'的'+worstInjury.label)+'。':'',
         ending.injury==='NOT_ASSESSED'?'':'本人傷勢分級為'+grades[ending.injury]+'。',
         delays.length?'撤離或救援延誤：'+delays.join('、')+'。':''].join('');
       const parts=[];
       if(ending.type==='CRITICAL_FAILURE')parts.push(pick(rule.summaries,ctx)?.text||type);
       else {
         if(delays.length)parts.push('最早因'+delays[0]+'造成延誤');
-        if(worstInjuries.length)parts.push('過程中出現'+worstInjuries[0].label);
+        if(worstInjury)parts.push('過程中出現'+worstInjury.label);
       }
       const sourceIds=new Set([...selected.flatMap(x=>x.sourceIds),...improvements.flatMap(x=>x.sourceIds),...good.flatMap(x=>x.sourceIds),
         ...(pointImpact?.sourceIds||point?.sourceIds||[])]);

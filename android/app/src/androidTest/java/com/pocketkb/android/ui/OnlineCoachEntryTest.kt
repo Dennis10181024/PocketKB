@@ -14,6 +14,8 @@ class OnlineCoachEntryTest {
 
     @Test fun onlineModeHasVisibleEntryAndCanBeSelected() {
         rule.onNodeWithText("開始情境演練").performClick()
+        rule.onNodeWithText("演練設定").performClick()
+        rule.onNodeWithText("顯示舊版對話劇本").performClick()
         rule.onNodeWithText("GPT 線上演練").assertIsDisplayed()
         rule.onNode(isToggleable()).performClick()
         rule.onNodeWithText("線上模式會將對話傳送至 OpenAI，請勿輸入個人資料。支援火災與五個新版因果劇本；其他舊版情境使用離線規則。").assertIsDisplayed()

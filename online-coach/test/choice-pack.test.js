@@ -10,6 +10,7 @@ const schema=require('../../web-pwa/scenarios/choice/schema-v1.json');
 const manifest=require('../../web-pwa/scenarios/choice/manifest.json');
 const vectors=require('../../web-pwa/scenarios/choice/test-vectors.json');
 const {optionAudit,run}=require('./step51b-report');
+const parity=require('./step52-parity');
 const readPack=file=>readJson(readFileSync(join(__dirname,'../../web-pwa/scenarios/choice',file),'utf8'));
 
 test('published packs load by pinned digest and a changed byte is rejected',async()=>{
@@ -20,6 +21,10 @@ test('published packs load by pinned digest and a changed byte is rejected',asyn
     assert.equal(vectors.scenarios.find(row=>row.file===entry.file).packSha256,entry.sha256);
     await assert.rejects(loadVerifiedPack(Buffer.concat([bytes,Buffer.from(' ')]),entry.sha256,schema,webcrypto.subtle),/SHA-256/);
   }
+});
+
+test('Kotlin parity snapshots are current against JS reference and shared vectors',()=>{
+  assert.deepEqual(parity.collect(),JSON.parse(readFileSync(parity.file,'utf8')));
 });
 
 test('validation rejects duplicate keys, unknown references, untrusted URLs and unsafe correct options',()=>{
@@ -156,6 +161,8 @@ test('each rough debrief uses the cited choice’s direct events and at most two
     assert.equal(review.delays.length,2);
     assert.ok(review.delays.every(reason=>state.delays.some(item=>item.reason===reason)));
     assert.deepEqual(records.flatMap(row=>row.delays),state.delays);
+    assert.equal(review.delays[0],records.find(row=>row.safety==='unsafe'&&row.delays.length).delays[0].reason);
+    assert.ok(review.dangers.some(item=>item.optionId===review.turning.optionId));
     const goodTexts=pack.decisions.flatMap(d=>d.options.filter(o=>o.class==='correct').map(o=>o.text));
     assert.ok(review.good.every(item=>goodTexts.includes(item.optionText)));
     if(scenario.file==='fire-dorm.json'){
@@ -163,7 +170,7 @@ test('each rough debrief uses the cited choice’s direct events and at most two
       assert.match(review.dangers.find(item=>item.optionId==='grab_handle').outcome,/掌心接觸燙傷/);
       assert.match(review.improvements.find(item=>item.id==='close_only').text,/小岑/);
     }else{
-      assert.match(review.dangers.find(item=>item.optionId==='rush_aftershock').outcome,/小腿撞傷/);
+      assert.match(records.find(item=>item.optionId==='rush_aftershock').impacts.find(item=>item.direct).outcome,/小腿/);
       assert.match(review.dangers.find(item=>item.optionId==='watch_door').outcome,/手腕受傷/);
     }
   }

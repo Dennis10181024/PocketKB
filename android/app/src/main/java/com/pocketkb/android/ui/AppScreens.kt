@@ -46,6 +46,7 @@ private val professorDemoScenarioIds = listOf(
 @Composable
 fun PocketKbRoot(state: PocketKbUiState, recentSessions: List<DrillSessionEntity>, actions: PocketKbViewModel) {
     var pendingTab by remember { mutableStateOf<AppTab?>(null) }
+    var showLegacy by rememberSaveable { mutableStateOf(false) }
     val active = state.selectedScenario != null && state.drillStep.outcome == DrillOutcome.CONTINUE
     fun navigate(tab: AppTab) {
         if (active && tab != AppTab.DRILL) pendingTab = tab else actions.selectTab(tab)
@@ -91,8 +92,11 @@ fun PocketKbRoot(state: PocketKbUiState, recentSessions: List<DrillSessionEntity
             Box(Modifier.widthIn(max = 760.dp).fillMaxSize()) {
                 when (state.selectedTab) {
                     AppTab.HOME -> HomeScreen(actions)
-                    AppTab.DRILL -> if (state.selectedScenario == null) ScenarioPickerScreen(state, actions)
-                        else DrillChatScreen(state, actions) { if (active) pendingTab = AppTab.DRILL else actions.stopScenario() }
+                    AppTab.DRILL -> when {
+                        state.selectedScenario != null -> DrillChatScreen(state, actions) { if (active) pendingTab = AppTab.DRILL else actions.stopScenario() }
+                        showLegacy -> ScenarioPickerScreen(state, actions) { showLegacy = false }
+                        else -> ChoiceRoute(onLegacy = { showLegacy = true })
+                    }
                     AppTab.EMERGENCY -> EmergencyScreen()
                     AppTab.RESOURCES -> ResourcesScreen()
                     AppTab.HISTORY -> HistoryScreen(recentSessions, actions)
@@ -131,7 +135,7 @@ private fun HomeScreen(actions: PocketKbViewModel) {
         item {
             ActionCard(
                 title = "開始情境演練",
-                subtitle = "${actions.scenarios.size} 個情境 · 從你的下一步開始",
+                subtitle = "選擇題練習 · 無須網路",
                 icon = Icons.Default.PlayArrow,
                 onClick = { actions.selectCategory(null); actions.selectTab(AppTab.DRILL) },
                 prominent = true,
@@ -192,7 +196,7 @@ private fun Metric(value: String, label: String, modifier: Modifier = Modifier) 
 }
 
 @Composable
-private fun ScenarioPickerScreen(state: PocketKbUiState, actions: PocketKbViewModel) {
+private fun ScenarioPickerScreen(state: PocketKbUiState, actions: PocketKbViewModel, onChoice: () -> Unit) {
     val orderedScenarios = remember(actions.scenarios) {
         actions.scenarios.sortedWith(
             compareBy<DrillScenario> {
@@ -218,6 +222,7 @@ private fun ScenarioPickerScreen(state: PocketKbUiState, actions: PocketKbViewMo
             dismissButton = { TextButton(onClick = { candidate = null }) { Text("再看看") } })
     }
     LazyColumn(contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        item { TextButton(onClick = onChoice) { Text("返回選擇題演練") } }
         item { PageHeading("練習面對未知", "選一個情境，試著說出你的下一步行動。") }
         item {
             Card(colors = CardDefaults.cardColors(containerColor = PocketColors.Surface)) {

@@ -13,6 +13,7 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Update
+import androidx.room.Transaction
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.pocketkb.android.core.ChatMessage
@@ -67,8 +68,32 @@ data class DrillMessageEntity(
 @Entity(tableName = "drill_turns", primaryKeys = ["sessionId", "ordinal"])
 data class DrillTurnEntity(val sessionId: String, val ordinal: Int, val json: String)
 
+@Entity(tableName = "choice_resume")
+data class ChoiceResumeEntity(@PrimaryKey val slot: Int = 1, val scenarioId: String, val payload: String)
+
 @Dao
 interface DrillHistoryDao {
+    @Query("SELECT * FROM choice_resume WHERE slot = 1")
+    suspend fun choiceResume(): ChoiceResumeEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveChoice(row: ChoiceResumeEntity)
+
+    @Query("DELETE FROM choice_resume WHERE slot = 1")
+    suspend fun clearChoice()
+
+    @Transaction
+    suspend fun persistChoice(resume: ChoiceResumeEntity, turn: DrillTurnEntity?) {
+        if (turn != null) insertTurn(turn)
+        saveChoice(resume)
+    }
+
+    @Transaction
+    suspend fun exitChoice(turn: DrillTurnEntity) {
+        insertTurn(turn)
+        clearChoice()
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTurn(turn: DrillTurnEntity)
 
@@ -94,8 +119,8 @@ interface DrillHistoryDao {
 }
 
 @Database(
-    entities = [DrillSessionEntity::class, DrillMessageEntity::class, DrillTurnEntity::class],
-    version = 2,
+    entities = [DrillSessionEntity::class, DrillMessageEntity::class, DrillTurnEntity::class, ChoiceResumeEntity::class],
+    version = 3,
     exportSchema = false,
 )
 abstract class PocketKbDatabase : RoomDatabase() {
@@ -113,6 +138,10 @@ abstract class PocketKbDatabase : RoomDatabase() {
                 ).addMigrations(object : Migration(1, 2) {
                     override fun migrate(db: SupportSQLiteDatabase) {
                         db.execSQL("CREATE TABLE IF NOT EXISTS drill_turns (sessionId TEXT NOT NULL, ordinal INTEGER NOT NULL, json TEXT NOT NULL, PRIMARY KEY(sessionId, ordinal))")
+                    }
+                }, object : Migration(2, 3) {
+                    override fun migrate(db: SupportSQLiteDatabase) {
+                        db.execSQL("CREATE TABLE IF NOT EXISTS choice_resume (slot INTEGER NOT NULL, scenarioId TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(slot))")
                     }
                 }).build().also { instance = it }
             }

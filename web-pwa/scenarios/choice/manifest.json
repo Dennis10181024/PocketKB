@@ -5,13 +5,13 @@
       "id": "drill_fire_dorm",
       "title": "宿舍火災",
       "file": "fire-dorm.json",
-      "sha256": "7c6ede891c439f9b38b93af463857d2713ca8d9dd2b6780225f4ef403c151923"
+      "sha256": "d4249168c1b9139903edc7353c35ba17b5b05f8a808c74d99853029012956d27"
     },
     {
       "id": "earthquake_school",
       "title": "學校地震",
       "file": "earthquake-school.json",
-      "sha256": "6511a844e9e243cbf94aa293c3ffdb7fd04274b19a584e0098e812424124d3dc"
+      "sha256": "2b5cf838c79ee322775e859627a85caa9b74c07618009497f8a8d6f16d209d87"
     }
   ]
 }

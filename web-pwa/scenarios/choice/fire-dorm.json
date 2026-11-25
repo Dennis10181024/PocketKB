@@ -3,7 +3,7 @@
   "meta": {
     "id": "drill_fire_dorm",
     "title": "宿舍火災",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "hazard": "fire",
     "skeletonVersion": "director-4.2b",
     "sources": [
@@ -84,7 +84,7 @@
       {"id":"open","sourceIds":["safety"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"開門使煙立刻進入房間。","tip":"門外已有濃煙時，先關門隔煙。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"},"normal":{"narration":"hazard_open","effect":{"set":{"facts.doorClosed":false,"facts.sealed":false,"facts.delayed":true},"add":{"exposure.smoke":2},"delay":"再次開門引入濃煙"}}},
       {"id":"bathroom","sourceIds":["nfa"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"浴室沒有可用對外窗，不能作此情境的待救位置。","tip":"回到能隔煙並可對外聯絡的位置。","eligibleWhen":{"always":true},"priority":5,"principleId":"signal"},"normal":{"narration":"hazard_bathroom","effect":{"set":{"facts.delayed":true},"add":{"exposure.smoke":1},"delay":"躲入浴室耽誤定位"}}},
       {"id":"collect","sourceIds":["nfa"],"when":{"always":true},"review":{"why":"收拾物品會耽誤通報、阻煙或回應。","tip":"先用手機通報位置，省下找證件的時間。","eligibleWhen":{"always":true},"priority":5,"principleId":"dial"},"normal":{"narration":"hazard_collect","effect":{"set":{"facts.delayed":true},"add":{},"delay":"收拾物品耽誤處理"}},"cases":[{"when":{"fact":"sealed","eq":false},"result":{"narration":"collect_exposed","effect":{"set":{"facts.delayed":true},"add":{"exposure.smoke":1},"delay":"收拾物品耽誤阻煙"}}}]},
-      {"id":"hot_handle","sourceIds":["safety"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"直接抓發燙的把手可能燙傷。","tip":"避開發燙的把手並先隔煙。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"},"normal":{"narration":"hazard_hot_handle","effect":{"set":{"facts.delayed":true},"add":{"exposure.heat":2},"delay":"熱門把造成燙傷","injuries":[{"id":"hand_burn","subject":"player","label":"掌心接觸燙傷","severity":"MILD"}]}}},
+      {"id":"hot_handle","sourceIds":["safety"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"直接抓發燙的把手可能燙傷。","tip":"避開發燙的把手並先隔煙。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"},"normal":{"narration":"hazard_hot_handle","effect":{"set":{"facts.delayed":true},"add":{"exposure.heat":2},"injuries":[{"id":"hand_burn","subject":"player","label":"掌心接觸燙傷","severity":"MILD"}]}}},
       {"id":"elevator","sourceIds":["safety"],"when":{"always":true},"review":{"why":"電梯突然停住，門打不開。","tip":"門外濃煙時留在房內隔煙並通報，避免受困電梯。","eligibleWhen":{"always":true},"priority":5,"principleId":"wait_inside"},"normal":{"narration":"hazard_elevator","effect":{"set":{},"add":{}}},"fatalEndingId":"elevator_fatal"},
       {"id":"jump","sourceIds":["safety"],"when":{"always":true},"review":{"why":"我翻過窗台落到下方平台，無法繼續行動。","tip":"從室內靠窗示意並報位置，避免墜落。","eligibleWhen":{"always":true},"priority":5,"principleId":"wait_inside"},"normal":{"narration":"hazard_jump","effect":{"set":{},"add":{}}},"fatalEndingId":"jump_fatal"},
       {"id":"climb_window","sourceIds":["safety"],"when":{"always":true},"review":{"why":"我沿外牆滑落，不能回到房間。","tip":"留在室內窗邊示意，等待救援。","eligibleWhen":{"always":true},"priority":5,"principleId":"wait_inside"},"normal":{"narration":"hazard_climb_window","effect":{"set":{},"add":{}}},"fatalEndingId":"climb_window_fatal"},
