@@ -1,7 +1,7 @@
 'use strict';
 
 const target = document.querySelector('#play-root');
-const choice = PocketChoiceView.create(render, { choiceOnly: true });
+const choice = PocketChoiceView.create(render, { choiceOnly: true, study: PocketPlayStudyLog });
 const connectivity = document.querySelector('#play-connectivity');
 
 function render() {

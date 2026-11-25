@@ -1,13 +1,13 @@
 'use strict';
 
 const prefix = 'pocketkb-choice-play-';
-const cacheName = prefix + 'v1';
+const cacheName = prefix + 'v2';
 const packDirectory = './scenarios/choice/';
 const manifestUrl = packDirectory + 'manifest.json';
 const appFiles = [
   './play.html', './play.js', './play.webmanifest', './play-icon-192.png',
   './play-icon-512.png', './styles.css', './vendor/sha256.min.js',
-  './choice-pack.js', './choice-runtime.js', './choice-view.js', packDirectory + 'schema-v1.json'
+  './choice-pack.js', './choice-runtime.js', './choice-view.js', './play-study-log.js', packDirectory + 'schema-v1.json'
 ];
 
 self.addEventListener('install', event => {

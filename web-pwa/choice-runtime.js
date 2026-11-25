@@ -258,7 +258,9 @@
     function start(){
       const state=initialState();
       if(!matches(decisions.get(state.decisionId).when,context(state)))throw new TypeError('Initial decision guard is false');
-      const session=Object.freeze({id:root.crypto?.randomUUID?.()||'choice-'+(++sequence)});
+      const entropy=root.crypto?.getRandomValues?.(new Uint8Array(16));
+      const generated=entropy&&Array.from(entropy,byte=>byte.toString(16).padStart(2,'0')).join('');
+      const session=Object.freeze({id:root.crypto?.randomUUID?.()||generated||'choice-'+(++sequence)});
       sessionLookup.set(session,{state,lines:[pack.presentation.narration[pack.initial.openingNarration][0]],
         order:shuffle(decisions.get(state.decisionId).options),attempt:1,revision:0,history:[],log:[],requests:new Map(),retryFrom:null});
       return session;

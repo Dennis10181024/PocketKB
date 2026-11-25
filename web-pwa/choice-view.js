@@ -39,12 +39,27 @@
       (review.sources.length?'<h4>官方依據</h4>'+duties(review.sources,row=>'<a href="'+esc(row.url)+'" target="_blank" rel="noopener noreferrer">'+esc(row.title)+'</a>'):'')+
       '<h4>帶走一個思考題</h4><p>'+esc(review.reflection)+'</p></div>';
   }
-  function create(rerender,{choiceOnly=false}={}){
+  function create(rerender,{choiceOnly=false,study=null}={}){
     let catalog=null, runtime=null, session=null, view=null, review=null, selected=null;
     let info='', error='', loading=false, openedAt=0;
+    let studyLog=null, backgroundAt=null, backgroundTime=0;
     let showLegacy=false;
     let showDrafts=false;
     try{showLegacy=!choiceOnly&&localStorage.getItem(storageKey)==='1';}catch{}
+    function startTimer(){
+      openedAt=performance.now();
+      backgroundTime=0;
+      backgroundAt=document.hidden?openedAt:null;
+    }
+    if(study)document.addEventListener('visibilitychange',()=>{
+      if(!view?.decision)return;
+      const now=performance.now();
+      if(document.hidden)backgroundAt=now;
+      else if(backgroundAt!==null){
+        backgroundTime+=now-backgroundAt;
+        backgroundAt=null;
+      }
+    });
     function refresh(focus=false){
       rerender();
       if(focus)document.querySelector('#choice-heading')?.focus();
@@ -76,12 +91,18 @@
         runtime=root.PocketChoiceRuntime.createRuntime(pack);
         session=runtime.start();
         view=runtime.snapshot(session);
-        openedAt=performance.now();
+        if(study){
+          studyLog=study.create({sessionId:session.id,scenarioId:pack.meta.id,
+            packVersion:pack.meta.version,packDigest:selected.sha256});
+          studyLog.marker('start',view);
+        }
+        startTimer();
       }catch{error='情境資料載入或完整性檢查失敗，請重新載入。';}
       finally{loading=false;refresh(true);}
     }
     function reset(){
       runtime=session=view=review=selected=null;
+      studyLog=null;
       info=error='';
       refresh(true);
     }
@@ -93,7 +114,8 @@
           (review.injury?'<p class="choice-grade">本人傷勢｜'+esc(review.injury)+'</p>':'')+
           duties(view.lines,esc)+'<h3>傷勢清單</h3>'+injuries(review.injuries)+
           '<h3>演練回顧</h3>'+renderReview(review)+'<div class="choice-tools">'+
-          (review.canRetry?button('choice-retry','從這個決定重來',true):'')+button('choice-reset','回到情境清單')+'</div>';
+          (review.canRetry?button('choice-retry','從這個決定重來',true):'')+
+          (studyLog?button('choice-export','下載試玩紀錄'):'')+button('choice-reset','回到情境清單')+'</div>';
       }else if(view){
         content='<h2 id="choice-heading" tabindex="-1">'+esc(selected.title)+'</h2>'+
           '<h3>現在發生什麼</h3><div class="choice-scene">'+view.lines.map(line=>'<p>'+esc(line)+'</p>').join('')+'</div>'+
@@ -103,7 +125,9 @@
             '<button type="button" class="choice-option" data-choice-option="'+esc(option.id)+'">'+esc(option.text)+'</button>').join('')+'</div>'+
           '<div class="choice-tools">'+button('choice-observe','先看看四周')+button('choice-ask','問同伴')+'</div>'+
           '<p class="choice-inspection" role="status">'+esc(info)+'</p>'+
-          '<details class="choice-stop"><summary>停止演練</summary>'+button('choice-reset','結束並回到情境清單')+'</details>';
+          '<details class="choice-stop"><summary>停止演練</summary><div class="choice-tools">'+
+          button('choice-reset','結束並回到情境清單')+
+          (studyLog?button('choice-exit-export','結束並下載紀錄'):'')+'</div></details>';
       }else if(selected){
         content='<h2 id="choice-heading" tabindex="-1">'+esc(selected.title)+'</h2>'+
           '<p>演練中可能出現受傷的結果，你可以隨時停止。</p>'+
@@ -131,9 +155,16 @@
       el('refresh')?.addEventListener('click',()=>{void loadCatalog();refresh();});
       el('start')?.addEventListener('click',start);
       el('reset')?.addEventListener('click',()=>{if(!loading)reset();});
+      el('export')?.addEventListener('click',()=>study.save(session.id,studyLog.jsonl()));
+      el('exit-export')?.addEventListener('click',()=>{
+        studyLog.marker('exit',view);
+        study.save(session.id,studyLog.jsonl());
+        reset();
+      });
       el('retry')?.addEventListener('click',()=>{
         view=runtime.retry(session);
-        review=null;info='';openedAt=performance.now();refresh(true);
+        studyLog?.marker('retry',view);
+        review=null;info='';startTimer();refresh(true);
       });
       const inspect=kind=>{
         info=runtime[kind](session);
@@ -161,12 +192,16 @@
         const {decision,revision}=view;
         button.addEventListener('click',()=>{
           if(view.revision!==revision)return;
-          const responseTimeMs=Math.round(performance.now()-openedAt);
+          const elapsed=performance.now()-openedAt;
+          const responseTimeMs=Math.round(Math.max(0,elapsed-backgroundTime));
+          const requestId='choice-'+revision;
           view=runtime.submitChoice(session,{decisionId:decision.id,optionId:button.dataset.choiceOption,
-            inputId:'choice-'+revision,revision,responseTimeMs});
+            inputId:requestId,revision,responseTimeMs});
+          if(studyLog)studyLog.choice(runtime.records(session).at(-1),
+            {revision,backgroundTimeMs:Math.round(backgroundTime),requestId});
           info='';
           if(view.state.ending)review=runtime.debrief(session);
-          openedAt=performance.now();
+          startTimer();
           refresh(true);
         });
       }

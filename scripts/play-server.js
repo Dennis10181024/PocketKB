@@ -43,7 +43,7 @@ function parseArgs(args) {
 function serve(config) {
   const publicFiles = new Set([
     'play.html', 'play.js', 'play.webmanifest', 'play-sw.js', 'play-icon-192.png', 'play-icon-512.png',
-    'styles.css', 'vendor/sha256.min.js', 'choice-pack.js', 'choice-runtime.js', 'choice-view.js',
+    'styles.css', 'vendor/sha256.min.js', 'choice-pack.js', 'choice-runtime.js', 'choice-view.js', 'play-study-log.js',
     folder + 'manifest.json', folder + 'schema-v1.json'
   ]);
   const catalog = JSON.parse(fs.readFileSync(path.join(web, folder + 'manifest.json'), 'utf8'));
