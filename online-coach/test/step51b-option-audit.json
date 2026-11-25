@@ -222,5 +222,89 @@
   "go_back_after_roll": {
     "text": "我離開隊伍找小維，想和他一起回報。",
     "visibleActions": 2
+  },
+  "metro_distance_ok": {
+    "text": "我叫小宇，帶他往前拉開距離。",
+    "visibleActions": 2
+  },
+  "metro_distance_myth": {
+    "text": "我扶好欄杆，拿手機拍下後方情況。",
+    "visibleActions": 2
+  },
+  "metro_distance_risk": {
+    "text": "我朝騷動走去，想先讓衝突停下來。",
+    "visibleActions": 1
+  },
+  "metro_intercom_ok": {
+    "text": "我用對講機回報車廂位置與現況。",
+    "visibleActions": 1
+  },
+  "metro_intercom_myth": {
+    "text": "我傳影片給站外朋友，再等他回訊息。",
+    "visibleActions": 2
+  },
+  "metro_intercom_risk": {
+    "text": "我往車廂後方走，大聲找人幫忙通報。",
+    "visibleActions": 2
+  },
+  "metro_doors_ok": {
+    "text": "我留在原位等停車廣播指示。",
+    "visibleActions": 1
+  },
+  "metro_doors_myth": {
+    "text": "我扶著車門旁欄杆，往前卡住下車位。",
+    "visibleActions": 2
+  },
+  "metro_doors_risk": {
+    "text": "我試著自行開車門，想往軌道旁繞開。",
+    "visibleActions": 2
+  },
+  "metro_platform_ok": {
+    "text": "我叫小宇順著人流走上月台。",
+    "visibleActions": 2
+  },
+  "metro_platform_myth": {
+    "text": "我拉小宇停在門口，彎腰撿完再跟隊。",
+    "visibleActions": 3
+  },
+  "metro_platform_risk": {
+    "text": "我擠到前排，推開比較慢的人先出去。",
+    "visibleActions": 2
+  },
+  "metro_hide_ok": {
+    "text": "我退到厚牆後，關手機保持安靜。",
+    "visibleActions": 2
+  },
+  "metro_hide_myth": {
+    "text": "我靠牆站好，開擴音請旁人一起報案。",
+    "visibleActions": 3
+  },
+  "metro_hide_risk": {
+    "text": "我擠往樓梯口，請人群讓出一條路。",
+    "visibleActions": 2
+  },
+  "metro_barrier_ok": {
+    "text": "我和旁人一起用包包保持距離。",
+    "visibleActions": 1
+  },
+  "metro_barrier_myth": {
+    "text": "我放下包包，側身往堵住的出口擠去。",
+    "visibleActions": 2
+  },
+  "metro_barrier_risk": {
+    "text": "我靠近人聲，喊話想叫騷動先停下來。",
+    "visibleActions": 2
+  },
+  "metro_report_ok": {
+    "text": "我打110，回報站名和現場情況。",
+    "visibleActions": 2
+  },
+  "metro_report_myth": {
+    "text": "我把手機影片上傳，等轉發的人幫忙。",
+    "visibleActions": 2
+  },
+  "metro_report_risk": {
+    "text": "我回月台找站務核對，等查清再向警方回報。",
+    "visibleActions": 3
   }
 }

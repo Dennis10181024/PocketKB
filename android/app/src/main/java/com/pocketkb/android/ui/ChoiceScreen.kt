@@ -39,6 +39,7 @@ internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, mo
     val scope = rememberCoroutineScope()
     var exit by remember { mutableStateOf(false) }
     var seeSettings by remember { mutableStateOf(false) }
+    var showDrafts by rememberSaveable { mutableStateOf(false) }
     var confirmModel by remember { mutableStateOf<ChoiceModelKind?>(null) }
     var question by rememberSaveable { mutableStateOf("") }
     val view = state.view
@@ -172,19 +173,26 @@ internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, mo
             }
             state.preview != null -> item {
                 Text("演練中可能出現受傷的結果，你可以隨時停止。")
+                (state.preview?.get("contentNotice") as? String)?.let { Text(it) }
                 Text("點一個做法就會送出。想先取得線索，可以看看四周或問同伴。")
                 Button(onClick = model::start, enabled = !state.busy, modifier = Modifier.testTag("choice_start").heightIn(min = 48.dp)) { Text("開始演練") }
-                TextButton(onClick = { model.preview(null) }, enabled = !state.busy) { Text("回到情境清單") }
+                TextButton(onClick = { model.preview(null) }, enabled = !state.busy) {
+                    Text(if (state.preview?.get("status") == "draft") "跳過此情境" else "回到情境清單")
+                }
             }
             else -> {
-                items(state.packs.filter { it["status"] != "draft" }, key = { it.text("id") }) { pack ->
+                items(state.packs.filter { showDrafts || it["status"] != "draft" }, key = { it.text("id") }) { pack ->
                     OutlinedButton(onClick = { model.preview(pack) }, enabled = !state.busy,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("choice_pack_"+pack.text("id"))) { Text(pack.text("title")) }
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("choice_pack_"+pack.text("id"))) {
+                        Text((if (pack["status"] == "draft") "草稿・" else "")+pack.text("title"))
+                    }
                 }
                 item {
                     TextButton(onClick = { seeSettings = !seeSettings }) { Text("演練設定") }
                     if (seeSettings) {
                         TextButton(onClick = onLegacy) { Text("顯示舊版對話劇本") }
+                        if (state.packs.any { it["status"] == "draft" }) FilterChip(selected = showDrafts, onClick = { showDrafts = !showDrafts },
+                            label = { Text("顯示草稿情境") }, modifier = Modifier.heightIn(min = 48.dp))
                         SectionTitle("離線模型")
                         for (kind in ChoiceModelKind.entries) {
                             FilterChip(selected = state.model == kind, onClick = { model.selectModel(kind) }, enabled = !state.modelBusy,

@@ -5,28 +5,402 @@
       "file": "fire-dorm.json",
       "packSha256": "d4249168c1b9139903edc7353c35ba17b5b05f8a808c74d99853029012956d27",
       "cases": [
-        {"id":"all-correct","choices":["close_warn","help_roommate","full_call","seal_gap","window_signal","keep_line","stay_ready","answer_rescuer"],"expected":{"clock":8,"ending":"SAFE_RESCUE","injury":"NONE","exposure":{"smoke":1,"heat":0},"facts":{"doorClosed":true,"room":true,"sealed":true,"handedOff":true}}},
-        {"id":"reckless","choices":["close_only","bathroom","pack_first","grab_handle","look_window","phone_only","bathroom_wait","bathroom_wait","bathroom_wait","bathroom_wait","bathroom_wait","wait_rescuer","wait_rescuer"],"expected":{"clock":13,"ending":"DELAYED_RESCUE","injury":"SEVERE","exposure":{"smoke":21,"heat":2},"facts":{"called":false,"handedOff":false},"injuries":["npc_smoke","smoke_mild","smoke_moderate","hand_burn","smoke_severe"]}},
-        {"id":"fatal","choices":["elevator"],"expected":{"clock":0,"ending":"CRITICAL_FAILURE","injury":"NOT_ASSESSED","exposure":{"smoke":0,"heat":0}}},
-        {"id":"retry","choices":["close_warn","help_roommate","full_call","seal_gap","jump_out"],"retry":{"decisionId":"window","clock":4,"facts":{"doorClosed":true,"room":true,"sealed":true}},"resume":["window_signal","keep_line","stay_ready","answer_rescuer"],"sameAs":"all-correct"},
-        {"id":"partial-report","choices":["close_warn","help_roommate","partial_call"],"checkpoint":{"clock":3,"facts":{"called":true,"address":true,"headcount":true,"room":false,"condition":false}}},
-        {"id":"shuffle","sameAs":"all-correct"},
-        {"id":"observe","choices":["close_warn","help_roommate"]},
-        {"id":"dedupe","choices":["close_warn","help_roommate"]}
+        {
+          "id": "all-correct",
+          "choices": [
+            "close_warn",
+            "help_roommate",
+            "full_call",
+            "seal_gap",
+            "window_signal",
+            "keep_line",
+            "stay_ready",
+            "answer_rescuer"
+          ],
+          "expected": {
+            "clock": 8,
+            "ending": "SAFE_RESCUE",
+            "injury": "NONE",
+            "exposure": {
+              "smoke": 1,
+              "heat": 0
+            },
+            "facts": {
+              "doorClosed": true,
+              "room": true,
+              "sealed": true,
+              "handedOff": true
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "close_only",
+            "bathroom",
+            "pack_first",
+            "grab_handle",
+            "look_window",
+            "phone_only",
+            "bathroom_wait",
+            "bathroom_wait",
+            "bathroom_wait",
+            "bathroom_wait",
+            "bathroom_wait",
+            "wait_rescuer",
+            "wait_rescuer"
+          ],
+          "expected": {
+            "clock": 13,
+            "ending": "DELAYED_RESCUE",
+            "injury": "SEVERE",
+            "exposure": {
+              "smoke": 21,
+              "heat": 2
+            },
+            "facts": {
+              "called": false,
+              "handedOff": false
+            },
+            "injuries": [
+              "npc_smoke",
+              "smoke_mild",
+              "smoke_moderate",
+              "hand_burn",
+              "smoke_severe"
+            ]
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "elevator"
+          ],
+          "expected": {
+            "clock": 0,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "smoke": 0,
+              "heat": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "close_warn",
+            "help_roommate",
+            "full_call",
+            "seal_gap",
+            "jump_out"
+          ],
+          "retry": {
+            "decisionId": "window",
+            "clock": 4,
+            "facts": {
+              "doorClosed": true,
+              "room": true,
+              "sealed": true
+            }
+          },
+          "resume": [
+            "window_signal",
+            "keep_line",
+            "stay_ready",
+            "answer_rescuer"
+          ],
+          "sameAs": "all-correct"
+        },
+        {
+          "id": "partial-report",
+          "choices": [
+            "close_warn",
+            "help_roommate",
+            "partial_call"
+          ],
+          "checkpoint": {
+            "clock": 3,
+            "facts": {
+              "called": true,
+              "address": true,
+              "headcount": true,
+              "room": false,
+              "condition": false
+            }
+          }
+        },
+        {
+          "id": "shuffle",
+          "sameAs": "all-correct"
+        },
+        {
+          "id": "observe",
+          "choices": [
+            "close_warn",
+            "help_roommate"
+          ]
+        },
+        {
+          "id": "dedupe",
+          "choices": [
+            "close_warn",
+            "help_roommate"
+          ]
+        }
       ]
     },
     {
       "file": "earthquake-school.json",
       "packSha256": "2b5cf838c79ee322775e859627a85caa9b74c07618009497f8a8d6f16d209d87",
       "cases": [
-        {"id":"all-correct","choices":["take_cover","reassure_peer","cover_aftershock","orderly_stairs","avoid_wire","join_class","answer_roll"],"expected":{"clock":7,"ending":"SELF_EVACUATION","injury":"NONE","exposure":{"trauma":0,"separation":0},"facts":{"covered":true,"afterCovered":true,"stairs":true,"openArea":true,"group":true,"counted":true}}},
-        {"id":"reckless","choices":["rush_door","watch_door","rush_aftershock","rush_stairs","follow_wall","join_other_class","wait_roll","wait_roll"],"expected":{"clock":8,"ending":"DELAYED_EVACUATION","injury":"SEVERE","exposure":{"trauma":9,"separation":5},"facts":{"counted":false,"delayed":true},"injuries":["arm_scrape","falling_debris","peer_wrist","leg_bruise","ankle_sprain"]}},
-        {"id":"fatal","choices":["take_cover","reassure_peer","cover_aftershock","take_elevator"],"expected":{"clock":3,"ending":"CRITICAL_FAILURE","injury":"NOT_ASSESSED","exposure":{"trauma":0,"separation":0}}},
-        {"id":"retry","choices":["take_cover","reassure_peer","cover_aftershock","take_elevator"],"retry":{"decisionId":"stairs","clock":3,"facts":{"covered":true,"stopped":true,"afterCovered":true}},"resume":["orderly_stairs","avoid_wire","join_class","answer_roll"],"sameAs":"all-correct"},
-        {"id":"leave-to-search","choices":["take_cover","reassure_peer","cover_aftershock","orderly_stairs","avoid_wire","join_class","go_back_after_roll"],"checkpoint":{"clock":7,"facts":{"counted":false,"delayed":true},"hazards":["leave_group_search"],"event":"leave_group_search"}},
-        {"id":"shuffle","sameAs":"all-correct"},
-        {"id":"observe","choices":["take_cover","reassure_peer"]},
-        {"id":"dedupe","choices":["take_cover","reassure_peer"]}
+        {
+          "id": "all-correct",
+          "choices": [
+            "take_cover",
+            "reassure_peer",
+            "cover_aftershock",
+            "orderly_stairs",
+            "avoid_wire",
+            "join_class",
+            "answer_roll"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "SELF_EVACUATION",
+            "injury": "NONE",
+            "exposure": {
+              "trauma": 0,
+              "separation": 0
+            },
+            "facts": {
+              "covered": true,
+              "afterCovered": true,
+              "stairs": true,
+              "openArea": true,
+              "group": true,
+              "counted": true
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "rush_door",
+            "watch_door",
+            "rush_aftershock",
+            "rush_stairs",
+            "follow_wall",
+            "join_other_class",
+            "wait_roll",
+            "wait_roll"
+          ],
+          "expected": {
+            "clock": 8,
+            "ending": "DELAYED_EVACUATION",
+            "injury": "SEVERE",
+            "exposure": {
+              "trauma": 9,
+              "separation": 5
+            },
+            "facts": {
+              "counted": false,
+              "delayed": true
+            },
+            "injuries": [
+              "arm_scrape",
+              "falling_debris",
+              "peer_wrist",
+              "leg_bruise",
+              "ankle_sprain"
+            ]
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "take_cover",
+            "reassure_peer",
+            "cover_aftershock",
+            "take_elevator"
+          ],
+          "expected": {
+            "clock": 3,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "trauma": 0,
+              "separation": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "take_cover",
+            "reassure_peer",
+            "cover_aftershock",
+            "take_elevator"
+          ],
+          "retry": {
+            "decisionId": "stairs",
+            "clock": 3,
+            "facts": {
+              "covered": true,
+              "stopped": true,
+              "afterCovered": true
+            }
+          },
+          "resume": [
+            "orderly_stairs",
+            "avoid_wire",
+            "join_class",
+            "answer_roll"
+          ],
+          "sameAs": "all-correct"
+        },
+        {
+          "id": "leave-to-search",
+          "choices": [
+            "take_cover",
+            "reassure_peer",
+            "cover_aftershock",
+            "orderly_stairs",
+            "avoid_wire",
+            "join_class",
+            "go_back_after_roll"
+          ],
+          "checkpoint": {
+            "clock": 7,
+            "facts": {
+              "counted": false,
+              "delayed": true
+            },
+            "hazards": [
+              "leave_group_search"
+            ],
+            "event": "leave_group_search"
+          }
+        },
+        {
+          "id": "shuffle",
+          "sameAs": "all-correct"
+        },
+        {
+          "id": "observe",
+          "choices": [
+            "take_cover",
+            "reassure_peer"
+          ]
+        },
+        {
+          "id": "dedupe",
+          "choices": [
+            "take_cover",
+            "reassure_peer"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "metro-attack-draft.json",
+      "packSha256": "0849dda24bb2023319765d5aa86b49be8a8cee9a501d59d94558b5af531ae6d2",
+      "cases": [
+        {
+          "id": "all-correct",
+          "choices": [
+            "metro_distance_ok",
+            "metro_intercom_ok",
+            "metro_doors_ok",
+            "metro_platform_ok",
+            "metro_hide_ok",
+            "metro_barrier_ok",
+            "metro_report_ok"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "SELF_EVACUATION",
+            "injury": "NONE",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "metro_distance_myth",
+            "metro_intercom_myth",
+            "metro_doors_myth",
+            "metro_platform_myth",
+            "metro_hide_myth",
+            "metro_barrier_myth",
+            "metro_report_myth"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "DELAYED_EVACUATION",
+            "injury": "SEVERE",
+            "exposure": {
+              "harm": 4,
+              "delay": 7
+            }
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "metro_distance_risk"
+          ],
+          "expected": {
+            "clock": 0,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "fatal-metro_doors_risk",
+          "choices": [
+            "metro_distance_ok",
+            "metro_intercom_ok",
+            "metro_doors_risk"
+          ],
+          "expected": {
+            "clock": 2,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "metro_distance_risk"
+          ],
+          "retry": {
+            "decisionId": "metro_distance",
+            "clock": 0,
+            "facts": {}
+          },
+          "resume": [
+            "metro_distance_ok",
+            "metro_intercom_ok",
+            "metro_doors_ok",
+            "metro_platform_ok",
+            "metro_hide_ok",
+            "metro_barrier_ok",
+            "metro_report_ok"
+          ],
+          "sameAs": "all-correct"
+        }
       ]
     }
   ]

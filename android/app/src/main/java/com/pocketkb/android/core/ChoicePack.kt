@@ -119,7 +119,8 @@ internal data class ChoicePack(val data: PackObject, val digest: String) {
             val sourceIds = index(sources)
             for (source in sources) {
                 val url = URI(source.text("url"))
-                require(url.port == -1 && (url.host.endsWith(".gov.tw") || url.host.endsWith(".gov.taipei")))
+                require(url.port == -1 && (url.host.endsWith(".gov.tw") || url.host.endsWith(".gov.taipei") ||
+                    url.host in setOf("www.metro.taipei", "www.cdc.gov")))
             }
             val catalog = pack.getValue("catalog").obj()
             val steps = listOf("principle", "hazard", "channel").associateWith { index(catalog.rows(it + "s")) }

@@ -176,7 +176,8 @@
     const sources=byId(pack.meta.sources,'source');
     for(const source of sources.values()){
       const url=new URL(source.url);
-      if(url.protocol!=='https:'||!(/\.gov\.(?:tw|taipei)$/.test(url.hostname))||url.username||url.password||url.port)
+      const official=/\.gov\.(?:tw|taipei)$/.test(url.hostname)||['www.metro.taipei','www.cdc.gov'].includes(url.hostname);
+      if(url.protocol!=='https:'||!official||url.username||url.password||url.port)
         fail('Untrusted official source: '+source.id);
     }
     const lists={principle:byId(pack.catalog.principles,'principle'),hazard:byId(pack.catalog.hazards,'hazard'),

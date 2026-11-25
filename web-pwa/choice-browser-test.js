@@ -37,6 +37,14 @@ async function main(){
     assert.equal(await page.locator('a[href*="?scenario="]').count(),4);
     await page.getByLabel('顯示舊版對話劇本').uncheck();
     assert.equal(await page.locator('a[href*="?scenario="]').count(),0);
+    if(await page.getByLabel('顯示草稿情境').count()){
+      await page.getByLabel('顯示草稿情境').check();
+      await page.locator('[data-choice-pack="metro_attack_draft"]').click();
+      await page.getByText(/包含突發攻擊/).waitFor();
+      await page.getByRole('button',{name:'跳過此情境'}).click();
+      await page.getByLabel('顯示草稿情境').uncheck();
+      assert.equal(await page.locator('[data-choice-pack]').count(),2);
+    }
     await page.evaluate(()=>navigator.serviceWorker.ready.then(()=>undefined));
     await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
     await context.setOffline(true);

@@ -1,4 +1,4 @@
-const CACHE_NAME = "pocketkb-pwa-v15-choice-parity";
+const CACHE_NAME = "pocketkb-pwa-v16-choice-drafts";
 const CORE_ASSETS = [
   "./", "./index.html", "./styles.css", "./app.js", "./drill-language.js", "./drill-events.js", "./scenario-engine-v3.js",
   "./scenarios/v3/fire-dorm.json", "./manifest.webmanifest", "./icon.svg", "./choice-pack.js", "./choice-runtime.js", "./choice-view.js",
@@ -6,7 +6,12 @@ const CORE_ASSETS = [
   "./scenarios/choice/earthquake-school.json"
 ];
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS)));
+  event.waitUntil(caches.open(CACHE_NAME).then(async cache => {
+    await cache.addAll(CORE_ASSETS);
+    const {packs}=await (await cache.match("./scenarios/choice/manifest.json")).json();
+    await cache.addAll(packs.filter(pack=>pack.status==="draft"&&/^[a-z0-9-]+\.json$/.test(pack.file))
+      .map(pack=>"./scenarios/choice/"+pack.file));
+  }));
   self.skipWaiting();
 });
 self.addEventListener("activate", event => {

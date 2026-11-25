@@ -85,7 +85,7 @@ for(const scenario of vectors.scenarios){
         const counters=view.state.counters;
         assert.ok(Math.max(...Object.values(counters))>=2);
       }
-      if(row.id==='fatal')assert.equal(debrief.injury,null);
+      if(row.id.startsWith('fatal'))assert.equal(debrief.injury,null);
     }else if(row.checkpoint){
       const view=play(runtime,session,row.choices);
       assert.equal(view.state.clock,row.checkpoint.clock);
@@ -132,8 +132,12 @@ for(const scenario of vectors.scenarios){
 }
 
 test('option length, visible actions and negative wording do not leak the answer',()=>{
-  const rows=optionAudit(manifest.packs.map(entry=>readPack(entry.file)));
-  for(const key of ['lengthBias','significantBias','actionBias'])assert.ok(rows.filter(row=>row[key]).length/rows.length<=0.35,key);
+  const packs=manifest.packs.map(entry=>readPack(entry.file));
+  const rows=optionAudit(packs);
+  for(const set of [rows.filter(row=>packs.find(p=>p.meta.id===row.packId).meta.status!=='draft'),
+    ...packs.filter(p=>p.meta.status==='draft').map(p=>rows.filter(row=>row.packId===p.meta.id))]){
+    for(const key of ['lengthBias','significantBias','actionBias'])assert.ok(set.filter(row=>row[key]).length/set.length<=0.35,key+' '+set[0].packId);
+  }
   for(const row of rows){
     assert.ok(row.spread<=4&&row.significantSpread<=4,row.id+' length spread');
     for(const option of row.options){
@@ -144,7 +148,7 @@ test('option length, visible actions and negative wording do not leak the answer
 });
 
 test('each rough debrief uses the cited choice’s direct events and at most two actual delays',()=>{
-  for(const scenario of vectors.scenarios){
+  for(const scenario of vectors.scenarios.filter(item=>readPack(item.file).meta.status!=='draft')){
     const pack=readPack(scenario.file);
     const sample=scenario.cases.find(row=>row.id==='reckless');
     const {state,records,review}=run(pack,sample.choices);

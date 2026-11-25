@@ -12,6 +12,14 @@
       "title": "學校地震",
       "file": "earthquake-school.json",
       "sha256": "2b5cf838c79ee322775e859627a85caa9b74c07618009497f8a8d6f16d209d87"
+    },
+    {
+      "id": "metro_attack_draft",
+      "title": "板南線車廂的突發騷動",
+      "file": "metro-attack-draft.json",
+      "sha256": "0849dda24bb2023319765d5aa86b49be8a8cee9a501d59d94558b5af531ae6d2",
+      "status": "draft",
+      "contentNotice": "這一場包含突發攻擊、人群恐慌與非血腥受傷描述。可跳過，或隨時停止。"
     }
   ]
 }

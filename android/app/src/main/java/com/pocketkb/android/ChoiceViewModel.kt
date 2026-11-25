@@ -91,7 +91,8 @@ internal class ChoiceViewModel(app: Application) : AndroidViewModel(app) {
         val file = entry.text("file")
         require(Regex("[a-z0-9-]+\\.json").matches(file))
         val pack = assets.open("packs/$file").use { ChoicePack.load(it.readBytes(), entry.text("sha256"), schema) }
-        require(pack.id == entry["id"] && pack.title == entry["title"])
+        require(pack.id == entry["id"] && pack.title == entry["title"] &&
+            pack.meta["status"] == entry["status"] && pack.meta["contentNotice"] == entry["contentNotice"])
         ChoiceRuntime(pack)
     }
 

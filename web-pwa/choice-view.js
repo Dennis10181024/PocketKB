@@ -43,6 +43,7 @@
     let catalog=null, runtime=null, session=null, view=null, review=null, selected=null;
     let info='', error='', loading=false, openedAt=0;
     let showLegacy=false;
+    let showDrafts=false;
     try{showLegacy=localStorage.getItem(storageKey)==='1';}catch{}
     function refresh(focus=false){
       rerender();
@@ -68,7 +69,8 @@
       try{
         const [bytes,schema]=await Promise.all([request(selected.file,'arrayBuffer'),request('schema-v1.json','json')]);
         const pack=await root.PocketChoicePack.loadVerifiedPack(bytes,selected.sha256,schema);
-        if(pack.meta.id!==selected.id||pack.meta.title!==selected.title)throw new Error('Pack identity mismatch');
+        if(pack.meta.id!==selected.id||pack.meta.title!==selected.title||
+          pack.meta.status!==selected.status||pack.meta.contentNotice!==selected.contentNotice)throw new Error('Pack identity mismatch');
         runtime=root.PocketChoiceRuntime.createRuntime(pack);
         session=runtime.start();
         view=runtime.snapshot(session);
@@ -103,15 +105,18 @@
       }else if(selected){
         content='<h2 id="choice-heading" tabindex="-1">'+esc(selected.title)+'</h2>'+
           '<p>演練中可能出現受傷的結果，你可以隨時停止。</p>'+
+          (selected.contentNotice?'<p>'+esc(selected.contentNotice)+'</p>':'')+
           '<p>點選一個做法就會送出。「先看看四周」和「問同伴」可先取得線索。</p>'+
           '<div class="choice-tools"><button type="button" class="primary" id="choice-start" '+(loading?'disabled':'')+'>'+(loading?'正在載入':'開始演練')+'</button>'+
-          button('choice-reset','回到情境清單')+'</div>';
+          button('choice-reset',selected.status==='draft'?'跳過此情境':'回到情境清單')+'</div>';
       }else{
         content='<h2 id="choice-heading" tabindex="-1">情境演練</h2><p>選一個情境，練習在災害發生時做決定。</p>'+
-          '<div class="choice-options">'+(catalog?.map(row=>'<button type="button" class="choice-option" data-choice-pack="'+esc(row.id)+'">'+esc(row.title)+'</button>').join('')||
+          '<div class="choice-options">'+(catalog?.filter(row=>showDrafts||row.status!=='draft').map(row=>
+            '<button type="button" class="choice-option" data-choice-pack="'+esc(row.id)+'">'+esc((row.status==='draft'?'草稿・':'')+row.title)+'</button>').join('')||
           (error?button('choice-refresh','重新載入'):'<p role="status">正在讀取情境清單。</p>'))+'</div>'+
-          '<details class="choice-stop" '+(showLegacy?'open':'')+'><summary>演練設定</summary>'+
+          '<details class="choice-stop" '+(showLegacy||showDrafts?'open':'')+'><summary>演練設定</summary>'+
           '<label class="choice-setting"><input id="choice-legacy" type="checkbox" '+(showLegacy?'checked':'')+'>顯示舊版對話劇本</label>'+
+          (catalog?.some(row=>row.status==='draft')?'<label class="choice-setting"><input id="choice-drafts" type="checkbox" '+(showDrafts?'checked':'')+'>顯示草稿情境</label>':'')+
           (showLegacy?duties(legacyScenarios,([id,title])=>'<a href="./online.html?scenario='+esc(id)+'">'+esc(title)+'</a>')+
             '<p>舊版對話劇本需啟動線上教練服務。</p>':'')+'</details>';
       }
@@ -139,6 +144,12 @@
         refresh();
         el('legacy')?.closest('details')?.setAttribute('open','');
         el('legacy')?.focus();
+      });
+      el('drafts')?.addEventListener('change',event=>{
+        showDrafts=event.target.checked;
+        refresh();
+        el('drafts')?.closest('details')?.setAttribute('open','');
+        el('drafts')?.focus();
       });
       for(const button of document.querySelectorAll('[data-choice-pack]'))button.addEventListener('click',()=>{
         selected=catalog.find(row=>row.id===button.dataset.choicePack);error='';refresh(true);

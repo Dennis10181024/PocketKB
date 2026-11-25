@@ -54,6 +54,20 @@ class ChoiceScreenTest {
         rule.onNodeWithText("回到情境清單").performClick()
     }
 
+    @Test fun draftIsHiddenUntilOptInAndCanBeSkipped() {
+        rule.onNodeWithText("開始情境演練").performClick()
+        rule.waitUntil(10_000) { rule.onAllNodesWithTag("choice_pack_drill_fire_dorm").fetchSemanticsNodes().isNotEmpty() }
+        rule.onAllNodesWithTag("choice_pack_metro_attack_draft").assertCountEquals(0)
+        rule.onNodeWithText("演練設定").performClick()
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("顯示草稿情境"))
+        rule.onNodeWithText("顯示草稿情境").performClick()
+        rule.onNode(hasScrollAction()).performScrollToNode(hasTestTag("choice_pack_metro_attack_draft"))
+        rule.onNodeWithTag("choice_pack_metro_attack_draft").performClick()
+        rule.onNodeWithText("包含突發攻擊", substring = true).assertIsDisplayed()
+        rule.onNodeWithText("跳過此情境").performClick()
+        rule.onNodeWithTag("choice_pack_drill_fire_dorm").assertIsDisplayed()
+    }
+
     @Test fun resumesAfterForceStop() {
         val args = InstrumentationRegistry.getArguments()
         val phase = args.getString("choiceRestart")

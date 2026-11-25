@@ -69,8 +69,8 @@ function reviewText({review,records}){
   lines.push('#### 因果核對','',
     '| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |','|---|---|---|---|');
   for(const reviewed of [...review.dangers,...(review.turning?[review.turning]:[])]){
-    const row=records.find(record=>record.optionId===reviewed.optionId&&record.impacts?.some(item=>item.id===reviewed.eventId&&
-      (reviewed.at===undefined||item.at===reviewed.at)));
+    const row=records.find(record=>record.optionId===reviewed.optionId&&(!reviewed.eventId||
+      record.impacts?.some(item=>item.id===reviewed.eventId&&(reviewed.at===undefined||item.at===reviewed.at))));
     const events=row.impacts.filter(impact=>impact.direct);
     lines.push('| '+[reviewed.at===undefined?'關鍵轉折':'第 '+reviewed.at+' 回合',reviewed.optionText,events.map(item=>item.id).join('、'),
       events.flatMap(item=>item.injuries.map(injury=>injury.label+(injury.subject==='player'?'':'（同伴）'))).join('、')||'—'].map(cell).join(' | ')+' |');
@@ -80,7 +80,7 @@ function reviewText({review,records}){
 }
 
 function main(){
-  const packs=manifest.packs.map(entry=>readPack(entry.file));
+  const packs=manifest.packs.filter(entry=>entry.status!=='draft').map(entry=>readPack(entry.file));
   const rows=optionAudit(packs);
   const stat=key=>{const matches=rows.filter(row=>row[key]).length;return matches+'/'+rows.length+'（'+(matches/rows.length*100).toFixed(1)+'%）';};
   const lines=['# 步驟 5.1b 選項與回顧驗收','',
@@ -118,4 +118,4 @@ function main(){
 }
 
 if(require.main===module)main();
-module.exports={optionAudit,run};
+module.exports={optionAudit,run,reviewText};
