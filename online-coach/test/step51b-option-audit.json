@@ -390,5 +390,93 @@
   "flood_recovery_risk": {
     "text": "我把潮濕的延長線插回，想測樓下電力。",
     "visibleActions": 2
+  },
+  "typhoon_light_ok": {
+    "text": "我開手電筒，先照亮眼前的通道。",
+    "visibleActions": 2
+  },
+  "typhoon_light_myth": {
+    "text": "我點一支蠟燭照走廊，再回房找東西。",
+    "visibleActions": 3
+  },
+  "typhoon_light_risk": {
+    "text": "我摸黑走進走廊，找應急燈。",
+    "visibleActions": 2
+  },
+  "typhoon_plugs_ok": {
+    "text": "我拔下乾燥處的電暖器與吹風機插頭。",
+    "visibleActions": 1
+  },
+  "typhoon_plugs_myth": {
+    "text": "我關掉電暖器，整理電線後把它移到牆邊。",
+    "visibleActions": 3
+  },
+  "typhoon_plugs_risk": {
+    "text": "我留著暖器加熱檔，用外套蓋住。",
+    "visibleActions": 2
+  },
+  "typhoon_fumes_ok": {
+    "text": "我選常溫備糧，和小晴待在安全處。",
+    "visibleActions": 2
+  },
+  "typhoon_fumes_myth": {
+    "text": "我在客廳用卡式爐煮一點熱食。",
+    "visibleActions": 1
+  },
+  "typhoon_fumes_risk": {
+    "text": "我把發電機放在窗邊，啟動來接電扇。",
+    "visibleActions": 3
+  },
+  "typhoon_fumes_other": {
+    "text": "我叫小晴等一下，去翻櫃子再找晚餐。",
+    "visibleActions": 3
+  },
+  "typhoon_outage_ok": {
+    "text": "我撥1911通報區域停電和地址。",
+    "visibleActions": 1
+  },
+  "typhoon_outage_myth": {
+    "text": "我打119查復電，再請他轉報。",
+    "visibleActions": 2
+  },
+  "typhoon_outage_risk": {
+    "text": "我到大門口察看，再問鄰居是否有人報修。",
+    "visibleActions": 3
+  },
+  "typhoon_help_ok": {
+    "text": "我在安全處撥119，回報位置與不適。",
+    "visibleActions": 2
+  },
+  "typhoon_help_myth": {
+    "text": "我先打1911問停電狀況，再找人求助。",
+    "visibleActions": 3
+  },
+  "typhoon_help_risk": {
+    "text": "我進隔戶查看，再把住戶帶出來。",
+    "visibleActions": 2
+  },
+  "typhoon_fridge_ok": {
+    "text": "我關好冰箱，改吃常溫保存的備糧。",
+    "visibleActions": 2
+  },
+  "typhoon_fridge_myth": {
+    "text": "我打開冰箱逐層查看，先挑冷飲補充水分。",
+    "visibleActions": 3
+  },
+  "typhoon_fridge_risk": {
+    "text": "我聞聞回溫牛奶，喝幾口確認味道。",
+    "visibleActions": 2
+  },
+  "typhoon_wire_ok": {
+    "text": "我留在安全處打1911，報電線位置。",
+    "visibleActions": 2
+  },
+  "typhoon_wire_myth": {
+    "text": "我到門外拍照，傳給鄰居確認是哪一條。",
+    "visibleActions": 3
+  },
+  "typhoon_wire_risk": {
+    "text": "我用手把路上的電線移開，讓人好走。",
+    "visibleActions": 1
   }
 }

@@ -284,3 +284,145 @@
 | 第 3 回合 | 我留在梯口，請阿哲看看水深。 | flood_basement_act_myth | 手肘挫傷（同伴） |
 | 第 6 回合 | 我往樓下移動，揮手讓救援看見。 | flood_signal_act_myth | 小腿撞傷 |
 | 關鍵轉折 | 我搬高延長線，再整理桌上的插頭。 | flood_power_act_myth | — |
+
+## 颱風夜，租屋處停電
+
+7 題，5 種可達結局，334 個可達非終止狀態。
+
+- 公開查證：消防防災館停電應變由區公所刊載，另以消防署 119、地方消防局一氧化碳宣導核對通報與燃燒設備。
+- 待人工查證：食品保存依品項與實測溫度而異。本包省略分鐘數、藥品可否繼續使用與再復電時的設備操作細節。
+
+| 檢查 | 數據 |
+|---|---|
+| 最長＝正確（標點計入） | 1/7（14.3%） |
+| 最長＝正確（忽略標點） | 1/7（14.3%） |
+| 動作最多＝正確 | 0/7（0.0%） |
+| 最短＝正確（標點計入） | 1/7（14.3%） |
+| 最短＝正確（忽略標點） | 1/7（14.3%） |
+| 自我否定用詞 | 0/22 |
+| 同題最大字差 | 4 字 |
+
+比例含並列。動作數為按原文核對的可見行動標註。
+
+| 決策點／問題 | 選項 | 判定 | 字數 | 動作數 | 採用 ID | 來源 |
+|---|---|---|---:|---:|---|---|
+| typhoon_light／室內突然變暗，手電筒和蠟燭就在桌上。我要怎麼在室內照明？ | 我開手電筒，先照亮眼前的通道。 | 正確 | 15 | 2 | typhoon_light_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_light／室內突然變暗，手電筒和蠟燭就在桌上。我要怎麼在室內照明？ | 我點一支蠟燭照走廊，再回房找東西。 | 迷思 | 17 | 3 | typhoon_light_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_light／室內突然變暗，手電筒和蠟燭就在桌上。我要怎麼在室內照明？ | 我摸黑走進走廊，找應急燈。 | 危險／延誤 | 13 | 2 | typhoon_light_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_light 字差 | — | — | 4 | — | — | — |
+| typhoon_plugs／乾燥室內的電暖器和吹風機仍插著。我和小晴要離開這個房間，應怎麼處理？ | 我拔下乾燥處的電暖器與吹風機插頭。 | 正確 | 17 | 1 | typhoon_plugs_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_plugs／乾燥室內的電暖器和吹風機仍插著。我和小晴要離開這個房間，應怎麼處理？ | 我關掉電暖器，整理電線後把它移到牆邊。 | 迷思 | 19 | 3 | typhoon_plugs_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_plugs／乾燥室內的電暖器和吹風機仍插著。我和小晴要離開這個房間，應怎麼處理？ | 我留著暖器加熱檔，用外套蓋住。 | 危險／延誤 | 15 | 2 | typhoon_plugs_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_plugs 字差 | — | — | 4 | — | — | — |
+| typhoon_fumes／屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？ | 我選常溫備糧，和小晴待在安全處。 | 正確 | 16 | 2 | typhoon_fumes_act_ok | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
+| typhoon_fumes／屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？ | 我在客廳用卡式爐煮一點熱食。 | 迷思 | 14 | 1 | typhoon_fumes_act_myth | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
+| typhoon_fumes／屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？ | 我把發電機放在窗邊，啟動來接電扇。 | 危險／延誤 | 17 | 3 | typhoon_fumes_act_risk | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
+| typhoon_fumes／屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？ | 我叫小晴等一下，去翻櫃子再找晚餐。 | 危險／延誤 | 17 | 3 | typhoon_fumes_act_other | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
+| typhoon_fumes 字差 | — | — | 3 | — | — | — |
+| typhoon_outage／透過窗看見附近街廓也停電，眼前沒有火煙或傷者。要回報給誰？ | 我撥1911通報區域停電和地址。 | 正確 | 16 | 1 | typhoon_outage_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_outage／透過窗看見附近街廓也停電，眼前沒有火煙或傷者。要回報給誰？ | 我打119查復電，再請他轉報。 | 迷思 | 15 | 2 | typhoon_outage_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_outage／透過窗看見附近街廓也停電，眼前沒有火煙或傷者。要回報給誰？ | 我到大門口察看，再問鄰居是否有人報修。 | 危險／延誤 | 19 | 3 | typhoon_outage_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_outage 字差 | — | — | 4 | — | — | — |
+| typhoon_help／隔戶有人說頭暈、站不穩，屋內正在用燃料設備。我在安全通風的樓梯口，要怎麼求助？ | 我在安全處撥119，回報位置與不適。 | 正確 | 18 | 2 | typhoon_help_act_ok | [urgent](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
+| typhoon_help／隔戶有人說頭暈、站不穩，屋內正在用燃料設備。我在安全通風的樓梯口，要怎麼求助？ | 我先打1911問停電狀況，再找人求助。 | 迷思 | 19 | 3 | typhoon_help_act_myth | [urgent](https://www.nfa.gov.tw/cht/?code=list&ids=66) |
+| typhoon_help／隔戶有人說頭暈、站不穩，屋內正在用燃料設備。我在安全通風的樓梯口，要怎麼求助？ | 我進隔戶查看，再把住戶帶出來。 | 危險／延誤 | 15 | 2 | typhoon_help_act_risk | [co](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152) |
+| typhoon_help 字差 | — | — | 4 | — | — | — |
+| typhoon_fridge／我回到安全處，冰箱已停電一段時間，桌上有常溫備糧。一盒牛奶摸起來已回到室溫。我要怎麼安排食物？ | 我關好冰箱，改吃常溫保存的備糧。 | 正確 | 16 | 2 | typhoon_fridge_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_fridge／我回到安全處，冰箱已停電一段時間，桌上有常溫備糧。一盒牛奶摸起來已回到室溫。我要怎麼安排食物？ | 我打開冰箱逐層查看，先挑冷飲補充水分。 | 迷思 | 19 | 3 | typhoon_fridge_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_fridge／我回到安全處，冰箱已停電一段時間，桌上有常溫備糧。一盒牛奶摸起來已回到室溫。我要怎麼安排食物？ | 我聞聞回溫牛奶，喝幾口確認味道。 | 危險／延誤 | 16 | 2 | typhoon_fridge_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_fridge 字差 | — | — | 3 | — | — | — |
+| typhoon_wire／從室內看到巷口一條電線掉下來，旁邊仍有風雨，暫時沒人靠近。最後我要怎麼處理？ | 我留在安全處打1911，報電線位置。 | 正確 | 18 | 2 | typhoon_wire_act_ok | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_wire／從室內看到巷口一條電線掉下來，旁邊仍有風雨，暫時沒人靠近。最後我要怎麼處理？ | 我到門外拍照，傳給鄰居確認是哪一條。 | 迷思 | 18 | 3 | typhoon_wire_act_myth | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_wire／從室內看到巷口一條電線掉下來，旁邊仍有風雨，暫時沒人靠近。最後我要怎麼處理？ | 我用手把路上的電線移開，讓人好走。 | 危險／延誤 | 17 | 1 | typhoon_wire_act_risk | [outage](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699) |
+| typhoon_wire 字差 | — | — | 1 | — | — | — |
+
+### 全對重播回顧全文
+
+結局傷勢清單｜無紀錄傷勢。
+
+#### 結果
+
+安全應變並交接。本人傷勢分級為無傷。
+
+照明、用電與報案分流都已處理。
+
+#### 做對的決定
+
+- 「我開手電筒，先照亮眼前的通道。」 電池照明沒有明火。
+- 「我拔下乾燥處的電暖器與吹風機插頭。」 乾燥可安全操作時，可避免設備復電後意外啟動。
+- 「我選常溫備糧，和小晴待在安全處。」 密閉空間要避免燃料設備不完全燃燒的風險。
+
+#### 下次可以補上的
+
+本場無此項。
+
+#### 這次的危險選擇與後果
+
+本場無此項。
+
+#### 關鍵轉折
+
+- 「我開手電筒，先照亮眼前的通道。」 → 手電筒照亮地板，小晴看得見腳下。 → 可以維持「我開手電筒，先照亮眼前的通道。」 電池照明沒有明火。
+
+#### 官方依據
+
+- [消防防災館《停電應變》（高雄市鹽埕區公所刊載）](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699)
+- [桃園市消防局：一氧化碳中毒與居家防範](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152)
+
+#### 帶走一個思考題
+
+- 下次如果在宿舍遇到停電，我要如何確認該找台電還是消防？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 關鍵轉折 | 我開手電筒，先照亮眼前的通道。 |  | — |
+
+
+### 亂玩重播回顧全文
+
+結局傷勢清單｜小晴：手指燙傷。
+
+#### 結果
+
+延誤後完成應變交接。最嚴重的傷勢為小晴的手指燙傷。本人傷勢分級為輕傷。撤離或救援延誤：為處理明火反覆往返、整理電器後須折返確認插頭。
+
+最早因為處理明火反覆往返造成延誤，過程中出現手指燙傷。
+
+#### 做對的決定
+
+本場無此項。
+
+#### 下次可以補上的
+
+- 在安全距離通報1911，提醒他人遠離。
+- 保持冰箱關閉，改用可安全在常溫保存的食物。
+
+#### 這次的危險選擇與後果
+
+- 第 1 回合「我點一支蠟燭照走廊，再回房找東西。」 蠟燭留在走道，小晴挪它時手指被燙到（本回合傷勢：手指燙傷）。 走道用手電筒照明，避免無人照看的火源。
+- 第 2 回合「我關掉電暖器，整理電線後把它移到牆邊。」 我移好電暖器，插頭仍接著，稍後還得返回確認。 插座與手部乾燥時拔下插頭。
+- 第 3 回合「我叫小晴等一下，去翻櫃子再找晚餐。」 我留在昏暗的收納間翻找，耽擱了留意屋外狀況。 優先取用在手邊且無需用火的備糧。
+
+#### 關鍵轉折
+
+- 「我點一支蠟燭照走廊，再回房找東西。」 → 蠟燭留在走道，小晴挪它時手指被燙到（本回合傷勢：手指燙傷）。 → 可改選「我開手電筒，先照亮眼前的通道。」 走道用手電筒照明，避免無人照看的火源。
+
+#### 官方依據
+
+- [消防防災館《停電應變》（高雄市鹽埕區公所刊載）](https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699)
+- [桃園市消防局：一氧化碳中毒與居家防範](https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152)
+
+#### 帶走一個思考題
+
+- 下次如果在宿舍遇到停電，我要如何確認該找台電還是消防？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 第 1 回合 | 我點一支蠟燭照走廊，再回房找東西。 | typhoon_light_act_myth | 手指燙傷（同伴） |
+| 第 2 回合 | 我關掉電暖器，整理電線後把它移到牆邊。 | typhoon_plugs_act_myth | — |
+| 第 3 回合 | 我叫小晴等一下，去翻櫃子再找晚餐。 | typhoon_fumes_act_other | — |
+| 關鍵轉折 | 我點一支蠟燭照走廊，再回房找東西。 | typhoon_light_act_myth | 手指燙傷（同伴） |

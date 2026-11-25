@@ -27,6 +27,13 @@
       "file": "flood-low-home-draft.json",
       "sha256": "0c9307bf4411501a9feabd548a12f2061de16dcedfc59e28929dfde83f26c902",
       "status": "draft"
+    },
+    {
+      "id": "typhoon_outage_draft",
+      "title": "颱風夜，租屋處停電",
+      "file": "typhoon-outage-draft.json",
+      "sha256": "19671e3eecbfc20ec71907c0dda0b7b955116bcaf5e126eef1fd5c4eddb29fe2",
+      "status": "draft"
     }
   ]
 }

@@ -1,0 +1,441 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "typhoon_outage_draft",
+    "title": "颱風夜，租屋處停電",
+    "version": "1.0.0",
+    "hazard": "typhoon",
+    "skeletonVersion": "draft-choice-5.5",
+    "sources": [
+      {"id":"outage","title":"消防防災館《停電應變》（高雄市鹽埕區公所刊載）","url":"https://yancheng.kcg.gov.tw/News_Content.aspx?n=29B3D06675FAF607&s=100A98A0F122872C&sms=52EBA08E597C8699"},
+      {"id":"co","title":"桃園市消防局：一氧化碳中毒與居家防範","url":"https://www.tyfd.gov.tw/cht/index.php?act=article&article_id=1080&code=detail&ids=152"},
+      {"id":"urgent","title":"內政部消防署：119 緊急報案專線","url":"https://www.nfa.gov.tw/cht/?code=list&ids=66"}
+    ],
+    "status": "draft"
+  },
+  "initial": {
+    "facts": {
+      "flashlight": false,
+      "reportedOutage": false,
+      "reportedEmergency": false,
+      "reportedWire": false
+    },
+    "exposure": {
+      "harm": 0,
+      "delay": 0
+    },
+    "npc": {
+      "peer": {
+        "name": "小晴",
+        "state": "nearby",
+        "injured": false
+      }
+    },
+    "decisionId": "typhoon_light",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 7
+  },
+  "catalog": {
+    "principles": [
+      {"id":"typhoon_light_act_ok","sourceIds":["outage"],"when":{"always":true},"review":{"why":"電池照明沒有明火。","tip":"停電優先使用手電筒或其他電池燈。","eligibleWhen":{"always":true},"priority":2},"normal":{"narration":"principle_typhoon_light_act_ok","effect":{"set":{"facts.flashlight":true}}}},
+      {"id":"typhoon_plugs_act_ok","sourceIds":["outage"],"when":{"always":true},"review":{"why":"乾燥可安全操作時，可避免設備復電後意外啟動。","tip":"離開房間前，先讓發熱電器與電源分離。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_typhoon_plugs_act_ok","effect":{}}},
+      {"id":"typhoon_fumes_act_ok","sourceIds":["co"],"when":{"always":true},"review":{"why":"密閉空間要避免燃料設備不完全燃燒的風險。","tip":"改用不需加熱的備糧，不在密閉處用卡式爐或發電機。","eligibleWhen":{"always":true},"priority":4},"normal":{"narration":"principle_typhoon_fumes_act_ok","effect":{}}},
+      {"id":"typhoon_outage_act_ok","sourceIds":["outage"],"when":{"always":true},"review":{"why":"1911 處理停電和電線等電力問題。","tip":"只有停電時通報台電1911或查詢搶修資訊。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_typhoon_outage_act_ok","effect":{"set":{"facts.reportedOutage":true}}}},
+      {"id":"typhoon_help_act_ok","sourceIds":["urgent"],"when":{"always":true},"review":{"why":"有人不適需要緊急消防救援。","tip":"在安全處撥119，報位置、症狀和是否仍有燃料設備。","eligibleWhen":{"always":true},"priority":6},"normal":{"narration":"principle_typhoon_help_act_ok","effect":{"set":{"facts.reportedEmergency":true}}}},
+      {"id":"typhoon_fridge_act_ok","sourceIds":["outage"],"when":{"always":true},"review":{"why":"少開門可減少冷藏流失，回溫或變質的冷藏品應避免。","tip":"保持冰箱關閉，改用可安全在常溫保存的食物。","eligibleWhen":{"always":true},"priority":7},"normal":{"narration":"principle_typhoon_fridge_act_ok","effect":{}}},
+      {"id":"typhoon_wire_act_ok","sourceIds":["outage"],"when":{"always":true},"review":{"why":"掉落電線可能仍帶電，應由專業人員處理。","tip":"在安全距離通報1911，提醒他人遠離。","eligibleWhen":{"always":true},"priority":8},"normal":{"narration":"principle_typhoon_wire_act_ok","effect":{"set":{"facts.reportedWire":true}}}}
+    ],
+    "hazards": [
+      {"id":"typhoon_light_act_myth","sourceIds":["outage"],"when":{"always":true},"review":{"why":"離開點亮的燭火可能引火或燙傷。","tip":"走道用手電筒照明，避免無人照看的火源。","eligibleWhen":{"always":true},"priority":2,"principleId":"typhoon_light_act_ok"},"normal":{"narration":"hazard_typhoon_light_act_myth","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"set":{"npc.peer.injured":true,"npc.peer.state":"burn"},"injuries":[{"id":"typhoon_peer_hand","label":"手指燙傷","severity":"MILD","subject":"peer"}],"delay":"為處理明火反覆往返"}}},
+      {"id":"typhoon_light_act_risk","sourceIds":["outage"],"when":{"always":true},"review":{"why":"摸黑走動可能絆倒或撞到障礙。","tip":"在拿得到手電筒的原處先開燈再移動。","eligibleWhen":{"always":true},"priority":2,"principleId":"typhoon_light_act_ok"},"normal":{"narration":"hazard_typhoon_light_act_risk","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"injuries":[{"id":"typhoon_knee","label":"膝蓋挫傷","severity":"MILD","subject":"player"}],"delay":"摸黑碰到障礙後折返"}}},
+      {"id":"typhoon_plugs_act_myth","sourceIds":["outage"],"when":{"always":true},"review":{"why":"只有切換設備按鍵仍需確認復電狀況。","tip":"插座與手部乾燥時拔下插頭。","eligibleWhen":{"always":true},"priority":3,"principleId":"typhoon_plugs_act_ok"},"normal":{"narration":"hazard_typhoon_plugs_act_myth","effect":{"add":{"exposure.delay":1},"delay":"整理電器後須折返確認插頭"}}},
+      {"id":"typhoon_plugs_act_risk","sourceIds":["outage"],"when":{"always":true},"review":{"why":"復電後覆蓋的發熱設備有起火風險。","tip":"把衣物移開並在乾燥安全時拔掉插頭。","eligibleWhen":{"always":true},"priority":3,"principleId":"typhoon_plugs_act_ok"},"normal":{"narration":"hazard_typhoon_plugs_act_risk","effect":{"add":{"exposure.delay":1},"delay":"回頭處理被衣物覆蓋的暖器"}}},
+      {"id":"typhoon_fumes_act_myth","sourceIds":["co"],"when":{"always":true},"review":{"why":"通風不足的室內燃料爐具可能造成一氧化碳中毒。","tip":"避免在通風不足的室內用燃料爐具，若有人不適立即求助。","eligibleWhen":{"always":true},"priority":4,"principleId":"typhoon_fumes_act_ok"},"normal":{"narration":"hazard_typhoon_fumes_act_myth","effect":{}},"fatalEndingId":"typhoon_fumes_act_myth_ending"},
+      {"id":"typhoon_fumes_act_risk","sourceIds":["co"],"when":{"always":true},"review":{"why":"發電機的廢氣即使在窗邊也可能回到室內。","tip":"發電機設在室外且遠離窗，不在室內使用。","eligibleWhen":{"always":true},"priority":4,"principleId":"typhoon_fumes_act_ok"},"normal":{"narration":"hazard_typhoon_fumes_act_risk","effect":{}},"fatalEndingId":"typhoon_fumes_act_risk_ending"},
+      {"id":"typhoon_fumes_act_other","sourceIds":["co"],"when":{"always":true},"review":{"why":"停電時先用已準備的常溫食物可避免延誤。","tip":"優先取用在手邊且無需用火的備糧。","eligibleWhen":{"always":true},"priority":4,"principleId":"typhoon_fumes_act_ok"},"normal":{"narration":"hazard_typhoon_fumes_act_other","effect":{"add":{"exposure.delay":1},"delay":"翻找器材耽擱後續通報"}}},
+      {"id":"typhoon_outage_act_myth","sourceIds":["outage"],"when":{"always":true},"review":{"why":"停電查詢不屬消防緊急救助。","tip":"把一般停電交給台電1911，不用119查復電。","eligibleWhen":{"always":true},"priority":5,"principleId":"typhoon_outage_act_ok"},"normal":{"narration":"hazard_typhoon_outage_act_myth","effect":{"add":{"exposure.delay":1},"delay":"撥錯專線增加停電轉報時間"}}},
+      {"id":"typhoon_outage_act_risk","sourceIds":["outage"],"when":{"always":true},"review":{"why":"到門口詢問無法確認電力維修登記，也多接觸風雨。","tip":"留在安全室內，直接聯繫電力服務。","eligibleWhen":{"always":true},"priority":5,"principleId":"typhoon_outage_act_ok"},"normal":{"narration":"hazard_typhoon_outage_act_risk","effect":{"add":{"exposure.delay":1},"delay":"外出詢問耽擱停電報修"}}},
+      {"id":"typhoon_help_act_myth","sourceIds":["urgent"],"when":{"always":true},"review":{"why":"電力服務不能替代有人不適時的緊急救援。","tip":"有人疑似中毒或需要救援，直接撥119。","eligibleWhen":{"always":true},"priority":6,"principleId":"typhoon_help_act_ok"},"normal":{"narration":"hazard_typhoon_help_act_myth","effect":{"add":{"exposure.delay":1},"delay":"先詢問復電耽擱緊急通報"}}},
+      {"id":"typhoon_help_act_risk","sourceIds":["co"],"when":{"always":true},"review":{"why":"未確認安全就進入可能讓更多人暴露。","tip":"先留在安全通風處通報，依救援指示行動。","eligibleWhen":{"always":true},"priority":6,"principleId":"typhoon_help_act_ok"},"normal":{"narration":"hazard_typhoon_help_act_risk","effect":{"add":{"exposure.harm":2,"exposure.delay":1},"injuries":[{"id":"typhoon_exposure","label":"吸入廢氣後頭暈","severity":"MODERATE","subject":"player"}],"delay":"進入不安全空間後需撤回"}}},
+      {"id":"typhoon_fridge_act_myth","sourceIds":["outage"],"when":{"always":true},"review":{"why":"頻繁打開冰箱會讓冷度更快流失。","tip":"避免為了找冷飲打開冰箱，改用室溫飲水。","eligibleWhen":{"always":true},"priority":7,"principleId":"typhoon_fridge_act_ok"},"normal":{"narration":"hazard_typhoon_fridge_act_myth","effect":{"add":{"exposure.delay":1},"delay":"頻繁查看冰箱導致食材需重新清點"}}},
+      {"id":"typhoon_fridge_act_risk","sourceIds":["outage"],"when":{"always":true},"review":{"why":"氣味和少量品嚐無法證明回溫冷藏食品安全。","tip":"回到常溫或疑似變質的冷藏品不要食用。","eligibleWhen":{"always":true},"priority":7,"principleId":"typhoon_fridge_act_ok"},"normal":{"narration":"hazard_typhoon_fridge_act_risk","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"injuries":[{"id":"typhoon_food","label":"飲用回溫乳品後腹部不適","severity":"MILD","subject":"player"}]}}},
+      {"id":"typhoon_wire_act_myth","sourceIds":["outage"],"when":{"always":true},"review":{"why":"靠近線路確認外觀會增加暴露。","tip":"不用近距離拍照，從安全處回報位置。","eligibleWhen":{"always":true},"priority":8,"principleId":"typhoon_wire_act_ok"},"normal":{"narration":"hazard_typhoon_wire_act_myth","effect":{"add":{"exposure.delay":1},"delay":"外出確認電線耽擱正確通報"}}},
+      {"id":"typhoon_wire_act_risk","sourceIds":["outage"],"when":{"always":true},"review":{"why":"電線外觀不能證明已經斷電。","tip":"不靠近掉落電線，從安全處通報台電。","eligibleWhen":{"always":true},"priority":8,"principleId":"typhoon_wire_act_ok"},"normal":{"narration":"hazard_typhoon_wire_act_risk","effect":{}},"fatalEndingId":"typhoon_wire_act_risk_ending"}
+    ],
+    "channels": []
+  },
+  "beats": [
+    {"id":"scene_typhoon_plugs","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_typhoon_plugs","effect":{}},"decisionId":"typhoon_plugs"},
+    {"id":"scene_typhoon_fumes","at":2,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_typhoon_fumes","effect":{}},"decisionId":"typhoon_fumes","after":{"beat":"scene_typhoon_plugs","turns":1}},
+    {"id":"scene_typhoon_outage","at":3,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_typhoon_outage","effect":{}},"decisionId":"typhoon_outage","after":{"beat":"scene_typhoon_fumes","turns":1}},
+    {"id":"scene_typhoon_help","at":4,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_typhoon_help","effect":{}},"decisionId":"typhoon_help","after":{"beat":"scene_typhoon_outage","turns":1}},
+    {"id":"scene_typhoon_fridge","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_typhoon_fridge","effect":{}},"decisionId":"typhoon_fridge","after":{"beat":"scene_typhoon_help","turns":1}},
+    {"id":"scene_typhoon_wire","at":6,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_typhoon_wire","effect":{}},"decisionId":"typhoon_wire","after":{"beat":"scene_typhoon_fridge","turns":1}}
+  ],
+  "decisions": [
+    {"id":"typhoon_light","prompt":"室內突然變暗，手電筒和蠟燭就在桌上。我要怎麼在室內照明？","when":{"clock":{"eq":0}},"options":[{"id":"typhoon_light_ok","text":"我開手電筒，先照亮眼前的通道。","class":"correct","safety":"safe","sourceIds":["outage"],"steps":[{"kind":"principle","id":"typhoon_light_act_ok"}],"cues":[],"effect":{},"narration":"option_typhoon_light_ok"},{"id":"typhoon_light_myth","text":"我點一支蠟燭照走廊，再回房找東西。","class":"misconception","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_light_act_myth"}],"cues":[],"effect":{},"narration":"option_typhoon_light_myth"},{"id":"typhoon_light_risk","text":"我摸黑走進走廊，找應急燈。","class":"risk_or_delay","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_light_act_risk"}],"cues":[],"effect":{},"narration":"option_typhoon_light_risk"}]},
+    {"id":"typhoon_plugs","prompt":"乾燥室內的電暖器和吹風機仍插著。我和小晴要離開這個房間，應怎麼處理？","when":{"clock":{"eq":1}},"options":[{"id":"typhoon_plugs_ok","text":"我拔下乾燥處的電暖器與吹風機插頭。","class":"correct","safety":"safe","sourceIds":["outage"],"steps":[{"kind":"principle","id":"typhoon_plugs_act_ok"}],"cues":[],"effect":{},"narration":"option_typhoon_plugs_ok"},{"id":"typhoon_plugs_myth","text":"我關掉電暖器，整理電線後把它移到牆邊。","class":"misconception","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_plugs_act_myth"}],"cues":[],"effect":{},"narration":"option_typhoon_plugs_myth"},{"id":"typhoon_plugs_risk","text":"我留著暖器加熱檔，用外套蓋住。","class":"risk_or_delay","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_plugs_act_risk"}],"cues":[],"effect":{},"narration":"option_typhoon_plugs_risk"}]},
+    {"id":"typhoon_fumes","prompt":"屋外風雨強，門窗關著。小晴看見收納間有發電機和卡式爐，問晚餐怎麼辦？","when":{"clock":{"eq":2}},"options":[{"id":"typhoon_fumes_ok","text":"我選常溫備糧，和小晴待在安全處。","class":"correct","safety":"safe","sourceIds":["co"],"steps":[{"kind":"principle","id":"typhoon_fumes_act_ok"}],"cues":[],"effect":{},"narration":"option_typhoon_fumes_ok"},{"id":"typhoon_fumes_myth","text":"我在客廳用卡式爐煮一點熱食。","class":"misconception","safety":"unsafe","sourceIds":["co"],"steps":[{"kind":"hazard","id":"typhoon_fumes_act_myth"}],"cues":[],"effect":{},"narration":"option_typhoon_fumes_myth"},{"id":"typhoon_fumes_risk","text":"我把發電機放在窗邊，啟動來接電扇。","class":"risk_or_delay","safety":"unsafe","sourceIds":["co"],"steps":[{"kind":"hazard","id":"typhoon_fumes_act_risk"}],"cues":[],"effect":{},"narration":"option_typhoon_fumes_risk"},{"id":"typhoon_fumes_other","text":"我叫小晴等一下，去翻櫃子再找晚餐。","class":"risk_or_delay","safety":"unsafe","sourceIds":["co"],"steps":[{"kind":"hazard","id":"typhoon_fumes_act_other"}],"cues":[],"effect":{},"narration":"option_typhoon_fumes_other"}]},
+    {"id":"typhoon_outage","prompt":"透過窗看見附近街廓也停電，眼前沒有火煙或傷者。要回報給誰？","when":{"clock":{"eq":3}},"options":[{"id":"typhoon_outage_ok","text":"我撥1911通報區域停電和地址。","class":"correct","safety":"safe","sourceIds":["outage"],"steps":[{"kind":"principle","id":"typhoon_outage_act_ok"}],"cues":[],"effect":{},"narration":"option_typhoon_outage_ok"},{"id":"typhoon_outage_myth","text":"我打119查復電，再請他轉報。","class":"misconception","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_outage_act_myth"}],"cues":[],"effect":{},"narration":"option_typhoon_outage_myth"},{"id":"typhoon_outage_risk","text":"我到大門口察看，再問鄰居是否有人報修。","class":"risk_or_delay","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_outage_act_risk"}],"cues":[],"effect":{},"narration":"option_typhoon_outage_risk"}]},
+    {"id":"typhoon_help","prompt":"隔戶有人說頭暈、站不穩，屋內正在用燃料設備。我在安全通風的樓梯口，要怎麼求助？","when":{"clock":{"eq":4}},"options":[{"id":"typhoon_help_ok","text":"我在安全處撥119，回報位置與不適。","class":"correct","safety":"safe","sourceIds":["urgent"],"steps":[{"kind":"principle","id":"typhoon_help_act_ok"}],"cues":[],"effect":{},"narration":"option_typhoon_help_ok"},{"id":"typhoon_help_myth","text":"我先打1911問停電狀況，再找人求助。","class":"misconception","safety":"unsafe","sourceIds":["urgent"],"steps":[{"kind":"hazard","id":"typhoon_help_act_myth"}],"cues":[],"effect":{},"narration":"option_typhoon_help_myth"},{"id":"typhoon_help_risk","text":"我進隔戶查看，再把住戶帶出來。","class":"risk_or_delay","safety":"unsafe","sourceIds":["co"],"steps":[{"kind":"hazard","id":"typhoon_help_act_risk"}],"cues":[],"effect":{},"narration":"option_typhoon_help_risk"}]},
+    {"id":"typhoon_fridge","prompt":"我回到安全處，冰箱已停電一段時間，桌上有常溫備糧。一盒牛奶摸起來已回到室溫。我要怎麼安排食物？","when":{"clock":{"eq":5}},"options":[{"id":"typhoon_fridge_ok","text":"我關好冰箱，改吃常溫保存的備糧。","class":"correct","safety":"safe","sourceIds":["outage"],"steps":[{"kind":"principle","id":"typhoon_fridge_act_ok"}],"cues":[],"effect":{},"narration":"option_typhoon_fridge_ok"},{"id":"typhoon_fridge_myth","text":"我打開冰箱逐層查看，先挑冷飲補充水分。","class":"misconception","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_fridge_act_myth"}],"cues":[],"effect":{},"narration":"option_typhoon_fridge_myth"},{"id":"typhoon_fridge_risk","text":"我聞聞回溫牛奶，喝幾口確認味道。","class":"risk_or_delay","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_fridge_act_risk"}],"cues":[],"effect":{},"narration":"option_typhoon_fridge_risk"}]},
+    {"id":"typhoon_wire","prompt":"從室內看到巷口一條電線掉下來，旁邊仍有風雨，暫時沒人靠近。最後我要怎麼處理？","when":{"clock":{"eq":6}},"options":[{"id":"typhoon_wire_ok","text":"我留在安全處打1911，報電線位置。","class":"correct","safety":"safe","sourceIds":["outage"],"steps":[{"kind":"principle","id":"typhoon_wire_act_ok"}],"cues":[],"effect":{},"narration":"option_typhoon_wire_ok"},{"id":"typhoon_wire_myth","text":"我到門外拍照，傳給鄰居確認是哪一條。","class":"misconception","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_wire_act_myth"}],"cues":[],"effect":{},"narration":"option_typhoon_wire_myth"},{"id":"typhoon_wire_risk","text":"我用手把路上的電線移開，讓人好走。","class":"risk_or_delay","safety":"unsafe","sourceIds":["outage"],"steps":[{"kind":"hazard","id":"typhoon_wire_act_risk"}],"cues":[],"effect":{},"narration":"option_typhoon_wire_risk"}]}
+  ],
+  "consequences": [
+    {"id":"escalating_delay","kind":"reckless","decisionId":null,"when":{"compare":{"left":{"ref":"exposure.delay"},"op":"gt","right":{"ref":"counter.escalating_delay"}}},"tiers":[{"fromCount":1,"result":{"narration":"delay_tier_1","effect":{}}},{"fromCount":2,"result":{"narration":"delay_tier_2","effect":{}}},{"fromCount":3,"result":{"narration":"delay_tier_3","effect":{}}}],"sourceIds":["outage"],"review":{"why":"錯過立即可處理的事，會增加後續照明和通報困難。","tip":"先處理現場安全及正確通報，保留通行空間。","eligibleWhen":{"always":true},"priority":5}}
+  ],
+  "phaseRules": [],
+  "endings": [
+    {"id":"typhoon_fumes_act_myth_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_typhoon_fumes_act_myth_ending","labels":[{"when":{"always":true},"text":"疑似一氧化碳中毒"}],"summaries":[{"when":{"always":true},"text":"在密閉租屋處開了燃料爐具。"}]},
+    {"id":"typhoon_fumes_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_typhoon_fumes_act_risk_ending","labels":[{"when":{"always":true},"text":"室內啟動發電機，需救援"}],"summaries":[{"when":{"always":true},"text":"在密閉處使用燃油發電機。"}]},
+    {"id":"typhoon_wire_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_typhoon_wire_act_risk_ending","labels":[{"when":{"always":true},"text":"接觸落線，需緊急救援"}],"summaries":[{"when":{"always":true},"text":"靠近並碰觸可能帶電的路面電線。"}]},
+    {"id":"safe","type":"SAFE_RESCUE","phase":"afterBeats","when":{"all":[{"clock":{"gte":7}},{"compare":{"left":{"ref":"exposure.delay"},"op":"eq","right":0}}]},"injury":"fromThresholds","narration":"end_safe","labels":[{"when":{"always":true},"text":"安全應變並交接"}],"summaries":[{"when":{"always":true},"text":"照明、用電與報案分流都已處理。"}]},
+    {"id":"delayed","type":"DELAYED_RESCUE","phase":"afterBeats","when":{"clock":{"gte":7}},"injury":"fromThresholds","narration":"end_delayed","labels":[{"when":{"always":true},"text":"延誤後完成應變交接"}],"summaries":[{"when":{"always":true},"text":"重複核對位置與通報增加等待。"}]}
+  ],
+  "injury": {
+    "score": {
+      "ref": "exposure.harm"
+    },
+    "noneMax": 0,
+    "mildMax": 1,
+    "moderateMax": 3
+  },
+  "review": {
+    "reflectionPrompt": "下次如果在宿舍遇到停電，我要如何確認該找台電還是消防？"
+  },
+  "presentation": {
+    "narration": {
+      "opening": [
+        "晚上我和小晴在租屋處，窗外颱風風雨很大。桌燈忽然熄滅，電暖器也停了。桌上有手電筒，旁邊還放著一支蠟燭。",
+        "我住的地方突然一片黑，小晴叫了我一聲。雨敲著窗戶，手電筒和蠟燭都在桌上。"
+      ],
+      "principle_typhoon_light_act_ok": [
+        "手電筒照亮地板，小晴看得見腳下。",
+        "白光落在走道上，我和小晴都能走動。"
+      ],
+      "option_typhoon_light_ok": [
+        "手電筒照亮地板，小晴看得見腳下。",
+        "白光落在走道上，我和小晴都能走動。"
+      ],
+      "hazard_typhoon_light_act_myth": [
+        "蠟燭留在走道，小晴挪它時手指被燙到。",
+        "我回房後，小晴碰到熱燭台，立刻縮手。"
+      ],
+      "option_typhoon_light_myth": [
+        "蠟燭留在走道，小晴挪它時手指被燙到。",
+        "我回房後，小晴碰到熱燭台，立刻縮手。"
+      ],
+      "hazard_typhoon_light_act_risk": [
+        "我碰到走道邊的物品，膝蓋撞了一下。",
+        "走廊比想像暗，我的膝蓋碰到櫃角。"
+      ],
+      "option_typhoon_light_risk": [
+        "我碰到走道邊的物品，膝蓋撞了一下。",
+        "走廊比想像暗，我的膝蓋碰到櫃角。"
+      ],
+      "look_typhoon_light": [
+        "晚上我和小晴在租屋處，窗外颱風風雨很大。桌燈忽然熄滅，電暖器也停了。桌上有手電筒，旁邊還放著一支蠟燭。",
+        "我住的地方突然一片黑，小晴叫了我一聲。雨敲著窗戶，手電筒和蠟燭都在桌上。"
+      ],
+      "ask_typhoon_light": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "principle_typhoon_plugs_act_ok": [
+        "我拔下兩個插頭，復電時電器不會自動啟動。",
+        "我在乾燥處拔掉兩台發熱電器的插頭。"
+      ],
+      "option_typhoon_plugs_ok": [
+        "我拔下兩個插頭，復電時電器不會自動啟動。",
+        "我在乾燥處拔掉兩台發熱電器的插頭。"
+      ],
+      "hazard_typhoon_plugs_act_myth": [
+        "我移好電暖器，插頭仍接著，稍後還得返回確認。",
+        "電線整理過了，電暖器仍接在電源上。"
+      ],
+      "option_typhoon_plugs_myth": [
+        "我移好電暖器，插頭仍接著，稍後還得返回確認。",
+        "電線整理過了，電暖器仍接在電源上。"
+      ],
+      "hazard_typhoon_plugs_act_risk": [
+        "我留著加熱設定，蓋上的衣物擋住機身。",
+        "小晴看見外套留在暖器上，回頭等我處理。"
+      ],
+      "option_typhoon_plugs_risk": [
+        "我留著加熱設定，蓋上的衣物擋住機身。",
+        "小晴看見外套留在暖器上，回頭等我處理。"
+      ],
+      "scene_typhoon_plugs": [
+        "兩台電器都停了，插頭仍接在乾燥的插座上。",
+        "我看得到電暖器插頭，牆壁和地板都乾燥。"
+      ],
+      "look_typhoon_plugs": [
+        "兩台電器都停了，插頭仍接在乾燥的插座上。",
+        "我看得到電暖器插頭，牆壁和地板都乾燥。"
+      ],
+      "ask_typhoon_plugs": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "principle_typhoon_fumes_act_ok": [
+        "我把常溫備糧拿到桌上，屋內沒有新增燃燒來源。",
+        "我和小晴留在室內避風，吃準備好的乾糧。"
+      ],
+      "option_typhoon_fumes_ok": [
+        "我把常溫備糧拿到桌上，屋內沒有新增燃燒來源。",
+        "我和小晴留在室內避風，吃準備好的乾糧。"
+      ],
+      "hazard_typhoon_fumes_act_myth": [
+        "密閉房間裡，小晴開始頭暈，我也覺得無力。",
+        "室內有人感到頭痛和明顯不適。"
+      ],
+      "end_typhoon_fumes_act_myth_ending": [
+        "頭暈使我難以移動，這一場需要緊急救援。",
+        "我和小晴都出現不適，應變中斷。"
+      ],
+      "option_typhoon_fumes_myth": [
+        "密閉房間裡，小晴開始頭暈，我也覺得無力。",
+        "室內有人感到頭痛和明顯不適。"
+      ],
+      "hazard_typhoon_fumes_act_risk": [
+        "我開始頭暈，小晴也說自己走不穩。",
+        "房間的通風不足，我和小晴出現不適。"
+      ],
+      "end_typhoon_fumes_act_risk_ending": [
+        "我和小晴無法繼續自行應變。",
+        "我站不穩，這一場停在需要救援的狀態。"
+      ],
+      "option_typhoon_fumes_risk": [
+        "我開始頭暈，小晴也說自己走不穩。",
+        "房間的通風不足，我和小晴出現不適。"
+      ],
+      "hazard_typhoon_fumes_act_other": [
+        "我留在昏暗的收納間翻找，耽擱了留意屋外狀況。",
+        "我還在找需加熱的東西，備糧就在客廳。"
+      ],
+      "option_typhoon_fumes_other": [
+        "我留在昏暗的收納間翻找，耽擱了留意屋外狀況。",
+        "我還在找需加熱的東西，備糧就在客廳。"
+      ],
+      "scene_typhoon_fumes": [
+        "窗緊閉，屋外風把雨吹進窗框。我和小晴站在客廳。",
+        "房間空氣悶，小晴盯著燃料設備，又看了看桌上的乾糧。"
+      ],
+      "look_typhoon_fumes": [
+        "窗緊閉，屋外風把雨吹進窗框。我和小晴站在客廳。",
+        "房間空氣悶，小晴盯著燃料設備，又看了看桌上的乾糧。"
+      ],
+      "ask_typhoon_fumes": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "principle_typhoon_outage_act_ok": [
+        "台電客服記下停電地址。",
+        "我回報停電範圍，客服確認了位置。"
+      ],
+      "option_typhoon_outage_ok": [
+        "台電客服記下停電地址。",
+        "我回報停電範圍，客服確認了位置。"
+      ],
+      "hazard_typhoon_outage_act_myth": [
+        "119無法提供台電的搶修排程，還需另行通報。",
+        "我得再聯繫台電，電力報修尚未完成。"
+      ],
+      "option_typhoon_outage_myth": [
+        "119無法提供台電的搶修排程，還需另行通報。",
+        "我得再聯繫台電，電力報修尚未完成。"
+      ],
+      "hazard_typhoon_outage_act_risk": [
+        "我在門口問了一圈，仍沒有確認是否有人通報。",
+        "我離開避風的位置，短時間內沒得到答覆。"
+      ],
+      "option_typhoon_outage_risk": [
+        "我在門口問了一圈，仍沒有確認是否有人通報。",
+        "我離開避風的位置，短時間內沒得到答覆。"
+      ],
+      "scene_typhoon_outage": [
+        "整段街燈都暗了，手機還能通話。",
+        "我從室內看到鄰近住戶的燈都熄滅。"
+      ],
+      "look_typhoon_outage": [
+        "整段街燈都暗了，手機還能通話。",
+        "我從室內看到鄰近住戶的燈都熄滅。"
+      ],
+      "ask_typhoon_outage": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "principle_typhoon_help_act_ok": [
+        "消防接線員接到訊息，問清楚樓層和目前情況。",
+        "我從通風的安全點打電話，救援開始安排。"
+      ],
+      "option_typhoon_help_ok": [
+        "消防接線員接到訊息，問清楚樓層和目前情況。",
+        "我從通風的安全點打電話，救援開始安排。"
+      ],
+      "hazard_typhoon_help_act_myth": [
+        "台電能處理停電，緊急救援還未收到位置。",
+        "通報仍在電力客服，傷者資訊尚未到消防。"
+      ],
+      "option_typhoon_help_myth": [
+        "台電能處理停電，緊急救援還未收到位置。",
+        "通報仍在電力客服，傷者資訊尚未到消防。"
+      ],
+      "hazard_typhoon_help_act_risk": [
+        "我走進通風不良處後也開始不舒服，只得退出。",
+        "我進到裡面，頭部不適，靠回通風處。"
+      ],
+      "option_typhoon_help_risk": [
+        "我走進通風不良處後也開始不舒服，只得退出。",
+        "我進到裡面，頭部不適，靠回通風處。"
+      ],
+      "scene_typhoon_help": [
+        "我聽見小晴說，隔戶有住戶需要協助。我站在通風位置。",
+        "走廊另一邊有人報告不適，裡面還聽得到設備聲。"
+      ],
+      "look_typhoon_help": [
+        "我聽見小晴說，隔戶有住戶需要協助。我站在通風位置。",
+        "走廊另一邊有人報告不適，裡面還聽得到設備聲。"
+      ],
+      "ask_typhoon_help": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "principle_typhoon_fridge_act_ok": [
+        "冰箱保持關著，我們改吃常溫備糧。",
+        "小晴把備糧拿到桌上，冰箱門沒有再打開。"
+      ],
+      "option_typhoon_fridge_ok": [
+        "冰箱保持關著，我們改吃常溫備糧。",
+        "小晴把備糧拿到桌上，冰箱門沒有再打開。"
+      ],
+      "hazard_typhoon_fridge_act_myth": [
+        "冰箱門又開了一段時間，冷空氣繼續散掉。",
+        "我在暗處翻找飲料，原有冷度流失得更快。"
+      ],
+      "option_typhoon_fridge_myth": [
+        "冰箱門又開了一段時間，冷空氣繼續散掉。",
+        "我在暗處翻找飲料，原有冷度流失得更快。"
+      ],
+      "hazard_typhoon_fridge_act_risk": [
+        "我喝了已回溫的牛奶，稍後肚子不舒服。",
+        "我喝完回溫牛奶，後來開始覺得腹部不適。"
+      ],
+      "option_typhoon_fridge_risk": [
+        "我喝了已回溫的牛奶，稍後肚子不舒服。",
+        "我喝完回溫牛奶，後來開始覺得腹部不適。"
+      ],
+      "scene_typhoon_fridge": [
+        "冰箱門關著，桌上有備糧和已回到室溫的牛奶。",
+        "小晴看著牛奶，又指了指不需冷藏的食物。"
+      ],
+      "look_typhoon_fridge": [
+        "冰箱門關著，桌上有備糧和已回到室溫的牛奶。",
+        "小晴看著牛奶，又指了指不需冷藏的食物。"
+      ],
+      "ask_typhoon_fridge": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "principle_typhoon_wire_act_ok": [
+        "台電記下電線位置，我與小晴都留在室內。",
+        "客服記下巷口地址，安排人員處理。"
+      ],
+      "option_typhoon_wire_ok": [
+        "台電記下電線位置，我與小晴都留在室內。",
+        "客服記下巷口地址，安排人員處理。"
+      ],
+      "hazard_typhoon_wire_act_myth": [
+        "我靠近風雨圈，還要先退回安全處。",
+        "我下去拍照耗了時間，線路位置仍待通報。"
+      ],
+      "option_typhoon_wire_myth": [
+        "我靠近風雨圈，還要先退回安全處。",
+        "我下去拍照耗了時間，線路位置仍待通報。"
+      ],
+      "hazard_typhoon_wire_act_risk": [
+        "我碰到線路後失去平衡，需要緊急協助。",
+        "我接觸掉落電線，無法自行離開。"
+      ],
+      "end_typhoon_wire_act_risk_ending": [
+        "應變在接觸電線後中止。",
+        "我無法自行離開，需要專業救援。"
+      ],
+      "option_typhoon_wire_risk": [
+        "我碰到線路後失去平衡，需要緊急協助。",
+        "我接觸掉落電線，無法自行離開。"
+      ],
+      "scene_typhoon_wire": [
+        "我隔著窗戶看見巷口垂下電線。",
+        "風把掉落電線吹向路邊，我在屋內看得見。"
+      ],
+      "look_typhoon_wire": [
+        "我隔著窗戶看見巷口垂下電線。",
+        "風把掉落電線吹向路邊，我在屋內看得見。"
+      ],
+      "ask_typhoon_wire": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "look_default": [
+        "晚上我和小晴在租屋處，窗外颱風風雨很大。桌燈忽然熄滅，電暖器也停了。桌上有手電筒，旁邊還放著一支蠟燭。",
+        "我住的地方突然一片黑，小晴叫了我一聲。雨敲著窗戶，手電筒和蠟燭都在桌上。"
+      ],
+      "ask_default": [
+        "小晴說：「走廊也黑了，我們留在屋裡先看一下。」",
+        "小晴伸手找桌邊，她說樓梯間的燈也熄了。"
+      ],
+      "idle": [
+        "我聽見雨拍著玻璃，室內還是暗的。",
+        "窗外風聲持續，走廊的燈仍未亮。"
+      ],
+      "delay_tier_1": [
+        "光線一暗，手邊事情變得比較難處理。",
+        "風雨還沒變小，屋內動線仍得摸索。"
+      ],
+      "delay_tier_2": [
+        "走廊的電力還沒恢復，隔戶也開始找人確認。",
+        "停電持續，屋裡和走廊都沒有固定照明。"
+      ],
+      "delay_tier_3": [
+        "等待愈久，住戶的通報愈難核對，站在門邊的人愈多。",
+        "附近住戶需要互相讓路，以便等待工作人員接應。"
+      ],
+      "end_safe": [
+        "我留在安全處，小晴和我一起向到場人員交代情況。",
+        "緊急事件交給救援人員，台電接手檢查電線。"
+      ],
+      "end_delayed": [
+        "工作人員花了一些時間重新核對，最後接手屋外的狀況。",
+        "我答完問題才完成交接，屋內還有人需要照應。"
+      ]
+    },
+    "look": [
+      {"when":{"clock":{"eq":0}},"narration":"look_typhoon_light"},
+      {"when":{"clock":{"eq":1}},"narration":"look_typhoon_plugs"},
+      {"when":{"clock":{"eq":2}},"narration":"look_typhoon_fumes"},
+      {"when":{"clock":{"eq":3}},"narration":"look_typhoon_outage"},
+      {"when":{"clock":{"eq":4}},"narration":"look_typhoon_help"},
+      {"when":{"clock":{"eq":5}},"narration":"look_typhoon_fridge"},
+      {"when":{"clock":{"eq":6}},"narration":"look_typhoon_wire"},
+      {"when":{"always":true},"narration":"look_default"}
+    ],
+    "askCompanion": [
+      {"when":{"clock":{"eq":0}},"narration":"ask_typhoon_light"},
+      {"when":{"clock":{"eq":1}},"narration":"ask_typhoon_plugs"},
+      {"when":{"clock":{"eq":2}},"narration":"ask_typhoon_fumes"},
+      {"when":{"clock":{"eq":3}},"narration":"ask_typhoon_outage"},
+      {"when":{"clock":{"eq":4}},"narration":"ask_typhoon_help"},
+      {"when":{"clock":{"eq":5}},"narration":"ask_typhoon_fridge"},
+      {"when":{"clock":{"eq":6}},"narration":"ask_typhoon_wire"},
+      {"when":{"always":true},"narration":"ask_default"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": []
+  },
+  "assets": []
+}

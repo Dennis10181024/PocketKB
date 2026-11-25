@@ -545,6 +545,172 @@
           }
         }
       ]
+    },
+    {
+      "file": "typhoon-outage-draft.json",
+      "packSha256": "19671e3eecbfc20ec71907c0dda0b7b955116bcaf5e126eef1fd5c4eddb29fe2",
+      "cases": [
+        {
+          "id": "all-correct",
+          "choices": [
+            "typhoon_light_ok",
+            "typhoon_plugs_ok",
+            "typhoon_fumes_ok",
+            "typhoon_outage_ok",
+            "typhoon_help_ok",
+            "typhoon_fridge_ok",
+            "typhoon_wire_ok"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "SAFE_RESCUE",
+            "injury": "NONE",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "typhoon_light_myth",
+            "typhoon_plugs_myth",
+            "typhoon_fumes_other",
+            "typhoon_outage_myth",
+            "typhoon_help_myth",
+            "typhoon_fridge_myth",
+            "typhoon_wire_myth"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "DELAYED_RESCUE",
+            "injury": "MILD",
+            "exposure": {
+              "harm": 1,
+              "delay": 7
+            }
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "typhoon_light_ok",
+            "typhoon_plugs_ok",
+            "typhoon_fumes_myth"
+          ],
+          "expected": {
+            "clock": 2,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "fatal-typhoon_fumes_risk",
+          "choices": [
+            "typhoon_light_ok",
+            "typhoon_plugs_ok",
+            "typhoon_fumes_risk"
+          ],
+          "expected": {
+            "clock": 2,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "fatal-typhoon_wire_risk",
+          "choices": [
+            "typhoon_light_ok",
+            "typhoon_plugs_ok",
+            "typhoon_fumes_ok",
+            "typhoon_outage_ok",
+            "typhoon_help_ok",
+            "typhoon_fridge_ok",
+            "typhoon_wire_risk"
+          ],
+          "expected": {
+            "clock": 6,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "typhoon_light_ok",
+            "typhoon_plugs_ok",
+            "typhoon_fumes_myth"
+          ],
+          "retry": {
+            "decisionId": "typhoon_fumes",
+            "clock": 2,
+            "facts": {}
+          },
+          "resume": [
+            "typhoon_fumes_ok",
+            "typhoon_outage_ok",
+            "typhoon_help_ok",
+            "typhoon_fridge_ok",
+            "typhoon_wire_ok"
+          ],
+          "sameAs": "all-correct"
+        },
+        {
+          "id": "line-correct-split",
+          "choices": [
+            "typhoon_light_ok",
+            "typhoon_plugs_ok",
+            "typhoon_fumes_ok",
+            "typhoon_outage_ok",
+            "typhoon_help_ok"
+          ],
+          "checkpoint": {
+            "clock": 5,
+            "facts": {
+              "reportedOutage": true,
+              "reportedEmergency": true,
+              "reportedWire": false
+            }
+          }
+        },
+        {
+          "id": "line-mixed-up",
+          "choices": [
+            "typhoon_light_ok",
+            "typhoon_plugs_ok",
+            "typhoon_fumes_ok",
+            "typhoon_outage_myth",
+            "typhoon_help_myth"
+          ],
+          "checkpoint": {
+            "clock": 5,
+            "facts": {
+              "reportedOutage": false,
+              "reportedEmergency": false
+            },
+            "exposure": {
+              "harm": 0,
+              "delay": 2
+            },
+            "hazards": [
+              "typhoon_help_act_myth"
+            ]
+          }
+        }
+      ]
     }
   ]
 }
