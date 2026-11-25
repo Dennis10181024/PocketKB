@@ -1,0 +1,524 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "drill_fire_dorm",
+    "title": "宿舍火災",
+    "version": "1.0.0",
+    "hazard": "fire",
+    "skeletonVersion": "director-4.2b",
+    "sources": [
+      {"id":"safety","title":"臺北市消防局：火災發生時之逃生狀況及方法（電梯、濃煙與跳樓禁忌）","url":"https://www.119.gov.taipei/News_Content.aspx?n=6EEFD6ACA51B8E33&s=6FB1F286840AC217&sms=87415A8B9CE81B16"},
+      {"id":"escape","title":"臺北市消防局防災科學教育館：逃生情境模擬","url":"https://fsm.119.gov.taipei/w/fsm119/Fire_21103023325036374"},
+      {"id":"report","title":"臺北市消防局防災科學教育館：報案時機","url":"https://fsm.119.gov.taipei/w/fsm119/Fire_21103023504653530"},
+      {"id":"nfa","title":"消防署：火災不可躲廁所，受困請關門、靠窗打119求救","url":"https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113"},
+      {"id":"window-guide","title":"火場受困與開窗條件","url":"https://www.ttfd.gov.tw/userUpload/176/208/a1.pdf"},
+      {"id":"wet-towel","title":"濕毛巾無法過濾火場毒氣","url":"https://www.epb.taichung.gov.tw/3178451/post"}
+    ]
+  },
+  "initial": {
+    "facts": {
+      "doorClosed": false,
+      "sealed": false,
+      "called": false,
+      "address": false,
+      "room": false,
+      "headcount": false,
+      "condition": false,
+      "npcStopped": false,
+      "npcVoiced": false,
+      "npcCalmed": false,
+      "npcSmoke": false,
+      "windowChecked": false,
+      "signaled": false,
+      "keepContact": false,
+      "phoneLow": false,
+      "firefightersHere": false,
+      "askedReport": 0,
+      "arrivedAt": null,
+      "locatedAt": null,
+      "signalAt": null,
+      "arriveAt": null,
+      "handedOff": false,
+      "delayed": false,
+      "smokeMild": false,
+      "smokeModerate": false,
+      "smokeSevere": false
+    },
+    "exposure": {
+      "smoke": 0,
+      "heat": 0
+    },
+    "npc": {
+      "roommate": {
+        "name": "小岑",
+        "state": "by_door",
+        "injured": false
+      }
+    },
+    "decisionId": "door",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 13
+  },
+  "catalog": {
+    "principles": [
+      {"id":"barrier","sourceIds":["nfa"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"關門能減慢濃煙進入房間。","tip":"走廊已被濃煙阻斷時，關門隔煙。","eligibleWhen":{"fact":"firefightersHere","eq":false},"priority":10},"normal":{"narration":"principle_barrier","effect":{"set":{"facts.doorClosed":true},"add":{}}}},
+      {"id":"stop_roommate","sourceIds":["safety"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"阻止室友再開門，可維持隔煙。","tip":"室友想打開房門時，提醒門外已有濃煙。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_stop_roommate","effect":{"set":{"facts.npcStopped":true,"npc.roommate.state":"stays_inside"},"add":{}}}},
+      {"id":"reassure","sourceIds":["nfa"],"when":{"fact":"npcVoiced","eq":true},"review":{"why":"給同伴可行任務有助於配合待救。","tip":"承認同伴的焦慮，說明此刻能做的事。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_reassure","effect":{"set":{"facts.npcCalmed":true,"npc.roommate.state":"calmed"},"add":{}}}},
+      {"id":"seal_gap","sourceIds":["nfa"],"when":{"fact":"doorClosed","eq":true},"review":{"why":"塞縫可減少煙從門底滲入。","tip":"先關門，使用手邊可取得的布塞門縫。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_seal_gap","effect":{"set":{"facts.sealed":true},"add":{}}}},
+      {"id":"dial","sourceIds":["report"],"when":{"always":true},"review":{"why":"通報可讓消防單位知道有人受困。","tip":"受困時撥 119 並報出位置。","eligibleWhen":{"always":true},"priority":9},"normal":{"narration":"principle_dial","effect":{"set":{"facts.called":true},"add":{}}}},
+      {"id":"address","sourceIds":["report"],"when":{"fact":"called","eq":true},"review":{"why":"通報地址與棟別能幫助救援安排。","tip":"接通後說清楚地址與棟別。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_address","effect":{"set":{"facts.address":true},"add":{}}}},
+      {"id":"room","sourceIds":["report"],"when":{"fact":"called","eq":true},"review":{"why":"通報樓層與房號能幫助救援安排。","tip":"接通後說清楚樓層與房號。","eligibleWhen":{"always":true},"priority":10},"normal":{"narration":"principle_room","effect":{"set":{"facts.room":true},"add":{}}}},
+      {"id":"headcount","sourceIds":["report"],"when":{"fact":"called","eq":true},"review":{"why":"通報受困人數能幫助救援安排。","tip":"接通後說清楚受困人數。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_headcount","effect":{"set":{"facts.headcount":true},"add":{}}}},
+      {"id":"condition","sourceIds":["report"],"when":{"fact":"called","eq":true},"review":{"why":"通報現場煙況能幫助救援安排。","tip":"接通後說清楚現場煙況。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_condition","effect":{"set":{"facts.condition":true},"add":{}}}},
+      {"id":"check_window","sourceIds":["nfa"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"先了解窗外現況可避免貿然接近。","tip":"從室內觀察窗戶附近的狀況。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_check_window","effect":{"set":{"facts.windowChecked":true},"add":{}}}},
+      {"id":"signal","sourceIds":["nfa"],"when":{"fact":"windowChecked","eq":true},"review":{"why":"窗邊示警可讓外界知道房間位置。","tip":"在房內安全窗邊向外示意。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_signal","effect":{"set":{"facts.signaled":true,"facts.signalAt":{"op":"coalesce","args":[{"ref":"facts.signalAt"},{"ref":"turn.nextClock"}]}},"add":{}}}},
+      {"id":"keep_contact","sourceIds":["report"],"when":{"fact":"called","eq":true},"review":{"why":"保留聯絡可讓救援方核對位置。","tip":"依接線員指示安排聯絡。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_keep_contact","effect":{"set":{"facts.keepContact":true},"add":{}}}},
+      {"id":"wait_inside","sourceIds":["nfa"],"when":{"always":true},"review":{"why":"門外走廊濃煙時，留在隔煙空間可減少暴露。","tip":"留在室內，回應消防員的指示。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_wait_inside","effect":{"set":{},"add":{}}}},
+      {"id":"save_power","sourceIds":["report"],"when":{"always":true},"review":{"why":"節省電量可保留聯絡能力。","tip":"節省電量時保留必要通訊。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_save_power","effect":{"set":{},"add":{}}},"bonus":true},
+      {"id":"handoff","sourceIds":["nfa"],"when":{"fact":"firefightersHere","eq":true},"review":{"why":"回應敲門可幫消防員找到受困者。","tip":"直接回應消防員，等候他們指示。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_handoff","effect":{"set":{"facts.handedOff":true},"add":{}}}}
+    ],
+    "hazards": [
+      {"id":"open","sourceIds":["safety"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"開門使煙立刻進入房間。","tip":"門外已有濃煙時，先關門隔煙。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"},"normal":{"narration":"hazard_open","effect":{"set":{"facts.doorClosed":false,"facts.sealed":false,"facts.delayed":true},"add":{"exposure.smoke":2},"delay":"再次開門引入濃煙"}}},
+      {"id":"bathroom","sourceIds":["nfa"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"浴室沒有可用對外窗，不能作此情境的待救位置。","tip":"回到能隔煙並可對外聯絡的位置。","eligibleWhen":{"always":true},"priority":5,"principleId":"signal"},"normal":{"narration":"hazard_bathroom","effect":{"set":{"facts.delayed":true},"add":{"exposure.smoke":1},"delay":"躲入浴室耽誤定位"}}},
+      {"id":"collect","sourceIds":["nfa"],"when":{"always":true},"review":{"why":"收拾物品會耽誤通報、阻煙或回應。","tip":"優先處理當前安全問題。","eligibleWhen":{"always":true},"priority":5,"principleId":"dial"},"normal":{"narration":"hazard_collect","effect":{"set":{"facts.delayed":true},"add":{},"delay":"收拾物品耽誤處理"}},"cases":[{"when":{"fact":"sealed","eq":false},"result":{"narration":"collect_exposed","effect":{"set":{"facts.delayed":true},"add":{"exposure.smoke":1},"delay":"收拾物品耽誤阻煙"}}}]},
+      {"id":"hot_handle","sourceIds":["safety"],"when":{"fact":"firefightersHere","eq":false},"review":{"why":"直接抓發燙的把手可能燙傷。","tip":"避開發燙的把手並先隔煙。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"},"normal":{"narration":"hazard_hot_handle","effect":{"set":{"facts.delayed":true},"add":{"exposure.heat":2},"delay":"熱門把造成燙傷","injuries":[{"id":"hand_burn","subject":"player","label":"掌心接觸燙傷","severity":"MILD"}]}}},
+      {"id":"elevator","sourceIds":["safety"],"when":{"always":true},"review":{"why":"電梯突然停住，門打不開。","tip":"門外濃煙時留在房內隔煙並通報，避免受困電梯。","eligibleWhen":{"always":true},"priority":5,"principleId":"wait_inside"},"normal":{"narration":"hazard_elevator","effect":{"set":{},"add":{}}},"fatalEndingId":"elevator_fatal"},
+      {"id":"jump","sourceIds":["safety"],"when":{"always":true},"review":{"why":"我翻過窗台落到下方平台，無法繼續行動。","tip":"從室內靠窗示意並報位置，避免墜落。","eligibleWhen":{"always":true},"priority":5,"principleId":"wait_inside"},"normal":{"narration":"hazard_jump","effect":{"set":{},"add":{}}},"fatalEndingId":"jump_fatal"},
+      {"id":"climb_window","sourceIds":["safety"],"when":{"always":true},"review":{"why":"我沿外牆滑落，不能回到房間。","tip":"留在室內窗邊示意，等待救援。","eligibleWhen":{"always":true},"priority":5,"principleId":"wait_inside"},"normal":{"narration":"hazard_climb_window","effect":{"set":{},"add":{}}},"fatalEndingId":"climb_window_fatal"},
+      {"id":"smoke","sourceIds":["safety"],"when":{"always":true},"review":{"why":"我走進濃煙，找不到原來的房門。","tip":"已知走廊有濃煙時關門阻煙並通報。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"},"normal":{"narration":"hazard_smoke","effect":{"set":{},"add":{}}},"fatalEndingId":"smoke_fatal"}
+    ],
+    "channels": [
+      {"id":"call_119","sourceIds":["report"],"when":{"always":true},"review":{"why":"通報讓消防單位知道受困位置。","tip":"撥 119 並回報地址。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"channel_call_119","effect":{"set":{"facts.called":true},"credit":["dial"]}}}
+    ]
+  },
+  "beats": [
+    {"id":"npc_fear","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"npc_fear","effect":{"set":{"facts.npcVoiced":true},"add":{}}}},
+    {"id":"smoke_in","at":1,"when":{"fact":"doorClosed","eq":false},"repeat":true,"normal":{"narration":"smoke_in","effect":{"set":{},"add":{"exposure.smoke":1}}}},
+    {"id":"seep","at":3,"when":{"fact":"doorClosed","eq":true},"repeat":false,"normal":{"narration":"seep","effect":{}},"prevented":{"id":"seep_mild","when":{"fact":"sealed","eq":true},"result":{"narration":"seep_mild","effect":{}}}},
+    {"id":"battery","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"battery","effect":{"set":{"facts.phoneLow":true},"add":{}}}},
+    {"id":"plan_arrival_1","at":0,"when":{"all":[{"fact":"firefightersHere","eq":false},{"compare":{"left":{"ref":"facts.locatedAt"},"op":"ne","right":null}}]},"repeat":true,"normal":{"narration":"plan_arrival_1","effect":{"set":{"facts.arriveAt":{"op":"min","args":[{"op":"coalesce","args":[{"ref":"facts.arriveAt"},{"op":"max","args":[{"op":"add","args":[{"ref":"facts.locatedAt"},2]},7]}]},{"op":"max","args":[{"op":"add","args":[{"ref":"facts.locatedAt"},2]},7]}]}},"add":{}}},"hidden":true},
+    {"id":"plan_arrival_2","at":0,"when":{"all":[{"fact":"firefightersHere","eq":false},{"compare":{"left":{"ref":"clock"},"op":"gte","right":{"op":"add","args":[{"op":"coalesce","args":[{"ref":"facts.signalAt"},99]},3]}}}]},"repeat":true,"normal":{"narration":"plan_arrival_2","effect":{"set":{"facts.arriveAt":{"op":"min","args":[{"op":"coalesce","args":[{"ref":"facts.arriveAt"},{"op":"max","args":[{"ref":"clock"},8]}]},{"op":"max","args":[{"ref":"clock"},8]}]}},"add":{}}},"hidden":true},
+    {"id":"plan_arrival_3","at":0,"when":{"all":[{"fact":"firefightersHere","eq":false},{"all":[{"fact":"called","eq":true},{"clock":{"gte":9}}]}]},"repeat":true,"normal":{"narration":"plan_arrival_3","effect":{"set":{"facts.arriveAt":{"op":"min","args":[{"op":"coalesce","args":[{"ref":"facts.arriveAt"},{"ref":"clock"}]},{"ref":"clock"}]}},"add":{}}},"hidden":true},
+    {"id":"plan_arrival_4","at":0,"when":{"all":[{"fact":"firefightersHere","eq":false},{"clock":{"gte":11}}]},"repeat":true,"normal":{"narration":"plan_arrival_4","effect":{"set":{"facts.arriveAt":{"op":"min","args":[{"op":"coalesce","args":[{"ref":"facts.arriveAt"},{"ref":"clock"}]},{"ref":"clock"}]}},"add":{}}},"hidden":true},
+    {"id":"arrival","at":7,"when":{"all":[{"fact":"firefightersHere","eq":false},{"compare":{"left":{"ref":"clock"},"op":"gte","right":{"ref":"facts.arriveAt"}}}]},"repeat":false,"normal":{"narration":"arrival","effect":{"set":{"facts.firefightersHere":true,"facts.arrivedAt":{"ref":"clock"}},"add":{}}},"decisionId":"handoff"}
+  ],
+  "decisions": [
+    {"id":"handoff","prompt":"門外有人喊「503 有人嗎？」我怎麼回應？","when":{"fact":"firefightersHere","eq":true},"options":[{"id":"answer_rescuer","text":"我回應房號與人數，留在房內等指示。","class":"correct","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"handoff"}],"cues":[],"effect":{},"narration":"option_answer_rescuer"},{"id":"wait_rescuer","text":"我先安靜等在房內，等對方再確認。","class":"misconception","safety":"unsafe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"wait_inside"}],"cues":[],"effect":{},"narration":"option_wait_rescuer"},{"id":"pack_rescuer","text":"我先把東西收好，再答覆門外的人。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa"],"steps":[{"kind":"hazard","id":"collect"}],"cues":[],"effect":{},"narration":"option_pack_rescuer"}]},
+    {"id":"door","prompt":"走廊已經看不清，小岑想把房門拉開。我先做什麼？","when":{"clock":{"eq":0}},"options":[{"id":"close_warn","text":"我把房門關緊，提醒小岑別再打開。","class":"correct","safety":"safe","sourceIds":["nfa","safety"],"steps":[{"kind":"principle","id":"barrier"},{"kind":"principle","id":"stop_roommate"}],"cues":[],"effect":{},"narration":"option_close_warn"},{"id":"peek","text":"我把房門拉開一點，確認走廊能不能走。","class":"misconception","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"open"}],"cues":[],"effect":{},"narration":"option_peek"},{"id":"elevator","text":"我沿著走廊前往最近的電梯，打算下樓。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"elevator"}],"cues":[],"effect":{},"narration":"option_elevator"},{"id":"close_only","text":"我先把房門關緊，沒有和小岑說明。","class":"partial","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"barrier"}],"cues":[],"effect":{},"narration":"option_close_only"}]},
+    {"id":"roommate","prompt":"小岑還站在門附近，擔心其他人沒收到警報。我怎麼回應？","when":{"clock":{"eq":1}},"options":[{"id":"help_roommate","text":"我請小岑別開門，和我一起確認房號。","class":"correct","safety":"safe","sourceIds":["nfa","safety"],"steps":[{"kind":"principle","id":"stop_roommate"},{"kind":"principle","id":"reassure"}],"cues":[],"effect":{},"narration":"option_help_roommate"},{"id":"open_together","text":"我和小岑把門拉開，看看能不能叫到隔壁的人。","class":"misconception","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"open"}],"cues":[],"effect":{},"narration":"option_open_together"},{"id":"bathroom","text":"我請小岑和我進浴室關門，避開眼前的煙。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa"],"steps":[{"kind":"hazard","id":"bathroom"}],"cues":[],"effect":{},"narration":"option_bathroom"},{"id":"warn_only","text":"我提醒小岑別開門，接著自己留意房內狀況。","class":"partial","safety":"safe","sourceIds":["nfa","safety"],"steps":[{"kind":"principle","id":"stop_roommate"}],"cues":[],"effect":{},"narration":"option_warn_only"}]},
+    {"id":"report","prompt":"手機在手上，外面還不知道我們在哪一間。我怎麼通報？","when":{"clock":{"eq":2}},"options":[{"id":"full_call","text":"我打 119，報 A 棟五樓 503 室、地址、人數和走廊煙況。","class":"correct","safety":"safe","sourceIds":["nfa","report"],"steps":[{"kind":"channel","id":"call_119"},{"kind":"principle","id":"dial"},{"kind":"principle","id":"address"},{"kind":"principle","id":"room"},{"kind":"principle","id":"headcount"},{"kind":"principle","id":"condition"}],"cues":[],"effect":{},"narration":"option_full_call"},{"id":"signal_only","text":"我先從安全窗邊揮衣，等樓下的人替我報位置。","class":"misconception","safety":"unsafe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"check_window"},{"kind":"principle","id":"signal"}],"cues":[],"effect":{"set":{"facts.delayed":true},"add":{},"delay":"只示意，未直接通報完整位置"},"narration":"option_signal_only"},{"id":"pack_first","text":"我先找身分證和房卡，再拿起手機通報。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa"],"steps":[{"kind":"hazard","id":"collect"}],"cues":[],"effect":{},"narration":"option_pack_first"},{"id":"partial_call","text":"我打 119，只說兩人困在宿舍裡。","class":"partial","safety":"safe","sourceIds":["nfa","report"],"steps":[{"kind":"channel","id":"call_119"},{"kind":"principle","id":"dial"},{"kind":"principle","id":"headcount"}],"cues":[],"effect":{},"narration":"option_partial_call"}]},
+    {"id":"seal","prompt":"門底附近有焦味，手邊有可拿到的布。我怎麼處理？","when":{"clock":{"eq":3}},"options":[{"id":"seal_gap","text":"我先確認門關緊，再用手邊的布塞住門縫。","class":"correct","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"barrier"},{"kind":"principle","id":"seal_gap"}],"cues":[],"effect":{},"narration":"option_seal_gap"},{"id":"grab_handle","text":"我直接握緊已經發燙的門把，試著拉一下。","class":"misconception","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"hot_handle"}],"cues":[],"effect":{},"narration":"option_grab_handle"},{"id":"reopen","text":"我打開一點房門，確認焦味是不是從走廊來的。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"open"}],"cues":[],"effect":{},"narration":"option_reopen"},{"id":"close_again","text":"我確認房門緊閉，先留在安全的位置。","class":"partial","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"barrier"}],"cues":[],"effect":{},"narration":"option_close_again"}]},
+    {"id":"window","prompt":"外面的人可能看不到房裡的我們。我怎麼讓對方找到房間？","when":{"clock":{"eq":4}},"options":[{"id":"window_signal","text":"我從室內確認窗外狀況，再留在窗內揮衣呼救。","class":"correct","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"check_window"},{"kind":"principle","id":"signal"}],"cues":[],"effect":{},"narration":"option_window_signal"},{"id":"climb_out","text":"我攀上窗外的架子，想讓下面的人看得更清楚。","class":"misconception","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"climb_window"}],"cues":[],"effect":{},"narration":"option_climb_out"},{"id":"jump_out","text":"我從窗台往下跳，避開被煙堵住的走廊。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"jump"}],"cues":[],"effect":{},"narration":"option_jump_out"},{"id":"look_window","text":"我先從室內確認窗外情況，暫時不做其他動作。","class":"partial","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"check_window"}],"cues":[],"effect":{},"narration":"option_look_window"}]},
+    {"id":"contact","prompt":"手機電量不多，外面仍在確認位置。我怎麼安排通訊？","when":{"clock":{"eq":5}},"options":[{"id":"keep_line","text":"我打 119 或持續通話，補報樓層房號並保持聯絡。","class":"correct","safety":"safe","sourceIds":["nfa","report"],"steps":[{"kind":"channel","id":"call_119"},{"kind":"principle","id":"dial"},{"kind":"principle","id":"room"},{"kind":"principle","id":"keep_contact"}],"cues":[],"effect":{},"narration":"option_keep_line"},{"id":"phone_only","text":"我先將手機留著省電，暫時不聯絡接線員。","class":"misconception","safety":"unsafe","sourceIds":["nfa","report"],"steps":[{"kind":"principle","id":"save_power"}],"cues":[],"effect":{"set":{"facts.delayed":true},"add":{},"delay":"未及時保持聯絡"},"narration":"option_phone_only"},{"id":"bathroom_phone","text":"我先帶手機躲進浴室，再決定如何通報。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa"],"steps":[{"kind":"hazard","id":"bathroom"}],"cues":[],"effect":{},"narration":"option_bathroom_phone"},{"id":"keep_room","text":"我留在房裡，關掉不必要的程式。","class":"partial","safety":"safe","sourceIds":["nfa","report"],"steps":[{"kind":"principle","id":"wait_inside"},{"kind":"principle","id":"save_power"}],"cues":[],"effect":{},"narration":"option_keep_room"}]},
+    {"id":"wait","prompt":"走廊視線仍被濃煙遮住，門外還沒敲門。我接下來怎麼做？","when":{"always":true},"options":[{"id":"stay_ready","text":"我先關緊門、留在房內，準備回應救援人員。","class":"correct","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"barrier"},{"kind":"principle","id":"wait_inside"}],"cues":[],"effect":{},"narration":"option_stay_ready"},{"id":"bathroom_wait","text":"我先躲到沒有對外窗的浴室，等煙退再說。","class":"misconception","safety":"unsafe","sourceIds":["nfa"],"steps":[{"kind":"hazard","id":"bathroom"}],"cues":[],"effect":{},"narration":"option_bathroom_wait"},{"id":"walk_smoke","text":"我趁門外安靜，沿著走廊去找樓梯。","class":"risk_or_delay","safety":"unsafe","sourceIds":["nfa","safety"],"steps":[{"kind":"hazard","id":"smoke"}],"cues":[],"effect":{},"narration":"option_walk_smoke"},{"id":"stay_still","text":"我留在房間裡，只聽外面的聲音。","class":"partial","safety":"safe","sourceIds":["nfa"],"steps":[{"kind":"principle","id":"wait_inside"}],"cues":[],"effect":{},"narration":"option_stay_still"}]}
+  ],
+  "consequences": [
+    {"id":"unsealed_gap","kind":"missed","decisionId":null,"when":{"all":[{"clock":{"gte":3}},{"fact":"doorClosed","eq":true},{"fact":"sealed","eq":false},{"fact":"firefightersHere","eq":false}]},"tiers":[{"fromCount":1,"result":{"narration":"gap_first","effect":{"set":{},"add":{"exposure.smoke":1}}}},{"fromCount":2,"result":{"narration":"gap_worse","effect":{"set":{"facts.delayed":true},"add":{"exposure.smoke":2},"delay":"門縫一直未封，濃煙暴露加重"}}}],"sourceIds":["nfa"],"review":{"why":"門縫未封使煙持續滲入。","tip":"關門後塞住手邊可及的門縫。","eligibleWhen":{"always":true},"priority":5,"principleId":"seal_gap"}},
+    {"id":"npc_opened_closed_door","kind":"reckless","decisionId":"roommate","when":{"all":[{"fact":"doorClosed","eq":true},{"fact":"npcStopped","eq":false}]},"tiers":[{"fromCount":1,"result":{"narration":"npc_opened","effect":{"set":{"facts.doorClosed":false,"facts.sealed":false,"facts.npcSmoke":true,"facts.delayed":true,"npc.roommate.injured":true},"add":{"exposure.smoke":2},"delay":"未勸阻室友再次開門","injuries":[{"id":"npc_smoke","subject":"roommate","label":"吸入濃煙後咳嗽","severity":"MILD"}]}}}],"sourceIds":["nfa"],"review":{"why":"室友再次開門，兩人暴露在濃煙中。","tip":"留在隔煙處並勸室友別開門。","eligibleWhen":{"always":true},"priority":5,"principleId":"stop_roommate","companion":true}},
+    {"id":"smoke_mild","kind":"world","decisionId":null,"when":{"all":[{"fact":"smokeMild","eq":false},{"compare":{"left":{"ref":"exposure.smoke"},"op":"gte","right":2}}]},"tiers":[{"fromCount":1,"result":{"narration":"smoke_mild","effect":{"set":{"facts.smokeMild":true},"add":{},"injuries":[{"id":"smoke_mild","subject":"player","label":"眼與喉嚨受濃煙刺激","severity":"MILD"}]}}}],"sourceIds":["nfa"],"review":{"why":"眼與喉嚨受濃煙刺激。","tip":"及早阻煙，確認位置並聯絡消防單位。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"}},
+    {"id":"smoke_moderate","kind":"world","decisionId":null,"when":{"all":[{"fact":"smokeModerate","eq":false},{"compare":{"left":{"ref":"exposure.smoke"},"op":"gte","right":4}}]},"tiers":[{"fromCount":1,"result":{"narration":"smoke_moderate","effect":{"set":{"facts.smokeModerate":true},"add":{},"injuries":[{"id":"smoke_moderate","subject":"player","label":"吸入濃煙後持續咳嗽","severity":"MODERATE"}]}}}],"sourceIds":["nfa"],"review":{"why":"吸入濃煙後持續咳嗽。","tip":"及早阻煙，確認位置並聯絡消防單位。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"}},
+    {"id":"smoke_severe","kind":"world","decisionId":null,"when":{"all":[{"fact":"smokeSevere","eq":false},{"compare":{"left":{"ref":"exposure.smoke"},"op":"gte","right":6}}]},"tiers":[{"fromCount":1,"result":{"narration":"smoke_severe","effect":{"set":{"facts.smokeSevere":true},"add":{},"injuries":[{"id":"smoke_severe","subject":"player","label":"吸入濃煙後呼吸困難","severity":"SEVERE"}]}}}],"sourceIds":["nfa"],"review":{"why":"吸入濃煙後呼吸困難。","tip":"及早阻煙，確認位置並聯絡消防單位。","eligibleWhen":{"always":true},"priority":5,"principleId":"barrier"}},
+    {"id":"no_rescuer_reply","kind":"missed","decisionId":"handoff","when":{"all":[{"fact":"firefightersHere","eq":true},{"fact":"handedOff","eq":false}]},"tiers":[{"fromCount":1,"result":{"narration":"no_reply","effect":{"set":{"facts.delayed":true},"add":{},"delay":"沒有即時回應消防員"}}},{"fromCount":2,"result":{"narration":"no_reply_again","effect":{"set":{"facts.delayed":true},"add":{},"delay":"未回應使消防員需逐間確認"}}}],"sourceIds":["nfa"],"review":{"why":"消防員沒有收到房間裡的回音。","tip":"聽到呼喊時回應房號與人數。","eligibleWhen":{"always":true},"priority":5,"principleId":"handoff"}}
+  ],
+  "phaseRules": [
+    {"id":"locate_room","phase":"afterActions","when":{"all":[{"fact":"called","eq":true},{"fact":"room","eq":true},{"fact":"locatedAt","eq":null}]},"result":{"narration":"locate_room","effect":{"set":{"facts.locatedAt":{"ref":"turn.nextClock"}},"add":{}}},"skipBeats":false}
+  ],
+  "endings": [
+    {"id":"elevator_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_elevator_fatal","labels":[{"when":{"always":true},"text":"受困電梯，等待救援"}],"summaries":[{"when":{"always":true},"text":"電梯突然停住，門打不開。"}]},
+    {"id":"jump_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_jump_fatal","labels":[{"when":{"always":true},"text":"窗外墜落，無法脫困"}],"summaries":[{"when":{"always":true},"text":"我翻過窗台落到下方平台，無法繼續行動。"}]},
+    {"id":"climb_window_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_climb_window_fatal","labels":[{"when":{"always":true},"text":"外牆滑落，無法脫困"}],"summaries":[{"when":{"always":true},"text":"我沿外牆滑落，不能回到房間。"}]},
+    {"id":"smoke_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_smoke_fatal","labels":[{"when":{"always":true},"text":"迷失在濃煙中"}],"summaries":[{"when":{"always":true},"text":"我走進濃煙，找不到原來的房門。"}]},
+    {"id":"handoff_safe","type":"SAFE_RESCUE","phase":"beforeBeats","when":{"all":[{"fact":"handedOff","eq":true},{"fact":"delayed","eq":false},{"fact":"npcSmoke","eq":false},{"compare":{"left":{"ref":"facts.arriveAt"},"op":"lte","right":7}}]},"injury":"fromThresholds","narration":"end_handoff_safe","labels":[{"when":{"always":true},"text":"安全待救獲救"}],"summaries":[{"when":{"always":true},"text":"隔煙、通報位置並回應消防員，救援得以接手。"}]},
+    {"id":"handoff_delayed","type":"DELAYED_RESCUE","phase":"beforeBeats","when":{"fact":"handedOff","eq":true},"injury":"fromThresholds","narration":"end_handoff_delayed","labels":[{"when":{"always":true},"text":"延誤後獲救"}],"summaries":[{"when":{"always":true},"text":"消防員找到房間後接手救援。"}]},
+    {"id":"forced_rescue","type":"DELAYED_RESCUE","phase":"beforeBeats","when":{"all":[{"fact":"firefightersHere","eq":true},{"compare":{"left":{"ref":"clock"},"op":"gt","right":{"op":"add","args":[{"op":"coalesce","args":[{"ref":"facts.arrivedAt"},99]},1]}}},{"clock":{"lt":13}}]},"injury":"fromThresholds","narration":"end_forced_rescue","labels":[{"when":{"always":true},"text":"延誤後獲救"}],"summaries":[{"when":{"always":true},"text":"未即時回應，消防員需要逐間確認。"}]},
+    {"id":"rescue_limit","type":"DELAYED_RESCUE","phase":"afterBeats","when":{"clock":{"gte":13}},"injury":"fromThresholds","narration":"end_rescue_limit","labels":[{"when":{"always":true},"text":"延誤後獲救"}],"summaries":[{"when":{"always":true},"text":"搜尋完成後才獲救。"}]}
+  ],
+  "injury": {
+    "score": {
+      "op": "sum",
+      "args": [
+        {"ref":"exposure.smoke"},
+        {"ref":"exposure.heat"}
+      ]
+    },
+    "noneMax": 1,
+    "mildMax": 3,
+    "moderateMax": 5
+  },
+  "review": {
+    "reflectionPrompt": "如果換成租屋處，我能說出哪些位置資訊，讓消防員知道要找哪間房？"
+  },
+  "presentation": {
+    "narration": {
+      "opening": [
+        "我和小岑在 A 棟五樓 503 室，警報響起，半開房門外的走廊已被濃煙遮住。",
+        "夜深了，宿舍警報突然響起。我和小岑在五樓 503 室，煙正從半開的房門飄進來。"
+      ],
+      "principle_barrier": [
+        "我把房門關緊。",
+        "房門在我面前喀一聲闔上。"
+      ],
+      "principle_stop_roommate": [
+        "小岑把手從門把收回來。",
+        "小岑停下開門的動作。"
+      ],
+      "principle_reassure": [
+        "小岑點頭，站回我旁邊。",
+        "小岑聽我說完，把手移開。"
+      ],
+      "principle_seal_gap": [
+        "我把手邊的濕布壓在門縫。",
+        "布條被我壓進了門底的縫隙。"
+      ],
+      "principle_dial": [
+        "接線員接起電話。",
+        "手機傳來接線的聲音。"
+      ],
+      "principle_address": [
+        "我向接線員報出地址與棟別。",
+        "接線員記下我說的地址與棟別。"
+      ],
+      "principle_room": [
+        "我向接線員報出樓層與房號。",
+        "接線員記下我說的樓層與房號。"
+      ],
+      "principle_headcount": [
+        "我向接線員報出受困人數。",
+        "接線員記下我說的受困人數。"
+      ],
+      "principle_condition": [
+        "我向接線員報出現場煙況。",
+        "接線員記下我說的現場煙況。"
+      ],
+      "principle_check_window": [
+        "我從室內看見窗外沒有煙。",
+        "隔著玻璃，我看清窗外沒有煙。"
+      ],
+      "principle_signal": [
+        "我留在窗內揮衣呼救。",
+        "我在窗內舉起衣物示意。"
+      ],
+      "principle_keep_contact": [
+        "我保持和接線員聯絡。",
+        "電話保持接通。"
+      ],
+      "principle_wait_inside": [
+        "我留在房內。",
+        "我在房內等消息。"
+      ],
+      "principle_save_power": [
+        "我把不使用的程式關掉。",
+        "我把手機螢幕調暗。"
+      ],
+      "principle_handoff": [
+        "我回應消防員，說明房裡有兩個人。",
+        "我朝門外回報房號和受困人數。"
+      ],
+      "channel_call_119": [
+        "電話接通。",
+        "我聽見接線員的聲音。"
+      ],
+      "hazard_open": [
+        "房門一拉開，濃煙立刻灌進房間。",
+        "門開了一道縫，濃煙衝了進來。"
+      ],
+      "hazard_bathroom": [
+        "浴室沒有對外窗，我失去窗邊示警的位置。",
+        "我走進浴室，外面的人看不見我。"
+      ],
+      "hazard_collect": [
+        "我忙著收拾東西，錯過當下的處理機會。",
+        "我停下找物品，時間繼續過去。"
+      ],
+      "collect_exposed": [
+        "我找物品時，煙繼續從門縫飄進來。",
+        "物品還沒收好，門邊的焦味已加重。"
+      ],
+      "hazard_hot_handle": [
+        "門把燙得我立刻縮手。",
+        "我碰到發燙的把手，掌心一陣痛。"
+      ],
+      "hazard_elevator": [
+        "電梯突然停住，門打不開。",
+        "我困在停住的轎廂裡，開門鍵沒有反應。"
+      ],
+      "end_elevator_fatal": [
+        "救難人員須先確認樓內通行狀況，救援還需要時間。",
+        "我只能在轎廂裡等救援人員處理樓內狀況。"
+      ],
+      "hazard_jump": [
+        "我翻過窗台落到下方平台，無法繼續行動。",
+        "我從窗台往下後跌落，無法回到房間。"
+      ],
+      "end_jump_fatal": [
+        "我已無法自行繼續撤離。",
+        "我停在原處，這次的撤離中斷了。"
+      ],
+      "hazard_climb_window": [
+        "我沿外牆滑落，不能回到房間。",
+        "外牆沒有穩固落腳點，我滑落後無法返回。"
+      ],
+      "end_climb_window_fatal": [
+        "我已無法自行繼續撤離。",
+        "我停在原處，這次的撤離中斷了。"
+      ],
+      "hazard_smoke": [
+        "我走進濃煙，找不到原來的房門。",
+        "走廊能見度突然消失，我無法辨認回房的路。"
+      ],
+      "end_smoke_fatal": [
+        "我已無法自行繼續撤離。",
+        "我停在原處，這次的撤離中斷了。"
+      ],
+      "option_answer_rescuer": [
+        "我答應了一聲。",
+        "消防員聽見我的回應。"
+      ],
+      "option_wait_rescuer": [
+        "我沒有出聲。",
+        "門外還沒聽到回應。"
+      ],
+      "option_pack_rescuer": [
+        "我還在收東西。",
+        "門外喊話時我還未答。"
+      ],
+      "option_close_warn": [
+        "我和小岑一起退離門邊。",
+        "門關緊後，小岑停了下來。"
+      ],
+      "option_peek": [
+        "煙從門口進來。",
+        "走廊的煙灌進房內。"
+      ],
+      "option_elevator": [
+        "我進了電梯。",
+        "電梯門在我面前關上。"
+      ],
+      "option_close_only": [
+        "我先把門闔上。",
+        "門關上了，小岑還在旁邊。"
+      ],
+      "option_help_roommate": [
+        "小岑把手收回來，跟我核對位置。",
+        "她退離門邊，和我一起看房號。"
+      ],
+      "option_open_together": [
+        "煙湧向兩人。",
+        "門縫變大，濃煙立刻往房內跑。"
+      ],
+      "option_bathroom": [
+        "我離開可以對外示意的窗邊。",
+        "兩人移到了沒有對外窗的浴室。"
+      ],
+      "option_warn_only": [
+        "小岑沒有打開門。",
+        "她把扶在門把上的手拿開。"
+      ],
+      "option_full_call": [
+        "接線員核對了完整的位置與現況。",
+        "我把地址、房號、人數和煙況都報了出去。"
+      ],
+      "option_signal_only": [
+        "樓下可能看得到我，電話仍未接通。",
+        "我有對外示意，接線員還未收到房號。"
+      ],
+      "option_pack_first": [
+        "我在桌上找房卡。",
+        "手機留在旁邊，我先翻找物品。"
+      ],
+      "option_partial_call": [
+        "電話接通，但對方還沒有樓層房號。",
+        "接線員只記下兩人受困。"
+      ],
+      "option_seal_gap": [
+        "門底的縫被布塞好。",
+        "我壓實門縫裡的布。"
+      ],
+      "option_grab_handle": [
+        "我的手立刻縮了回來。",
+        "門把的高溫讓我放開手。"
+      ],
+      "option_reopen": [
+        "濃煙沿著門口灌入。",
+        "我打開房門時煙更快進來了。"
+      ],
+      "option_close_again": [
+        "房門關緊了。",
+        "我把門重新拉緊。"
+      ],
+      "option_window_signal": [
+        "我在窗內示意。",
+        "樓下有人抬頭往這扇窗看。"
+      ],
+      "option_climb_out": [
+        "我從窗跨向外牆。",
+        "我伸腳往窗外架子踩。"
+      ],
+      "option_jump_out": [
+        "我翻出了窗。",
+        "我從窗台往下離開房間。"
+      ],
+      "option_look_window": [
+        "我確認了窗外狀況。",
+        "我靠近窗內，看清外面的情況。"
+      ],
+      "option_keep_line": [
+        "接線員確認了五樓 503 室。",
+        "通話保持接通，房號已被記下。"
+      ],
+      "option_phone_only": [
+        "我先省下手機電量，救援方沒有收到新消息。",
+        "手機亮度調低了，位置還沒更新。"
+      ],
+      "option_bathroom_phone": [
+        "我走進了看不到外面的浴室。",
+        "我離開房間對外窗的旁邊。"
+      ],
+      "option_keep_room": [
+        "我把手機留在手上。",
+        "我留在房內，調暗手機。"
+      ],
+      "option_stay_ready": [
+        "我留在房內等可以辨認的聲音。",
+        "我安靜留在房內，留意門外的呼喊。"
+      ],
+      "option_bathroom_wait": [
+        "我移到沒有對外窗的位置。",
+        "我暫時失去對外示意的窗戶。"
+      ],
+      "option_walk_smoke": [
+        "我踏進走廊。",
+        "濃煙擋住了我的去路。"
+      ],
+      "option_stay_still": [
+        "我站在房內等候。",
+        "我沒有往濃煙裡走。"
+      ],
+      "npc_fear": [
+        "小岑低聲說她很擔心隔壁的人。",
+        "小岑停在門邊，問其他人有沒有聽見警報。"
+      ],
+      "smoke_in": [
+        "半開的門一直進煙。",
+        "煙從門邊斷續飄進房間。"
+      ],
+      "seep": [
+        "門底傳來一陣焦味。",
+        "我聞到一點從門底飄過的味道。"
+      ],
+      "seep_mild": [
+        "布條壓住了門縫，門底沒有新的煙團。",
+        "我看見濕布仍塞在門底。"
+      ],
+      "battery": [
+        "手機顯示低電量。",
+        "手機的電量警示亮起。"
+      ],
+      "plan_arrival_1": [
+        "救援安排已更新。",
+        "搜尋安排已有進展。"
+      ],
+      "plan_arrival_2": [
+        "救援安排已更新。",
+        "搜尋安排已有進展。"
+      ],
+      "plan_arrival_3": [
+        "救援安排已更新。",
+        "搜尋安排已有進展。"
+      ],
+      "plan_arrival_4": [
+        "救援安排已更新。",
+        "搜尋安排已有進展。"
+      ],
+      "arrival": [
+        "消防員敲門喊：「房裡有人嗎？」",
+        "門外傳來敲門聲，有人詢問這間房是否有人。"
+      ],
+      "gap_first": [
+        "煙從門底貼著地面進來。",
+        "門縫還沒有壓實，我聞到新一陣焦味。"
+      ],
+      "gap_worse": [
+        "煙不再只是薄薄一縷，我開始咳。",
+        "門底的煙更濃了，我的喉嚨開始刺。"
+      ],
+      "npc_opened": [
+        "小岑把門拉開，煙一下灌入，她劇烈咳嗽。",
+        "小岑沒有收到阻止，她拉開門，吸到煙後退了一步。"
+      ],
+      "smoke_mild": [
+        "我的眼睛刺痛，喉嚨也開始發乾。",
+        "濃煙暴露累積：眼與喉嚨受濃煙刺激。"
+      ],
+      "smoke_moderate": [
+        "我咳個不停，說話得停下喘氣。",
+        "濃煙暴露累積：吸入濃煙後持續咳嗽。"
+      ],
+      "smoke_severe": [
+        "我呼吸變得吃力，已說不出完整的句子。",
+        "濃煙暴露累積：吸入濃煙後呼吸困難。"
+      ],
+      "no_reply": [
+        "門外沒有聽到回應，消防員又喊了一次。",
+        "消防員在門外多問了一次房內是否有人。"
+      ],
+      "no_reply_again": [
+        "消防員等不到回音，得逐一確認房間。",
+        "門口一直沒收到答覆，消防員開始逐間確認。"
+      ],
+      "locate_room": [
+        "房號已超過口頭確認階段。",
+        "消防員搜尋範圍縮小了。"
+      ],
+      "end_handoff_safe": [
+        "消防員確認房號，把我和小岑帶出房間。",
+        "救援人員找到正確房間，接手我們的撤離。"
+      ],
+      "end_handoff_delayed": [
+        "消防員確認到正確房間後，把我們帶出。",
+        "等到消防員核對我們的位置後，兩人才離開房間。"
+      ],
+      "end_forced_rescue": [
+        "消防員逐間搜尋，最後到房內找到我和小岑。",
+        "消防員花時間核對房間後進入，把我們帶離。"
+      ],
+      "end_rescue_limit": [
+        "搜尋隊最後找到房間並安排撤離。",
+        "消防員找到正確房間後接手。"
+      ],
+      "look_open": [
+        "門仍開著，走廊看不清，房內有對外窗。",
+        "從半開的門看出去，濃煙遮住了走廊。"
+      ],
+      "look_closed": [
+        "房門關著，手機與對外窗都在房內。",
+        "我看見門、窗和放在手邊的手機。"
+      ],
+      "ask_roommate": [
+        "小岑說：「我聽得到警報，走廊那邊看不清楚。」",
+        "小岑指向窗戶，說她看不清門外的狀況。"
+      ],
+      "idle": [
+        "我聽見警報還在響。",
+        "警報聲持續從走廊傳來。"
+      ]
+    },
+    "look": [
+      {"when":{"fact":"doorClosed","eq":false},"narration":"look_open"},
+      {"when":{"always":true},"narration":"look_closed"}
+    ],
+    "askCompanion": [
+      {"when":{"always":true},"narration":"ask_roommate"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": [
+      {"when":{"fact":"doorClosed","eq":false},"text":"房門仍開著"},
+      {"when":{"fact":"called","eq":true},"text":"已通報"}
+    ]
+  },
+  "assets": []
+}

@@ -1,0 +1,418 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "earthquake_school",
+    "title": "學校地震",
+    "version": "1.0.0",
+    "hazard": "earthquake",
+    "skeletonVersion": "director-4.2b",
+    "sources": [
+      {"id":"cwa-school","title":"地震防護","url":"https://scweb.cwa.gov.tw/zh-tw/page/intro/11"},
+      {"id":"moi-earthquake","title":"機關安全宣導：地震防災預防措施","url":"https://ws.moi.gov.tw/Download.ashx?n=5qmf6Zec5a6J5YWo5a6j5bCOIOKAlOWcsOmch%2BmYsueBvemgkOmYsuaOquaWvS5wZGY%3D&u=LzAwMS9VcGxvYWQvNDA5L3JlbGZpbGUvMTEwNzIvMjgxODU3LzNmMGY5ZTMzLTE4MzQtNGEwZi1hNzJlLTVlZjY3YTM5MmYzNi5wZGY%3D"},
+      {"id":"ntfd-cover","title":"地震來了，立即三步驟","url":"https://www.ntfd.gov.tw/index.php?act=article&code=detail&ids=6259"}
+    ]
+  },
+  "initial": {
+    "facts": {
+      "shaking": true,
+      "covered": false,
+      "stopped": false,
+      "calmed": false,
+      "waited": false,
+      "aftershock": false,
+      "afterCovered": false,
+      "head": false,
+      "orderly": false,
+      "stairs": false,
+      "openArea": false,
+      "group": false,
+      "counted": false,
+      "delayed": false
+    },
+    "exposure": {
+      "trauma": 0,
+      "separation": 0
+    },
+    "npc": {
+      "xiaowei": {
+        "name": "小維",
+        "state": "at_desk",
+        "injured": false
+      }
+    },
+    "decisionId": "main",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 8
+  },
+  "catalog": {
+    "principles": [
+      {"id":"cover","sourceIds":["ntfd-cover"],"when":{"fact":"shaking","eq":true},"review":{"why":"桌下的掩護可減少掉落物造成的傷害。","tip":"一搖晃就趴下、掩護、穩住。","eligibleWhen":{"fact":"shaking","eq":true},"priority":5},"normal":{"narration":"principle_cover","effect":{"set":{"facts.covered":true},"add":{}}},"cases":[{"when":{"has":{"set":"turnCues","id":"no_grip"}},"result":{"narration":"option_cover_only","effect":{"set":{"facts.covered":true},"add":{}}}}]},
+      {"id":"stop_npc","sourceIds":["cwa-school"],"when":{"always":true},"review":{"why":"主震中一起留在掩護處，可減少掉落物暴露。","tip":"提醒同伴先就地掩護。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_stop_npc","effect":{"set":{"facts.stopped":true,"npc.xiaowei.state":"stopped"},"add":{}}}},
+      {"id":"reassure","sourceIds":["cwa-school"],"when":{"always":true},"review":{"why":"給同伴一件可做的事，有助於維持原位。","tip":"回應同伴的擔心，商量停震後如何聯絡。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_reassure","effect":{"set":{"facts.calmed":true},"add":{}}}},
+      {"id":"wait","sourceIds":["cwa-school"],"when":{"always":true},"review":{"why":"持續搖晃時移動可能遇到墜落物。","tip":"停震後再依指示疏散。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_wait","effect":{"set":{"facts.waited":true},"add":{}}}},
+      {"id":"aftershock_cover","sourceIds":["cwa-school"],"when":{"fact":"aftershock","eq":true},"review":{"why":"餘震也可能讓物品移動或掉落。","tip":"餘震來時再次趴下、掩護、穩住。","eligibleWhen":{"fact":"aftershock","eq":true},"priority":5},"normal":{"narration":"principle_aftershock_cover","effect":{"set":{"facts.afterCovered":true},"add":{}}}},
+      {"id":"head","sourceIds":["moi-earthquake"],"when":{"not":{"fact":"shaking","eq":true}},"review":{"why":"疏散時護頭可減少落物風險。","tip":"停震後疏散時護頭，留意落物。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_head","effect":{"set":{"facts.head":true},"add":{}}}},
+      {"id":"orderly","sourceIds":["moi-earthquake"],"when":{"not":{"fact":"shaking","eq":true}},"review":{"why":"留出距離可降低推擠和跌倒風險。","tip":"走樓梯時不推不跑，與前方留出距離。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_orderly","effect":{"set":{"facts.orderly":true},"add":{}}}},
+      {"id":"stairs","sourceIds":["moi-earthquake"],"when":{"not":{"fact":"shaking","eq":true}},"review":{"why":"電梯可能停在樓層間。","tip":"停震後走可通行的樓梯疏散。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_stairs","effect":{"set":{"facts.stairs":true},"add":{}}}},
+      {"id":"open_area","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"空曠處可遠離外牆落物與電線。","tip":"到戶外後遠離外牆及掉落的電線。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_open_area","effect":{"set":{"facts.openArea":true},"add":{}}}},
+      {"id":"stay_group","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"留在班級位置有助於清點。","tip":"抵達集合點後留在班級隊伍。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_stay_group","effect":{"set":{"facts.group":true},"add":{}}}},
+      {"id":"roll_call","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"明確的回報可免去不必要的尋人。","tip":"點到名字時回應，說清尚未確認的人。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_roll_call","effect":{"set":{"facts.counted":true},"add":{}}}}
+    ],
+    "hazards": [
+      {"id":"rush_open","sourceIds":["cwa-school"],"when":{"fact":"shaking","eq":true},"review":{"why":"搖晃中跑動時，掉落物擦傷手臂。","tip":"先趴下、掩護、穩住，等搖晃停止再移動。","eligibleWhen":{"always":true},"priority":5,"principleId":"cover"},"normal":{"narration":"hazard_rush_open","effect":{"set":{"facts.delayed":true},"add":{"exposure.trauma":1},"delay":"搖晃中離開掩護處","injuries":[{"id":"arm_scrape","label":"手臂擦傷","severity":"MILD","subject":"player"}]}},"cases":[{"when":{"fact":"aftershock","eq":true},"result":{"narration":"rush_later","effect":{"set":{"facts.delayed":true},"add":{"exposure.trauma":2},"delay":"餘震中移動撞傷小腿","injuries":[{"id":"leg_bruise","label":"小腿撞傷","severity":"MODERATE","subject":"player"}]}}}]},
+      {"id":"triangle","sourceIds":["ntfd-cover"],"when":{"fact":"shaking","eq":true},"review":{"why":"靠在櫃旁會暴露在落物下。","tip":"靠近堅固桌子時，趴下、掩護並抓牢桌腳。","eligibleWhen":{"always":true},"priority":5,"principleId":"cover"},"normal":{"narration":"hazard_triangle","effect":{"set":{"facts.delayed":true},"add":{},"delay":"把靠在櫃旁當成掩護"}}},
+      {"id":"collect","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"折返使清點與疏散延誤。","tip":"留在班級隊伍，等學校確認後再取物。","eligibleWhen":{"always":true},"priority":5,"principleId":"stay_group"},"normal":{"narration":"hazard_collect","effect":{"set":{"facts.delayed":true},"add":{"exposure.separation":1},"delay":"回頭找個人物品"}}},
+      {"id":"pushing","sourceIds":["moi-earthquake"],"when":{"not":{"fact":"shaking","eq":true}},"review":{"why":"樓梯推擠奔跑導致跌倒及腳踝扭傷。","tip":"不推不跑，等前方有空間再走。","eligibleWhen":{"always":true},"priority":5,"principleId":"orderly"},"normal":{"narration":"hazard_pushing","effect":{"set":{"facts.delayed":true},"add":{"exposure.trauma":2},"delay":"樓梯踩空後需放慢腳步","injuries":[{"id":"ankle_sprain","label":"腳踝扭傷","severity":"MODERATE","subject":"player"}]}}},
+      {"id":"jump_window","sourceIds":["cwa-school"],"when":{"always":true},"review":{"why":"我跨出窗台後失去支撐，落到下方，已無法自行移動。","tip":"搖晃時先掩護，停震後走可通行的樓梯。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"hazard_jump_window","effect":{"set":{},"add":{}}},"fatalEndingId":"jump_window_fatal"},
+      {"id":"elevator","sourceIds":["cwa-school"],"when":{"always":true},"review":{"why":"電梯停在樓層之間，門打不開。","tip":"停震後依疏散指示走可通行的樓梯。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"hazard_elevator","effect":{"set":{},"add":{}}},"fatalEndingId":"elevator_fatal"},
+      {"id":"wire","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"我碰到下垂電線，隨即倒下，無法繼續走。","tip":"遠離掉落電線，將位置告訴老師或交給專業人員。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"hazard_wire","effect":{"set":{},"add":{}}},"fatalEndingId":"wire_fatal"},
+      {"id":"send_peer_to_door","sourceIds":["cwa-school"],"when":{"always":true},"review":{"why":"小維離開原本的掩護位置，走到門邊。","tip":"搖晃中讓同伴一起留在掩護處。","principleId":"stop_npc","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"option_wait_peer","effect":{"set":{"npc.xiaowei.state":"at_door","facts.delayed":true},"delay":"同伴離開掩護處"}}},
+      {"id":"stay_at_wall","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"外牆落物可能打中貼著牆走的人。","tip":"到戶外後離開外牆與電線，前往空曠處。","principleId":"open_area","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"option_follow_wall","effect":{}}},
+      {"id":"leave_assembly","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"清點時原班無法在隊伍裡找到我。","tip":"到自己班的集合位置等候。","principleId":"stay_group","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"option_join_other_class","effect":{}}},
+      {"id":"miss_roll_call","sourceIds":["moi-earthquake"],"when":{"always":true},"review":{"why":"點名時沒有回應，老師無法確認人員。","tip":"聽到自己的名字就回應並說明同行者的情況。","principleId":"roll_call","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"option_wait_roll","effect":{}}}
+    ],
+    "channels": []
+  },
+  "beats": [
+    {"id":"peer_proposal","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"peer_proposal","effect":{"set":{},"add":{}}},"decisionId":"companion"},
+    {"id":"aftershock_event","at":2,"when":{"always":true},"repeat":false,"normal":{"narration":"aftershock_event","effect":{"set":{"facts.aftershock":true,"facts.shaking":true},"add":{}}},"after":{"beat":"peer_proposal","turns":1},"decisionId":"aftershock"},
+    {"id":"route_ready","at":3,"when":{"always":true},"repeat":false,"normal":{"narration":"route_ready","effect":{"set":{"facts.shaking":false},"add":{}}},"after":{"beat":"aftershock_event","turns":1},"decisionId":"stairs"},
+    {"id":"outside_event","at":4,"when":{"always":true},"repeat":false,"normal":{"narration":"outside_event","effect":{"set":{},"add":{}}},"after":{"beat":"route_ready","turns":1},"decisionId":"outside"},
+    {"id":"assembly_event","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"assembly_event","effect":{"set":{},"add":{}}},"after":{"beat":"outside_event","turns":1},"decisionId":"assembly"},
+    {"id":"gather","at":6,"when":{"always":true},"repeat":false,"normal":{"narration":"gather","effect":{"set":{},"add":{}}},"after":{"beat":"assembly_event","turns":1},"decisionId":"roll_call"}
+  ],
+  "decisions": [
+    {"id":"main","prompt":"教室突然劇烈搖晃，桌椅開始移動。我第一步做什麼？","when":{"clock":{"eq":0}},"options":[{"id":"take_cover","text":"我趴在桌下護住頭頸，抓牢桌腳。","class":"correct","safety":"safe","sourceIds":["cwa-school","ntfd-cover"],"steps":[{"kind":"principle","id":"cover"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_take_cover"},{"id":"use_triangle","text":"我貼在櫃旁蹲下，利用櫃子旁的空間。","class":"misconception","safety":"unsafe","sourceIds":["cwa-school","ntfd-cover"],"steps":[{"kind":"hazard","id":"triangle"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_use_triangle"},{"id":"rush_door","text":"我趁門還開著，先跑到走廊。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school"],"steps":[{"kind":"hazard","id":"rush_open"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_rush_door"},{"id":"cover_only","text":"我縮到桌下護頭，空出手扶自己的身體。","class":"partial","safety":"safe","sourceIds":["cwa-school","ntfd-cover"],"steps":[{"kind":"principle","id":"cover"}],"cues":["no_grip"],"effect":{"set":{},"add":{}},"narration":"option_cover_only"}]},
+    {"id":"companion","prompt":"小維說：「我想拉開後門，叫隔壁班一起走。」我怎麼回他？","when":{"clock":{"eq":1}},"options":[{"id":"reassure_peer","text":"我請小維留在掩護處，答應停震後一起確認情況。","class":"correct","safety":"safe","sourceIds":["cwa-school"],"steps":[{"kind":"principle","id":"stop_npc"},{"kind":"principle","id":"reassure"},{"kind":"principle","id":"wait"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_reassure_peer"},{"id":"wait_peer","text":"我叫他先站到門邊，等搖晃變小再開。","class":"misconception","safety":"unsafe","sourceIds":["cwa-school"],"steps":[{"kind":"hazard","id":"send_peer_to_door"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_wait_peer"},{"id":"watch_door","text":"我跟小維一起往門邊走，看看隔壁班。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school"],"steps":[{"kind":"hazard","id":"rush_open"}],"cues":["invite"],"effect":{"set":{},"add":{}},"narration":"option_watch_door"},{"id":"stop_peer","text":"我請小維先回桌下，自己暫時不離開。","class":"partial","safety":"safe","sourceIds":["cwa-school"],"steps":[{"kind":"principle","id":"stop_npc"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_stop_peer"}]},
+    {"id":"aftershock","prompt":"剛要起身，教室又晃了起來，桌腳在地上滑。我怎麼應對？","when":{"clock":{"eq":2}},"options":[{"id":"cover_aftershock","text":"我重新趴下護頭、抓牢桌腳，等搖晃過去。","class":"correct","safety":"safe","sourceIds":["cwa-school"],"steps":[{"kind":"principle","id":"aftershock_cover"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_cover_aftershock"},{"id":"stand_by_desk","text":"我蹲在櫃旁，想等一停就能移動。","class":"misconception","safety":"unsafe","sourceIds":["cwa-school","ntfd-cover"],"steps":[{"kind":"hazard","id":"triangle"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_stand_by_desk"},{"id":"rush_aftershock","text":"我趁這波搖晃較短先跑出教室。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school"],"steps":[{"kind":"hazard","id":"rush_open"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_rush_aftershock"},{"id":"climb_window","text":"我先跨出窗台，想在外牆找地方落腳。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school"],"steps":[{"kind":"hazard","id":"jump_window"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_climb_window"}]},
+    {"id":"stairs","prompt":"老師說可以疏散。樓梯前已排了幾個班，另一側有電梯。我怎麼離開？","when":{"clock":{"eq":3}},"options":[{"id":"orderly_stairs","text":"我護住頭頸，保持距離，跟隊伍走樓梯。","class":"correct","safety":"safe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"principle","id":"head"},{"kind":"principle","id":"orderly"},{"kind":"principle","id":"stairs"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_orderly_stairs"},{"id":"rush_stairs","text":"我趁人還少先往下快跑，免得後面更擠。","class":"misconception","safety":"unsafe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"hazard","id":"pushing"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_rush_stairs"},{"id":"take_elevator","text":"我搭電梯先到一樓，再到外面跟大家會合。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school"],"steps":[{"kind":"hazard","id":"elevator"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_take_elevator"},{"id":"stairs_only","text":"我跟著班級走樓梯，留著距離慢慢走。","class":"partial","safety":"safe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"principle","id":"orderly"},{"kind":"principle","id":"stairs"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_stairs_only"}]},
+    {"id":"outside","prompt":"出口外牆掉了幾塊碎片，前方還垂著一條線。我選哪條路？","when":{"clock":{"eq":4}},"options":[{"id":"avoid_wire","text":"我繞開電線和外牆，往操場空地走。","class":"correct","safety":"safe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"principle","id":"open_area"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_avoid_wire"},{"id":"follow_wall","text":"我貼著外牆走過去，想避開正前方的電線。","class":"misconception","safety":"unsafe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"hazard","id":"stay_at_wall"}],"cues":["wall"],"effect":{"set":{},"add":{}},"narration":"option_follow_wall"},{"id":"move_wire","text":"我先把垂下的電線挪開，讓同學能通過。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"hazard","id":"wire"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_move_wire"}]},
+    {"id":"assembly","prompt":"操場上幾個班正在集合，熟識的同學朝我招手。我在哪裡等？","when":{"clock":{"eq":5}},"options":[{"id":"join_class","text":"我找到自己班的集合位置，留在老師看得到的地方。","class":"correct","safety":"safe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"principle","id":"stay_group"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_join_class"},{"id":"join_other_class","text":"我先站到朋友那一班，等老師找我再回去。","class":"misconception","safety":"unsafe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"hazard","id":"leave_assembly"}],"cues":["leave"],"effect":{"set":{},"add":{}},"narration":"option_join_other_class"},{"id":"retrieve_phone","text":"我趁點名前回教室拿手機，再趕回操場。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"hazard","id":"collect"}],"cues":["leave"],"effect":{"set":{},"add":{}},"narration":"option_retrieve_phone"}]},
+    {"id":"roll_call","prompt":"老師正喊我的名字，小維還沒被確認。我回應什麼？","when":{"clock":{"gte":6}},"options":[{"id":"answer_roll","text":"我回應到，說清小維最後的位置及是否受傷。","class":"correct","safety":"safe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"principle","id":"roll_call"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_answer_roll"},{"id":"wait_roll","text":"我先等老師再喊一次，免得聽錯名單。","class":"misconception","safety":"unsafe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"hazard","id":"miss_roll_call"}],"cues":[],"effect":{"set":{},"add":{}},"narration":"option_wait_roll"},{"id":"go_back_after_roll","text":"我先離開隊伍找小維，等找到再一起回報。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cwa-school","moi-earthquake"],"steps":[{"kind":"hazard","id":"collect"}],"cues":["leave"],"effect":{"set":{},"add":{}},"narration":"option_go_back_after_roll"}]}
+  ],
+  "consequences": [
+    {"id":"missed_cover","kind":"missed","decisionId":null,"when":{"all":[{"fact":"shaking","eq":true},{"clock":{"lte":2}},{"not":{"fact":"covered","eq":true}}]},"tiers":[{"fromCount":1,"result":{"narration":"no_cover","effect":{"set":{"facts.delayed":true},"add":{"exposure.trauma":1},"delay":"主震未掩護","injuries":[{"id":"arm_scrape","label":"手臂擦傷","severity":"MILD","subject":"player"}]}}},{"fromCount":2,"result":{"narration":"still_no_cover","effect":{"set":{"facts.delayed":true},"add":{"exposure.trauma":2},"delay":"持續未取得掩護","injuries":[{"id":"falling_debris","label":"落物造成手臂受傷","severity":"MODERATE","subject":"player"}]}}}],"sourceIds":["ntfd-cover"],"review":{"why":"主震未掩護使落物接連打到身旁。","tip":"搖晃一開始就趴低、掩護、穩住。","eligibleWhen":{"always":true},"priority":5,"principleId":"cover"}},
+    {"id":"peer_followed","kind":"reckless","decisionId":"companion","when":{"has":{"set":"turnCues","id":"invite"}},"tiers":[{"fromCount":1,"result":{"narration":"peer_wrist","effect":{"set":{"npc.xiaowei.injured":true,"npc.xiaowei.state":"hurt"},"add":{},"delay":"同伴受傷後需要協助","injuries":[{"id":"peer_wrist","label":"手腕受傷","severity":"MILD","subject":"xiaowei"}]}}}],"sourceIds":["cwa-school"],"review":{"why":"小維跟著離開掩護，失去平衡時傷到手腕。","tip":"搖晃時讓同伴一起留在掩護處。","eligibleWhen":{"always":true},"priority":5,"principleId":"stop_npc"}},
+    {"id":"missed_aftershock","kind":"missed","decisionId":"aftershock","when":{"all":[{"not":{"fact":"afterCovered","eq":true}},{"not":{"has":{"set":"turnHazards","id":"rush_open"}}}]},"tiers":[{"fromCount":1,"result":{"narration":"no_aftercover","effect":{"set":{"facts.delayed":true},"add":{"exposure.trauma":2},"delay":"餘震時沒有就地掩護","injuries":[{"id":"leg_bruise","label":"小腿撞傷","severity":"MODERATE","subject":"player"}]}}}],"sourceIds":["cwa-school"],"review":{"why":"餘震時沒有掩護，移動的桌子撞傷小腿。","tip":"遇到餘震再就地趴下、掩護、穩住。","eligibleWhen":{"always":true},"priority":5,"principleId":"aftershock_cover"}},
+    {"id":"wall_delay","kind":"reckless","decisionId":"outside","when":{"has":{"set":"turnCues","id":"wall"}},"tiers":[{"fromCount":1,"result":{"narration":"wall_scraps","effect":{"set":{"facts.delayed":true},"add":{"exposure.separation":1},"delay":"貼外牆後折返繞行"}}}],"sourceIds":["moi-earthquake"],"review":{"why":"外牆掉落碎片，迫使我折返。","tip":"出大樓後往遠離外牆和電線的空曠處移動。","eligibleWhen":{"always":true},"priority":5,"principleId":"open_area"}},
+    {"id":"left_group","kind":"reckless","decisionId":"assembly","when":{"has":{"set":"turnCues","id":"leave"}},"tiers":[{"fromCount":1,"result":{"narration":"left_group","effect":{"set":{"facts.delayed":true},"add":{"exposure.separation":1},"delay":"離開班級集合處"}}}],"sourceIds":["moi-earthquake"],"review":{"why":"班級隊伍無法確認我在哪裡。","tip":"到操場後留在自己班的集合位置。","eligibleWhen":{"always":true},"priority":5,"principleId":"stay_group"}},
+    {"id":"missed_roll","kind":"missed","decisionId":"roll_call","when":{"not":{"fact":"counted","eq":true}},"tiers":[{"fromCount":1,"result":{"narration":"no_roll","effect":{"set":{"facts.delayed":true},"add":{"exposure.separation":1},"delay":"點名沒有回應"}}},{"fromCount":2,"result":{"narration":"no_roll_again","effect":{"set":{"facts.delayed":true},"add":{"exposure.separation":2},"delay":"老師另外查找後才確認人員"}}}],"sourceIds":["moi-earthquake"],"review":{"why":"點名無回覆使老師必須另外查找。","tip":"留在本班位置並在點名時應答。","eligibleWhen":{"always":true},"priority":5,"principleId":"roll_call"}}
+  ],
+  "phaseRules": [],
+  "endings": [
+    {"id":"jump_window_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_jump_window_fatal","labels":[{"when":{"always":true},"text":"墜落後無法自行撤離"}],"summaries":[{"when":{"always":true},"text":"我跨出窗台後失去支撐，落到下方，已無法自行移動。"}]},
+    {"id":"elevator_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_elevator_fatal","labels":[{"when":{"always":true},"text":"受困電梯，等待救援"}],"summaries":[{"when":{"always":true},"text":"電梯停在樓層之間，門打不開。"}]},
+    {"id":"wire_fatal","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_wire_fatal","labels":[{"when":{"always":true},"text":"接觸掉落電線，撤離中斷"}],"summaries":[{"when":{"always":true},"text":"我碰到下垂電線，隨即倒下，無法繼續走。"}]},
+    {"id":"safe_exit","type":"SELF_EVACUATION","phase":"afterBeats","when":{"all":[{"fact":"counted","eq":true},{"not":{"fact":"delayed","eq":true}},{"fact":"group","eq":true},{"fact":"openArea","eq":true}]},"injury":"fromThresholds","narration":"end_safe_exit","labels":[{"when":{"always":true},"text":"安全撤離"}],"summaries":[{"when":{"always":true},"text":"我跟隊到集合處並完成點名。"}]},
+    {"id":"delayed_exit","type":"DELAYED_EVACUATION","phase":"afterBeats","when":{"fact":"counted","eq":true},"injury":"fromThresholds","narration":"end_delayed_exit","labels":[{"when":{"always":true},"text":"延誤撤離"}],"summaries":[{"when":{"always":true},"text":"老師重新核對人員後才完成清點。"}]},
+    {"id":"assisted_exit","type":"DELAYED_EVACUATION","phase":"afterBeats","when":{"clock":{"gte":8}},"injury":"fromThresholds","narration":"end_assisted_exit","labels":[{"when":{"always":true},"text":"延誤後由老師協助撤離"}],"summaries":[{"when":{"always":true},"text":"未回應點名，老師另外花時間查找。"}]}
+  ],
+  "injury": {
+    "score": {
+      "ref": "exposure.trauma"
+    },
+    "noneMax": 0,
+    "mildMax": 1,
+    "moderateMax": 3
+  },
+  "review": {
+    "reflectionPrompt": "如果地點換成圖書館，搖晃停止後，我要如何確認路線與同行者？"
+  },
+  "presentation": {
+    "narration": {
+      "principle_cover": [
+        "我縮到桌下，抓住桌腳。",
+        "桌腳晃得厲害，我趴低身子握住它。"
+      ],
+      "principle_stop_npc": [
+        "小維縮回跨向走道的腳。",
+        "小維聽到我的話，把腳收回桌邊。"
+      ],
+      "principle_reassure": [
+        "小維聽完，把手放回桌腳。",
+        "小維點點頭，沒有離開我身邊。"
+      ],
+      "principle_wait": [
+        "我留在原處，聽著桌椅的聲音慢下來。",
+        "我沒有往門邊移動。"
+      ],
+      "principle_aftershock_cover": [
+        "我再次低下身子，穩住桌腳。",
+        "桌子滑動，我護住頭頸並抓住桌腳。"
+      ],
+      "principle_head": [
+        "我護著頭頸跟上隊伍。",
+        "我遮護頭部，視線留在樓梯。"
+      ],
+      "principle_orderly": [
+        "我和前方同學留著距離。",
+        "我沿著方向走，沒有擠向前面。"
+      ],
+      "principle_stairs": [
+        "我跟著班級從樓梯下樓。",
+        "老師的隊伍沿這側樓梯往下，我也跟上。"
+      ],
+      "principle_open_area": [
+        "我避開外牆和垂落的電線，往開闊處走。",
+        "我繞過電線垂落的位置，走到操場空地。"
+      ],
+      "principle_stay_group": [
+        "我留在班級指定位置。",
+        "我走到自己的隊伍旁，保持在老師視線內。"
+      ],
+      "principle_roll_call": [
+        "我回應自己的名字，說明同伴的位置。",
+        "老師叫到我時，我回應並說小維在哪裡。"
+      ],
+      "rush_later": [
+        "地板再次晃動，滑過來的桌子撞上我的小腿。",
+        "我往門邊走，桌腳移位撞到腿，落腳時一陣痛。"
+      ],
+      "hazard_rush_open": [
+        "門框旁的物品掉下來，擦過我手臂。",
+        "我離開桌邊，一件掉落的物品擦到手臂。"
+      ],
+      "hazard_triangle": [
+        "我留在櫃旁，頭頂沒有遮擋。",
+        "櫃子晃動，我身上方沒有掩護。"
+      ],
+      "hazard_collect": [
+        "我停下找自己的東西，隊伍已離我更遠。",
+        "我把注意力放在物品上，老師暫時看不到我。"
+      ],
+      "hazard_pushing": [
+        "樓梯轉角有人停下，我收不住腳，腳踝一拐。",
+        "隊伍在樓梯口擠成一團，我踩空扭傷腳踝。"
+      ],
+      "hazard_jump_window": [
+        "我跨出窗台後失去支撐，落到下方，已無法自行移動。",
+        "通路中斷，我無法繼續跟隊撤離。"
+      ],
+      "end_jump_window_fatal": [
+        "我只能留在原處，其他人得等待救難人員確認。",
+        "撤離中斷，救難人員得先確認現場狀況。"
+      ],
+      "hazard_elevator": [
+        "電梯停在樓層之間，門打不開。",
+        "通路中斷，我無法繼續跟隊撤離。"
+      ],
+      "end_elevator_fatal": [
+        "我只能留在原處，其他人得等待救難人員確認。",
+        "撤離中斷，救難人員得先確認現場狀況。"
+      ],
+      "hazard_wire": [
+        "我碰到下垂電線，隨即倒下，無法繼續走。",
+        "通路中斷，我無法繼續跟隊撤離。"
+      ],
+      "end_wire_fatal": [
+        "我只能留在原處，其他人得等待救難人員確認。",
+        "撤離中斷，救難人員得先確認現場狀況。"
+      ],
+      "option_take_cover": [
+        "我握住了桌腳。",
+        "桌面遮住我的頭頸。"
+      ],
+      "option_use_triangle": [
+        "我蹲在櫃旁。",
+        "我背靠著晃動的櫃子。"
+      ],
+      "option_rush_door": [
+        "我離開了桌邊。",
+        "我往教室外跑。"
+      ],
+      "option_cover_only": [
+        "我縮到桌下。",
+        "我的頭暫時有桌面遮住。"
+      ],
+      "option_reassure_peer": [
+        "小維回到桌邊。",
+        "我和小維留在原地。"
+      ],
+      "option_wait_peer": [
+        "小維挪到了門邊，手扶著還在晃的門框。",
+        "小維離開桌旁，站到走道的門邊。"
+      ],
+      "option_watch_door": [
+        "小維跟了過來。",
+        "小維也走離桌子。"
+      ],
+      "option_stop_peer": [
+        "小維收回腳步。",
+        "他回到桌旁。"
+      ],
+      "option_cover_aftershock": [
+        "我維持低姿勢。",
+        "我抓住桌腳等震動退去。"
+      ],
+      "option_stand_by_desk": [
+        "頭頂仍沒有遮擋。",
+        "櫃子仍晃動。"
+      ],
+      "option_rush_aftershock": [
+        "我往門邊移動。",
+        "我站了起來。"
+      ],
+      "option_climb_window": [
+        "我的腳越過窗台。",
+        "我離開了教室的地面。"
+      ],
+      "option_orderly_stairs": [
+        "我沿著樓梯下去。",
+        "我跟上班級隊伍。"
+      ],
+      "option_rush_stairs": [
+        "轉角的隊伍突然停住。",
+        "我和前方的距離一下縮短。"
+      ],
+      "option_take_elevator": [
+        "我按下一樓。",
+        "電梯門關上了。"
+      ],
+      "option_stairs_only": [
+        "我跟著隊伍走。",
+        "樓梯上仍有同學。"
+      ],
+      "option_avoid_wire": [
+        "我走向操場。",
+        "外牆離我越來越遠。"
+      ],
+      "option_follow_wall": [
+        "我走近了外牆。",
+        "頭頂有碎屑落下。"
+      ],
+      "option_move_wire": [
+        "我伸手碰線。",
+        "我接觸到垂下的電線。"
+      ],
+      "option_join_class": [
+        "我回到自己的班級隊伍。",
+        "老師在我面前核對名單。"
+      ],
+      "option_join_other_class": [
+        "我走到另一班。",
+        "自己班的隊伍已聽不到我。"
+      ],
+      "option_retrieve_phone": [
+        "我轉頭走向大樓。",
+        "我離開了班級集合處。"
+      ],
+      "option_answer_roll": [
+        "老師把我和小維的位置記下。",
+        "老師聽見我的回報，更新了名單。"
+      ],
+      "option_wait_roll": [
+        "名單上我的狀態仍待確認。",
+        "老師叫了下一個名字。"
+      ],
+      "option_go_back_after_roll": [
+        "老師沒有收到我的回應。",
+        "我離開了點名的位置。"
+      ],
+      "peer_proposal": [
+        "小維挪開椅子，說想拉開後門去叫人。",
+        "我聽見小維說要出去找隔壁班。"
+      ],
+      "aftershock_event": [
+        "主震鬆了不到一會，窗玻璃又震出一陣低聲。",
+        "桌椅剛停下，腳底又傳來第二波震動。"
+      ],
+      "route_ready": [
+        "地板慢慢停住，老師在門口集結班級。",
+        "餘震過去後，老師指向能走的樓梯。"
+      ],
+      "outside_event": [
+        "出口外有碎屑，前方電線低垂。",
+        "亮光從出口照進來，外牆旁有一條線垂下。"
+      ],
+      "assembly_event": [
+        "操場上傳來各班老師集合的聲音。",
+        "幾個班在操場拉開隊伍，我聽見人喊班級。"
+      ],
+      "gather": [
+        "名單翻動，老師開始叫名字。",
+        "老師清了清嗓子，按名單點名。"
+      ],
+      "no_cover": [
+        "有碎物擦過我的手臂。",
+        "我還站在桌外，手臂被掉落的物品擦了一下。"
+      ],
+      "still_no_cover": [
+        "頭頂響了一聲，燈具碎片落到我伸手就碰得到的位置。",
+        "碎片接連掉下，我往後縮，手臂又被擦到。"
+      ],
+      "peer_wrist": [
+        "小維跟我走出桌邊，踉蹌時用手撐住門框，手腕痛得縮了回去。",
+        "小維在我後面失去平衡，撐了一下門框後握住自己的手腕。"
+      ],
+      "no_aftercover": [
+        "桌腳突然滑動，撞到我的小腿。",
+        "我還沒找到掩護，桌子就撞上小腿。"
+      ],
+      "wall_scraps": [
+        "外牆落下小碎片，我只好折回再繞。",
+        "牆邊響起碎石聲，我退回原來路口。"
+      ],
+      "left_group": [
+        "我離開了自己班的位置，老師清點不到我。",
+        "班級隊伍已在核對名單，我不在他們那一排。"
+      ],
+      "no_roll": [
+        "老師停下點名，重新掃視隊伍。",
+        "名單旁多了一個待確認記號。"
+      ],
+      "no_roll_again": [
+        "老師花時間在隊伍外找到我，才確認沒有人失聯。",
+        "另一位老師過來確認我的身分，清點這才繼續。"
+      ],
+      "end_safe_exit": [
+        "老師在我的名字旁畫了勾，我留在操場上和大家等候。",
+        "班級名單核對完，我在操場和同學一起等通知。"
+      ],
+      "end_delayed_exit": [
+        "老師記下我的位置，等我跟上後完成清點。",
+        "我終於回到隊伍，老師重新核對名單。"
+      ],
+      "end_assisted_exit": [
+        "老師在集合處外找到我，叫同學過來協助，我這才和班級會合。",
+        "我聽到老師在隊伍外叫我，身旁有人扶我回到集合處。"
+      ],
+      "opening": [
+        "我是上午上課的學生，小維坐在隔壁桌。椅腳猛地刮過地板，窗邊也在響。老師的聲音被桌椅碰撞蓋住。",
+        "我在教室上課，小維在我隔壁。桌腳忽然滑動，整間教室響起碰撞聲。"
+      ],
+      "look_shaking": [
+        "桌椅仍在晃，教室後門在走道另一端。",
+        "我手邊有一張堅固的桌，離門還有一段路。"
+      ],
+      "look_school": [
+        "我看得到老師和班級隊伍。",
+        "老師正沿著隊伍一側查看。"
+      ],
+      "ask_peer": [
+        "小維說：「我聽到老師的聲音，但人有點多。」",
+        "小維看向老師的方向，說他還找得到自己的班。"
+      ],
+      "idle": [
+        "我等了一下，周圍人的腳步重新響起。",
+        "我聽到旁邊有人在喊同學的名字。"
+      ]
+    },
+    "look": [
+      {"when":{"fact":"shaking","eq":true},"narration":"look_shaking"},
+      {"when":{"always":true},"narration":"look_school"}
+    ],
+    "askCompanion": [
+      {"when":{"always":true},"narration":"ask_peer"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": [
+      {"when":{"fact":"shaking","eq":true},"text":"教室仍在搖晃"},
+      {"when":{"fact":"aftershock","eq":true},"text":"已出現餘震"}
+    ]
+  },
+  "assets": []
+}

@@ -200,6 +200,7 @@ state.saved = false;
 state.inputIntent = 'action';
 state.draft = '';
 const app = document.querySelector("#app");
+const choiceView = globalThis.location?.hash === '#legacy-drill' ? null : globalThis.PocketChoiceView?.create(() => render());
 
 function installFireSpec(spec) {
   fireSpec = spec;
@@ -666,6 +667,10 @@ function tabButton(id, label) {
 }
 
 function renderDrillView() {
+  return choiceView ? choiceView.render(state.tab === "drill") : renderLegacyDrillView();
+}
+
+function renderLegacyDrillView() {
   const scenario = state.activeScenario || scenarios.find((item) => item.id === state.selectedScenarioId);
   if (scenario.id === 'drill_fire_dorm') return renderFireView(scenario);
   const step = state.activeScenario?.steps[state.currentStep - 1] || scenario.steps[0];
@@ -833,6 +838,7 @@ function renderOnlineView() {
 }
 
 function bindEvents() {
+  choiceView?.bind();
   document.querySelectorAll("[data-tab]").forEach((button) => {
     button.addEventListener("click", () => {
       state.tab = button.dataset.tab;

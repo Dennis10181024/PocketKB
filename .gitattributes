@@ -1,0 +1,2 @@
+# Published scenario pack SHA-256 hashes are computed from the checked-out bytes.
+web-pwa/scenarios/choice/*.json text eol=lf

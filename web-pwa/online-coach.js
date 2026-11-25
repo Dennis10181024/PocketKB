@@ -264,4 +264,9 @@ async function send(text,intent='action',hintTrigger) {
 document.addEventListener('visibilitychange',syncIdle);
 window.addEventListener('beforeunload',event=>{if(online.session&&!online.session.terminal){event.preventDefault();event.returnValue='';}});
 render();
-json('/api/scenarios').then(value=>{online.catalog=value.scenarios;render();}).catch(()=>{online.error='請透過電腦的本機線上教練開啟這個頁面。';render();});
+json('/api/scenarios').then(value=>{
+  online.catalog=value.scenarios;
+  const requested=new URLSearchParams(location.search).get('scenario');
+  if(online.catalog.some(row=>row.id===requested))online.selected=requested;
+  render();
+}).catch(()=>{online.error='請透過電腦的本機線上教練開啟這個頁面。';render();});
