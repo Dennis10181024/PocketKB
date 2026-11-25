@@ -208,6 +208,14 @@ Java_com_pocketkb_android_ai_NativeLlamaBridge_nativeCancel(JNIEnv *, jobject) {
 }
 
 extern "C"
+JNIEXPORT void JNICALL
+Java_com_pocketkb_android_ai_NativeLlamaBridge_nativeUnload(JNIEnv *, jobject) {
+    g_cancel.store(true);
+    std::lock_guard<std::mutex> lock(g_mutex);
+    release_model_locked();
+}
+
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_pocketkb_android_ai_NativeLlamaBridge_nativeSystemInfo(JNIEnv * env, jobject) {
     return env->NewStringUTF(llama_print_system_info());

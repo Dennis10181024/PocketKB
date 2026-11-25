@@ -33,6 +33,10 @@ class NativeLlamaBridge(context: Context) {
         nativeCancel()
     }
 
+    fun unload() {
+        if (isAvailable) nativeUnload()
+    }
+
     private external fun nativeInit(nativeLibDir: String)
     private external fun nativeLoad(
         modelPath: String,
@@ -42,5 +46,6 @@ class NativeLlamaBridge(context: Context) {
     ): Int
     private external fun nativeGenerate(prompt: String, maxTokens: Int): String
     private external fun nativeCancel()
+    private external fun nativeUnload()
     private external fun nativeSystemInfo(): String
 }

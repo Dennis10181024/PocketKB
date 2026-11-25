@@ -98,4 +98,9 @@ class LlamaCppEngine(
     override fun cancel() {
         bridge.cancel()
     }
+
+    fun unload() {
+        bridge.unload()
+        config = null
+    }
 }
