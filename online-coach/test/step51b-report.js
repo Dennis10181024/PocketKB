@@ -39,9 +39,11 @@ function optionAudit(packs){
         negative:negative.test(option.text)};
     });
     const bestOf=metric=>options.some(option=>option.class==='correct'&&option[metric]===Math.max(...options.map(o=>o[metric])));
+    const shortest=metric=>options.some(option=>option.class==='correct'&&option[metric]===Math.min(...options.map(o=>o[metric])));
     const spread=metric=>Math.max(...options.map(o=>o[metric]))-Math.min(...options.map(o=>o[metric]));
     return {packId:pack.meta.id,id:decision.id,prompt:decision.prompt,options,lengthBias:bestOf('length'),
-      significantBias:bestOf('significant'),actionBias:bestOf('actions'),spread:spread('length'),significantSpread:spread('significant')};
+      significantBias:bestOf('significant'),actionBias:bestOf('actions'),spread:spread('length'),significantSpread:spread('significant'),
+      shortestBias:shortest('length'),shortestSignificantBias:shortest('significant')};
   }));
 }
 

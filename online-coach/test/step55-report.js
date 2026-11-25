@@ -32,7 +32,8 @@ for(const entry of manifest.packs.filter(item=>item.status==='draft')){
     stats.decisions+' 題，'+stats.endings+' 種可達結局，'+stats.states+' 個可達非終止狀態。',
     '',...(sourceNotes[pack.meta.id]||[]).map(note=>'- '+note),'',
     '| 檢查 | 數據 |','|---|---|');
-  for(const [metric,label] of [['lengthBias','最長＝正確（標點計入）'],['significantBias','最長＝正確（忽略標點）'],['actionBias','動作最多＝正確']]){
+  for(const [metric,label] of [['lengthBias','最長＝正確（標點計入）'],['significantBias','最長＝正確（忽略標點）'],
+    ['actionBias','動作最多＝正確'],['shortestBias','最短＝正確（標點計入）'],['shortestSignificantBias','最短＝正確（忽略標點）']]){
     const count=rows.filter(row=>row[metric]).length;
     lines.push('| '+label+' | '+count+'/'+rows.length+'（'+(count/rows.length*100).toFixed(1)+'%） |');
   }

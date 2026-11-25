@@ -7,7 +7,7 @@ const {readJson,validatePack}=require('../../web-pwa/choice-pack');
 const {createRuntime}=require('../../web-pwa/choice-runtime');
 const dir=path.resolve(__dirname,'../../web-pwa/scenarios/choice');
 const schema=require(path.join(dir,'schema-v1.json'));
-const {file,audit,safe,rough,fatalRuns}=JSON.parse(fs.readFileSync(0,'utf8'));
+const {file,audit,safe,rough,fatalRuns,extraCases=[]}=JSON.parse(fs.readFileSync(0,'utf8'));
 if(!/^[a-z][a-z0-9-]+-draft\.json$/.test(file))throw Error('Expected draft filename');
 const bytes=fs.readFileSync(path.join(dir,file));
 const pack=validatePack(readJson(bytes.toString('utf8')),schema);
@@ -45,6 +45,7 @@ const retry=fatalRuns.find(item=>!item.prefix);
 if(!retry)throw Error('Need a fatal vector from an all-correct prefix');
 cases.push({id:'retry',choices:[...safe.slice(0,retry.at),retry.choice],
   retry:{decisionId:pack.decisions[retry.at].id,clock:retry.at,facts:{}},resume:safe.slice(retry.at),sameAs:'all-correct'});
+cases.push(...extraCases);
 vectors.scenarios=vectors.scenarios.filter(item=>item.file!==file).concat({file,packSha256:sha256,cases});
 Object.assign(notes,audit);
 const encode=value=>JSON.stringify(value,null,2)+'\n';

@@ -228,7 +228,7 @@
     "visibleActions": 2
   },
   "metro_distance_myth": {
-    "text": "我扶好欄杆，拿手機拍下後方情況。",
+    "text": "我靠扶手，拿手機拍下後方。",
     "visibleActions": 2
   },
   "metro_distance_risk": {
@@ -240,7 +240,7 @@
     "visibleActions": 1
   },
   "metro_intercom_myth": {
-    "text": "我傳影片給站外朋友，再等他回訊息。",
+    "text": "我傳影片給朋友，等他來回報。",
     "visibleActions": 2
   },
   "metro_intercom_risk": {
@@ -252,19 +252,19 @@
     "visibleActions": 1
   },
   "metro_doors_myth": {
-    "text": "我扶著車門旁欄杆，往前卡住下車位。",
+    "text": "我握欄杆，卡在門邊等開門。",
     "visibleActions": 2
   },
   "metro_doors_risk": {
-    "text": "我試著自行開車門，想往軌道旁繞開。",
+    "text": "我想自行開車門，從軌道旁繞過。",
     "visibleActions": 2
   },
   "metro_platform_ok": {
-    "text": "我叫小宇順著人流走上月台。",
+    "text": "我叫小宇順著人流走到月台。",
     "visibleActions": 2
   },
   "metro_platform_myth": {
-    "text": "我拉小宇停在門口，彎腰撿完再跟隊。",
+    "text": "我停下，幫小宇撿耳機再走。",
     "visibleActions": 3
   },
   "metro_platform_risk": {
@@ -276,7 +276,7 @@
     "visibleActions": 2
   },
   "metro_hide_myth": {
-    "text": "我靠牆站好，開擴音請旁人一起報案。",
+    "text": "我靠牆開擴音，再請旁人報案。",
     "visibleActions": 3
   },
   "metro_hide_risk": {
@@ -292,19 +292,103 @@
     "visibleActions": 2
   },
   "metro_barrier_risk": {
-    "text": "我靠近人聲，喊話想叫騷動先停下來。",
+    "text": "我朝聲音走去，想喊話叫停。",
     "visibleActions": 2
   },
   "metro_report_ok": {
-    "text": "我打110，回報站名和現場情況。",
+    "text": "我打110，回報站名和現場的情況。",
     "visibleActions": 2
   },
   "metro_report_myth": {
-    "text": "我把手機影片上傳，等轉發的人幫忙。",
+    "text": "我先上傳影片，等轉發的人幫忙。",
     "visibleActions": 2
   },
   "metro_report_risk": {
-    "text": "我回月台找站務核對，等查清再向警方回報。",
+    "text": "我回月台找站務核對，查清再向警方回報。",
     "visibleActions": 3
+  },
+  "flood_power_ok": {
+    "text": "我確認動線乾燥，再切斷屋內總電源。",
+    "visibleActions": 1
+  },
+  "flood_power_myth": {
+    "text": "我搬高延長線，再整理桌上的插頭。",
+    "visibleActions": 2
+  },
+  "flood_power_risk": {
+    "text": "我開著電器收拾物品，等水進來再處理。",
+    "visibleActions": 2
+  },
+  "flood_wet_panel_ok": {
+    "text": "我沿乾的樓梯上樓，避開電箱附近。",
+    "visibleActions": 1
+  },
+  "flood_wet_panel_myth": {
+    "text": "我在玄關鋪毛巾，再拿拖把吸水。",
+    "visibleActions": 2
+  },
+  "flood_wet_panel_risk": {
+    "text": "我踩水走到電箱，伸手確認開關位置。",
+    "visibleActions": 2
+  },
+  "flood_basement_ok": {
+    "text": "我勸阿哲放下車鑰匙，一起走上樓梯。",
+    "visibleActions": 2
+  },
+  "flood_basement_myth": {
+    "text": "我留在梯口，請阿哲看看水深。",
+    "visibleActions": 2
+  },
+  "flood_basement_risk": {
+    "text": "我跟他下到車庫移車，想把車開到高處。",
+    "visibleActions": 2
+  },
+  "flood_road_ok": {
+    "text": "我留在樓上乾燥處，和阿哲等候聯絡。",
+    "visibleActions": 2
+  },
+  "flood_road_myth": {
+    "text": "我下到低梯口，揮手請巷口車子靠近。",
+    "visibleActions": 2
+  },
+  "flood_road_risk": {
+    "text": "我下樓開車穿過積水，想從巷口撤走。",
+    "visibleActions": 2
+  },
+  "flood_call_ok": {
+    "text": "我打119，報地址、樓層和受困人數。",
+    "visibleActions": 2
+  },
+  "flood_call_myth": {
+    "text": "我拍下樓梯水位，傳給房東再打電話。",
+    "visibleActions": 3
+  },
+  "flood_call_risk": {
+    "text": "我拍下積水，貼社群再標地標。",
+    "visibleActions": 3
+  },
+  "flood_signal_ok": {
+    "text": "我留在高處窗內示意，等候人員接應。",
+    "visibleActions": 2
+  },
+  "flood_signal_myth": {
+    "text": "我往樓下移動，揮手讓救援看見。",
+    "visibleActions": 2
+  },
+  "flood_signal_risk": {
+    "text": "我往地面入口移動，想在門邊迎接救援。",
+    "visibleActions": 3
+  },
+  "flood_recovery_ok": {
+    "text": "我保持設備原狀，等專業人員檢查。",
+    "visibleActions": 1
+  },
+  "flood_recovery_myth": {
+    "text": "我擦乾插座外側，再接小電器試看看。",
+    "visibleActions": 2
+  },
+  "flood_recovery_risk": {
+    "text": "我把潮濕的延長線插回，想測樓下電力。",
+    "visibleActions": 2
   }
 }

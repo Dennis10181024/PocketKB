@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "flood_low_home_draft",
+    "title": "一樓住家的水聲",
+    "version": "1.0.0",
+    "hazard": "flood",
+    "skeletonVersion": "draft-choice-5.5",
+    "sources": [
+      {"id":"wet-flood","title":"臺南市政府：淹水避難須知","url":"https://w3fs.tainan.gov.tw/Download.ashx?n=5re55rC06YG%2F6Zuj6aCI55%2BlLnBkZg%3D%3D&u=LzAwMS9VcGxvYWQvNzAvcmVsZmlsZS8xMTQ1NC8xMTc5MzU5LzMyYWMxZjhhLTIwYWUtNGQ1Ny05ZWI3LTlhYzY3MjUwY2NlZi5wZGY%3D"},
+      {"id":"power-flood","title":"CDC：災後預防用電危險","url":"https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html"},
+      {"id":"road-flood","title":"消防署颱風洪水防災須知（臺中市石岡區公所刊載）","url":"https://www.shigang.taichung.gov.tw/980804/980876/980886/980896/1021465"},
+      {"id":"call-flood","title":"內政部消防署：119 緊急報案專線","url":"https://www.nfa.gov.tw/cht/?code=list&ids=66"}
+    ],
+    "status": "draft"
+  },
+  "initial": {
+    "facts": {
+      "handsDry": true,
+      "floorDry": true,
+      "panelAccessible": true,
+      "powerOff": false,
+      "upper": false,
+      "called": false
+    },
+    "exposure": {
+      "harm": 0,
+      "delay": 0
+    },
+    "npc": {
+      "peer": {
+        "name": "阿哲",
+        "state": "nearby",
+        "injured": false
+      }
+    },
+    "decisionId": "flood_power",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 7
+  },
+  "catalog": {
+    "principles": [
+      {"id":"flood_power_act_ok","sourceIds":["power-flood"],"when":{"all":[{"fact":"handsDry","eq":true},{"fact":"floorDry","eq":true},{"fact":"panelAccessible","eq":true}]},"review":{"why":"乾燥可及時，提前隔離電源可減少進水後的感電疑慮。","tip":"只有手、站立處和動線乾燥、配電箱可安全抵達時才關總開關。","eligibleWhen":{"always":true},"priority":2},"normal":{"narration":"principle_flood_power_act_ok","effect":{"set":{"facts.powerOff":true}}}},
+      {"id":"flood_wet_panel_act_ok","sourceIds":["power-flood"],"when":{"always":true},"review":{"why":"濕區不適合接近電力設備。","tip":"離開積水與配電箱，等專業人員確認。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_flood_wet_panel_act_ok","effect":{"set":{"facts.upper":true}}}},
+      {"id":"flood_basement_act_ok","sourceIds":["wet-flood"],"when":{"always":true},"review":{"why":"地下室可能快速進水，同行上樓也便於互相照應。","tip":"離開地下入口，勸同伴一起往二樓以上移動。","eligibleWhen":{"always":true},"priority":4},"normal":{"narration":"principle_flood_basement_act_ok","effect":{"set":{"facts.upper":true,"npc.peer.state":"upstairs"}}}},
+      {"id":"flood_road_act_ok","sourceIds":["road-flood"],"when":{"always":true},"review":{"why":"道路深淺與流速看不清楚時留在高處較安全。","tip":"避開積水道路，在可及的高處待救。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_flood_road_act_ok","effect":{}}},
+      {"id":"flood_call_act_ok","sourceIds":["call-flood"],"when":{"always":true},"review":{"why":"急難受困需要把可定位資訊交給救援。","tip":"通報地址、樓層、人數及水況。","eligibleWhen":{"always":true},"priority":6},"normal":{"narration":"principle_flood_call_act_ok","effect":{"set":{"facts.called":true}}}},
+      {"id":"flood_signal_act_ok","sourceIds":["wet-flood"],"when":{"always":true},"review":{"why":"安全且明顯的位置有助定位。","tip":"留在高處的安全位置，讓救援容易看到。","eligibleWhen":{"always":true},"priority":7},"normal":{"narration":"principle_flood_signal_act_ok","effect":{}}},
+      {"id":"flood_recovery_act_ok","sourceIds":["power-flood"],"when":{"always":true},"review":{"why":"外表看乾也不能證明內部安全。","tip":"泡水設備應經專業檢查才能重新使用。","eligibleWhen":{"always":true},"priority":8},"normal":{"narration":"principle_flood_recovery_act_ok","effect":{}}}
+    ],
+    "hazards": [
+      {"id":"flood_power_act_myth","sourceIds":["power-flood"],"when":{"always":true},"review":{"why":"移高延長線無法代替斷電。","tip":"優先處理乾燥且安全可及的總開關。","eligibleWhen":{"always":true},"priority":2,"principleId":"flood_power_act_ok"},"normal":{"narration":"hazard_flood_power_act_myth","effect":{"add":{"exposure.delay":1},"delay":"整理插頭耽擱乾燥時斷電"}}},
+      {"id":"flood_power_act_risk","sourceIds":["power-flood"],"when":{"always":true},"review":{"why":"等到進水後再碰配電設備風險增加。","tip":"動線仍乾燥且安全可及時，先隔離總電源。","eligibleWhen":{"always":true},"priority":2,"principleId":"flood_power_act_ok"},"normal":{"narration":"hazard_flood_power_act_risk","effect":{"add":{"exposure.delay":1},"delay":"收拾物品錯過乾燥時斷電"}}},
+      {"id":"flood_wet_panel_act_myth","sourceIds":["power-flood"],"when":{"always":true},"review":{"why":"吸水拖延從仍可走的乾處避難。","tip":"別在進水處停留，沿乾的安全樓梯上行。","eligibleWhen":{"always":true},"priority":3,"principleId":"flood_wet_panel_act_ok"},"normal":{"narration":"hazard_flood_wet_panel_act_myth","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"injuries":[{"id":"flood_palm","label":"手掌擦傷","severity":"MILD","subject":"player"}],"delay":"在玄關清水錯過及早上樓"}}},
+      {"id":"flood_wet_panel_act_risk","sourceIds":["power-flood"],"when":{"fact":"powerOff","eq":false},"review":{"why":"積水且可能有電時，接觸設備會造成感電危險。","tip":"先走乾的安全路徑到高處，等專業人員確認。","eligibleWhen":{"always":true},"priority":3,"principleId":"flood_wet_panel_act_ok"},"normal":{"narration":"hazard_flood_wet_panel_act_risk","effect":{}},"fatalEndingId":"flood_wet_panel_act_risk_ending"},
+      {"id":"flood_basement_act_myth","sourceIds":["wet-flood"],"when":{"always":true},"review":{"why":"讓同伴接近進水坡道會增加滑倒風險。","tip":"一起離開入口，及早向高處移動。","eligibleWhen":{"always":true},"priority":4,"principleId":"flood_basement_act_ok"},"normal":{"narration":"hazard_flood_basement_act_myth","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"set":{"npc.peer.injured":true,"npc.peer.state":"elbow_hurt"},"injuries":[{"id":"flood_peer_elbow","label":"手肘挫傷","severity":"MILD","subject":"peer"}],"delay":"等候查看地下室拖慢避難"}}},
+      {"id":"flood_basement_act_risk","sourceIds":["wet-flood"],"when":{"always":true},"review":{"why":"已進水的地下室會卡住離開路線。","tip":"不要下地下室移車，改到便於救援的高處。","eligibleWhen":{"always":true},"priority":4,"principleId":"flood_basement_act_ok"},"normal":{"narration":"hazard_flood_basement_act_risk","effect":{}},"fatalEndingId":"flood_basement_act_risk_ending"},
+      {"id":"flood_road_act_myth","sourceIds":["road-flood"],"when":{"always":true},"review":{"why":"在低處等車會錯過安全的高處聯絡位置。","tip":"從乾燥高處直接通報情況。","eligibleWhen":{"always":true},"priority":5,"principleId":"flood_road_act_ok"},"normal":{"narration":"hazard_flood_road_act_myth","effect":{"add":{"exposure.delay":1},"delay":"到低處等車使避難延誤"}}},
+      {"id":"flood_road_act_risk","sourceIds":["road-flood"],"when":{"always":true},"review":{"why":"外表看不出實際水深，車輛可能熄火受困。","tip":"不要強行開過積水路段，改留安全高處待救。","eligibleWhen":{"always":true},"priority":5,"principleId":"flood_road_act_ok"},"normal":{"narration":"hazard_flood_road_act_risk","effect":{}},"fatalEndingId":"flood_road_act_risk_ending"},
+      {"id":"flood_call_act_myth","sourceIds":["call-flood"],"when":{"always":true},"review":{"why":"因為水路切斷，直接急難通報更快可定位。","tip":"以119直接通報目前位置和人數。","eligibleWhen":{"always":true},"priority":6,"principleId":"flood_call_act_ok"},"normal":{"narration":"hazard_flood_call_act_myth","effect":{"add":{"exposure.delay":1},"delay":"等房東轉報延誤定位"}}},
+      {"id":"flood_call_act_risk","sourceIds":["call-flood"],"when":{"always":true},"review":{"why":"貼文缺少能立即核對的資訊。","tip":"先用電話回報確切地址、樓層及受困人數。","eligibleWhen":{"always":true},"priority":6,"principleId":"flood_call_act_ok"},"normal":{"narration":"hazard_flood_call_act_risk","effect":{"add":{"exposure.delay":1},"delay":"等社群轉報耗時"}}},
+      {"id":"flood_signal_act_myth","sourceIds":["wet-flood"],"when":{"always":true},"review":{"why":"水邊滑倒會增加接應難度。","tip":"留在乾燥高處示意，不走到水邊。","eligibleWhen":{"always":true},"priority":7,"principleId":"flood_signal_act_ok"},"normal":{"narration":"hazard_flood_signal_act_myth","effect":{"add":{"exposure.harm":2,"exposure.delay":1},"injuries":[{"id":"flood_leg","label":"小腿撞傷","severity":"MODERATE","subject":"player"}],"delay":"下到水邊折返耽誤接應"}}},
+      {"id":"flood_signal_act_risk","sourceIds":["wet-flood"],"when":{"always":true},"review":{"why":"擅自移到水邊減少安全站立空間。","tip":"依接線員通知留在可接近的安全高處。","eligibleWhen":{"always":true},"priority":7,"principleId":"flood_signal_act_ok"},"normal":{"narration":"hazard_flood_signal_act_risk","effect":{"add":{"exposure.delay":1},"delay":"移離高處使救援需重新定位"}}},
+      {"id":"flood_recovery_act_myth","sourceIds":["power-flood"],"when":{"always":true},"review":{"why":"擦乾外側不能排除內部受潮。","tip":"停止自行測試，讓專業人員確認設備。","eligibleWhen":{"always":true},"priority":8,"principleId":"flood_recovery_act_ok"},"normal":{"narration":"hazard_flood_recovery_act_myth","effect":{"add":{"exposure.delay":1},"delay":"錯誤試電耽誤專業檢查"}}},
+      {"id":"flood_recovery_act_risk","sourceIds":["power-flood"],"when":{"always":true},"review":{"why":"受潮設備可能漏電，普通試電不安全。","tip":"讓泡水電器與線路保持原狀，等專業檢測。","eligibleWhen":{"always":true},"priority":8,"principleId":"flood_recovery_act_ok"},"normal":{"narration":"hazard_flood_recovery_act_risk","effect":{"add":{"exposure.delay":1},"delay":"重新接回潮濕設備使現場需再次確認"}}},
+      {"id":"flood_wet_panel_slip","sourceIds":["wet-flood"],"when":{"fact":"powerOff","eq":true},"review":{"why":"先前完成斷電，這次仍因踩進積水跌倒。","tip":"即使完成斷電也要避開積水，改走乾的樓梯。","eligibleWhen":{"always":true},"priority":5,"principleId":"flood_wet_panel_act_ok"},"normal":{"narration":"wet_panel_after_cut","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"delay":"涉水滑倒後需折返乾燥路線","injuries":[{"id":"flood_slip_cut","label":"手掌擦傷","severity":"MILD","subject":"player"}]}}}
+    ],
+    "channels": []
+  },
+  "beats": [
+    {"id":"scene_flood_wet_panel","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_flood_wet_panel","effect":{"set":{"facts.floorDry":false,"facts.panelAccessible":false}}},"decisionId":"flood_wet_panel"},
+    {"id":"scene_flood_basement","at":2,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_flood_basement","effect":{}},"decisionId":"flood_basement","after":{"beat":"scene_flood_wet_panel","turns":1}},
+    {"id":"scene_flood_road","at":3,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_flood_road","effect":{"set":{"facts.upper":true}}},"decisionId":"flood_road","after":{"beat":"scene_flood_basement","turns":1}},
+    {"id":"scene_flood_call","at":4,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_flood_call","effect":{}},"decisionId":"flood_call","after":{"beat":"scene_flood_road","turns":1}},
+    {"id":"scene_flood_signal","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_flood_signal","effect":{}},"decisionId":"flood_signal","after":{"beat":"scene_flood_call","turns":1}},
+    {"id":"scene_flood_recovery","at":6,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_flood_recovery","effect":{}},"decisionId":"flood_recovery","after":{"beat":"scene_flood_signal","turns":1}}
+  ],
+  "decisions": [
+    {"id":"flood_power","prompt":"門外水在升，屋內、手部與電箱旁目前是乾的。總開關在眼前，我怎麼安排？","when":{"clock":{"eq":0}},"options":[{"id":"flood_power_ok","text":"我確認動線乾燥，再切斷屋內總電源。","class":"correct","safety":"safe","sourceIds":["power-flood"],"steps":[{"kind":"principle","id":"flood_power_act_ok"}],"cues":[],"effect":{},"narration":"option_flood_power_ok"},{"id":"flood_power_myth","text":"我搬高延長線，再整理桌上的插頭。","class":"misconception","safety":"unsafe","sourceIds":["power-flood"],"steps":[{"kind":"hazard","id":"flood_power_act_myth"}],"cues":[],"effect":{},"narration":"option_flood_power_myth"},{"id":"flood_power_risk","text":"我開著電器收拾物品，等水進來再處理。","class":"risk_or_delay","safety":"unsafe","sourceIds":["power-flood"],"steps":[{"kind":"hazard","id":"flood_power_act_risk"}],"cues":[],"effect":{},"narration":"option_flood_power_risk"}]},
+    {"id":"flood_wet_panel","prompt":"水已漫過玄關和去電箱的地板，樓梯另一側還乾，我現在怎麼做？","when":{"clock":{"eq":1}},"options":[{"id":"flood_wet_panel_ok","text":"我沿乾的樓梯上樓，避開電箱附近。","class":"correct","safety":"safe","sourceIds":["power-flood"],"steps":[{"kind":"principle","id":"flood_wet_panel_act_ok"}],"cues":[],"effect":{},"narration":"option_flood_wet_panel_ok"},{"id":"flood_wet_panel_myth","text":"我在玄關鋪毛巾，再拿拖把吸水。","class":"misconception","safety":"unsafe","sourceIds":["power-flood"],"steps":[{"kind":"hazard","id":"flood_wet_panel_act_myth"}],"cues":[],"effect":{},"narration":"option_flood_wet_panel_myth"},{"id":"flood_wet_panel_risk","text":"我踩水走到電箱，伸手確認開關位置。","class":"risk_or_delay","safety":"unsafe","sourceIds":["power-flood","wet-flood"],"steps":[{"kind":"hazard","id":"flood_wet_panel_act_risk"},{"kind":"hazard","id":"flood_wet_panel_slip"}],"cues":[],"effect":{},"narration":"option_flood_wet_panel_risk"}]},
+    {"id":"flood_basement","prompt":"地下車庫坡道開始進水。阿哲拿著車鑰匙，提議下去移車，我怎麼回他？","when":{"clock":{"eq":2}},"options":[{"id":"flood_basement_ok","text":"我勸阿哲放下車鑰匙，一起走上樓梯。","class":"correct","safety":"safe","sourceIds":["wet-flood"],"steps":[{"kind":"principle","id":"flood_basement_act_ok"}],"cues":[],"effect":{},"narration":"option_flood_basement_ok"},{"id":"flood_basement_myth","text":"我留在梯口，請阿哲看看水深。","class":"misconception","safety":"unsafe","sourceIds":["wet-flood"],"steps":[{"kind":"hazard","id":"flood_basement_act_myth"}],"cues":[],"effect":{},"narration":"option_flood_basement_myth"},{"id":"flood_basement_risk","text":"我跟他下到車庫移車，想把車開到高處。","class":"risk_or_delay","safety":"unsafe","sourceIds":["wet-flood"],"steps":[{"kind":"hazard","id":"flood_basement_act_risk"}],"cues":[],"effect":{},"narration":"option_flood_basement_risk"}]},
+    {"id":"flood_road","prompt":"我看見巷口道路積水，鄰居說車還能開。現在往哪裡避難？","when":{"clock":{"eq":3}},"options":[{"id":"flood_road_ok","text":"我留在樓上乾燥處，和阿哲等候聯絡。","class":"correct","safety":"safe","sourceIds":["road-flood"],"steps":[{"kind":"principle","id":"flood_road_act_ok"}],"cues":[],"effect":{},"narration":"option_flood_road_ok"},{"id":"flood_road_myth","text":"我下到低梯口，揮手請巷口車子靠近。","class":"misconception","safety":"unsafe","sourceIds":["road-flood"],"steps":[{"kind":"hazard","id":"flood_road_act_myth"}],"cues":[],"effect":{},"narration":"option_flood_road_myth"},{"id":"flood_road_risk","text":"我下樓開車穿過積水，想從巷口撤走。","class":"risk_or_delay","safety":"unsafe","sourceIds":["road-flood"],"steps":[{"kind":"hazard","id":"flood_road_act_risk"}],"cues":[],"effect":{},"narration":"option_flood_road_risk"}]},
+    {"id":"flood_call","prompt":"我已在二樓乾處；外面水流切斷離開的路。手機有訊號，我怎麼求助？","when":{"clock":{"eq":4}},"options":[{"id":"flood_call_ok","text":"我打119，報地址、樓層和受困人數。","class":"correct","safety":"safe","sourceIds":["call-flood"],"steps":[{"kind":"principle","id":"flood_call_act_ok"}],"cues":[],"effect":{},"narration":"option_flood_call_ok"},{"id":"flood_call_myth","text":"我拍下樓梯水位，傳給房東再打電話。","class":"misconception","safety":"unsafe","sourceIds":["call-flood"],"steps":[{"kind":"hazard","id":"flood_call_act_myth"}],"cues":[],"effect":{},"narration":"option_flood_call_myth"},{"id":"flood_call_risk","text":"我拍下積水，貼社群再標地標。","class":"risk_or_delay","safety":"unsafe","sourceIds":["call-flood"],"steps":[{"kind":"hazard","id":"flood_call_act_risk"}],"cues":[],"effect":{},"narration":"option_flood_call_risk"}]},
+    {"id":"flood_signal","prompt":"外面看得到二樓窗邊，但樓梯下方水流還急。我在哪裡等待接應？","when":{"clock":{"eq":5}},"options":[{"id":"flood_signal_ok","text":"我留在高處窗內示意，等候人員接應。","class":"correct","safety":"safe","sourceIds":["wet-flood"],"steps":[{"kind":"principle","id":"flood_signal_act_ok"}],"cues":[],"effect":{},"narration":"option_flood_signal_ok"},{"id":"flood_signal_myth","text":"我往樓下移動，揮手讓救援看見。","class":"misconception","safety":"unsafe","sourceIds":["wet-flood"],"steps":[{"kind":"hazard","id":"flood_signal_act_myth"}],"cues":[],"effect":{},"narration":"option_flood_signal_myth"},{"id":"flood_signal_risk","text":"我往地面入口移動，想在門邊迎接救援。","class":"risk_or_delay","safety":"unsafe","sourceIds":["wet-flood"],"steps":[{"kind":"hazard","id":"flood_signal_act_risk"}],"cues":[],"effect":{},"narration":"option_flood_signal_risk"}]},
+    {"id":"flood_recovery","prompt":"水開始退，但一樓的插座和電器曾泡到水。有人提議試電，我該如何處理？","when":{"clock":{"eq":6}},"options":[{"id":"flood_recovery_ok","text":"我保持設備原狀，等專業人員檢查。","class":"correct","safety":"safe","sourceIds":["power-flood"],"steps":[{"kind":"principle","id":"flood_recovery_act_ok"}],"cues":[],"effect":{},"narration":"option_flood_recovery_ok"},{"id":"flood_recovery_myth","text":"我擦乾插座外側，再接小電器試看看。","class":"misconception","safety":"unsafe","sourceIds":["power-flood"],"steps":[{"kind":"hazard","id":"flood_recovery_act_myth"}],"cues":[],"effect":{},"narration":"option_flood_recovery_myth"},{"id":"flood_recovery_risk","text":"我把潮濕的延長線插回，想測樓下電力。","class":"risk_or_delay","safety":"unsafe","sourceIds":["power-flood"],"steps":[{"kind":"hazard","id":"flood_recovery_act_risk"}],"cues":[],"effect":{},"narration":"option_flood_recovery_risk"}]}
+  ],
+  "consequences": [
+    {"id":"escalating_delay","kind":"reckless","decisionId":null,"when":{"compare":{"left":{"ref":"exposure.delay"},"op":"gt","right":{"ref":"counter.escalating_delay"}}},"tiers":[{"fromCount":1,"result":{"narration":"delay_tier_1","effect":{}}},{"fromCount":2,"result":{"narration":"delay_tier_2","effect":{}}},{"fromCount":3,"result":{"narration":"delay_tier_3","effect":{}}}],"sourceIds":["wet-flood"],"review":{"why":"水位持續上升會縮短安全移動的時間。","tip":"一樓動線仍安全時就往可及高處移動。","eligibleWhen":{"always":true},"priority":5}}
+  ],
+  "phaseRules": [],
+  "endings": [
+    {"id":"flood_wet_panel_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_flood_wet_panel_act_risk_ending","labels":[{"when":{"always":true},"text":"感電危機，演練中止"}],"summaries":[{"when":{"always":true},"text":"進水後踏過積水接觸仍可能帶電的設備。"}]},
+    {"id":"flood_basement_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_flood_basement_act_risk_ending","labels":[{"when":{"always":true},"text":"受困地下車庫"}],"summaries":[{"when":{"always":true},"text":"往進水的地下空間取車，回程被水擋住。"}]},
+    {"id":"flood_road_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_flood_road_act_risk_ending","labels":[{"when":{"always":true},"text":"車輛受困積水"}],"summaries":[{"when":{"always":true},"text":"試圖開車穿過看不清水深的道路。"}]},
+    {"id":"safe","type":"SAFE_RESCUE","phase":"afterBeats","when":{"all":[{"clock":{"gte":7}},{"compare":{"left":{"ref":"exposure.delay"},"op":"eq","right":0}}]},"injury":"fromThresholds","narration":"end_safe","labels":[{"when":{"always":true},"text":"在高處平安待救"}],"summaries":[{"when":{"always":true},"text":"避開積水、報出位置，在高處等到協助。"}]},
+    {"id":"delayed","type":"DELAYED_RESCUE","phase":"afterBeats","when":{"clock":{"gte":7}},"injury":"fromThresholds","narration":"end_delayed","labels":[{"when":{"always":true},"text":"延誤後由救援人員協助"}],"summaries":[{"when":{"always":true},"text":"積水切斷低處動線，定位與接應延後。"}]}
+  ],
+  "injury": {
+    "score": {
+      "ref": "exposure.harm"
+    },
+    "noneMax": 0,
+    "mildMax": 1,
+    "moderateMax": 3
+  },
+  "review": {
+    "reflectionPrompt": "如果住在有地下車道的大樓，遇到對外動線被水切斷，我會先找哪處安全高點？"
+  },
+  "presentation": {
+    "narration": {
+      "opening": [
+        "午後，我和阿哲在一樓租屋處。雨水已堆到門外，室內還是乾的。我的手是乾的，總開關和通路都還乾燥可及。",
+        "我在低窪地段的一樓住家，阿哲站在玄關。門外積水在上升，室內地面及總開關旁尚未受潮。"
+      ],
+      "principle_flood_power_act_ok": [
+        "我在乾燥位置關掉總開關，屋內的電器停了。",
+        "我確認能安全到達，關掉屋內總電源。"
+      ],
+      "option_flood_power_ok": [
+        "我在乾燥位置關掉總開關，屋內的電器停了。",
+        "我確認能安全到達，關掉屋內總電源。"
+      ],
+      "hazard_flood_power_act_myth": [
+        "我整理延長線，總開關還沒動，門外水又漲了一些。",
+        "延長線搬高了，還沒切斷供電。"
+      ],
+      "option_flood_power_myth": [
+        "我整理延長線，總開關還沒動，門外水又漲了一些。",
+        "延長線搬高了，還沒切斷供電。"
+      ],
+      "hazard_flood_power_act_risk": [
+        "屋內電器仍帶電，進水前的可處理時間縮短。",
+        "我忙著收物，總開關仍在供電。"
+      ],
+      "option_flood_power_risk": [
+        "屋內電器仍帶電，進水前的可處理時間縮短。",
+        "我忙著收物，總開關仍在供電。"
+      ],
+      "look_flood_power": [
+        "午後，我和阿哲在一樓租屋處。雨水已堆到門外，室內還是乾的。我的手是乾的，總開關和通路都還乾燥可及。",
+        "我在低窪地段的一樓住家，阿哲站在玄關。門外積水在上升，室內地面及總開關旁尚未受潮。"
+      ],
+      "ask_flood_power": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "principle_flood_wet_panel_act_ok": [
+        "我避過濕地，往乾燥的梯段移動。",
+        "我沒有踩過電箱前的水，沿另一側上樓。"
+      ],
+      "option_flood_wet_panel_ok": [
+        "我避過濕地，往乾燥的梯段移動。",
+        "我沒有踩過電箱前的水，沿另一側上樓。"
+      ],
+      "hazard_flood_wet_panel_act_myth": [
+        "拖把還沒清乾，水在地上繼續擴大，我滑了一下。",
+        "積水很快超過毛巾能吸收的範圍，我踩滑了。"
+      ],
+      "option_flood_wet_panel_myth": [
+        "拖把還沒清乾，水在地上繼續擴大，我滑了一下。",
+        "積水很快超過毛巾能吸收的範圍，我踩滑了。"
+      ],
+      "hazard_flood_wet_panel_act_risk": [
+        "我踏入潮濕區接近電箱，隨即無法繼續移動。",
+        "積水與電力設備形成危險，我無法自行離開。"
+      ],
+      "end_flood_wet_panel_act_risk_ending": [
+        "到高處的撤離中斷，需外部救援。",
+        "我已無法自行繼續移動。"
+      ],
+      "option_flood_wet_panel_risk": [
+        "我踏入潮濕區接近電箱，隨即無法繼續移動。",
+        "積水與電力設備形成危險，我無法自行離開。"
+      ],
+      "scene_flood_wet_panel": [
+        "我聽見玄關進水，電箱前的地面很快被蓋住。",
+        "一層水從門底進來，切斷了安全抵達電箱的路。"
+      ],
+      "look_flood_wet_panel": [
+        "我聽見玄關進水，電箱前的地面很快被蓋住。",
+        "一層水從門底進來，切斷了安全抵達電箱的路。"
+      ],
+      "ask_flood_wet_panel": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "principle_flood_basement_act_ok": [
+        "阿哲停在梯口，跟我往上。",
+        "車鑰匙留在他手上，他轉身往高處走。"
+      ],
+      "option_flood_basement_ok": [
+        "阿哲停在梯口，跟我往上。",
+        "車鑰匙留在他手上，他轉身往高處走。"
+      ],
+      "hazard_flood_basement_act_myth": [
+        "阿哲往下踩了一階就滑倒了，手肘碰到階邊。",
+        "梯口濕滑，阿哲探看時手肘撞到欄杆。"
+      ],
+      "option_flood_basement_myth": [
+        "阿哲往下踩了一階就滑倒了，手肘碰到階邊。",
+        "梯口濕滑，阿哲探看時手肘撞到欄杆。"
+      ],
+      "hazard_flood_basement_act_risk": [
+        "低處持續進水，車庫回到樓梯的方向變得模糊。",
+        "我跟到車庫深處，坡道回程已被水擋住。"
+      ],
+      "end_flood_basement_act_risk_ending": [
+        "我找不到能安全返回的路，撤離停在車庫。",
+        "地面出口被水擋住，我不能自行上樓。"
+      ],
+      "option_flood_basement_risk": [
+        "低處持續進水，車庫回到樓梯的方向變得模糊。",
+        "我跟到車庫深處，坡道回程已被水擋住。"
+      ],
+      "scene_flood_basement": [
+        "阿哲捏著車鑰匙，坡道下傳來流水聲。",
+        "水往地下入口流，阿哲還在猶豫要不要移車。"
+      ],
+      "look_flood_basement": [
+        "阿哲捏著車鑰匙，坡道下傳來流水聲。",
+        "水往地下入口流，阿哲還在猶豫要不要移車。"
+      ],
+      "ask_flood_basement": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "principle_flood_road_act_ok": [
+        "我留在能安全站立的樓上，外面的路仍被水蓋住。",
+        "我退回乾燥處，阿哲也留在樓上。"
+      ],
+      "option_flood_road_ok": [
+        "我留在能安全站立的樓上，外面的路仍被水蓋住。",
+        "我退回乾燥處，阿哲也留在樓上。"
+      ],
+      "hazard_flood_road_act_myth": [
+        "我下到較低的台階，回頭時水已濺到鞋邊。",
+        "我花時間等車，樓梯底部的積水已更高。"
+      ],
+      "option_flood_road_myth": [
+        "我下到較低的台階，回頭時水已濺到鞋邊。",
+        "我花時間等車，樓梯底部的積水已更高。"
+      ],
+      "hazard_flood_road_act_risk": [
+        "車在積水路段停住，水位仍在變。",
+        "我進了積水路段，車輛已無法前行。"
+      ],
+      "end_flood_road_act_risk_ending": [
+        "車子停下，這一趟未能撤離。",
+        "我未能穿過積水路段，需要協助。"
+      ],
+      "option_flood_road_risk": [
+        "車在積水路段停住，水位仍在變。",
+        "我進了積水路段，車輛已無法前行。"
+      ],
+      "scene_flood_road": [
+        "從樓梯轉角看出去，雨水已遮住道路邊緣。",
+        "巷口的車燈照在水上，路面深處看不清楚。"
+      ],
+      "look_flood_road": [
+        "從樓梯轉角看出去，雨水已遮住道路邊緣。",
+        "巷口的車燈照在水上，路面深處看不清楚。"
+      ],
+      "ask_flood_road": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "principle_flood_call_act_ok": [
+        "接線員記下位置及兩人受困。",
+        "我報出樓層與地址，消防接線員覆誦位置。"
+      ],
+      "option_flood_call_ok": [
+        "接線員記下位置及兩人受困。",
+        "我報出樓層與地址，消防接線員覆誦位置。"
+      ],
+      "hazard_flood_call_act_myth": [
+        "我等房東回覆，救援單位仍未收到確切位置。",
+        "房東還沒答覆，我和阿哲的位置尚待確認。"
+      ],
+      "option_flood_call_myth": [
+        "我等房東回覆，救援單位仍未收到確切位置。",
+        "房東還沒答覆，我和阿哲的位置尚待確認。"
+      ],
+      "hazard_flood_call_act_risk": [
+        "照片已貼出，消防仍未收到樓層和位置。",
+        "我盯著貼文等待，救援人員未能靠這張照片找到我。"
+      ],
+      "option_flood_call_risk": [
+        "照片已貼出，消防仍未收到樓層和位置。",
+        "我盯著貼文等待，救援人員未能靠這張照片找到我。"
+      ],
+      "scene_flood_call": [
+        "樓上還乾，手機可以通話。",
+        "我穩穩站在二樓，窗外的道路已被水蓋起。"
+      ],
+      "look_flood_call": [
+        "樓上還乾，手機可以通話。",
+        "我穩穩站在二樓，窗外的道路已被水蓋起。"
+      ],
+      "ask_flood_call": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "principle_flood_signal_act_ok": [
+        "我在乾燥高處揮手，救援人員看見了位置。",
+        "我在窗內示意，沒有離開安全的站立處。"
+      ],
+      "option_flood_signal_ok": [
+        "我在乾燥高處揮手，救援人員看見了位置。",
+        "我在窗內示意，沒有離開安全的站立處。"
+      ],
+      "hazard_flood_signal_act_myth": [
+        "我下到水邊，腳一滑撞到台階。",
+        "低處比我預想濕滑，我差點站不穩。"
+      ],
+      "option_flood_signal_myth": [
+        "我下到水邊，腳一滑撞到台階。",
+        "低處比我預想濕滑，我差點站不穩。"
+      ],
+      "hazard_flood_signal_act_risk": [
+        "門口仍有水，我到了不容易移動的低處。",
+        "迎到入口時，救援方反而要重新確認我在哪。"
+      ],
+      "option_flood_signal_risk": [
+        "門口仍有水，我到了不容易移動的低處。",
+        "迎到入口時，救援方反而要重新確認我在哪。"
+      ],
+      "scene_flood_signal": [
+        "二樓有一扇可向外示意的窗，樓梯下傳來流水聲。",
+        "我從乾燥處看見外面的救援動線，樓下仍是積水。"
+      ],
+      "look_flood_signal": [
+        "二樓有一扇可向外示意的窗，樓梯下傳來流水聲。",
+        "我從乾燥處看見外面的救援動線，樓下仍是積水。"
+      ],
+      "ask_flood_signal": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "principle_flood_recovery_act_ok": [
+        "我先不碰曾泡水的電器，請專業人員確認。",
+        "我在乾燥位置等候檢查，沒有自行試電。"
+      ],
+      "option_flood_recovery_ok": [
+        "我先不碰曾泡水的電器，請專業人員確認。",
+        "我在乾燥位置等候檢查，沒有自行試電。"
+      ],
+      "hazard_flood_recovery_act_myth": [
+        "我看到插座外乾了，但設備仍未確認安全。",
+        "試電沒有證明設備能長時間安全使用，專業檢查延後。"
+      ],
+      "option_flood_recovery_myth": [
+        "我看到插座外乾了，但設備仍未確認安全。",
+        "試電沒有證明設備能長時間安全使用，專業檢查延後。"
+      ],
+      "hazard_flood_recovery_act_risk": [
+        "我接回潮濕設備，救援人員要求先隔離現場。",
+        "受潮的電線沒有確認安全，我必須等候進一步處理。"
+      ],
+      "option_flood_recovery_risk": [
+        "我接回潮濕設備，救援人員要求先隔離現場。",
+        "受潮的電線沒有確認安全，我必須等候進一步處理。"
+      ],
+      "scene_flood_recovery": [
+        "水線降了一些，電器旁仍留下潮濕痕跡。",
+        "屋內看得見退水痕，插座與電器仍需確認。"
+      ],
+      "look_flood_recovery": [
+        "水線降了一些，電器旁仍留下潮濕痕跡。",
+        "屋內看得見退水痕，插座與電器仍需確認。"
+      ],
+      "ask_flood_recovery": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "look_default": [
+        "午後，我和阿哲在一樓租屋處。雨水已堆到門外，室內還是乾的。我的手是乾的，總開關和通路都還乾燥可及。",
+        "我在低窪地段的一樓住家，阿哲站在玄關。門外積水在上升，室內地面及總開關旁尚未受潮。"
+      ],
+      "ask_default": [
+        "阿哲說：「門外的水在往上升。」",
+        "阿哲看著玄關，說外面的水聲愈來愈近。"
+      ],
+      "idle": [
+        "我聽到雨滴敲在鐵窗上。",
+        "屋外的雨聲蓋過了平常的車聲。"
+      ],
+      "delay_tier_1": [
+        "雨水持續往低處流，玄關愈來愈難站穩。",
+        "屋外的流水聲一陣比一陣大。"
+      ],
+      "delay_tier_2": [
+        "通向低處的動線越來越窄，屋內的光暗了一些。",
+        "水拍上較高的台階，走過低處變得困難。"
+      ],
+      "delay_tier_3": [
+        "低處的路已被積水擋住，救援人員還得確認可通行的入口。",
+        "積水擋住入口，救援必須額外尋找安全接近點。"
+      ],
+      "end_safe": [
+        "救援人員循通報位置找到我和阿哲，安排我們離開。",
+        "接線員確認位置後，救援人員接手避難。"
+      ],
+      "end_delayed": [
+        "救援人員從另一側找到了我們，我和阿哲才得以離開。",
+        "救援隊要先核對可通行入口，後來才接到我們。"
+      ],
+      "wet_panel_after_cut": [
+        "我在濕地上滑倒，掌根撞到地面；仍得從乾的樓梯離開。",
+        "總電源已切離，積水卻讓我失足，手掌擦到地面。"
+      ]
+    },
+    "look": [
+      {"when":{"clock":{"eq":0}},"narration":"look_flood_power"},
+      {"when":{"clock":{"eq":1}},"narration":"look_flood_wet_panel"},
+      {"when":{"clock":{"eq":2}},"narration":"look_flood_basement"},
+      {"when":{"clock":{"eq":3}},"narration":"look_flood_road"},
+      {"when":{"clock":{"eq":4}},"narration":"look_flood_call"},
+      {"when":{"clock":{"eq":5}},"narration":"look_flood_signal"},
+      {"when":{"clock":{"eq":6}},"narration":"look_flood_recovery"},
+      {"when":{"always":true},"narration":"look_default"}
+    ],
+    "askCompanion": [
+      {"when":{"clock":{"eq":0}},"narration":"ask_flood_power"},
+      {"when":{"clock":{"eq":1}},"narration":"ask_flood_wet_panel"},
+      {"when":{"clock":{"eq":2}},"narration":"ask_flood_basement"},
+      {"when":{"clock":{"eq":3}},"narration":"ask_flood_road"},
+      {"when":{"clock":{"eq":4}},"narration":"ask_flood_call"},
+      {"when":{"clock":{"eq":5}},"narration":"ask_flood_signal"},
+      {"when":{"clock":{"eq":6}},"narration":"ask_flood_recovery"},
+      {"when":{"always":true},"narration":"ask_default"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": []
+  },
+  "assets": []
+}

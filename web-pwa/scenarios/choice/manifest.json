@@ -17,9 +17,16 @@
       "id": "metro_attack_draft",
       "title": "板南線車廂的突發騷動",
       "file": "metro-attack-draft.json",
-      "sha256": "0849dda24bb2023319765d5aa86b49be8a8cee9a501d59d94558b5af531ae6d2",
+      "sha256": "dc1cda300ad75691915c974202d9bfce85ef911f84d1e06092af2d4d7980da96",
       "status": "draft",
       "contentNotice": "這一場包含突發攻擊、人群恐慌與非血腥受傷描述。可跳過，或隨時停止。"
+    },
+    {
+      "id": "flood_low_home_draft",
+      "title": "一樓住家的水聲",
+      "file": "flood-low-home-draft.json",
+      "sha256": "0c9307bf4411501a9feabd548a12f2061de16dcedfc59e28929dfde83f26c902",
+      "status": "draft"
     }
   ]
 }

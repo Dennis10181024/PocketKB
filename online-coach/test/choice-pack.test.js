@@ -90,6 +90,7 @@ for(const scenario of vectors.scenarios){
       const view=play(runtime,session,row.choices);
       assert.equal(view.state.clock,row.checkpoint.clock);
       for(const [id,value] of Object.entries(row.checkpoint.facts))assert.equal(view.state.facts[id],value);
+      if(row.checkpoint.exposure)assert.deepEqual(view.state.exposure,row.checkpoint.exposure);
       if(row.checkpoint.hazards)assert.deepEqual(runtime.records(session).at(-1).hazards,row.checkpoint.hazards);
       if(row.checkpoint.event)assert.ok(view.state.events.some(event=>event.id===row.checkpoint.event));
     }else if(row.retry){
@@ -144,6 +145,11 @@ test('option length, visible actions and negative wording do not leak the answer
       assert.equal(option.negative,false,option.id);
       if(option.class==='partial')assert.ok(option.missingStep,option.id);
     }
+  }
+  for(const pack of packs.filter(p=>p.meta.status==='draft')){
+    const questions=rows.filter(row=>row.packId===pack.meta.id);
+    for(const key of ['shortestBias','shortestSignificantBias'])
+      assert.ok(questions.filter(row=>row[key]).length/questions.length<=0.35,key+' '+pack.meta.id);
   }
 });
 
