@@ -9,6 +9,10 @@ const {createRuntime}=require('../../web-pwa/choice-runtime');
 const schema=require('../../web-pwa/scenarios/choice/schema-v1.json');
 const labels={correct:'正確',misconception:'迷思',risk_or_delay:'危險／延誤',partial:'不完整'};
 const sourceNotes={
+  earthquake_fire_draft:[
+    "草稿，待人工審查。氣象署說明震後火災成因、臺南消防局說明疑似瓦斯時避開電器開關，消防署受困與通報資料支援煙況阻路的決策。",
+    "待人工查證：瓦斯氣味與其他樓層的煙來源沒有直接因果宣稱。煙蔓延、室內動線、餘震時點與傷勢是合成情節，需消防專業複核。"
+  ],
   barrier_lake_downstream_draft:[
     "草稿，待人工審查。依林業保育署應變程序及地方公告區分河段禁入與指定社區撤離，轉線以主管機關指示為準。",
     "待人工查證：封橋時點、同岸替代道路與高地的安全性由劇本宣告，不能套用到真實地點；各處傷勢為合成分支。"

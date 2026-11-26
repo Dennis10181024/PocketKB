@@ -58,6 +58,14 @@
       "sha256": "c639d9f369499d28a8f7c3f2d8d8ea6621c15099c894d2a03f87517e9984fc5d",
       "status": "draft",
       "contentNotice": "這一場包含緊急撤離、水流聲與非血腥受傷描述，可跳過或停止。"
+    },
+    {
+      "id": "earthquake_fire_draft",
+      "title": "震後樓道裡的焦味",
+      "file": "earthquake-fire-draft.json",
+      "sha256": "b4733b61c321d198e17c9772f248bd069d6e3f7bac59cd77922f26d7d27f1423",
+      "status": "draft",
+      "contentNotice": "這一場包含地震、火警、受困與非血腥受傷描述，可跳過或停止。"
     }
   ]
 }

@@ -730,5 +730,89 @@
   "lake_wait_risk": {
     "text": "我和她先回住家附近，再聽下一輪廣播。",
     "visibleActions": 2
+  },
+  "quakefire_cover_ok": {
+    "text": "我到堅固桌下護頭，抓穩桌腳。",
+    "visibleActions": 1
+  },
+  "quakefire_cover_myth": {
+    "text": "我伸手接住架上杯子，叫怡安也過來。",
+    "visibleActions": 2
+  },
+  "quakefire_cover_risk": {
+    "text": "我扶著牆往門口跑，叫怡安拿鑰匙。",
+    "visibleActions": 2
+  },
+  "quakefire_assess_ok": {
+    "text": "我從原處查看煙況、人和可用動線。",
+    "visibleActions": 1
+  },
+  "quakefire_assess_myth": {
+    "text": "我叫怡安去聞，自己留在門邊。",
+    "visibleActions": 2
+  },
+  "quakefire_assess_risk": {
+    "text": "我回內側先找手機，再跟怡安走出去看。",
+    "visibleActions": 2
+  },
+  "quakefire_gas_ok": {
+    "text": "我勸怡安把手收回，沿無煙的一側走。",
+    "visibleActions": 1
+  },
+  "quakefire_gas_myth": {
+    "text": "我請她開廚房燈，先查看爐子。",
+    "visibleActions": 2
+  },
+  "quakefire_gas_risk": {
+    "text": "我往廚房裡走去查味道，再示意她等候。",
+    "visibleActions": 2
+  },
+  "quakefire_route_ok": {
+    "text": "我走向看得清的樓梯入口，沿途再確認。",
+    "visibleActions": 1
+  },
+  "quakefire_route_myth": {
+    "text": "我走熟悉的內側，想趁還認得路出去。",
+    "visibleActions": 2
+  },
+  "quakefire_route_risk": {
+    "text": "我留在樓梯口看舊圖，再聽怡安的想法。",
+    "visibleActions": 2
+  },
+  "quakefire_smoke_ok": {
+    "text": "我退回可隔煙的房內，把門帶緊。",
+    "visibleActions": 1
+  },
+  "quakefire_smoke_myth": {
+    "text": "我靠樓梯邊等一陣，看看煙會不會變薄。",
+    "visibleActions": 2
+  },
+  "quakefire_smoke_risk": {
+    "text": "我貼著牆進樓梯間，想摸出下一層。",
+    "visibleActions": 2
+  },
+  "quakefire_after_ok": {
+    "text": "我就地伏低護頭頸，穩住手邊的桌腳。",
+    "visibleActions": 1
+  },
+  "quakefire_after_myth": {
+    "text": "我走到玻璃窗旁，拉怡安來看下面。",
+    "visibleActions": 2
+  },
+  "quakefire_after_risk": {
+    "text": "我先打亮手機，再四處尋找屋裡的東西。",
+    "visibleActions": 2
+  },
+  "quakefire_call_ok": {
+    "text": "我打給一一九，報地址、房號和受困人數。",
+    "visibleActions": 1
+  },
+  "quakefire_call_myth": {
+    "text": "我傳訊給朋友，請他看看樓下動靜。",
+    "visibleActions": 2
+  },
+  "quakefire_call_risk": {
+    "text": "我繼續看走道煙況，和怡安等下一步。",
+    "visibleActions": 2
   }
 }

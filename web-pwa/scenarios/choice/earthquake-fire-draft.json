@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "earthquake_fire_draft",
+    "title": "震後樓道裡的焦味",
+    "version": "1.0.0",
+    "hazard": "earthquake_fire",
+    "skeletonVersion": "draft-choice-5.5",
+    "sources": [
+      {"id":"eq","title":"中央氣象署：地震防護","url":"https://scweb.cwa.gov.tw/zh-tw/page/intro/11"},
+      {"id":"cause","title":"中央氣象署：地震為何會引發火災","url":"https://scweb.cwa.gov.tw/zh-tw/guidance/faqdetail/85"},
+      {"id":"gas","title":"臺南市消防局：瓦斯外洩的四步驟","url":"https://119.tainan.gov.tw/News_Content.aspx?n=25533&s=8693793"},
+      {"id":"fire","title":"消防署：火場受困時關門、靠窗通報","url":"https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113"},
+      {"id":"call","title":"消防署：119 報案要領","url":"https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68"}
+    ],
+    "status": "draft",
+    "contentNotice": "這一場包含地震、火警、受困與非血腥受傷描述，可跳過或停止。"
+  },
+  "initial": {
+    "facts": {
+      "covered": false,
+      "assessed": false,
+      "keptAway": false,
+      "routeChecked": false,
+      "smokeBlocked": false,
+      "aftershockCovered": false,
+      "reported": false
+    },
+    "exposure": {
+      "harm": 0,
+      "delay": 0
+    },
+    "npc": {
+      "peer": {
+        "name": "怡安",
+        "state": "nearby",
+        "injured": false
+      }
+    },
+    "decisionId": "quakefire_cover",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 7
+  },
+  "catalog": {
+    "principles": [
+      {"id":"quakefire_cover_act_ok","sourceIds":["eq"],"when":{"always":true},"review":{"why":"就近掩護可減少落物傷害。","tip":"地震晃動時先趴下、掩護、穩住。","eligibleWhen":{"always":true},"priority":2},"normal":{"narration":"principle_quakefire_cover_act_ok","effect":{"set":{"facts.covered":true},"injuries":[],"add":{}}}},
+      {"id":"quakefire_assess_act_ok","sourceIds":["cause"],"when":{"always":true},"review":{"why":"震後可能有次生災害，先查現場而不是假定原因。","tip":"停晃後看傷勢、煙況與出口是否完整。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_quakefire_assess_act_ok","effect":{"set":{"facts.assessed":true},"injuries":[],"add":{}}}},
+      {"id":"quakefire_gas_act_ok","sourceIds":["gas"],"when":{"always":true},"review":{"why":"疑似瓦斯外洩時開關電器可能有火花，安全動線可用應離開。","tip":"別碰開關；確定路線可行時帶同伴遠離，安全處再求助。","eligibleWhen":{"always":true},"priority":4},"normal":{"narration":"principle_quakefire_gas_act_ok","effect":{"set":{"facts.keptAway":true},"injuries":[],"add":{}}}},
+      {"id":"quakefire_route_act_ok","sourceIds":["fire"],"when":{"always":true},"review":{"why":"避開已冒煙的方向，撤離時持續核對動線。","tip":"只採用能確認無煙且可通行的出口，遇況變立即重判。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_quakefire_route_act_ok","effect":{"set":{"facts.routeChecked":true},"injuries":[],"add":{}}}},
+      {"id":"quakefire_smoke_act_ok","sourceIds":["fire"],"when":{"always":true},"review":{"why":"濃煙阻路時不硬闖，可先隔煙等候救援。","tip":"退向就近能關門隔煙的空間，有條件時通報靠窗位置。","eligibleWhen":{"always":true},"priority":6},"normal":{"narration":"principle_quakefire_smoke_act_ok","effect":{"set":{"facts.smokeBlocked":true},"injuries":[],"add":{}}}},
+      {"id":"quakefire_after_act_ok","sourceIds":["eq"],"when":{"always":true},"review":{"why":"餘震期間應保持就近掩護並避免玻璃。","tip":"等到再次穩定後才確認靠窗或撤離動線。","eligibleWhen":{"always":true},"priority":7},"normal":{"narration":"principle_quakefire_after_act_ok","effect":{"set":{"facts.aftershockCovered":true},"injuries":[],"add":{}}}},
+      {"id":"quakefire_call_act_ok","sourceIds":["call"],"when":{"always":true},"review":{"why":"地址、樓層、人數及煙況能改善救援定位。","tip":"從可通話的安全位置急報地址、樓層與房號、人數和是否受困。","eligibleWhen":{"always":true},"priority":8},"normal":{"narration":"principle_quakefire_call_act_ok","effect":{"set":{"facts.reported":true},"injuries":[],"add":{}}}}
+    ],
+    "hazards": [
+      {"id":"quakefire_cover_act_myth","sourceIds":["eq"],"when":{"always":true},"review":{"why":"保護物品會讓人進入落物範圍。","tip":"先護住頭頸，不要在搖晃時接掉物。","eligibleWhen":{"always":true},"priority":2,"principleId":"quakefire_cover_act_ok"},"normal":{"narration":"hazard_quakefire_cover_act_myth","effect":{"set":{},"injuries":[{"id":"quakefire_arm","subject":"player","label":"前臂擦傷","severity":"MILD"}],"add":{"exposure.harm":1,"exposure.delay":1},"delay":"搖晃時靠近置物架"}}},
+      {"id":"quakefire_cover_act_risk","sourceIds":["eq"],"when":{"always":true},"review":{"why":"晃動中移動遇到不穩物件的機會較高。","tip":"從位置附近找掩護，震停再重新看出口。","eligibleWhen":{"always":true},"priority":2,"principleId":"quakefire_cover_act_ok"},"normal":{"narration":"hazard_quakefire_cover_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"搖晃中走到門邊"}}},
+      {"id":"quakefire_assess_act_myth","sourceIds":["cause"],"when":{"always":true},"review":{"why":"不把同伴派向未知煙味或落物區。","tip":"在可辨識的安全位置由遠觀察，和同伴一起重新判斷。","eligibleWhen":{"always":true},"priority":3,"principleId":"quakefire_assess_act_ok"},"normal":{"narration":"hazard_quakefire_assess_act_myth","effect":{"set":{"npc.peer.injured":true},"injuries":[{"id":"quakefire_peer_hand","subject":"peer","label":"手背擦傷","severity":"MILD"}],"add":{"exposure.delay":1},"delay":"讓同伴靠近未確認區域"}}},
+      {"id":"quakefire_assess_act_risk","sourceIds":["cause"],"when":{"always":true},"review":{"why":"先找個人物品會延後確認出口。","tip":"只在安全位置取用手邊必要通訊設備，先判斷環境。","eligibleWhen":{"always":true},"priority":3,"principleId":"quakefire_assess_act_ok"},"normal":{"narration":"hazard_quakefire_assess_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"先回內側翻找物品"}}},
+      {"id":"quakefire_gas_act_myth","sourceIds":["gas"],"when":{"always":true},"review":{"why":"開關照明設備可能產生火花，即使想看清現場也不適合。","tip":"讓怡安手離開開關，先離開疑似外洩的區域。","eligibleWhen":{"always":true},"priority":4,"principleId":"quakefire_gas_act_ok"},"normal":{"narration":"hazard_quakefire_gas_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"操作電器後仍停在疑似外洩處"}}},
+      {"id":"quakefire_gas_act_risk","sourceIds":["gas"],"when":{"always":true},"review":{"why":"靠近察看不會降低瓦斯外洩風險。","tip":"維持距離與清楚動線，不去來源不明的室內區域。","eligibleWhen":{"always":true},"priority":4,"principleId":"quakefire_gas_act_ok"},"normal":{"narration":"hazard_quakefire_gas_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"朝疑似外洩來源走去"}}},
+      {"id":"quakefire_route_act_myth","sourceIds":["fire"],"when":{"always":true},"review":{"why":"熟悉並不足以抵銷煙的暴露。","tip":"看到煙就避開該方向，重新找可辨識的動線。","eligibleWhen":{"always":true},"priority":5,"principleId":"quakefire_route_act_ok"},"normal":{"narration":"hazard_quakefire_route_act_myth","effect":{"set":{},"injuries":[{"id":"quakefire_smoke","subject":"player","label":"短暫煙霧刺激","severity":"MILD"}],"add":{"exposure.harm":1,"exposure.delay":1},"delay":"朝有煙的熟悉動線走"}}},
+      {"id":"quakefire_route_act_risk","sourceIds":["fire"],"when":{"always":true},"review":{"why":"平面圖說明格局，不能證明當下無煙。","tip":"先用當下可觀察資訊判斷，避免停在煙可能逼近的岔口。","eligibleWhen":{"always":true},"priority":5,"principleId":"quakefire_route_act_ok"},"normal":{"narration":"hazard_quakefire_route_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"依賴舊圖等待決定"}}},
+      {"id":"quakefire_smoke_act_myth","sourceIds":["fire"],"when":{"always":true},"review":{"why":"靠煙線等待會增加吸入與延誤。","tip":"一確認煙阻斷，就退回遠離煙的一側並隔煙。","eligibleWhen":{"always":true},"priority":6,"principleId":"quakefire_smoke_act_ok"},"normal":{"narration":"hazard_quakefire_smoke_act_myth","effect":{"set":{},"injuries":[{"id":"quakefire_breath","subject":"player","label":"濃煙吸入後呼吸不適","severity":"MODERATE"}],"add":{"exposure.harm":2,"exposure.delay":1},"delay":"留在濃煙邊界等待"}}},
+      {"id":"quakefire_smoke_act_risk","sourceIds":["fire"],"when":{"always":true},"review":{"why":"穿進濃煙會迅速失去方向、退路與可呼吸環境。","tip":"看到濃煙就停止前進，回到能隔煙的位置通報。","eligibleWhen":{"always":true},"priority":6,"principleId":"quakefire_smoke_act_ok"},"normal":{"narration":"hazard_quakefire_smoke_act_risk","effect":{"set":{},"injuries":[],"add":{}}},"fatalEndingId":"quakefire_smoke_act_risk_ending"},
+      {"id":"quakefire_after_act_myth","sourceIds":["eq"],"when":{"always":true},"review":{"why":"搖晃時靠窗和移動會增加暴露。","tip":"先在原地就近護頭，晃停且窗邊安全時再判斷。","eligibleWhen":{"always":true},"priority":7,"principleId":"quakefire_after_act_ok"},"normal":{"narration":"hazard_quakefire_after_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"餘震時走到玻璃旁"}}},
+      {"id":"quakefire_after_act_risk","sourceIds":["eq"],"when":{"always":true},"review":{"why":"找物時無法同時維持有效的掩護。","tip":"先就近採取趴下、掩護、穩住，等停後再使用手機。","eligibleWhen":{"always":true},"priority":7,"principleId":"quakefire_after_act_ok"},"normal":{"narration":"hazard_quakefire_after_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"餘震時分心找東西"}}},
+      {"id":"quakefire_call_act_myth","sourceIds":["call"],"when":{"always":true},"review":{"why":"先透過朋友可能延誤救援報案。","tip":"有可用電話時直接打 119，提供可找到的門牌與樓層。","eligibleWhen":{"always":true},"priority":8,"principleId":"quakefire_call_act_ok"},"normal":{"narration":"hazard_quakefire_call_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"先等朋友回覆未完整通報"}}},
+      {"id":"quakefire_call_act_risk","sourceIds":["call"],"when":{"always":true},"review":{"why":"只等待煙變化沒有提供救援所在位置。","tip":"在空間仍可安全通話時主動說明位置與煙況。","eligibleWhen":{"always":true},"priority":8,"principleId":"quakefire_call_act_ok"},"normal":{"narration":"hazard_quakefire_call_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"有訊號時未通報位置"}}}
+    ],
+    "channels": []
+  },
+  "beats": [
+    {"id":"scene_quakefire_assess","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_quakefire_assess","effect":{}},"decisionId":"quakefire_assess"},
+    {"id":"scene_quakefire_gas","at":2,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_quakefire_gas","effect":{}},"decisionId":"quakefire_gas","after":{"beat":"scene_quakefire_assess","turns":1}},
+    {"id":"scene_quakefire_route","at":3,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_quakefire_route","effect":{}},"decisionId":"quakefire_route","after":{"beat":"scene_quakefire_gas","turns":1}},
+    {"id":"scene_quakefire_smoke","at":4,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_quakefire_smoke","effect":{}},"decisionId":"quakefire_smoke","after":{"beat":"scene_quakefire_route","turns":1}},
+    {"id":"scene_quakefire_after","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_quakefire_after","effect":{}},"decisionId":"quakefire_after","after":{"beat":"scene_quakefire_smoke","turns":1}},
+    {"id":"scene_quakefire_call","at":6,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_quakefire_call","effect":{}},"decisionId":"quakefire_call","after":{"beat":"scene_quakefire_after","turns":1}}
+  ],
+  "decisions": [
+    {"id":"quakefire_cover","prompt":"屋子開始左右晃，架上的杯子往外滑。我的第一步是什麼？","when":{"clock":{"eq":0}},"options":[{"id":"quakefire_cover_ok","text":"我到堅固桌下護頭，抓穩桌腳。","class":"correct","safety":"safe","sourceIds":["eq"],"steps":[{"kind":"principle","id":"quakefire_cover_act_ok"}],"cues":[],"effect":{},"narration":"option_quakefire_cover_ok"},{"id":"quakefire_cover_myth","text":"我伸手接住架上杯子，叫怡安也過來。","class":"misconception","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"quakefire_cover_act_myth"}],"cues":[],"effect":{},"narration":"option_quakefire_cover_myth"},{"id":"quakefire_cover_risk","text":"我扶著牆往門口跑，叫怡安拿鑰匙。","class":"risk_or_delay","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"quakefire_cover_act_risk"}],"cues":[],"effect":{},"narration":"option_quakefire_cover_risk"}]},
+    {"id":"quakefire_assess","prompt":"搖晃暫時停了，走道另一頭有焦味。屋內地板也散著物品。我先判斷什麼？","when":{"clock":{"eq":1}},"options":[{"id":"quakefire_assess_ok","text":"我從原處查看煙況、人和可用動線。","class":"correct","safety":"safe","sourceIds":["cause"],"steps":[{"kind":"principle","id":"quakefire_assess_act_ok"}],"cues":[],"effect":{},"narration":"option_quakefire_assess_ok"},{"id":"quakefire_assess_myth","text":"我叫怡安去聞，自己留在門邊。","class":"misconception","safety":"unsafe","sourceIds":["cause"],"steps":[{"kind":"hazard","id":"quakefire_assess_act_myth"}],"cues":[],"effect":{},"narration":"option_quakefire_assess_myth"},{"id":"quakefire_assess_risk","text":"我回內側先找手機，再跟怡安走出去看。","class":"risk_or_delay","safety":"unsafe","sourceIds":["cause"],"steps":[{"kind":"hazard","id":"quakefire_assess_act_risk"}],"cues":[],"effect":{},"narration":"option_quakefire_assess_risk"}]},
+    {"id":"quakefire_gas","prompt":"離廚房一段距離有疑似瓦斯味，可通行的前側沒有煙。怡安伸手要開燈，我怎麼回她？","when":{"clock":{"eq":2}},"options":[{"id":"quakefire_gas_ok","text":"我勸怡安把手收回，沿無煙的一側走。","class":"correct","safety":"safe","sourceIds":["gas"],"steps":[{"kind":"principle","id":"quakefire_gas_act_ok"}],"cues":[],"effect":{},"narration":"option_quakefire_gas_ok"},{"id":"quakefire_gas_myth","text":"我請她開廚房燈，先查看爐子。","class":"misconception","safety":"unsafe","sourceIds":["gas"],"steps":[{"kind":"hazard","id":"quakefire_gas_act_myth"}],"cues":[],"effect":{},"narration":"option_quakefire_gas_myth"},{"id":"quakefire_gas_risk","text":"我往廚房裡走去查味道，再示意她等候。","class":"risk_or_delay","safety":"unsafe","sourceIds":["gas"],"steps":[{"kind":"hazard","id":"quakefire_gas_act_risk"}],"cues":[],"effect":{},"narration":"option_quakefire_gas_risk"}]},
+    {"id":"quakefire_route","prompt":"門外有兩條方向。內側出口遠端已見煙，前側的樓梯門外還看得清。我選哪邊？","when":{"clock":{"eq":3}},"options":[{"id":"quakefire_route_ok","text":"我走向看得清的樓梯入口，沿途再確認。","class":"correct","safety":"safe","sourceIds":["fire"],"steps":[{"kind":"principle","id":"quakefire_route_act_ok"}],"cues":[],"effect":{},"narration":"option_quakefire_route_ok"},{"id":"quakefire_route_myth","text":"我走熟悉的內側，想趁還認得路出去。","class":"misconception","safety":"unsafe","sourceIds":["fire"],"steps":[{"kind":"hazard","id":"quakefire_route_act_myth"}],"cues":[],"effect":{},"narration":"option_quakefire_route_myth"},{"id":"quakefire_route_risk","text":"我留在樓梯口看舊圖，再聽怡安的想法。","class":"risk_or_delay","safety":"unsafe","sourceIds":["fire"],"steps":[{"kind":"hazard","id":"quakefire_route_act_risk"}],"cues":[],"effect":{},"narration":"option_quakefire_route_risk"}]},
+    {"id":"quakefire_smoke","prompt":"走到可見範圍邊緣，樓梯門外忽然被濃煙遮住。我退後還能回到較清楚的一側。我怎麼選？","when":{"clock":{"eq":4}},"options":[{"id":"quakefire_smoke_ok","text":"我退回可隔煙的房內，把門帶緊。","class":"correct","safety":"safe","sourceIds":["fire"],"steps":[{"kind":"principle","id":"quakefire_smoke_act_ok"}],"cues":[],"effect":{},"narration":"option_quakefire_smoke_ok"},{"id":"quakefire_smoke_myth","text":"我靠樓梯邊等一陣，看看煙會不會變薄。","class":"misconception","safety":"unsafe","sourceIds":["fire"],"steps":[{"kind":"hazard","id":"quakefire_smoke_act_myth"}],"cues":[],"effect":{},"narration":"option_quakefire_smoke_myth"},{"id":"quakefire_smoke_risk","text":"我貼著牆進樓梯間，想摸出下一層。","class":"risk_or_delay","safety":"unsafe","sourceIds":["fire"],"steps":[{"kind":"hazard","id":"quakefire_smoke_act_risk"}],"cues":[],"effect":{},"narration":"option_quakefire_smoke_risk"}]},
+    {"id":"quakefire_after","prompt":"回到較清楚的一側，我又感到一次搖晃。窗邊和桌旁都在眼前。這一刻我怎麼做？","when":{"clock":{"eq":5}},"options":[{"id":"quakefire_after_ok","text":"我就地伏低護頭頸，穩住手邊的桌腳。","class":"correct","safety":"safe","sourceIds":["eq"],"steps":[{"kind":"principle","id":"quakefire_after_act_ok"}],"cues":[],"effect":{},"narration":"option_quakefire_after_ok"},{"id":"quakefire_after_myth","text":"我走到玻璃窗旁，拉怡安來看下面。","class":"misconception","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"quakefire_after_act_myth"}],"cues":[],"effect":{},"narration":"option_quakefire_after_myth"},{"id":"quakefire_after_risk","text":"我先打亮手機，再四處尋找屋裡的東西。","class":"risk_or_delay","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"quakefire_after_act_risk"}],"cues":[],"effect":{},"narration":"option_quakefire_after_risk"}]},
+    {"id":"quakefire_call","prompt":"搖晃又停了，這一側能通話，前方的煙仍沒退。我先傳達哪些訊息？","when":{"clock":{"eq":6}},"options":[{"id":"quakefire_call_ok","text":"我打給一一九，報地址、房號和受困人數。","class":"correct","safety":"safe","sourceIds":["call"],"steps":[{"kind":"principle","id":"quakefire_call_act_ok"}],"cues":[],"effect":{},"narration":"option_quakefire_call_ok"},{"id":"quakefire_call_myth","text":"我傳訊給朋友，請他看看樓下動靜。","class":"misconception","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"quakefire_call_act_myth"}],"cues":[],"effect":{},"narration":"option_quakefire_call_myth"},{"id":"quakefire_call_risk","text":"我繼續看走道煙況，和怡安等下一步。","class":"risk_or_delay","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"quakefire_call_act_risk"}],"cues":[],"effect":{},"narration":"option_quakefire_call_risk"}]}
+  ],
+  "consequences": [
+    {"id":"escalating_delay","kind":"reckless","decisionId":null,"when":{"compare":{"left":{"ref":"exposure.delay"},"op":"gt","right":{"ref":"counter.escalating_delay"}}},"tiers":[{"fromCount":1,"result":{"narration":"delay_tier_1","effect":{}}},{"fromCount":2,"result":{"narration":"delay_tier_2","effect":{}}},{"fromCount":3,"result":{"narration":"delay_tier_3","effect":{}}}],"sourceIds":["eq"],"review":{"why":"地震過後還可能有火警與餘震，反覆試錯會拉長暴露或救援定位。","tip":"每次有煙況或晃動變化都重新判斷，安全位置盡早通報。","eligibleWhen":{"always":true},"priority":5}}
+  ],
+  "phaseRules": [],
+  "endings": [
+    {"id":"quakefire_smoke_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_quakefire_smoke_act_risk_ending","labels":[{"when":{"always":true},"text":"濃煙中失去可辨動線"}],"summaries":[{"when":{"always":true},"text":"進入濃煙後方向與退路被遮住，無法自行安全離開。"}]},
+    {"id":"safe","type":"SAFE_RESCUE","phase":"afterBeats","when":{"all":[{"clock":{"gte":7}},{"compare":{"left":{"ref":"exposure.delay"},"op":"eq","right":0}}]},"injury":"fromInjuries","narration":"end_safe","labels":[{"when":{"always":true},"text":"隔煙待援後獲救"}],"summaries":[{"when":{"always":true},"text":"在安全一側避開煙與餘震，救援人員依位置接手。"}]},
+    {"id":"delayed","type":"DELAYED_RESCUE","phase":"afterBeats","when":{"clock":{"gte":7}},"injury":"fromInjuries","narration":"end_delayed","labels":[{"when":{"always":true},"text":"延誤後獲救"}],"summaries":[{"when":{"always":true},"text":"煙況與失去的通報時間使接應延後。"}]}
+  ],
+  "injury": {
+    "score": {
+      "ref": "exposure.harm"
+    },
+    "noneMax": 0,
+    "mildMax": 1,
+    "moderateMax": 3
+  },
+  "review": {
+    "reflectionPrompt": "如果我在陌生大樓先遇到地震又聞到焦味，哪些現場線索會改變我原本的出路？"
+  },
+  "presentation": {
+    "narration": {
+      "opening": [
+        "傍晚我到怡安住的大樓自習，房門對著內側走道。屋裡的燈晃了一下，桌面傳來快速碰撞聲。下一瞬間，門邊的掛勾也開始搖。",
+        "我在怡安租屋的套房裡，桌上的水杯突然撞上書本。腳下開始連續晃動，門邊的掛勾也在響。"
+      ],
+      "principle_quakefire_cover_act_ok": [
+        "我貼低身體抓牢桌腳，杯子從遠一點落下。",
+        "我躲在桌面下，聽見上方的杯子落到外側地面。"
+      ],
+      "option_quakefire_cover_ok": [
+        "我貼低身體抓牢桌腳，杯子從遠一點落下。",
+        "我躲在桌面下，聽見上方的杯子落到外側地面。"
+      ],
+      "hazard_quakefire_cover_act_myth": [
+        "杯子撞到我的前臂，另一個滑到腳邊。",
+        "我手伸在架子下時，掉落物擦過手臂。"
+      ],
+      "option_quakefire_cover_myth": [
+        "杯子撞到我的前臂，另一個滑到腳邊。",
+        "我手伸在架子下時，掉落物擦過手臂。"
+      ],
+      "hazard_quakefire_cover_act_risk": [
+        "鑰匙從桌上滑下去，門邊也有物品砸落。",
+        "走向門口時腳下有碎片，怡安跟不上來。"
+      ],
+      "option_quakefire_cover_risk": [
+        "鑰匙從桌上滑下去，門邊也有物品砸落。",
+        "走向門口時腳下有碎片，怡安跟不上來。"
+      ],
+      "look_quakefire_cover": [
+        "我看到杯子沿層板滑動，地面仍在搖。",
+        "置物架上有東西落下，牆面也發出聲響。"
+      ],
+      "ask_quakefire_cover": [
+        "怡安的手抓在椅背上，還沒伏低。",
+        "怡安朝我看過來，桌面也開始動。"
+      ],
+      "principle_quakefire_assess_act_ok": [
+        "我和怡安確認眼前路況，才知道哪一側還能看清楚。",
+        "我先確認同伴能回話，再看前面有沒有一條真正可行的路。"
+      ],
+      "option_quakefire_assess_ok": [
+        "我和怡安確認眼前路況，才知道哪一側還能看清楚。",
+        "我先確認同伴能回話，再看前面有沒有一條真正可行的路。"
+      ],
+      "hazard_quakefire_assess_act_myth": [
+        "怡安忙著穿過散落物時滑了一下，手背擦到牆。",
+        "怡安踢到地面的物品，撐住牆時手背擦傷。"
+      ],
+      "option_quakefire_assess_myth": [
+        "怡安忙著穿過散落物時滑了一下，手背擦到牆。",
+        "怡安踢到地面的物品，撐住牆時手背擦傷。"
+      ],
+      "hazard_quakefire_assess_act_risk": [
+        "我花了時間在東西堆裡找，走道的聲音還在變。",
+        "我回身找東西時，怡安在門邊多等了一輪。"
+      ],
+      "option_quakefire_assess_risk": [
+        "我花了時間在東西堆裡找，走道的聲音還在變。",
+        "我回身找東西時，怡安在門邊多等了一輪。"
+      ],
+      "scene_quakefire_assess": [
+        "搖晃停下後，我聽到走道另一端傳出火警聲。",
+        "一股焦味從走道另一側傳來，地面有掉落的小物。"
+      ],
+      "look_quakefire_assess": [
+        "搖晃停下後，我聽到走道另一端傳出火警聲。",
+        "一股焦味從走道另一側傳來，地面有掉落的小物。"
+      ],
+      "ask_quakefire_assess": [
+        "怡安低頭看腳邊，問我們能看清楚多遠。",
+        "怡安抬手指向走道，遠端情況仍看不清。"
+      ],
+      "principle_quakefire_gas_act_ok": [
+        "怡安收回手，我跟她拉開與廚房的距離。",
+        "我和怡安一起走往目視未被煙擋住的前側。"
+      ],
+      "option_quakefire_gas_ok": [
+        "怡安收回手，我跟她拉開與廚房的距離。",
+        "我和怡安一起走往目視未被煙擋住的前側。"
+      ],
+      "hazard_quakefire_gas_act_myth": [
+        "開關聲很清楚，味道依然讓我無法確認裡面。",
+        "怡安按過燈後，我們仍停在氣味附近判斷。"
+      ],
+      "option_quakefire_gas_myth": [
+        "開關聲很清楚，味道依然讓我無法確認裡面。",
+        "怡安按過燈後，我們仍停在氣味附近判斷。"
+      ],
+      "hazard_quakefire_gas_act_risk": [
+        "我到一半聞到味道更強，又得退回前側。",
+        "我一靠近廚房，氣味更明顯，怡安等我退回。"
+      ],
+      "option_quakefire_gas_risk": [
+        "我到一半聞到味道更強，又得退回前側。",
+        "我一靠近廚房，氣味更明顯，怡安等我退回。"
+      ],
+      "scene_quakefire_gas": [
+        "廚房附近聞得到刺鼻氣味，前側走道視線仍清楚。",
+        "有一股陌生氣味從廚房傳來，廚房開關在氣味較重的一側。"
+      ],
+      "look_quakefire_gas": [
+        "廚房附近聞得到刺鼻氣味，前側走道視線仍清楚。",
+        "有一股陌生氣味從廚房傳來，廚房開關在氣味較重的一側。"
+      ],
+      "ask_quakefire_gas": [
+        "怡安的手停在燈開關旁，想看清廚房。",
+        "怡安說可先開燈看一眼，我們離廚房還有一段。"
+      ],
+      "principle_quakefire_route_act_ok": [
+        "我朝前側走，邊走邊看有沒有新的煙。",
+        "我保持離未知方向的距離，先看前側可走的部分。"
+      ],
+      "option_quakefire_route_ok": [
+        "我朝前側走，邊走邊看有沒有新的煙。",
+        "我保持離未知方向的距離，先看前側可走的部分。"
+      ],
+      "hazard_quakefire_route_act_myth": [
+        "內側的刺激性氣味讓我咳了幾聲，腳步慢下來。",
+        "我剛往內側走一小段就開始咳，退回時要先喘氣。"
+      ],
+      "option_quakefire_route_myth": [
+        "內側的刺激性氣味讓我咳了幾聲，腳步慢下來。",
+        "我剛往內側走一小段就開始咳，退回時要先喘氣。"
+      ],
+      "hazard_quakefire_route_act_risk": [
+        "路線圖沒有煙況，我們留在岔口更久。",
+        "我研究舊圖時，樓梯間的聲音又變了一次。"
+      ],
+      "option_quakefire_route_risk": [
+        "路線圖沒有煙況，我們留在岔口更久。",
+        "我研究舊圖時，樓梯間的聲音又變了一次。"
+      ],
+      "scene_quakefire_route": [
+        "我從安全距離看到前側樓梯門還清楚，內側已經一片暗。",
+        "近的一側路面仍能辨認，另一方向遠端煙影在移動。"
+      ],
+      "look_quakefire_route": [
+        "我從安全距離看到前側樓梯門還清楚，內側已經一片暗。",
+        "近的一側路面仍能辨認，另一方向遠端煙影在移動。"
+      ],
+      "ask_quakefire_route": [
+        "怡安問以前常走的內側是不是更快。",
+        "怡安指向平常出入的方向，那頭現在有煙。"
+      ],
+      "principle_quakefire_smoke_act_ok": [
+        "我退入房內把門帶上，外側的煙和我們隔開。",
+        "門在我身後合上，我的位置先離開了煙線。"
+      ],
+      "option_quakefire_smoke_ok": [
+        "我退入房內把門帶上，外側的煙和我們隔開。",
+        "門在我身後合上，我的位置先離開了煙線。"
+      ],
+      "hazard_quakefire_smoke_act_myth": [
+        "煙沒有立刻變薄，我持續咳嗽，胸口緊得不好說話。",
+        "我在門邊吸到更多煙，只能暫退，呼吸仍不舒服。"
+      ],
+      "option_quakefire_smoke_myth": [
+        "煙沒有立刻變薄，我持續咳嗽，胸口緊得不好說話。",
+        "我在門邊吸到更多煙，只能暫退，呼吸仍不舒服。"
+      ],
+      "hazard_quakefire_smoke_act_risk": [
+        "視線很快被煙淹沒，牆邊也看不到下一步。",
+        "我剛進入樓梯間，接著幾乎不見手邊任何東西。"
+      ],
+      "end_quakefire_smoke_act_risk_ending": [
+        "我沿牆只走了一小段，前方與身後都看不見。氣味愈來愈刺，原先的門也找不到了。",
+        "樓梯間的煙蓋住視線，我伸手卻找不到可回去的方向。呼吸開始變得困難。"
+      ],
+      "option_quakefire_smoke_risk": [
+        "視線很快被煙淹沒，牆邊也看不到下一步。",
+        "我剛進入樓梯間，接著幾乎不見手邊任何東西。"
+      ],
+      "scene_quakefire_smoke": [
+        "原本看得到的樓梯方向突然變暗，煙往回捲上來。",
+        "樓梯門的另一側迅速起煙，我仍能回到房門內。"
+      ],
+      "look_quakefire_smoke": [
+        "原本看得到的樓梯方向突然變暗，煙往回捲上來。",
+        "樓梯門的另一側迅速起煙，我仍能回到房門內。"
+      ],
+      "ask_quakefire_smoke": [
+        "怡安指著較清楚的那一側，問要不要先離開煙線。",
+        "怡安朝房間方向招手，我仍看得到後方可行處。"
+      ],
+      "principle_quakefire_after_act_ok": [
+        "桌腳往前滑了一點，我抓住後維持住掩護。",
+        "我把頭縮在遮蔽下，直到新的搖晃變小。"
+      ],
+      "option_quakefire_after_ok": [
+        "桌腳往前滑了一點，我抓住後維持住掩護。",
+        "我把頭縮在遮蔽下，直到新的搖晃變小。"
+      ],
+      "hazard_quakefire_after_act_myth": [
+        "靠窗時玻璃發出裂聲，我們多花時間才退回。",
+        "支架抖了一下，怡安和我被迫移回較內側。"
+      ],
+      "option_quakefire_after_myth": [
+        "靠窗時玻璃發出裂聲，我們多花時間才退回。",
+        "支架抖了一下，怡安和我被迫移回較內側。"
+      ],
+      "hazard_quakefire_after_act_risk": [
+        "搖晃讓桌邊更不好走，我多等一輪才穩住。",
+        "我被晃動打斷，還要轉回附近才有掩護。"
+      ],
+      "option_quakefire_after_risk": [
+        "搖晃讓桌邊更不好走，我多等一輪才穩住。",
+        "我被晃動打斷，還要轉回附近才有掩護。"
+      ],
+      "scene_quakefire_after": [
+        "我聽見室內玻璃輕響，腳下又開始晃。",
+        "新的晃動傳到窗框，桌面上的東西也滑動。"
+      ],
+      "look_quakefire_after": [
+        "我聽見室內玻璃輕響，腳下又開始晃。",
+        "新的晃動傳到窗框，桌面上的東西也滑動。"
+      ],
+      "ask_quakefire_after": [
+        "怡安就在附近，問是不是又一波。",
+        "怡安壓低頭，等我確認能不能在附近找到遮蔽。"
+      ],
+      "principle_quakefire_call_act_ok": [
+        "接線員先複誦房號，我接著說出口已被煙擋住。",
+        "我說出兩人受困及樓層，接線員開始對位置。"
+      ],
+      "option_quakefire_call_ok": [
+        "接線員先複誦房號，我接著說出口已被煙擋住。",
+        "我說出兩人受困及樓層，接線員開始對位置。"
+      ],
+      "hazard_quakefire_call_act_myth": [
+        "朋友看到了訊息，但救援端仍在核對我們在哪。",
+        "我等朋友回覆，外面的救援人員還沒得到地址。"
+      ],
+      "option_quakefire_call_myth": [
+        "朋友看到了訊息，但救援端仍在核對我們在哪。",
+        "我等朋友回覆，外面的救援人員還沒得到地址。"
+      ],
+      "hazard_quakefire_call_act_risk": [
+        "我等了一會，外頭先去確認隔壁房的人數。",
+        "已能通話的時間過去一段，救援端仍不知道確切房號。"
+      ],
+      "option_quakefire_call_risk": [
+        "我等了一會，外頭先去確認隔壁房的人數。",
+        "已能通話的時間過去一段，救援端仍不知道確切房號。"
+      ],
+      "scene_quakefire_call": [
+        "手機重新顯示有訊號，遠處有消防車的聲音。",
+        "我看得到房間位置，外側走道仍不能通過。"
+      ],
+      "look_quakefire_call": [
+        "手機重新顯示有訊號，遠處有消防車的聲音。",
+        "我看得到房間位置，外側走道仍不能通過。"
+      ],
+      "ask_quakefire_call": [
+        "怡安看向房號，問我們是不是要一起說清楚位置。",
+        "怡安數了一下身邊的人，指向房門內的標示。"
+      ],
+      "look_default": [
+        "傍晚我到怡安住的大樓自習，房門對著內側走道。屋裡的燈晃了一下，桌面傳來快速碰撞聲。下一瞬間，門邊的掛勾也開始搖。",
+        "我在怡安租屋的套房裡，桌上的水杯突然撞上書本。腳下開始連續晃動，門邊的掛勾也在響。"
+      ],
+      "ask_default": [
+        "怡安停了一下，低頭看看能站的位置。",
+        "怡安小聲問我們還看得到哪一段動線。"
+      ],
+      "idle": [
+        "外頭有短暫的腳步聲。",
+        "屋內傳來牆上一點細響。"
+      ],
+      "delay_tier_1": [
+        "我聽見樓梯間好幾次腳步聲，安全路線沒有因此變近。",
+        "先前可以用的時間被拉長，怡安重新確認我在哪裡。"
+      ],
+      "delay_tier_2": [
+        "走道的焦味變重，我看得清的範圍又縮小一點。",
+        "門外原本能看見的燈影被新一層煙遮住。"
+      ],
+      "delay_tier_3": [
+        "樓下開始逐層回報，救援端還在確認受影響的位置。",
+        "接應的聲音和我們隔著好幾間房，一段時間後才接近。"
+      ],
+      "end_safe": [
+        "消防員在外側對上門牌，我在房內回應。隔了片刻，他們確認路線後接手我和怡安。",
+        "我和怡安在確認的位置等到救援人員，先回應兩人的狀況，再照指示移動。"
+      ],
+      "end_delayed": [
+        "消防員改從外側查找，聽到我回應後先確認我們的位置。這比剛聽見救援聲時又多等了一輪。",
+        "我等到接應的人重新核對房內位置，才聽見他們叫出門牌。怡安跟我在確認後獲得接手。"
+      ]
+    },
+    "look": [
+      {"when":{"clock":{"eq":0}},"narration":"look_quakefire_cover"},
+      {"when":{"clock":{"eq":1}},"narration":"look_quakefire_assess"},
+      {"when":{"clock":{"eq":2}},"narration":"look_quakefire_gas"},
+      {"when":{"clock":{"eq":3}},"narration":"look_quakefire_route"},
+      {"when":{"clock":{"eq":4}},"narration":"look_quakefire_smoke"},
+      {"when":{"clock":{"eq":5}},"narration":"look_quakefire_after"},
+      {"when":{"clock":{"eq":6}},"narration":"look_quakefire_call"},
+      {"when":{"always":true},"narration":"look_default"}
+    ],
+    "askCompanion": [
+      {"when":{"clock":{"eq":0}},"narration":"ask_quakefire_cover"},
+      {"when":{"clock":{"eq":1}},"narration":"ask_quakefire_assess"},
+      {"when":{"clock":{"eq":2}},"narration":"ask_quakefire_gas"},
+      {"when":{"clock":{"eq":3}},"narration":"ask_quakefire_route"},
+      {"when":{"clock":{"eq":4}},"narration":"ask_quakefire_smoke"},
+      {"when":{"clock":{"eq":5}},"narration":"ask_quakefire_after"},
+      {"when":{"clock":{"eq":6}},"narration":"ask_quakefire_call"},
+      {"when":{"always":true},"narration":"ask_default"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": []
+  },
+  "assets": []
+}

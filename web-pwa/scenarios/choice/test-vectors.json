@@ -967,6 +967,94 @@
           "sameAs": "all-correct"
         }
       ]
+    },
+    {
+      "file": "earthquake-fire-draft.json",
+      "packSha256": "b4733b61c321d198e17c9772f248bd069d6e3f7bac59cd77922f26d7d27f1423",
+      "cases": [
+        {
+          "id": "all-correct",
+          "choices": [
+            "quakefire_cover_ok",
+            "quakefire_assess_ok",
+            "quakefire_gas_ok",
+            "quakefire_route_ok",
+            "quakefire_smoke_ok",
+            "quakefire_after_ok",
+            "quakefire_call_ok"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "SAFE_RESCUE",
+            "injury": "NONE",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "quakefire_cover_myth",
+            "quakefire_assess_myth",
+            "quakefire_gas_myth",
+            "quakefire_route_myth",
+            "quakefire_smoke_myth",
+            "quakefire_after_myth",
+            "quakefire_call_myth"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "DELAYED_RESCUE",
+            "injury": "MODERATE",
+            "exposure": {
+              "harm": 4,
+              "delay": 7
+            }
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "quakefire_cover_ok",
+            "quakefire_assess_ok",
+            "quakefire_gas_ok",
+            "quakefire_route_ok",
+            "quakefire_smoke_risk"
+          ],
+          "expected": {
+            "clock": 4,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "quakefire_cover_ok",
+            "quakefire_assess_ok",
+            "quakefire_gas_ok",
+            "quakefire_route_ok",
+            "quakefire_smoke_risk"
+          ],
+          "retry": {
+            "decisionId": "quakefire_smoke",
+            "clock": 4,
+            "facts": {}
+          },
+          "resume": [
+            "quakefire_smoke_ok",
+            "quakefire_after_ok",
+            "quakefire_call_ok"
+          ],
+          "sameAs": "all-correct"
+        }
+      ]
     }
   ]
 }

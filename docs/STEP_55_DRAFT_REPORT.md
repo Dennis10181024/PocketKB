@@ -854,3 +854,147 @@
 | 第 4 回合 | 我帶她靠近濕地，想看清水的位置。 | lake_water_act_myth | 手掌擦傷（同伴） |
 | 第 5 回合 | 我跨過濕滑的矮牆，想走較短的小徑。 | lake_high_act_myth | 腳踝扭傷 |
 | 關鍵轉折 | 我聽鄰居說還早，請他晚點再通知。 | lake_alert_act_myth | — |
+
+## 震後樓道裡的焦味
+
+7 題，3 種可達結局，367 個可達非終止狀態。
+
+- 草稿，待人工審查。氣象署說明震後火災成因、臺南消防局說明疑似瓦斯時避開電器開關，消防署受困與通報資料支援煙況阻路的決策。
+- 待人工查證：瓦斯氣味與其他樓層的煙來源沒有直接因果宣稱。煙蔓延、室內動線、餘震時點與傷勢是合成情節，需消防專業複核。
+
+| 檢查 | 數據 |
+|---|---|
+| 最長＝正確（標點計入） | 2/7（28.6%） |
+| 最長＝正確（忽略標點） | 2/7（28.6%） |
+| 動作最多＝正確 | 0/7（0.0%） |
+| 最短＝正確（標點計入） | 2/7（28.6%） |
+| 最短＝正確（忽略標點） | 2/7（28.6%） |
+| 自我否定用詞 | 0/21 |
+| 同題最大字差 | 4 字 |
+
+比例含並列。動作數為按原文核對的可見行動標註。
+
+| 決策點／問題 | 選項 | 判定 | 字數 | 動作數 | 採用 ID | 來源 |
+|---|---|---|---:|---:|---|---|
+| quakefire_cover／屋子開始左右晃，架上的杯子往外滑。我的第一步是什麼？ | 我到堅固桌下護頭，抓穩桌腳。 | 正確 | 14 | 1 | quakefire_cover_act_ok | [eq](https://scweb.cwa.gov.tw/zh-tw/page/intro/11) |
+| quakefire_cover／屋子開始左右晃，架上的杯子往外滑。我的第一步是什麼？ | 我伸手接住架上杯子，叫怡安也過來。 | 迷思 | 17 | 2 | quakefire_cover_act_myth | [eq](https://scweb.cwa.gov.tw/zh-tw/page/intro/11) |
+| quakefire_cover／屋子開始左右晃，架上的杯子往外滑。我的第一步是什麼？ | 我扶著牆往門口跑，叫怡安拿鑰匙。 | 危險／延誤 | 16 | 2 | quakefire_cover_act_risk | [eq](https://scweb.cwa.gov.tw/zh-tw/page/intro/11) |
+| quakefire_cover 字差 | — | — | 3 | — | — | — |
+| quakefire_assess／搖晃暫時停了，走道另一頭有焦味。屋內地板也散著物品。我先判斷什麼？ | 我從原處查看煙況、人和可用動線。 | 正確 | 16 | 1 | quakefire_assess_act_ok | [cause](https://scweb.cwa.gov.tw/zh-tw/guidance/faqdetail/85) |
+| quakefire_assess／搖晃暫時停了，走道另一頭有焦味。屋內地板也散著物品。我先判斷什麼？ | 我叫怡安去聞，自己留在門邊。 | 迷思 | 14 | 2 | quakefire_assess_act_myth | [cause](https://scweb.cwa.gov.tw/zh-tw/guidance/faqdetail/85) |
+| quakefire_assess／搖晃暫時停了，走道另一頭有焦味。屋內地板也散著物品。我先判斷什麼？ | 我回內側先找手機，再跟怡安走出去看。 | 危險／延誤 | 18 | 2 | quakefire_assess_act_risk | [cause](https://scweb.cwa.gov.tw/zh-tw/guidance/faqdetail/85) |
+| quakefire_assess 字差 | — | — | 4 | — | — | — |
+| quakefire_gas／離廚房一段距離有疑似瓦斯味，可通行的前側沒有煙。怡安伸手要開燈，我怎麼回她？ | 我勸怡安把手收回，沿無煙的一側走。 | 正確 | 17 | 1 | quakefire_gas_act_ok | [gas](https://119.tainan.gov.tw/News_Content.aspx?n=25533&s=8693793) |
+| quakefire_gas／離廚房一段距離有疑似瓦斯味，可通行的前側沒有煙。怡安伸手要開燈，我怎麼回她？ | 我請她開廚房燈，先查看爐子。 | 迷思 | 14 | 2 | quakefire_gas_act_myth | [gas](https://119.tainan.gov.tw/News_Content.aspx?n=25533&s=8693793) |
+| quakefire_gas／離廚房一段距離有疑似瓦斯味，可通行的前側沒有煙。怡安伸手要開燈，我怎麼回她？ | 我往廚房裡走去查味道，再示意她等候。 | 危險／延誤 | 18 | 2 | quakefire_gas_act_risk | [gas](https://119.tainan.gov.tw/News_Content.aspx?n=25533&s=8693793) |
+| quakefire_gas 字差 | — | — | 4 | — | — | — |
+| quakefire_route／門外有兩條方向。內側出口遠端已見煙，前側的樓梯門外還看得清。我選哪邊？ | 我走向看得清的樓梯入口，沿途再確認。 | 正確 | 18 | 1 | quakefire_route_act_ok | [fire](https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113) |
+| quakefire_route／門外有兩條方向。內側出口遠端已見煙，前側的樓梯門外還看得清。我選哪邊？ | 我走熟悉的內側，想趁還認得路出去。 | 迷思 | 17 | 2 | quakefire_route_act_myth | [fire](https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113) |
+| quakefire_route／門外有兩條方向。內側出口遠端已見煙，前側的樓梯門外還看得清。我選哪邊？ | 我留在樓梯口看舊圖，再聽怡安的想法。 | 危險／延誤 | 18 | 2 | quakefire_route_act_risk | [fire](https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113) |
+| quakefire_route 字差 | — | — | 1 | — | — | — |
+| quakefire_smoke／走到可見範圍邊緣，樓梯門外忽然被濃煙遮住。我退後還能回到較清楚的一側。我怎麼選？ | 我退回可隔煙的房內，把門帶緊。 | 正確 | 15 | 1 | quakefire_smoke_act_ok | [fire](https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113) |
+| quakefire_smoke／走到可見範圍邊緣，樓梯門外忽然被濃煙遮住。我退後還能回到較清楚的一側。我怎麼選？ | 我靠樓梯邊等一陣，看看煙會不會變薄。 | 迷思 | 18 | 2 | quakefire_smoke_act_myth | [fire](https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113) |
+| quakefire_smoke／走到可見範圍邊緣，樓梯門外忽然被濃煙遮住。我退後還能回到較清楚的一側。我怎麼選？ | 我貼著牆進樓梯間，想摸出下一層。 | 危險／延誤 | 16 | 2 | quakefire_smoke_act_risk | [fire](https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113) |
+| quakefire_smoke 字差 | — | — | 3 | — | — | — |
+| quakefire_after／回到較清楚的一側，我又感到一次搖晃。窗邊和桌旁都在眼前。這一刻我怎麼做？ | 我就地伏低護頭頸，穩住手邊的桌腳。 | 正確 | 17 | 1 | quakefire_after_act_ok | [eq](https://scweb.cwa.gov.tw/zh-tw/page/intro/11) |
+| quakefire_after／回到較清楚的一側，我又感到一次搖晃。窗邊和桌旁都在眼前。這一刻我怎麼做？ | 我走到玻璃窗旁，拉怡安來看下面。 | 迷思 | 16 | 2 | quakefire_after_act_myth | [eq](https://scweb.cwa.gov.tw/zh-tw/page/intro/11) |
+| quakefire_after／回到較清楚的一側，我又感到一次搖晃。窗邊和桌旁都在眼前。這一刻我怎麼做？ | 我先打亮手機，再四處尋找屋裡的東西。 | 危險／延誤 | 18 | 2 | quakefire_after_act_risk | [eq](https://scweb.cwa.gov.tw/zh-tw/page/intro/11) |
+| quakefire_after 字差 | — | — | 2 | — | — | — |
+| quakefire_call／搖晃又停了，這一側能通話，前方的煙仍沒退。我先傳達哪些訊息？ | 我打給一一九，報地址、房號和受困人數。 | 正確 | 19 | 1 | quakefire_call_act_ok | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| quakefire_call／搖晃又停了，這一側能通話，前方的煙仍沒退。我先傳達哪些訊息？ | 我傳訊給朋友，請他看看樓下動靜。 | 迷思 | 16 | 2 | quakefire_call_act_myth | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| quakefire_call／搖晃又停了，這一側能通話，前方的煙仍沒退。我先傳達哪些訊息？ | 我繼續看走道煙況，和怡安等下一步。 | 危險／延誤 | 17 | 2 | quakefire_call_act_risk | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| quakefire_call 字差 | — | — | 3 | — | — | — |
+
+### 全對重播回顧全文
+
+結局傷勢清單｜無紀錄傷勢。
+
+#### 結果
+
+隔煙待援後獲救。本人傷勢分級為無傷。
+
+在安全一側避開煙與餘震，救援人員依位置接手。
+
+#### 做對的決定
+
+- 「我到堅固桌下護頭，抓穩桌腳。」 就近掩護可減少落物傷害。
+- 「我從原處查看煙況、人和可用動線。」 震後可能有次生災害，先查現場而不是假定原因。
+- 「我勸怡安把手收回，沿無煙的一側走。」 疑似瓦斯外洩時開關電器可能有火花，安全動線可用應離開。
+
+#### 下次可以補上的
+
+本場無此項。
+
+#### 這次的危險選擇與後果
+
+本場無此項。
+
+#### 關鍵轉折
+
+- 「我到堅固桌下護頭，抓穩桌腳。」 → 我貼低身體抓牢桌腳，杯子從遠一點落下。 → 可以維持「我到堅固桌下護頭，抓穩桌腳。」 就近掩護可減少落物傷害。
+
+#### 官方依據
+
+- [中央氣象署：地震防護](https://scweb.cwa.gov.tw/zh-tw/page/intro/11)
+- [中央氣象署：地震為何會引發火災](https://scweb.cwa.gov.tw/zh-tw/guidance/faqdetail/85)
+- [臺南市消防局：瓦斯外洩的四步驟](https://119.tainan.gov.tw/News_Content.aspx?n=25533&s=8693793)
+
+#### 帶走一個思考題
+
+- 如果我在陌生大樓先遇到地震又聞到焦味，哪些現場線索會改變我原本的出路？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 關鍵轉折 | 我到堅固桌下護頭，抓穩桌腳。 |  | — |
+
+
+### 亂玩重播回顧全文
+
+結局傷勢清單｜本人：前臂擦傷、怡安：手背擦傷、本人：短暫煙霧刺激、本人：濃煙吸入後呼吸不適。
+
+#### 結果
+
+延誤後獲救。最嚴重的傷勢為濃煙吸入後呼吸不適。本人傷勢分級為中度傷勢・需送醫。撤離或救援延誤：搖晃時靠近置物架、讓同伴靠近未確認區域。
+
+最早因搖晃時靠近置物架造成延誤，過程中出現濃煙吸入後呼吸不適。
+
+#### 做對的決定
+
+本場無此項。
+
+#### 下次可以補上的
+
+- 從可通話的安全位置急報地址、樓層與房號、人數和是否受困。
+- 等到再次穩定後才確認靠窗或撤離動線。
+
+#### 這次的危險選擇與後果
+
+- 第 1 回合「我伸手接住架上杯子，叫怡安也過來。」 杯子撞到我的前臂，另一個滑到腳邊（本回合傷勢：前臂擦傷）。 先護住頭頸，不要在搖晃時接掉物。
+- 第 2 回合「我叫怡安去聞，自己留在門邊。」 怡安忙著穿過散落物時滑了一下，手背擦到牆（本回合傷勢：手背擦傷）。 在可辨識的安全位置由遠觀察，和同伴一起重新判斷。
+- 第 5 回合「我靠樓梯邊等一陣，看看煙會不會變薄。」 煙沒有立刻變薄，我持續咳嗽，胸口緊得不好說話（本回合傷勢：濃煙吸入後呼吸不適）。 一確認煙阻斷，就退回遠離煙的一側並隔煙。
+
+#### 關鍵轉折
+
+- 「我伸手接住架上杯子，叫怡安也過來。」 → 杯子撞到我的前臂，另一個滑到腳邊（本回合傷勢：前臂擦傷）。 → 可改選「我到堅固桌下護頭，抓穩桌腳。」 先護住頭頸，不要在搖晃時接掉物。
+
+#### 官方依據
+
+- [中央氣象署：地震防護](https://scweb.cwa.gov.tw/zh-tw/page/intro/11)
+- [中央氣象署：地震為何會引發火災](https://scweb.cwa.gov.tw/zh-tw/guidance/faqdetail/85)
+- [消防署：火場受困時關門、靠窗通報](https://www.nfa.gov.tw/pro/index.php?article_id=5720&code=list&flag=detail&ids=113)
+- [消防署：119 報案要領](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68)
+
+#### 帶走一個思考題
+
+- 如果我在陌生大樓先遇到地震又聞到焦味，哪些現場線索會改變我原本的出路？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 第 1 回合 | 我伸手接住架上杯子，叫怡安也過來。 | quakefire_cover_act_myth | 前臂擦傷 |
+| 第 2 回合 | 我叫怡安去聞，自己留在門邊。 | quakefire_assess_act_myth | 手背擦傷（同伴） |
+| 第 5 回合 | 我靠樓梯邊等一陣，看看煙會不會變薄。 | quakefire_smoke_act_myth | 濃煙吸入後呼吸不適 |
+| 關鍵轉折 | 我伸手接住架上杯子，叫怡安也過來。 | quakefire_cover_act_myth | 前臂擦傷 |
