@@ -9,6 +9,10 @@ const {createRuntime}=require('../../web-pwa/choice-runtime');
 const schema=require('../../web-pwa/scenarios/choice/schema-v1.json');
 const labels={correct:'正確',misconception:'迷思',risk_or_delay:'危險／延誤',partial:'不完整'};
 const sourceNotes={
+  landslide_mountain_road_draft:[
+    "草稿，待人工審查。農村水保署土石流指引及徵兆提供警戒、遠離危險區與撤離依據；公路局支援依最新交通管制選路。",
+    "待人工查證：服務站、迴轉點與接應時機均為合成設定；任何真實路段應以當下公告和可用動線判斷。傷勢為教學事件。"
+  ],
   metro_attack_draft:[
     '公開查證：警政署彙編頁 10 的跑、躲、告及專案收錄原文頁 16、26–27。北捷公開設備頁區分高運量與文湖線，板南線採緊急對講機。危險選項以嘗試自行離車呈現，無操作細節。',
     '待人工查證：請北捷或演練教官確認板南線各車型廣播與引導的措辭。暫時無退路且無法躲藏的阻擋選項只呈現保護與等候安全離開。'

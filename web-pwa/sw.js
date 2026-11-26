@@ -1,4 +1,4 @@
-const CACHE_NAME = "pocketkb-pwa-v20-home-draft";
+const CACHE_NAME = "pocketkb-pwa-v21-slide-draft";
 const CORE_ASSETS = [
   "./", "./index.html", "./styles.css", "./app.js", "./drill-language.js", "./drill-events.js", "./scenario-engine-v3.js",
   "./scenarios/v3/fire-dorm.json", "./manifest.webmanifest", "./icon.svg", "./choice-pack.js", "./choice-runtime.js", "./choice-view.js",

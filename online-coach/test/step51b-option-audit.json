@@ -562,5 +562,89 @@
   "home_handoff_risk": {
     "text": "我貼近斜櫃探頭，再催阿哲一起靠過來。",
     "visibleActions": 2
+  },
+  "slide_alert_ok": {
+    "text": "我對照所在地和官方警戒範圍。",
+    "visibleActions": 1
+  },
+  "slide_alert_myth": {
+    "text": "我比照去年的警訊，問朋友這裡穩不穩。",
+    "visibleActions": 2
+  },
+  "slide_alert_risk": {
+    "text": "我看遠處雨勢較弱，請小安照原路出發。",
+    "visibleActions": 2
+  },
+  "slide_barrier_ok": {
+    "text": "我停在服務站，確認封路通知。",
+    "visibleActions": 1
+  },
+  "slide_barrier_myth": {
+    "text": "我走到路障內側，拍給小安看路況。",
+    "visibleActions": 2
+  },
+  "slide_barrier_risk": {
+    "text": "我移開路障，催小安沿山壁把車開過去。",
+    "visibleActions": 2
+  },
+  "slide_return_ok": {
+    "text": "我按人員指示在站內迴轉，走公告路線。",
+    "visibleActions": 1
+  },
+  "slide_return_myth": {
+    "text": "我靠站牌停等，再刷新舊地圖。",
+    "visibleActions": 2
+  },
+  "slide_return_risk": {
+    "text": "我請小安改開支線，沿著溪邊找會車處。",
+    "visibleActions": 2
+  },
+  "slide_creek_ok": {
+    "text": "我請小安別靠近溪邊，留在較高路段。",
+    "visibleActions": 1
+  },
+  "slide_creek_myth": {
+    "text": "我帶小安走到橋頭，先看水有多深。",
+    "visibleActions": 2
+  },
+  "slide_creek_risk": {
+    "text": "我讓小安在路邊等，自己下到溪邊拍照。",
+    "visibleActions": 2
+  },
+  "slide_block_ok": {
+    "text": "我依新管制去指定等待點，讓人接應。",
+    "visibleActions": 1
+  },
+  "slide_block_myth": {
+    "text": "我跨過滑濕路肩，去找另一側的入口。",
+    "visibleActions": 2
+  },
+  "slide_block_risk": {
+    "text": "我往原路多走一段，再回來等人。",
+    "visibleActions": 2
+  },
+  "slide_report_ok": {
+    "text": "我向一一九報位置、人數與落石路段。",
+    "visibleActions": 1
+  },
+  "slide_report_myth": {
+    "text": "我告訴朋友雨勢大，請他轉傳。",
+    "visibleActions": 2
+  },
+  "slide_report_risk": {
+    "text": "我拍下前方路牌位置，再上傳給群組看。",
+    "visibleActions": 2
+  },
+  "slide_shelter_ok": {
+    "text": "我向服務人員報到，再確認小安的狀況。",
+    "visibleActions": 1
+  },
+  "slide_shelter_myth": {
+    "text": "我先跟小安去找位子，再回門口。",
+    "visibleActions": 2
+  },
+  "slide_shelter_risk": {
+    "text": "我到戶外迎接下一批車，招手叫小安過來。",
+    "visibleActions": 2
   }
 }

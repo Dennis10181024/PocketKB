@@ -796,6 +796,91 @@
           "sameAs": "all-correct"
         }
       ]
+    },
+    {
+      "file": "landslide-mountain-road-draft.json",
+      "packSha256": "14f73866ae7430a4dc40c54f33936b94bb00d0a878193a8e1e2dd9bfc634cfc7",
+      "cases": [
+        {
+          "id": "all-correct",
+          "choices": [
+            "slide_alert_ok",
+            "slide_barrier_ok",
+            "slide_return_ok",
+            "slide_creek_ok",
+            "slide_block_ok",
+            "slide_report_ok",
+            "slide_shelter_ok"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "SELF_EVACUATION",
+            "injury": "NONE",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "slide_alert_myth",
+            "slide_barrier_myth",
+            "slide_return_myth",
+            "slide_creek_myth",
+            "slide_block_myth",
+            "slide_report_myth",
+            "slide_shelter_myth"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "DELAYED_EVACUATION",
+            "injury": "MODERATE",
+            "exposure": {
+              "harm": 2,
+              "delay": 7
+            }
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "slide_alert_ok",
+            "slide_barrier_risk"
+          ],
+          "expected": {
+            "clock": 1,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "slide_alert_ok",
+            "slide_barrier_risk"
+          ],
+          "retry": {
+            "decisionId": "slide_barrier",
+            "clock": 1,
+            "facts": {}
+          },
+          "resume": [
+            "slide_barrier_ok",
+            "slide_return_ok",
+            "slide_creek_ok",
+            "slide_block_ok",
+            "slide_report_ok",
+            "slide_shelter_ok"
+          ],
+          "sameAs": "all-correct"
+        }
+      ]
     }
   ]
 }

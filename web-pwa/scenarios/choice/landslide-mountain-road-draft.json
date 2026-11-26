@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "landslide_mountain_road_draft",
+    "title": "山路上的雨聲",
+    "version": "1.0.0",
+    "hazard": "landslide",
+    "skeletonVersion": "draft-choice-5.5",
+    "sources": [
+      {"id":"slide","title":"農村水保署：土石流自主防災指引","url":"https://246.ardswc.gov.tw/SelfPreparedness/Guide"},
+      {"id":"signs","title":"農村水保署：土石流發生前兆","url":"https://246.ardswc.gov.tw/DebrisFlow/Features"},
+      {"id":"road","title":"公路局：省道即時交通資訊","url":"https://168.thb.gov.tw/"},
+      {"id":"call","title":"消防署：119 報案要領","url":"https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68"}
+    ],
+    "status": "draft",
+    "contentNotice": "這一場包含山區撤離、道路受阻與非血腥受傷描述，可跳過或停止。"
+  },
+  "initial": {
+    "facts": {
+      "noticed": false,
+      "stopped": false,
+      "reversed": false,
+      "stayedHigh": false,
+      "replanned": false,
+      "notified": false,
+      "checkedIn": false
+    },
+    "exposure": {
+      "harm": 0,
+      "delay": 0
+    },
+    "npc": {
+      "peer": {
+        "name": "小安",
+        "state": "nearby",
+        "injured": false
+      }
+    },
+    "decisionId": "slide_alert",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 7
+  },
+  "catalog": {
+    "principles": [
+      {"id":"slide_alert_act_ok","sourceIds":["slide"],"when":{"always":true},"review":{"why":"以所在地和主管機關警報判斷是否受影響。","tip":"看清河段、行政區及公告，不用遠處天色代替公告。","eligibleWhen":{"always":true},"priority":2},"normal":{"narration":"principle_slide_alert_act_ok","effect":{"set":{"facts.noticed":true},"injuries":[],"add":{}}}},
+      {"id":"slide_barrier_act_ok","sourceIds":["road"],"when":{"always":true},"review":{"why":"封路後不能以肉眼猜測下一段安全。","tip":"停在可合法停留的安全位置，向交通單位確認最新管制。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_slide_barrier_act_ok","effect":{"set":{"facts.stopped":true},"injuries":[],"add":{}}}},
+      {"id":"slide_return_act_ok","sourceIds":["road"],"when":{"always":true},"review":{"why":"只有當下確認可走的替代動線可採用。","tip":"按最新指示在安全位置迴轉，不轉進未確認支線。","eligibleWhen":{"always":true},"priority":4},"normal":{"narration":"principle_slide_return_act_ok","effect":{"set":{"facts.reversed":true},"injuries":[],"add":{}}}},
+      {"id":"slide_creek_act_ok","sourceIds":["signs"],"when":{"always":true},"review":{"why":"可能出現土石流時，溪谷與橋頭暴露較高。","tip":"依通行指示往安全高處方向移動，保持離溪岸距離。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_slide_creek_act_ok","effect":{"set":{"facts.stayedHigh":true},"injuries":[],"add":{}}}},
+      {"id":"slide_block_act_ok","sourceIds":["road"],"when":{"always":true},"review":{"why":"可通行路線會因降雨變更，指定等待點有助接應。","tip":"舊動線中斷後，以最新官方指示到指定安全位置。","eligibleWhen":{"always":true},"priority":6},"normal":{"narration":"principle_slide_block_act_ok","effect":{"set":{"facts.replanned":true},"injuries":[],"add":{}}}},
+      {"id":"slide_report_act_ok","sourceIds":["call"],"when":{"always":true},"review":{"why":"可辨識位置、實際人數與受阻狀況利於安排接應。","tip":"在安全處回報路名或里程、人數、是否受傷及阻路位置。","eligibleWhen":{"always":true},"priority":7},"normal":{"narration":"principle_slide_report_act_ok","effect":{"set":{"facts.notified":true},"injuries":[],"add":{}}}},
+      {"id":"slide_shelter_act_ok","sourceIds":["slide"],"when":{"always":true},"review":{"why":"避難處確認人數與需求，有助安排後續協助。","tip":"抵達時向服務人員報到，補位置、人數與傷勢。","eligibleWhen":{"always":true},"priority":8},"normal":{"narration":"principle_slide_shelter_act_ok","effect":{"set":{"facts.checkedIn":true},"injuries":[],"add":{}}}}
+    ],
+    "hazards": [
+      {"id":"slide_alert_act_myth","sourceIds":["slide"],"when":{"always":true},"review":{"why":"舊警訊及不在場者無法證明當下安全。","tip":"改查此次官方公告與精確位置。","eligibleWhen":{"always":true},"priority":2,"principleId":"slide_alert_act_ok"},"normal":{"narration":"hazard_slide_alert_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"以往年消息代替此次公告"}}},
+      {"id":"slide_alert_act_risk","sourceIds":["slide"],"when":{"always":true},"review":{"why":"眼前局部雨勢無法推翻上游及邊坡警戒。","tip":"核對官方警戒與道路管制，再決定是否移動。","eligibleWhen":{"always":true},"priority":2,"principleId":"slide_alert_act_ok"},"normal":{"narration":"hazard_slide_alert_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"用局部雨勢猜測路況"}}},
+      {"id":"slide_barrier_act_myth","sourceIds":["road"],"when":{"always":true},"review":{"why":"進入管制區觀察會增加暴露。","tip":"留在管制前，詢問人員而不走到封路區。","eligibleWhen":{"always":true},"priority":3,"principleId":"slide_barrier_act_ok"},"normal":{"narration":"hazard_slide_barrier_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"進到管制區觀察"}}},
+      {"id":"slide_barrier_act_risk","sourceIds":["road"],"when":{"always":true},"review":{"why":"進封路路段可能同時被落石與中斷路線困住。","tip":"停在路障外，改走公路人員確認的可用路線。","eligibleWhen":{"always":true},"priority":3,"principleId":"slide_barrier_act_ok"},"normal":{"narration":"hazard_slide_barrier_act_risk","effect":{"set":{},"injuries":[],"add":{}}},"fatalEndingId":"slide_barrier_act_risk_ending"},
+      {"id":"slide_return_act_myth","sourceIds":["road"],"when":{"always":true},"review":{"why":"舊圖可能與當下的道路管制不一致。","tip":"以現場管制所指的動線為準。","eligibleWhen":{"always":true},"priority":4,"principleId":"slide_return_act_ok"},"normal":{"narration":"hazard_slide_return_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"等待舊路線恢復"}}},
+      {"id":"slide_return_act_risk","sourceIds":["road"],"when":{"always":true},"review":{"why":"未核對的溪邊支路下雨時可能不通。","tip":"使用公路人員已確認的動線。","eligibleWhen":{"always":true},"priority":4,"principleId":"slide_return_act_ok"},"normal":{"narration":"hazard_slide_return_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"轉入未確認的溪邊支線"}}},
+      {"id":"slide_creek_act_myth","sourceIds":["signs"],"when":{"always":true},"review":{"why":"靠近橋頭查看本身就可能暴露在急流和濕滑地面。","tip":"在高處遠離橋頭，由安全位置聽公告。","eligibleWhen":{"always":true},"priority":5,"principleId":"slide_creek_act_ok"},"normal":{"narration":"hazard_slide_creek_act_myth","effect":{"set":{"npc.peer.injured":true},"injuries":[{"id":"slide_peer_knee","subject":"peer","label":"小腿撞傷","severity":"MILD"}],"add":{"exposure.delay":1},"delay":"靠近濕滑橋頭"}}},
+      {"id":"slide_creek_act_risk","sourceIds":["signs"],"when":{"always":true},"review":{"why":"觀察或拍攝不足以提早知道所有水流變化。","tip":"遠離溪岸及低地，改從安全位置聯繫人員。","eligibleWhen":{"always":true},"priority":5,"principleId":"slide_creek_act_ok"},"normal":{"narration":"hazard_slide_creek_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"為拍照接近溪岸"}}},
+      {"id":"slide_block_act_myth","sourceIds":["road"],"when":{"always":true},"review":{"why":"濕滑路肩或未經確認動線會增加跌倒風險。","tip":"退出不穩動線，留在有核對接應資訊的安全位置。","eligibleWhen":{"always":true},"priority":6,"principleId":"slide_block_act_ok"},"normal":{"narration":"hazard_slide_block_act_myth","effect":{"set":{},"injuries":[{"id":"slide_ankle","subject":"player","label":"腳踝扭傷","severity":"MODERATE"}],"add":{"exposure.harm":2,"exposure.delay":1},"delay":"自行跨越滑濕路肩"}}},
+      {"id":"slide_block_act_risk","sourceIds":["road"],"when":{"always":true},"review":{"why":"沿已封的舊路多走不能恢復通行條件。","tip":"依新的公告停留，避免以往返代替確認。","eligibleWhen":{"always":true},"priority":6,"principleId":"slide_block_act_ok"},"normal":{"narration":"hazard_slide_block_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"沿已封舊動線往返"}}},
+      {"id":"slide_report_act_myth","sourceIds":["call"],"when":{"always":true},"review":{"why":"群組轉傳不一定能讓接應取得完整資訊。","tip":"直接聯絡服務人員，說清定位與是否需要救護。","eligibleWhen":{"always":true},"priority":7,"principleId":"slide_report_act_ok"},"normal":{"narration":"hazard_slide_report_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"改用群組轉傳重要資訊"}}},
+      {"id":"slide_report_act_risk","sourceIds":["call"],"when":{"always":true},"review":{"why":"單一照片未必能交代人數與需求。","tip":"直接用短句報路牌、位置與人數，請對方複誦。","eligibleWhen":{"always":true},"priority":7,"principleId":"slide_report_act_ok"},"normal":{"narration":"hazard_slide_report_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"只傳照片未完成定位"}}},
+      {"id":"slide_shelter_act_myth","sourceIds":["slide"],"when":{"always":true},"review":{"why":"晚回報會使接應紀錄暫時不完整。","tip":"進入口先報到，再安排休息位置。","eligibleWhen":{"always":true},"priority":8,"principleId":"slide_shelter_act_ok"},"normal":{"narration":"hazard_slide_shelter_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"未先在避難處清點"}}},
+      {"id":"slide_shelter_act_risk","sourceIds":["slide"],"when":{"always":true},"review":{"why":"擅自離開讓清點失去已到達位置。","tip":"在指定區域內等候，依服務人員分派協助。","eligibleWhen":{"always":true},"priority":8,"principleId":"slide_shelter_act_ok"},"normal":{"narration":"hazard_slide_shelter_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"離開指定清點區"}}}
+    ],
+    "channels": []
+  },
+  "beats": [
+    {"id":"scene_slide_barrier","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_slide_barrier","effect":{}},"decisionId":"slide_barrier"},
+    {"id":"scene_slide_return","at":2,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_slide_return","effect":{}},"decisionId":"slide_return","after":{"beat":"scene_slide_barrier","turns":1}},
+    {"id":"scene_slide_creek","at":3,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_slide_creek","effect":{}},"decisionId":"slide_creek","after":{"beat":"scene_slide_return","turns":1}},
+    {"id":"scene_slide_block","at":4,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_slide_block","effect":{}},"decisionId":"slide_block","after":{"beat":"scene_slide_creek","turns":1}},
+    {"id":"scene_slide_report","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_slide_report","effect":{}},"decisionId":"slide_report","after":{"beat":"scene_slide_block","turns":1}},
+    {"id":"scene_slide_shelter","at":6,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_slide_shelter","effect":{}},"decisionId":"slide_shelter","after":{"beat":"scene_slide_report","turns":1}}
+  ],
+  "decisions": [
+    {"id":"slide_alert","prompt":"手機跳出警訊，地圖上只有部分路段變色。我先怎麼判斷？","when":{"clock":{"eq":0}},"options":[{"id":"slide_alert_ok","text":"我對照所在地和官方警戒範圍。","class":"correct","safety":"safe","sourceIds":["slide"],"steps":[{"kind":"principle","id":"slide_alert_act_ok"}],"cues":[],"effect":{},"narration":"option_slide_alert_ok"},{"id":"slide_alert_myth","text":"我比照去年的警訊，問朋友這裡穩不穩。","class":"misconception","safety":"unsafe","sourceIds":["slide"],"steps":[{"kind":"hazard","id":"slide_alert_act_myth"}],"cues":[],"effect":{},"narration":"option_slide_alert_myth"},{"id":"slide_alert_risk","text":"我看遠處雨勢較弱，請小安照原路出發。","class":"risk_or_delay","safety":"unsafe","sourceIds":["slide"],"steps":[{"kind":"hazard","id":"slide_alert_act_risk"}],"cues":[],"effect":{},"narration":"option_slide_alert_risk"}]},
+    {"id":"slide_barrier","prompt":"前方的路障亮起警示燈，公路人員往這裡走來。我們怎麼安排這段路？","when":{"clock":{"eq":1}},"options":[{"id":"slide_barrier_ok","text":"我停在服務站，確認封路通知。","class":"correct","safety":"safe","sourceIds":["road"],"steps":[{"kind":"principle","id":"slide_barrier_act_ok"}],"cues":[],"effect":{},"narration":"option_slide_barrier_ok"},{"id":"slide_barrier_myth","text":"我走到路障內側，拍給小安看路況。","class":"misconception","safety":"unsafe","sourceIds":["road"],"steps":[{"kind":"hazard","id":"slide_barrier_act_myth"}],"cues":[],"effect":{},"narration":"option_slide_barrier_myth"},{"id":"slide_barrier_risk","text":"我移開路障，催小安沿山壁把車開過去。","class":"risk_or_delay","safety":"unsafe","sourceIds":["road"],"steps":[{"kind":"hazard","id":"slide_barrier_act_risk"}],"cues":[],"effect":{},"narration":"option_slide_barrier_risk"}]},
+    {"id":"slide_return","prompt":"工作人員說入口內側可以迴轉，原上山路線已封。我選哪條動線？","when":{"clock":{"eq":2}},"options":[{"id":"slide_return_ok","text":"我按人員指示在站內迴轉，走公告路線。","class":"correct","safety":"safe","sourceIds":["road"],"steps":[{"kind":"principle","id":"slide_return_act_ok"}],"cues":[],"effect":{},"narration":"option_slide_return_ok"},{"id":"slide_return_myth","text":"我靠站牌停等，再刷新舊地圖。","class":"misconception","safety":"unsafe","sourceIds":["road"],"steps":[{"kind":"hazard","id":"slide_return_act_myth"}],"cues":[],"effect":{},"narration":"option_slide_return_myth"},{"id":"slide_return_risk","text":"我請小安改開支線，沿著溪邊找會車處。","class":"risk_or_delay","safety":"unsafe","sourceIds":["road"],"steps":[{"kind":"hazard","id":"slide_return_act_risk"}],"cues":[],"effect":{},"narration":"option_slide_return_risk"}]},
+    {"id":"slide_creek","prompt":"小安說溪邊那條路看來更短。遠處水聲變得很大。我怎麼回應？","when":{"clock":{"eq":3}},"options":[{"id":"slide_creek_ok","text":"我請小安別靠近溪邊，留在較高路段。","class":"correct","safety":"safe","sourceIds":["signs"],"steps":[{"kind":"principle","id":"slide_creek_act_ok"}],"cues":[],"effect":{},"narration":"option_slide_creek_ok"},{"id":"slide_creek_myth","text":"我帶小安走到橋頭，先看水有多深。","class":"misconception","safety":"unsafe","sourceIds":["signs"],"steps":[{"kind":"hazard","id":"slide_creek_act_myth"}],"cues":[],"effect":{},"narration":"option_slide_creek_myth"},{"id":"slide_creek_risk","text":"我讓小安在路邊等，自己下到溪邊拍照。","class":"risk_or_delay","safety":"unsafe","sourceIds":["signs"],"steps":[{"kind":"hazard","id":"slide_creek_act_risk"}],"cues":[],"effect":{},"narration":"option_slide_creek_risk"}]},
+    {"id":"slide_block","prompt":"替代路線的一段也封閉了，廣播剛更新。接下來怎麼安排？","when":{"clock":{"eq":4}},"options":[{"id":"slide_block_ok","text":"我依新管制去指定等待點，讓人接應。","class":"correct","safety":"safe","sourceIds":["road"],"steps":[{"kind":"principle","id":"slide_block_act_ok"}],"cues":[],"effect":{},"narration":"option_slide_block_ok"},{"id":"slide_block_myth","text":"我跨過滑濕路肩，去找另一側的入口。","class":"misconception","safety":"unsafe","sourceIds":["road"],"steps":[{"kind":"hazard","id":"slide_block_act_myth"}],"cues":[],"effect":{},"narration":"option_slide_block_myth"},{"id":"slide_block_risk","text":"我往原路多走一段，再回來等人。","class":"risk_or_delay","safety":"unsafe","sourceIds":["road"],"steps":[{"kind":"hazard","id":"slide_block_act_risk"}],"cues":[],"effect":{},"narration":"option_slide_block_risk"}]},
+    {"id":"slide_report","prompt":"有地方可以打電話，另一側的落石也阻斷了道路。我把哪些資訊傳出去？","when":{"clock":{"eq":5}},"options":[{"id":"slide_report_ok","text":"我向一一九報位置、人數與落石路段。","class":"correct","safety":"safe","sourceIds":["call"],"steps":[{"kind":"principle","id":"slide_report_act_ok"}],"cues":[],"effect":{},"narration":"option_slide_report_ok"},{"id":"slide_report_myth","text":"我告訴朋友雨勢大，請他轉傳。","class":"misconception","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"slide_report_act_myth"}],"cues":[],"effect":{},"narration":"option_slide_report_myth"},{"id":"slide_report_risk","text":"我拍下前方路牌位置，再上傳給群組看。","class":"risk_or_delay","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"slide_report_act_risk"}],"cues":[],"effect":{},"narration":"option_slide_report_risk"}]},
+    {"id":"slide_shelter","prompt":"接應的人帶我們到指定避難處，入口正在核對到場者。我怎麼回應？","when":{"clock":{"eq":6}},"options":[{"id":"slide_shelter_ok","text":"我向服務人員報到，再確認小安的狀況。","class":"correct","safety":"safe","sourceIds":["slide"],"steps":[{"kind":"principle","id":"slide_shelter_act_ok"}],"cues":[],"effect":{},"narration":"option_slide_shelter_ok"},{"id":"slide_shelter_myth","text":"我先跟小安去找位子，再回門口。","class":"misconception","safety":"unsafe","sourceIds":["slide"],"steps":[{"kind":"hazard","id":"slide_shelter_act_myth"}],"cues":[],"effect":{},"narration":"option_slide_shelter_myth"},{"id":"slide_shelter_risk","text":"我到戶外迎接下一批車，招手叫小安過來。","class":"risk_or_delay","safety":"unsafe","sourceIds":["slide"],"steps":[{"kind":"hazard","id":"slide_shelter_act_risk"}],"cues":[],"effect":{},"narration":"option_slide_shelter_risk"}]}
+  ],
+  "consequences": [
+    {"id":"escalating_delay","kind":"reckless","decisionId":null,"when":{"compare":{"left":{"ref":"exposure.delay"},"op":"gt","right":{"ref":"counter.escalating_delay"}}},"tiers":[{"fromCount":1,"result":{"narration":"delay_tier_1","effect":{}}},{"fromCount":2,"result":{"narration":"delay_tier_2","effect":{}}},{"fromCount":3,"result":{"narration":"delay_tier_3","effect":{}}}],"sourceIds":["slide"],"review":{"why":"山區降雨時可用道路會變動，延誤會減少可用的路線。","tip":"先確認管制及指定避難點，得到更新時就重新規劃。","eligibleWhen":{"always":true},"priority":5}}
+  ],
+  "phaseRules": [],
+  "endings": [
+    {"id":"slide_barrier_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_slide_barrier_act_risk_ending","labels":[{"when":{"always":true},"text":"車輛進入封閉路段受困"}],"summaries":[{"when":{"always":true},"text":"玩家越過路障後，落石與泥流使車輛失去退路。"}]},
+    {"id":"safe","type":"SELF_EVACUATION","phase":"afterBeats","when":{"all":[{"clock":{"gte":7}},{"compare":{"left":{"ref":"exposure.delay"},"op":"eq","right":0}}]},"injury":"fromInjuries","narration":"end_safe","labels":[{"when":{"always":true},"text":"依管制抵達避難處"}],"summaries":[{"when":{"always":true},"text":"避開中斷路段後，兩人向服務點完成清點。"}]},
+    {"id":"delayed","type":"DELAYED_EVACUATION","phase":"afterBeats","when":{"clock":{"gte":7}},"injury":"fromInjuries","narration":"end_delayed","labels":[{"when":{"always":true},"text":"延後抵達避難處"}],"summaries":[{"when":{"always":true},"text":"多次重找安全路線，拖延抵達指定避難處。"}]}
+  ],
+  "injury": {
+    "score": {
+      "ref": "exposure.harm"
+    },
+    "noneMax": 0,
+    "mildMax": 1,
+    "moderateMax": 3
+  },
+  "review": {
+    "reflectionPrompt": "若出遊時看不到前方路況，我可以從哪些管道確認交通管制？"
+  },
+  "presentation": {
+    "narration": {
+      "opening": [
+        "下午我和小安搭車經過山區聯絡道，雨滴敲得車頂很響。車停在一處有遮蔽的服務站停車區。手機剛收到縣府警訊，路線圖上有一段顏色跟原本不一樣。",
+        "我和小安因雨停在山站的停車區。屋簷的水跟雨聲混在一起，手機顯示這段山路收到警訊。"
+      ],
+      "principle_slide_alert_act_ok": [
+        "我核對所在路段，發現我們在警戒範圍。",
+        "警訊上的地名和我的位置對上，這一段在範圍內。"
+      ],
+      "option_slide_alert_ok": [
+        "我核對所在路段，發現我們在警戒範圍。",
+        "警訊上的地名和我的位置對上，這一段在範圍內。"
+      ],
+      "hazard_slide_alert_act_myth": [
+        "朋友不在這條路上，回話時已過一段時間。",
+        "轉傳的警訊只是舊截圖，沒顯示今天的範圍。"
+      ],
+      "option_slide_alert_myth": [
+        "朋友不在這條路上，回話時已過一段時間。",
+        "轉傳的警訊只是舊截圖，沒顯示今天的範圍。"
+      ],
+      "hazard_slide_alert_act_risk": [
+        "出入口的工作人員示意暫停，車還沒進山路。",
+        "路牌還在晃，管制人員帶我們停回停車區。"
+      ],
+      "option_slide_alert_risk": [
+        "出入口的工作人員示意暫停，車還沒進山路。",
+        "路牌還在晃，管制人員帶我們停回停車區。"
+      ],
+      "look_slide_alert": [
+        "雨暫時沒停，警訊旁列出鄉鎮與警戒區。",
+        "我看到同一個鄉鎮的不同路段被分成幾個區塊。"
+      ],
+      "ask_slide_alert": [
+        "小安問手機地圖上那一塊是不是我們所在的路段。",
+        "小安把位置畫面轉向我。"
+      ],
+      "principle_slide_barrier_act_ok": [
+        "我留在停車區，聽到工作人員說前方已封。",
+        "車停在原處。我向人員確認前方路段的管制。"
+      ],
+      "option_slide_barrier_ok": [
+        "我留在停車區，聽到工作人員說前方已封。",
+        "車停在原處。我向人員確認前方路段的管制。"
+      ],
+      "hazard_slide_barrier_act_myth": [
+        "靠外一點視線仍被雨擋住，我們等了更久。",
+        "我走出停車區後，工作人員又要確認我的位置。"
+      ],
+      "option_slide_barrier_myth": [
+        "靠外一點視線仍被雨擋住，我們等了更久。",
+        "我走出停車區後，工作人員又要確認我的位置。"
+      ],
+      "hazard_slide_barrier_act_risk": [
+        "車行到彎前，山壁傳出持續的撞擊聲。",
+        "我們進入封路區，前方路面湧出泥水。"
+      ],
+      "end_slide_barrier_act_risk_ending": [
+        "一波泥石打上封閉路段，前後視線一起被擋住。車停了下來，已經過不了這一段。",
+        "我聽見山壁一陣巨響，泥石滑落到道路。原路和前方都不再能安全通過。"
+      ],
+      "option_slide_barrier_risk": [
+        "車行到彎前，山壁傳出持續的撞擊聲。",
+        "我們進入封路區，前方路面湧出泥水。"
+      ],
+      "scene_slide_barrier": [
+        "路障後方看不到車回來。",
+        "警示燈照亮車道，工作人員拿著管制牌。"
+      ],
+      "look_slide_barrier": [
+        "路障後方看不到車回來。",
+        "警示燈照亮車道，工作人員拿著管制牌。"
+      ],
+      "ask_slide_barrier": [
+        "小安問前面看起來還有路面，是不是能再過一個彎。",
+        "小安看到燈閃，向我確認要不要移動。"
+      ],
+      "principle_slide_return_act_ok": [
+        "我們在站內迴轉後，沿目前公告的方向離開。",
+        "我看著現場標誌，在已確認可行的路段上折返。"
+      ],
+      "option_slide_return_ok": [
+        "我們在站內迴轉後，沿目前公告的方向離開。",
+        "我看著現場標誌，在已確認可行的路段上折返。"
+      ],
+      "hazard_slide_return_act_myth": [
+        "舊地圖仍標著已封路段，我們多留了一輪。",
+        "我一直等原路更新，已開放的方向還沒利用。"
+      ],
+      "option_slide_return_myth": [
+        "舊地圖仍標著已封路段，我們多留了一輪。",
+        "我一直等原路更新，已開放的方向還沒利用。"
+      ],
+      "hazard_slide_return_act_risk": [
+        "溪線支路剛好被泥水蓋住，我們得再退回來。",
+        "支線看不清界線，車在較高的一端就停住。"
+      ],
+      "option_slide_return_risk": [
+        "溪線支路剛好被泥水蓋住，我們得再退回來。",
+        "支線看不清界線，車在較高的一端就停住。"
+      ],
+      "scene_slide_return": [
+        "雨牌前有人指向站內停車區，示意在這裡可迴轉。",
+        "廣播更新了路段，其中站內的迴轉點仍可用。"
+      ],
+      "look_slide_return": [
+        "雨牌前有人指向站內停車區，示意在這裡可迴轉。",
+        "廣播更新了路段，其中站內的迴轉點仍可用。"
+      ],
+      "ask_slide_return": [
+        "小安拿出舊導航說後面有一條支線。",
+        "小安比較手機早一點下載的地圖和現場方向牌。"
+      ],
+      "principle_slide_creek_act_ok": [
+        "我們在較高處停下來，水聲從低處傳上來。",
+        "小安收起指向溪邊的手，我們留在遠離溪線的道路。"
+      ],
+      "option_slide_creek_ok": [
+        "我們在較高處停下來，水聲從低處傳上來。",
+        "小安收起指向溪邊的手，我們留在遠離溪線的道路。"
+      ],
+      "hazard_slide_creek_act_myth": [
+        "小安踩到濕石滑了一下，小腿撞到路緣。",
+        "我們靠到橋頭，板面又濕又滑，小安小腿碰上外緣。"
+      ],
+      "option_slide_creek_myth": [
+        "小安踩到濕石滑了一下，小腿撞到路緣。",
+        "我們靠到橋頭，板面又濕又滑，小安小腿碰上外緣。"
+      ],
+      "hazard_slide_creek_act_risk": [
+        "我被泥水濺到，腳下的石子開始向下滾。",
+        "我拍的畫面很模糊，靠岸位置的水位正在上升。"
+      ],
+      "option_slide_creek_risk": [
+        "我被泥水濺到，腳下的石子開始向下滾。",
+        "我拍的畫面很模糊，靠岸位置的水位正在上升。"
+      ],
+      "scene_slide_creek": [
+        "我聽到水聲比先前更響，河面上漂著樹枝。",
+        "雨霧後傳來低低的轟聲，溪岸線有些看不清。"
+      ],
+      "look_slide_creek": [
+        "我聽到水聲比先前更響，河面上漂著樹枝。",
+        "雨霧後傳來低低的轟聲，溪岸線有些看不清。"
+      ],
+      "ask_slide_creek": [
+        "小安手指寬一點的步道，說平常走那邊較快。",
+        "小安的手停在地圖的溪邊捷徑上。"
+      ],
+      "principle_slide_block_act_ok": [
+        "我們到了廣播所說的等待點，再核對避難動線。",
+        "接應人員確認這個安全位置可停，我和小安留在那裡。"
+      ],
+      "option_slide_block_ok": [
+        "我們到了廣播所說的等待點，再核對避難動線。",
+        "接應人員確認這個安全位置可停，我和小安留在那裡。"
+      ],
+      "hazard_slide_block_act_myth": [
+        "我在濕路肩滑倒，腳踝痛到難以正常站立。",
+        "砂石隨著鞋子滑動，我的腳踝扭了一下。"
+      ],
+      "option_slide_block_myth": [
+        "我在濕路肩滑倒，腳踝痛到難以正常站立。",
+        "砂石隨著鞋子滑動，我的腳踝扭了一下。"
+      ],
+      "hazard_slide_block_act_risk": [
+        "原路的警示燈還在，我們不得不重新等待。",
+        "前方仍然封閉，接應的人又得確認我們的位置。"
+      ],
+      "option_slide_block_risk": [
+        "原路的警示燈還在，我們不得不重新等待。",
+        "前方仍然封閉，接應的人又得確認我們的位置。"
+      ],
+      "scene_slide_block": [
+        "原本的替代段也架起新的路障。",
+        "我聽到新的管制通知，封閉範圍往前延伸。"
+      ],
+      "look_slide_block": [
+        "原本的替代段也架起新的路障。",
+        "我聽到新的管制通知，封閉範圍往前延伸。"
+      ],
+      "ask_slide_block": [
+        "小安在較穩的地方坐著，等新的接應資訊。",
+        "小安把手上的地圖合起來，朝靠山道路望。"
+      ],
+      "principle_slide_report_act_ok": [
+        "對方複誦路段與人數，請我們在指定點等候。",
+        "我報出路牌與阻斷位置，對方確認還有兩人在這裡。"
+      ],
+      "option_slide_report_ok": [
+        "對方複誦路段與人數，請我們在指定點等候。",
+        "我報出路牌與阻斷位置，對方確認還有兩人在這裡。"
+      ],
+      "hazard_slide_report_act_myth": [
+        "訊息被轉了幾次，接應人員還沒收到完整位置。",
+        "群組有人回覆，但沒有替我們對出路段。"
+      ],
+      "option_slide_report_myth": [
+        "訊息被轉了幾次，接應人員還沒收到完整位置。",
+        "群組有人回覆，但沒有替我們對出路段。"
+      ],
+      "hazard_slide_report_act_risk": [
+        "照片傳了一陣，路段與人數仍沒一起送出。",
+        "圖片停在上傳中，接應人員只知道附近有人。"
+      ],
+      "option_slide_report_risk": [
+        "照片傳了一陣，路段與人數仍沒一起送出。",
+        "圖片停在上傳中，接應人員只知道附近有人。"
+      ],
+      "scene_slide_report": [
+        "手機音量格亮了起來，路牌仍看得到。",
+        "接應前方有人呼叫，但還不清楚我們的位置。"
+      ],
+      "look_slide_report": [
+        "手機音量格亮了起來，路牌仍看得到。",
+        "接應前方有人呼叫，但還不清楚我們的位置。"
+      ],
+      "ask_slide_report": [
+        "小安指著里程牌，問要不要把它記進去。",
+        "小安能看到站牌上印著路段名稱。"
+      ],
+      "principle_slide_shelter_act_ok": [
+        "兩人的名字被記下，小安向服務人員回話。",
+        "我報上我們兩人都到了，並補充有沒有需要協助。"
+      ],
+      "option_slide_shelter_ok": [
+        "兩人的名字被記下，小安向服務人員回話。",
+        "我報上我們兩人都到了，並補充有沒有需要協助。"
+      ],
+      "hazard_slide_shelter_act_myth": [
+        "工作人員多問了一次這批有幾人，才確認我們也在。",
+        "入口暫時記不齊人數，我們稍後才返回補登記。"
+      ],
+      "option_slide_shelter_myth": [
+        "工作人員多問了一次這批有幾人，才確認我們也在。",
+        "入口暫時記不齊人數，我們稍後才返回補登記。"
+      ],
+      "hazard_slide_shelter_act_risk": [
+        "避難點的人員等了兩人回到入口才完成清點。",
+        "我一離開人群，服務人員需要再確認我們在哪裡。"
+      ],
+      "option_slide_shelter_risk": [
+        "避難點的人員等了兩人回到入口才完成清點。",
+        "我一離開人群，服務人員需要再確認我們在哪裡。"
+      ],
+      "scene_slide_shelter": [
+        "我看到門口架起一張登記桌，附近有人收起雨具。",
+        "屋內工作人員看向入口，確認這批車上的人數。"
+      ],
+      "look_slide_shelter": [
+        "我看到門口架起一張登記桌，附近有人收起雨具。",
+        "屋內工作人員看向入口，確認這批車上的人數。"
+      ],
+      "ask_slide_shelter": [
+        "小安站在我旁邊，等我和接應人員交談。",
+        "小安看著入口的人數登記表，想先找位子。"
+      ],
+      "look_default": [
+        "下午我和小安搭車經過山區聯絡道，雨滴敲得車頂很響。車停在一處有遮蔽的服務站停車區。手機剛收到縣府警訊，路線圖上有一段顏色跟原本不一樣。",
+        "我和小安因雨停在山站的停車區。屋簷的水跟雨聲混在一起，手機顯示這段山路收到警訊。"
+      ],
+      "ask_default": [
+        "小安靠近一點，等我把看到的資訊說清楚。",
+        "我聽見小安詢問附近有哪些地方仍有人管理。"
+      ],
+      "idle": [
+        "雨聲還蓋過遠處的車聲。",
+        "遠處的山壁被雨霧遮住。"
+      ],
+      "delay_tier_1": [
+        "道路管理人員重複播報了一次，我們得再等新的位置資訊。",
+        "服務站的車輛逐漸少了，我們仍在等可以行動的線索。"
+      ],
+      "delay_tier_2": [
+        "我聽到雨聲更密，廣播追加了一項通行管制。",
+        "山路的能見度變差，另一段路也暫停通行。"
+      ],
+      "delay_tier_3": [
+        "聯絡點要求重新確認接應位置，原先可走的選擇更少了。",
+        "山霧蓋住較遠的標誌，接應多花一輪時間核對我們在哪裡。"
+      ],
+      "end_safe": [
+        "我踏進指定避難處，聽見服務人員核對兩人的名字。小安在我旁邊回答，外面仍有雨。",
+        "我們從公告的動線抵達服務點，工作人員核對人數，讓我們先留在室內。"
+      ],
+      "end_delayed": [
+        "我多等了幾次交通更新才抵達指定地點。小安和我報上人數，工作人員重新確認進出路線。",
+        "進到服務點時，我們的到達時間比原定晚。接待的人核對兩人的位置和狀況。"
+      ]
+    },
+    "look": [
+      {"when":{"clock":{"eq":0}},"narration":"look_slide_alert"},
+      {"when":{"clock":{"eq":1}},"narration":"look_slide_barrier"},
+      {"when":{"clock":{"eq":2}},"narration":"look_slide_return"},
+      {"when":{"clock":{"eq":3}},"narration":"look_slide_creek"},
+      {"when":{"clock":{"eq":4}},"narration":"look_slide_block"},
+      {"when":{"clock":{"eq":5}},"narration":"look_slide_report"},
+      {"when":{"clock":{"eq":6}},"narration":"look_slide_shelter"},
+      {"when":{"always":true},"narration":"look_default"}
+    ],
+    "askCompanion": [
+      {"when":{"clock":{"eq":0}},"narration":"ask_slide_alert"},
+      {"when":{"clock":{"eq":1}},"narration":"ask_slide_barrier"},
+      {"when":{"clock":{"eq":2}},"narration":"ask_slide_return"},
+      {"when":{"clock":{"eq":3}},"narration":"ask_slide_creek"},
+      {"when":{"clock":{"eq":4}},"narration":"ask_slide_block"},
+      {"when":{"clock":{"eq":5}},"narration":"ask_slide_report"},
+      {"when":{"clock":{"eq":6}},"narration":"ask_slide_shelter"},
+      {"when":{"always":true},"narration":"ask_default"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": []
+  },
+  "assets": []
+}

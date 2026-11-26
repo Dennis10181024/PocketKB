@@ -568,3 +568,146 @@
 | 第 2 回合 | 我快步走近門邊，招手叫阿哲跟上。 | home_assess_act_myth | 手背擦傷（同伴） |
 | 第 5 回合 | 我站在桌沿旁，伸手接快掉的物品。 | home_shock_act_myth | 肩部撞傷 |
 | 關鍵轉折 | 我抓穩窗邊立櫃，叫阿哲也靠過來。 | home_cover_act_myth | 前臂擦傷 |
+
+## 山路上的雨聲
+
+7 題，3 種可達結局，255 個可達非終止狀態。
+
+- 草稿，待人工審查。農村水保署土石流指引及徵兆提供警戒、遠離危險區與撤離依據；公路局支援依最新交通管制選路。
+- 待人工查證：服務站、迴轉點與接應時機均為合成設定；任何真實路段應以當下公告和可用動線判斷。傷勢為教學事件。
+
+| 檢查 | 數據 |
+|---|---|
+| 最長＝正確（標點計入） | 2/7（28.6%） |
+| 最長＝正確（忽略標點） | 2/7（28.6%） |
+| 動作最多＝正確 | 0/7（0.0%） |
+| 最短＝正確（標點計入） | 2/7（28.6%） |
+| 最短＝正確（忽略標點） | 2/7（28.6%） |
+| 自我否定用詞 | 0/21 |
+| 同題最大字差 | 4 字 |
+
+比例含並列。動作數為按原文核對的可見行動標註。
+
+| 決策點／問題 | 選項 | 判定 | 字數 | 動作數 | 採用 ID | 來源 |
+|---|---|---|---:|---:|---|---|
+| slide_alert／手機跳出警訊，地圖上只有部分路段變色。我先怎麼判斷？ | 我對照所在地和官方警戒範圍。 | 正確 | 14 | 1 | slide_alert_act_ok | [slide](https://246.ardswc.gov.tw/SelfPreparedness/Guide) |
+| slide_alert／手機跳出警訊，地圖上只有部分路段變色。我先怎麼判斷？ | 我比照去年的警訊，問朋友這裡穩不穩。 | 迷思 | 18 | 2 | slide_alert_act_myth | [slide](https://246.ardswc.gov.tw/SelfPreparedness/Guide) |
+| slide_alert／手機跳出警訊，地圖上只有部分路段變色。我先怎麼判斷？ | 我看遠處雨勢較弱，請小安照原路出發。 | 危險／延誤 | 18 | 2 | slide_alert_act_risk | [slide](https://246.ardswc.gov.tw/SelfPreparedness/Guide) |
+| slide_alert 字差 | — | — | 4 | — | — | — |
+| slide_barrier／前方的路障亮起警示燈，公路人員往這裡走來。我們怎麼安排這段路？ | 我停在服務站，確認封路通知。 | 正確 | 14 | 1 | slide_barrier_act_ok | [road](https://168.thb.gov.tw/) |
+| slide_barrier／前方的路障亮起警示燈，公路人員往這裡走來。我們怎麼安排這段路？ | 我走到路障內側，拍給小安看路況。 | 迷思 | 16 | 2 | slide_barrier_act_myth | [road](https://168.thb.gov.tw/) |
+| slide_barrier／前方的路障亮起警示燈，公路人員往這裡走來。我們怎麼安排這段路？ | 我移開路障，催小安沿山壁把車開過去。 | 危險／延誤 | 18 | 2 | slide_barrier_act_risk | [road](https://168.thb.gov.tw/) |
+| slide_barrier 字差 | — | — | 4 | — | — | — |
+| slide_return／工作人員說入口內側可以迴轉，原上山路線已封。我選哪條動線？ | 我按人員指示在站內迴轉，走公告路線。 | 正確 | 18 | 1 | slide_return_act_ok | [road](https://168.thb.gov.tw/) |
+| slide_return／工作人員說入口內側可以迴轉，原上山路線已封。我選哪條動線？ | 我靠站牌停等，再刷新舊地圖。 | 迷思 | 14 | 2 | slide_return_act_myth | [road](https://168.thb.gov.tw/) |
+| slide_return／工作人員說入口內側可以迴轉，原上山路線已封。我選哪條動線？ | 我請小安改開支線，沿著溪邊找會車處。 | 危險／延誤 | 18 | 2 | slide_return_act_risk | [road](https://168.thb.gov.tw/) |
+| slide_return 字差 | — | — | 4 | — | — | — |
+| slide_creek／小安說溪邊那條路看來更短。遠處水聲變得很大。我怎麼回應？ | 我請小安別靠近溪邊，留在較高路段。 | 正確 | 17 | 1 | slide_creek_act_ok | [signs](https://246.ardswc.gov.tw/DebrisFlow/Features) |
+| slide_creek／小安說溪邊那條路看來更短。遠處水聲變得很大。我怎麼回應？ | 我帶小安走到橋頭，先看水有多深。 | 迷思 | 16 | 2 | slide_creek_act_myth | [signs](https://246.ardswc.gov.tw/DebrisFlow/Features) |
+| slide_creek／小安說溪邊那條路看來更短。遠處水聲變得很大。我怎麼回應？ | 我讓小安在路邊等，自己下到溪邊拍照。 | 危險／延誤 | 18 | 2 | slide_creek_act_risk | [signs](https://246.ardswc.gov.tw/DebrisFlow/Features) |
+| slide_creek 字差 | — | — | 2 | — | — | — |
+| slide_block／替代路線的一段也封閉了，廣播剛更新。接下來怎麼安排？ | 我依新管制去指定等待點，讓人接應。 | 正確 | 17 | 1 | slide_block_act_ok | [road](https://168.thb.gov.tw/) |
+| slide_block／替代路線的一段也封閉了，廣播剛更新。接下來怎麼安排？ | 我跨過滑濕路肩，去找另一側的入口。 | 迷思 | 17 | 2 | slide_block_act_myth | [road](https://168.thb.gov.tw/) |
+| slide_block／替代路線的一段也封閉了，廣播剛更新。接下來怎麼安排？ | 我往原路多走一段，再回來等人。 | 危險／延誤 | 15 | 2 | slide_block_act_risk | [road](https://168.thb.gov.tw/) |
+| slide_block 字差 | — | — | 2 | — | — | — |
+| slide_report／有地方可以打電話，另一側的落石也阻斷了道路。我把哪些資訊傳出去？ | 我向一一九報位置、人數與落石路段。 | 正確 | 17 | 1 | slide_report_act_ok | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| slide_report／有地方可以打電話，另一側的落石也阻斷了道路。我把哪些資訊傳出去？ | 我告訴朋友雨勢大，請他轉傳。 | 迷思 | 14 | 2 | slide_report_act_myth | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| slide_report／有地方可以打電話，另一側的落石也阻斷了道路。我把哪些資訊傳出去？ | 我拍下前方路牌位置，再上傳給群組看。 | 危險／延誤 | 18 | 2 | slide_report_act_risk | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| slide_report 字差 | — | — | 4 | — | — | — |
+| slide_shelter／接應的人帶我們到指定避難處，入口正在核對到場者。我怎麼回應？ | 我向服務人員報到，再確認小安的狀況。 | 正確 | 18 | 1 | slide_shelter_act_ok | [slide](https://246.ardswc.gov.tw/SelfPreparedness/Guide) |
+| slide_shelter／接應的人帶我們到指定避難處，入口正在核對到場者。我怎麼回應？ | 我先跟小安去找位子，再回門口。 | 迷思 | 15 | 2 | slide_shelter_act_myth | [slide](https://246.ardswc.gov.tw/SelfPreparedness/Guide) |
+| slide_shelter／接應的人帶我們到指定避難處，入口正在核對到場者。我怎麼回應？ | 我到戶外迎接下一批車，招手叫小安過來。 | 危險／延誤 | 19 | 2 | slide_shelter_act_risk | [slide](https://246.ardswc.gov.tw/SelfPreparedness/Guide) |
+| slide_shelter 字差 | — | — | 4 | — | — | — |
+
+### 全對重播回顧全文
+
+結局傷勢清單｜無紀錄傷勢。
+
+#### 結果
+
+依管制抵達避難處。本人傷勢分級為無傷。
+
+避開中斷路段後，兩人向服務點完成清點。
+
+#### 做對的決定
+
+- 「我對照所在地和官方警戒範圍。」 以所在地和主管機關警報判斷是否受影響。
+- 「我停在服務站，確認封路通知。」 封路後不能以肉眼猜測下一段安全。
+- 「我按人員指示在站內迴轉，走公告路線。」 只有當下確認可走的替代動線可採用。
+
+#### 下次可以補上的
+
+本場無此項。
+
+#### 這次的危險選擇與後果
+
+本場無此項。
+
+#### 關鍵轉折
+
+- 「我對照所在地和官方警戒範圍。」 → 我核對所在路段，發現我們在警戒範圍。 → 可以維持「我對照所在地和官方警戒範圍。」 以所在地和主管機關警報判斷是否受影響。
+
+#### 官方依據
+
+- [農村水保署：土石流自主防災指引](https://246.ardswc.gov.tw/SelfPreparedness/Guide)
+- [公路局：省道即時交通資訊](https://168.thb.gov.tw/)
+
+#### 帶走一個思考題
+
+- 若出遊時看不到前方路況，我可以從哪些管道確認交通管制？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 關鍵轉折 | 我對照所在地和官方警戒範圍。 |  | — |
+
+
+### 亂玩重播回顧全文
+
+結局傷勢清單｜小安：小腿撞傷、本人：腳踝扭傷。
+
+#### 結果
+
+延後抵達避難處。最嚴重的傷勢為腳踝扭傷。本人傷勢分級為中度傷勢・需送醫。撤離或救援延誤：以往年消息代替此次公告、進到管制區觀察。
+
+最早因以往年消息代替此次公告造成延誤，過程中出現腳踝扭傷。
+
+#### 做對的決定
+
+本場無此項。
+
+#### 下次可以補上的
+
+- 抵達時向服務人員報到，補位置、人數與傷勢。
+- 在安全處回報路名或里程、人數、是否受傷及阻路位置。
+
+#### 這次的危險選擇與後果
+
+- 第 1 回合「我比照去年的警訊，問朋友這裡穩不穩。」 朋友不在這條路上，回話時已過一段時間。 改查此次官方公告與精確位置。
+- 第 4 回合「我帶小安走到橋頭，先看水有多深。」 小安踩到濕石滑了一下，小腿撞到路緣（本回合傷勢：小腿撞傷）。 在高處遠離橋頭，由安全位置聽公告。
+- 第 5 回合「我跨過滑濕路肩，去找另一側的入口。」 我在濕路肩滑倒，腳踝痛到難以正常站立（本回合傷勢：腳踝扭傷）。 退出不穩動線，留在有核對接應資訊的安全位置。
+
+#### 關鍵轉折
+
+- 「我比照去年的警訊，問朋友這裡穩不穩。」 → 朋友不在這條路上，回話時已過一段時間。 → 可改選「我對照所在地和官方警戒範圍。」 改查此次官方公告與精確位置。
+
+#### 官方依據
+
+- [農村水保署：土石流自主防災指引](https://246.ardswc.gov.tw/SelfPreparedness/Guide)
+- [農村水保署：土石流發生前兆](https://246.ardswc.gov.tw/DebrisFlow/Features)
+- [公路局：省道即時交通資訊](https://168.thb.gov.tw/)
+- [消防署：119 報案要領](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68)
+
+#### 帶走一個思考題
+
+- 若出遊時看不到前方路況，我可以從哪些管道確認交通管制？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 第 1 回合 | 我比照去年的警訊，問朋友這裡穩不穩。 | slide_alert_act_myth | — |
+| 第 4 回合 | 我帶小安走到橋頭，先看水有多深。 | slide_creek_act_myth | 小腿撞傷（同伴） |
+| 第 5 回合 | 我跨過滑濕路肩，去找另一側的入口。 | slide_block_act_myth | 腳踝扭傷 |
+| 關鍵轉折 | 我比照去年的警訊，問朋友這裡穩不穩。 | slide_alert_act_myth | — |

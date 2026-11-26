@@ -42,6 +42,14 @@
       "sha256": "45c82253e5780ed7a2257315b7feec4fa5c6c57f814f7e28d459920636b64261",
       "status": "draft",
       "contentNotice": "這一場包含受困和非血腥受傷描述，可跳過或隨時停止。"
+    },
+    {
+      "id": "landslide_mountain_road_draft",
+      "title": "山路上的雨聲",
+      "file": "landslide-mountain-road-draft.json",
+      "sha256": "14f73866ae7430a4dc40c54f33936b94bb00d0a878193a8e1e2dd9bfc634cfc7",
+      "status": "draft",
+      "contentNotice": "這一場包含山區撤離、道路受阻與非血腥受傷描述，可跳過或停止。"
     }
   ]
 }
