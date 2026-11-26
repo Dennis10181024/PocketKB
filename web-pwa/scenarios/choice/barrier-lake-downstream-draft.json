@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "barrier_lake_downstream_draft",
+    "title": "河谷聚落的廣播",
+    "version": "1.0.0",
+    "hazard": "barrier_lake",
+    "skeletonVersion": "draft-choice-5.5",
+    "sources": [
+      {"id":"lake","title":"林業保育署：國有林地堰塞湖應變標準作業程序","url":"https://www.forest.gov.tw/file/66794"},
+      {"id":"county","title":"花蓮縣政府：馬太鞍溪堰塞湖警戒與疏散","url":"https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454"},
+      {"id":"public","title":"全民安全指引：緊急應變","url":"https://prepare.mnd.gov.tw/emergency-responses"},
+      {"id":"call","title":"消防署：119 報案要領","url":"https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68"}
+    ],
+    "status": "draft",
+    "contentNotice": "這一場包含緊急撤離、水流聲與非血腥受傷描述，可跳過或停止。"
+  },
+  "initial": {
+    "facts": {
+      "matchesAlert": false,
+      "leftEarly": false,
+      "rerouted": false,
+      "leftRiver": false,
+      "reachedHigh": false,
+      "reported": false,
+      "stayed": false
+    },
+    "exposure": {
+      "harm": 0,
+      "delay": 0
+    },
+    "npc": {
+      "peer": {
+        "name": "阿蘭",
+        "state": "nearby",
+        "injured": false
+      }
+    },
+    "decisionId": "lake_alert",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 7
+  },
+  "catalog": {
+    "principles": [
+      {"id":"lake_alert_act_ok","sourceIds":["county"],"when":{"always":true},"review":{"why":"河段禁入與特定地區撤離是不同通知。","tip":"比較官方公告與實際所在地，依該地區最新指示辦理。","eligibleWhen":{"always":true},"priority":2},"normal":{"narration":"principle_lake_alert_act_ok","effect":{"set":{"facts.matchesAlert":true},"injuries":[],"add":{}}}},
+      {"id":"lake_leave_act_ok","sourceIds":["public"],"when":{"always":true},"review":{"why":"正式撤離已發布時，延後出門可能錯過可用路線。","tip":"可安全離開時及時按指定路線走，生活物品留待解除。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_lake_leave_act_ok","effect":{"set":{"facts.leftEarly":true},"injuries":[],"add":{}}}},
+      {"id":"lake_bridge_act_ok","sourceIds":["lake"],"when":{"always":true},"review":{"why":"橋梁封閉後，仍乾的橋面不能代表安全。","tip":"照新的公告走官方已確認的替代路線。","eligibleWhen":{"always":true},"priority":4},"normal":{"narration":"principle_lake_bridge_act_ok","effect":{"set":{"facts.rerouted":true},"injuries":[],"add":{}}}},
+      {"id":"lake_water_act_ok","sourceIds":["public"],"when":{"always":true},"review":{"why":"靠近水岸觀察會增加被水勢與漂流物波及的機會。","tip":"保有距離，沿管理人員指定的安全動線移動。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_lake_water_act_ok","effect":{"set":{"facts.leftRiver":true},"injuries":[],"add":{}}}},
+      {"id":"lake_high_act_ok","sourceIds":["county"],"when":{"always":true},"review":{"why":"替代待援點需真的可達且由當地確認。","tip":"平面安全動線全斷時，走到官方指定的同岸高地。","eligibleWhen":{"always":true},"priority":6},"normal":{"narration":"principle_lake_high_act_ok","effect":{"set":{"facts.reachedHigh":true},"injuries":[],"add":{}}}},
+      {"id":"lake_report_act_ok","sourceIds":["call"],"when":{"always":true},"review":{"why":"安全處發出的具體位置及人數方便定位與接應。","tip":"報出可辨識地名、多少人、傷勢及無法通行的地點。","eligibleWhen":{"always":true},"priority":7},"normal":{"narration":"principle_lake_report_act_ok","effect":{"set":{"facts.reported":true},"injuries":[],"add":{}}}},
+      {"id":"lake_wait_act_ok","sourceIds":["county"],"when":{"always":true},"review":{"why":"雨小與風險解除沒有直接等號。","tip":"直到主管單位解除，留在指定地方並維持聯絡。","eligibleWhen":{"always":true},"priority":8},"normal":{"narration":"principle_lake_wait_act_ok","effect":{"set":{"facts.stayed":true},"injuries":[],"add":{}}}}
+    ],
+    "hazards": [
+      {"id":"lake_alert_act_myth","sourceIds":["county"],"when":{"always":true},"review":{"why":"鄰居的轉述可能不是所在區域的最新要求。","tip":"優先核對官方警報及本戶位置。","eligibleWhen":{"always":true},"priority":2,"principleId":"lake_alert_act_ok"},"normal":{"narration":"hazard_lake_alert_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"等鄰居轉述最新訊息"}}},
+      {"id":"lake_alert_act_risk","sourceIds":["county"],"when":{"always":true},"review":{"why":"一個視角無法看到上游變化。","tip":"用官方警訊判斷是否撤離。","eligibleWhen":{"always":true},"priority":2,"principleId":"lake_alert_act_ok"},"normal":{"narration":"hazard_lake_alert_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"以窗外的河道外觀判斷"}}},
+      {"id":"lake_leave_act_myth","sourceIds":["public"],"when":{"always":true},"review":{"why":"留在警戒區整理會拖延撤離。","tip":"跟同伴先離開，以救命和保持聯絡為先。","eligibleWhen":{"always":true},"priority":3,"principleId":"lake_leave_act_ok"},"normal":{"narration":"hazard_lake_leave_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"等同伴整理物品"}}},
+      {"id":"lake_leave_act_risk","sourceIds":["public"],"when":{"always":true},"review":{"why":"分頭找東西讓撤離通知落在身後。","tip":"有明確撤離指示時跟同伴一起走。","eligibleWhen":{"always":true},"priority":3,"principleId":"lake_leave_act_ok"},"normal":{"narration":"hazard_lake_leave_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"回房取物並分頭翻找"}}},
+      {"id":"lake_bridge_act_myth","sourceIds":["lake"],"when":{"always":true},"review":{"why":"如果已有官方替代路線，等待舊橋開放會消耗撤離時間。","tip":"收到明確新路線時依目標方向離開封橋區。","eligibleWhen":{"always":true},"priority":4,"principleId":"lake_bridge_act_ok"},"normal":{"narration":"hazard_lake_bridge_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"等候已封閉的橋重開"}}},
+      {"id":"lake_bridge_act_risk","sourceIds":["lake"],"when":{"always":true},"review":{"why":"跨越封鎖讓自己暴露於水勢與橋梁受損風險。","tip":"留下安全距離並按已核對替代線撤離。","eligibleWhen":{"always":true},"priority":4,"principleId":"lake_bridge_act_ok"},"normal":{"narration":"hazard_lake_bridge_act_risk","effect":{"set":{},"injuries":[],"add":{}}},"fatalEndingId":"lake_bridge_act_risk_ending"},
+      {"id":"lake_water_act_myth","sourceIds":["public"],"when":{"always":true},"review":{"why":"未經指示靠近濕地有跌倒與接近急水的風險。","tip":"遠離濕滑水岸，在安全位置查看官方訊息。","eligibleWhen":{"always":true},"priority":5,"principleId":"lake_water_act_ok"},"normal":{"narration":"hazard_lake_water_act_myth","effect":{"set":{"npc.peer.injured":true},"injuries":[{"id":"lake_peer_palm","subject":"peer","label":"手掌擦傷","severity":"MILD"}],"add":{"exposure.delay":1},"delay":"靠近濕滑河岸觀察"}}},
+      {"id":"lake_water_act_risk","sourceIds":["public"],"when":{"always":true},"review":{"why":"拍攝不會讓水流變得可預測。","tip":"留在撤離方向並維持與河岸的距離。","eligibleWhen":{"always":true},"priority":5,"principleId":"lake_water_act_ok"},"normal":{"narration":"hazard_lake_water_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"為拍照停留河岸"}}},
+      {"id":"lake_high_act_myth","sourceIds":["county"],"when":{"always":true},"review":{"why":"陌生濕滑的捷徑可能跌倒並拖慢撤離。","tip":"循現場指定的確認路線，別跨越積水或濕牆。","eligibleWhen":{"always":true},"priority":6,"principleId":"lake_high_act_ok"},"normal":{"narration":"hazard_lake_high_act_myth","effect":{"set":{},"injuries":[{"id":"lake_ankle","subject":"player","label":"腳踝扭傷","severity":"MODERATE"}],"add":{"exposure.harm":2,"exposure.delay":1},"delay":"翻越濕滑矮牆扭傷"}}},
+      {"id":"lake_high_act_risk","sourceIds":["county"],"when":{"always":true},"review":{"why":"堤防不一定是正式安全點。","tip":"走到官訊標示的指定位置，避免沿堤靠近河道。","eligibleWhen":{"always":true},"priority":6,"principleId":"lake_high_act_ok"},"normal":{"narration":"hazard_lake_high_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"往未指定堤頂尋找接應"}}},
+      {"id":"lake_report_act_myth","sourceIds":["call"],"when":{"always":true},"review":{"why":"家人知道平安不等於接應單位已掌握地點。","tip":"先向接應人員或緊急服務報出位置與人數。","eligibleWhen":{"always":true},"priority":7,"principleId":"lake_report_act_ok"},"normal":{"narration":"hazard_lake_report_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"只向家人回報未完成接應定位"}}},
+      {"id":"lake_report_act_risk","sourceIds":["call"],"when":{"always":true},"review":{"why":"等待照片而未通報會延誤命令確認。","tip":"先用語音或可用的緊急聯絡方式報定位。","eligibleWhen":{"always":true},"priority":7,"principleId":"lake_report_act_ok"},"normal":{"narration":"hazard_lake_report_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"等待照片上傳才定位"}}},
+      {"id":"lake_wait_act_myth","sourceIds":["county"],"when":{"always":true},"review":{"why":"擅自離開讓救援清點延誤。","tip":"待在已登記位置，有需求先和現場指揮反映。","eligibleWhen":{"always":true},"priority":8,"principleId":"lake_wait_act_ok"},"normal":{"narration":"hazard_lake_wait_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"擅離已回報的待援點"}}},
+      {"id":"lake_wait_act_risk","sourceIds":["county"],"when":{"always":true},"review":{"why":"仍在警戒時靠近河谷住家可能再次遇到管制與水勢。","tip":"聽到正式解除和返家指示後再移動。","eligibleWhen":{"always":true},"priority":8,"principleId":"lake_wait_act_ok"},"normal":{"narration":"hazard_lake_wait_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"警戒尚未解除就返回住宅附近"}}}
+    ],
+    "channels": []
+  },
+  "beats": [
+    {"id":"scene_lake_leave","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_lake_leave","effect":{}},"decisionId":"lake_leave"},
+    {"id":"scene_lake_bridge","at":2,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_lake_bridge","effect":{}},"decisionId":"lake_bridge","after":{"beat":"scene_lake_leave","turns":1}},
+    {"id":"scene_lake_water","at":3,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_lake_water","effect":{}},"decisionId":"lake_water","after":{"beat":"scene_lake_bridge","turns":1}},
+    {"id":"scene_lake_high","at":4,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_lake_high","effect":{}},"decisionId":"lake_high","after":{"beat":"scene_lake_water","turns":1}},
+    {"id":"scene_lake_report","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_lake_report","effect":{}},"decisionId":"lake_report","after":{"beat":"scene_lake_high","turns":1}},
+    {"id":"scene_lake_wait","at":6,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_lake_wait","effect":{}},"decisionId":"lake_wait","after":{"beat":"scene_lake_report","turns":1}}
+  ],
+  "decisions": [
+    {"id":"lake_alert","prompt":"廣播逐段念出撤離區，有幾個地名相似。我先做哪一件事？","when":{"clock":{"eq":0}},"options":[{"id":"lake_alert_ok","text":"我對照門牌和官方撤離範圍。","class":"correct","safety":"safe","sourceIds":["county"],"steps":[{"kind":"principle","id":"lake_alert_act_ok"}],"cues":[],"effect":{},"narration":"option_lake_alert_ok"},{"id":"lake_alert_myth","text":"我聽鄰居說還早，請他晚點再通知。","class":"misconception","safety":"unsafe","sourceIds":["county"],"steps":[{"kind":"hazard","id":"lake_alert_act_myth"}],"cues":[],"effect":{},"narration":"option_lake_alert_myth"},{"id":"lake_alert_risk","text":"我從窗邊看河水，請阿蘭幫忙判斷。","class":"risk_or_delay","safety":"unsafe","sourceIds":["county"],"steps":[{"kind":"hazard","id":"lake_alert_act_risk"}],"cues":[],"effect":{},"narration":"option_lake_alert_risk"}]},
+    {"id":"lake_leave","prompt":"里內廣播要求這段街道撤離。阿蘭轉身去找家中的物品。我怎麼和她商量？","when":{"clock":{"eq":1}},"options":[{"id":"lake_leave_ok","text":"我請阿蘭和我走，沿指定路線離開。","class":"correct","safety":"safe","sourceIds":["public"],"steps":[{"kind":"principle","id":"lake_leave_act_ok"}],"cues":[],"effect":{},"narration":"option_lake_leave_ok"},{"id":"lake_leave_myth","text":"我等阿蘭整理袋子，在門邊看。","class":"misconception","safety":"unsafe","sourceIds":["public"],"steps":[{"kind":"hazard","id":"lake_leave_act_myth"}],"cues":[],"effect":{},"narration":"option_lake_leave_myth"},{"id":"lake_leave_risk","text":"我回房拿證件，並請她去找其他東西。","class":"risk_or_delay","safety":"unsafe","sourceIds":["public"],"steps":[{"kind":"hazard","id":"lake_leave_act_risk"}],"cues":[],"effect":{},"narration":"option_lake_leave_risk"}]},
+    {"id":"lake_bridge","prompt":"橋頭架起管制線。出發前我們原本打算穿過橋，現在怎麼選方向？","when":{"clock":{"eq":2}},"options":[{"id":"lake_bridge_ok","text":"我依更新指示，改走同岸的替代路線。","class":"correct","safety":"safe","sourceIds":["lake"],"steps":[{"kind":"principle","id":"lake_bridge_act_ok"}],"cues":[],"effect":{},"narration":"option_lake_bridge_ok"},{"id":"lake_bridge_myth","text":"我在封鎖線外等，再查看群組消息。","class":"misconception","safety":"unsafe","sourceIds":["lake"],"steps":[{"kind":"hazard","id":"lake_bridge_act_myth"}],"cues":[],"effect":{},"narration":"option_lake_bridge_myth"},{"id":"lake_bridge_risk","text":"我趁橋面看起來乾，帶阿蘭跨過管制線。","class":"risk_or_delay","safety":"unsafe","sourceIds":["lake"],"steps":[{"kind":"hazard","id":"lake_bridge_act_risk"}],"cues":[],"effect":{},"narration":"option_lake_bridge_risk"}]},
+    {"id":"lake_water","prompt":"我看見河水變濁，水上帶著樹枝。旁邊有人停下來看。我怎麼做？","when":{"clock":{"eq":3}},"options":[{"id":"lake_water_ok","text":"我勸阿蘭離開水岸，沿著指示往外走。","class":"correct","safety":"safe","sourceIds":["public"],"steps":[{"kind":"principle","id":"lake_water_act_ok"}],"cues":[],"effect":{},"narration":"option_lake_water_ok"},{"id":"lake_water_myth","text":"我帶她靠近濕地，想看清水的位置。","class":"misconception","safety":"unsafe","sourceIds":["public"],"steps":[{"kind":"hazard","id":"lake_water_act_myth"}],"cues":[],"effect":{},"narration":"option_lake_water_myth"},{"id":"lake_water_risk","text":"我拍下河面變化，再沿人群走到欄杆旁。","class":"risk_or_delay","safety":"unsafe","sourceIds":["public"],"steps":[{"kind":"hazard","id":"lake_water_act_risk"}],"cues":[],"effect":{},"narration":"option_lake_water_risk"}]},
+    {"id":"lake_high","prompt":"前方平面道路不能走了，廣播指定同岸的高處待援點。我如何改變去向？","when":{"clock":{"eq":4}},"options":[{"id":"lake_high_ok","text":"我沿官方指示走到同岸高處的待援點。","class":"correct","safety":"safe","sourceIds":["county"],"steps":[{"kind":"principle","id":"lake_high_act_ok"}],"cues":[],"effect":{},"narration":"option_lake_high_ok"},{"id":"lake_high_myth","text":"我跨過濕滑的矮牆，想走較短的小徑。","class":"misconception","safety":"unsafe","sourceIds":["county"],"steps":[{"kind":"hazard","id":"lake_high_act_myth"}],"cues":[],"effect":{},"narration":"option_lake_high_myth"},{"id":"lake_high_risk","text":"我往堤頂走一段，找有空的接應處。","class":"risk_or_delay","safety":"unsafe","sourceIds":["county"],"steps":[{"kind":"hazard","id":"lake_high_act_risk"}],"cues":[],"effect":{},"narration":"option_lake_high_risk"}]},
+    {"id":"lake_report","prompt":"從高處看得到地名標誌，手機也有訊號。我怎麼讓外界知道我們在哪裡？","when":{"clock":{"eq":5}},"options":[{"id":"lake_report_ok","text":"我向一一九報高地位置、人數及阻路。","class":"correct","safety":"safe","sourceIds":["call"],"steps":[{"kind":"principle","id":"lake_report_act_ok"}],"cues":[],"effect":{},"narration":"option_lake_report_ok"},{"id":"lake_report_myth","text":"我在家人群組說平安，等大家回應。","class":"misconception","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"lake_report_act_myth"}],"cues":[],"effect":{},"narration":"option_lake_report_myth"},{"id":"lake_report_risk","text":"我先拍地名和低處道路，再把照片上傳。","class":"risk_or_delay","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"lake_report_act_risk"}],"cues":[],"effect":{},"narration":"option_lake_report_risk"}]},
+    {"id":"lake_wait","prompt":"雨勢變小了，阿蘭提到想回家看看；廣播還沒解除限制。我怎麼處理？","when":{"clock":{"eq":6}},"options":[{"id":"lake_wait_ok","text":"我和阿蘭留在高地，等官方通知。","class":"correct","safety":"safe","sourceIds":["county"],"steps":[{"kind":"principle","id":"lake_wait_act_ok"}],"cues":[],"effect":{},"narration":"option_lake_wait_ok"},{"id":"lake_wait_myth","text":"我去看原路狀況，再回來找阿蘭。","class":"misconception","safety":"unsafe","sourceIds":["county"],"steps":[{"kind":"hazard","id":"lake_wait_act_myth"}],"cues":[],"effect":{},"narration":"option_lake_wait_myth"},{"id":"lake_wait_risk","text":"我和她先回住家附近，再聽下一輪廣播。","class":"risk_or_delay","safety":"unsafe","sourceIds":["county"],"steps":[{"kind":"hazard","id":"lake_wait_act_risk"}],"cues":[],"effect":{},"narration":"option_lake_wait_risk"}]}
+  ],
+  "consequences": [
+    {"id":"escalating_delay","kind":"reckless","decisionId":null,"when":{"compare":{"left":{"ref":"exposure.delay"},"op":"gt","right":{"ref":"counter.escalating_delay"}}},"tiers":[{"fromCount":1,"result":{"narration":"delay_tier_1","effect":{}}},{"fromCount":2,"result":{"narration":"delay_tier_2","effect":{}}},{"fromCount":3,"result":{"narration":"delay_tier_3","effect":{}}}],"sourceIds":["lake"],"review":{"why":"同一場撤離可能多次更新管制。等待觀望或反覆改走舊路會拖延抵達安全點。","tip":"確認所在區與官方指示，有路可行時及早撤離，進入指定高地後保持聯絡。","eligibleWhen":{"always":true},"priority":5}}
+  ],
+  "phaseRules": [],
+  "endings": [
+    {"id":"lake_bridge_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_lake_bridge_act_risk_ending","labels":[{"when":{"always":true},"text":"封橋區內失去退路"}],"summaries":[{"when":{"always":true},"text":"進入封閉橋頭後，快速變化的水勢切斷回程。"}]},
+    {"id":"safe","type":"SAFE_RESCUE","phase":"afterBeats","when":{"all":[{"clock":{"gte":7}},{"compare":{"left":{"ref":"exposure.delay"},"op":"eq","right":0}}]},"injury":"fromInjuries","narration":"end_safe","labels":[{"when":{"always":true},"text":"在指定高地獲得接應"}],"summaries":[{"when":{"always":true},"text":"依更新避難路線抵達安全待救點，回報位置與人數。"}]},
+    {"id":"delayed","type":"DELAYED_RESCUE","phase":"afterBeats","when":{"clock":{"gte":7}},"injury":"fromInjuries","narration":"end_delayed","labels":[{"when":{"always":true},"text":"延誤後在高地獲得接應"}],"summaries":[{"when":{"always":true},"text":"錯過較早的通行或清點時機，接應花了更久。"}]}
+  ],
+  "injury": {
+    "score": {
+      "ref": "exposure.harm"
+    },
+    "noneMax": 0,
+    "mildMax": 1,
+    "moderateMax": 3
+  },
+  "review": {
+    "reflectionPrompt": "如果我到陌生河谷旅行，收到警訊時如何確認自己是否在撤離範圍？"
+  },
+  "presentation": {
+    "narration": {
+      "opening": [
+        "天還沒全亮，我和阿蘭在河谷聚落的家裡收拾早餐。里內廣播響了兩次，提到上游堰塞湖和撤離範圍。手機也亮起通知，我隔著窗聽見外面有人在叫住戶準備出門。",
+        "我跟阿蘭在河邊聚落的住家，正準備吃早飯。擴音器講到上游堰塞湖，手機幾乎同時跳出警訊。"
+      ],
+      "principle_lake_alert_act_ok": [
+        "門牌對上正式撤離的區域。",
+        "我對照後發現這一戶在撤離區裡。"
+      ],
+      "option_lake_alert_ok": [
+        "門牌對上正式撤離的區域。",
+        "我對照後發現這一戶在撤離區裡。"
+      ],
+      "hazard_lake_alert_act_myth": [
+        "鄰居轉身後，廣播已開始通知下一批。",
+        "鄰居也在找最新消息，我們留在原處等了一輪。"
+      ],
+      "option_lake_alert_myth": [
+        "鄰居轉身後，廣播已開始通知下一批。",
+        "鄰居也在找最新消息，我們留在原處等了一輪。"
+      ],
+      "hazard_lake_alert_act_risk": [
+        "河道離窗邊有段距離，我們仍看不清上游狀況。",
+        "視線所及只是一小段河岸，離開時點仍無法由窗外判定。"
+      ],
+      "option_lake_alert_risk": [
+        "河道離窗邊有段距離，我們仍看不清上游狀況。",
+        "視線所及只是一小段河岸，離開時點仍無法由窗外判定。"
+      ],
+      "look_lake_alert": [
+        "手機訊息寫著位置範圍，另一句提醒不要靠近河床。",
+        "警訊地圖與廣播先後說明了不同種類的範圍。"
+      ],
+      "ask_lake_alert": [
+        "阿蘭問住家地址出現在撤離清單，還是在河岸禁入名單。",
+        "阿蘭把音量調高，地名仍有兩個念起來很像。"
+      ],
+      "principle_lake_leave_act_ok": [
+        "阿蘭轉回門邊，跟我一起走向里內指定的方向。",
+        "我們離開家門時，指揮人員還在這條路引導。"
+      ],
+      "option_lake_leave_ok": [
+        "阿蘭轉回門邊，跟我一起走向里內指定的方向。",
+        "我們離開家門時，指揮人員還在這條路引導。"
+      ],
+      "hazard_lake_leave_act_myth": [
+        "阿蘭回到門口，一批前方住戶已經通過。",
+        "整理時我聽見外面連續叫了兩次，出門時隊伍已遠。"
+      ],
+      "option_lake_leave_myth": [
+        "阿蘭回到門口，一批前方住戶已經通過。",
+        "整理時我聽見外面連續叫了兩次，出門時隊伍已遠。"
+      ],
+      "hazard_lake_leave_act_risk": [
+        "兩人分頭翻找，再碰面時出門隊伍已經往前。",
+        "我回到屋內時，外頭有人再提醒此區需撤離。"
+      ],
+      "option_lake_leave_risk": [
+        "兩人分頭翻找，再碰面時出門隊伍已經往前。",
+        "我回到屋內時，外頭有人再提醒此區需撤離。"
+      ],
+      "scene_lake_leave": [
+        "門口腳步聲愈來愈多，廣播又念了一次這條街。",
+        "阿蘭轉身看向桌邊的袋子，外面傳來逐戶招呼聲。"
+      ],
+      "look_lake_leave": [
+        "門口腳步聲愈來愈多，廣播又念了一次這條街。",
+        "阿蘭轉身看向桌邊的袋子，外面傳來逐戶招呼聲。"
+      ],
+      "ask_lake_leave": [
+        "阿蘭問她還能不能回房把抽屜整理好。",
+        "阿蘭手上沒拿東西，卻還在看房間方向。"
+      ],
+      "principle_lake_bridge_act_ok": [
+        "我和阿蘭依標誌移到同岸路線，橋留在後面。",
+        "我看到同岸替代線已被指揮人員確認，便循著標誌走。"
+      ],
+      "option_lake_bridge_ok": [
+        "我和阿蘭依標誌移到同岸路線，橋留在後面。",
+        "我看到同岸替代線已被指揮人員確認，便循著標誌走。"
+      ],
+      "hazard_lake_bridge_act_myth": [
+        "群組消息互相矛盾，我們多等了一輪才確認替代線。",
+        "舊消息仍標著橋可通行，新的現場指示其實已經改變。"
+      ],
+      "option_lake_bridge_myth": [
+        "群組消息互相矛盾，我們多等了一輪才確認替代線。",
+        "舊消息仍標著橋可通行，新的現場指示其實已經改變。"
+      ],
+      "hazard_lake_bridge_act_risk": [
+        "我走進封橋區時，橋邊的聲音一下高了起來。",
+        "走過管制線後，我看到短時間內水流就逼近橋面。"
+      ],
+      "end_lake_bridge_act_risk_ending": [
+        "橋的一側捲來泥水，我回頭時管制線那一端已被水擋住。腳下的橋面開始發出震動聲。",
+        "我在橋頭聽見轟聲，水和漂流物越過路緣。回到岸上的道路已看不見。"
+      ],
+      "option_lake_bridge_risk": [
+        "我走進封橋區時，橋邊的聲音一下高了起來。",
+        "走過管制線後，我看到短時間內水流就逼近橋面。"
+      ],
+      "scene_lake_bridge": [
+        "封橋牌靠在護欄前，廣播改指同岸道路。",
+        "我看到橋頭有明確停行線，另一側的人暫時過不來。"
+      ],
+      "look_lake_bridge": [
+        "封橋牌靠在護欄前，廣播改指同岸道路。",
+        "我看到橋頭有明確停行線，另一側的人暫時過不來。"
+      ],
+      "ask_lake_bridge": [
+        "阿蘭看向原路，說橋面遠看好像還沒淹到。",
+        "阿蘭回頭看，我聽見她問是否需要改走同岸。"
+      ],
+      "principle_lake_water_act_ok": [
+        "阿蘭收回腳步，跟我一起拉開和河岸的距離。",
+        "我沿引導的方向繼續走，水聲留在後面。"
+      ],
+      "option_lake_water_ok": [
+        "阿蘭收回腳步，跟我一起拉開和河岸的距離。",
+        "我沿引導的方向繼續走，水聲留在後面。"
+      ],
+      "hazard_lake_water_act_myth": [
+        "靠岸處濕又滑，阿蘭跌了一下，手掌被地面擦傷。",
+        "濕地路面輕滑，阿蘭撐地時擦到手掌。"
+      ],
+      "option_lake_water_myth": [
+        "靠岸處濕又滑，阿蘭跌了一下，手掌被地面擦傷。",
+        "濕地路面輕滑，阿蘭撐地時擦到手掌。"
+      ],
+      "hazard_lake_water_act_risk": [
+        "我站到欄杆旁時，前方又增加一道管制。",
+        "手機畫面還在晃，河岸已經有人請聚集者離開。"
+      ],
+      "option_lake_water_risk": [
+        "我站到欄杆旁時，前方又增加一道管制。",
+        "手機畫面還在晃，河岸已經有人請聚集者離開。"
+      ],
+      "scene_lake_water": [
+        "濁水掠過河道，撞到河岸時聲音變大。",
+        "我隔著一段距離看到水面有漂流物。"
+      ],
+      "look_lake_water": [
+        "濁水掠過河道，撞到河岸時聲音變大。",
+        "我隔著一段距離看到水面有漂流物。"
+      ],
+      "ask_lake_water": [
+        "阿蘭朝水聲轉頭，問要不要停下來看清楚。",
+        "阿蘭看向停在路邊的人群，腳步慢了一點。"
+      ],
+      "principle_lake_high_act_ok": [
+        "依照標誌我到達同岸高處，接應位置清楚可辨。",
+        "我和阿蘭走到指定高地，從這裡能看見避難點牌子。"
+      ],
+      "option_lake_high_ok": [
+        "依照標誌我到達同岸高處，接應位置清楚可辨。",
+        "我和阿蘭走到指定高地，從這裡能看見避難點牌子。"
+      ],
+      "hazard_lake_high_act_myth": [
+        "鞋子在濕牆上打滑，我的腳踝疼得不好走。",
+        "我剛想踩過矮牆，重心偏了一下，腳踝扭到。"
+      ],
+      "option_lake_high_myth": [
+        "鞋子在濕牆上打滑，我的腳踝疼得不好走。",
+        "我剛想踩過矮牆，重心偏了一下，腳踝扭到。"
+      ],
+      "hazard_lake_high_act_risk": [
+        "堤邊傳來警戒廣播，我們多走了一段才折返。",
+        "我沿著堤頂方向多走幾步，才發現接應點在另一側。"
+      ],
+      "option_lake_high_risk": [
+        "堤邊傳來警戒廣播，我們多走了一段才折返。",
+        "我沿著堤頂方向多走幾步，才發現接應點在另一側。"
+      ],
+      "scene_lake_high": [
+        "前方標誌已經封閉，指揮人員指向同岸高處。",
+        "新廣播說平地動線受阻，改往已標示安全高地。"
+      ],
+      "look_lake_high": [
+        "前方標誌已經封閉，指揮人員指向同岸高處。",
+        "新廣播說平地動線受阻，改往已標示安全高地。"
+      ],
+      "ask_lake_high": [
+        "阿蘭看到高處方向牌，問是否要抄近堤防。",
+        "阿蘭把目光移到附近的低地路線。"
+      ],
+      "principle_lake_report_act_ok": [
+        "接線員複誦高地名稱和兩人數目。",
+        "我報出同岸的地名，接應資訊與兩人位置對上了。"
+      ],
+      "option_lake_report_ok": [
+        "接線員複誦高地名稱和兩人數目。",
+        "我報出同岸的地名，接應資訊與兩人位置對上了。"
+      ],
+      "hazard_lake_report_act_myth": [
+        "家人回了訊息，但接應人員仍在逐一詢問。",
+        "訊息送達親友，沒有連同位置傳給接應端。"
+      ],
+      "option_lake_report_myth": [
+        "家人回了訊息，但接應人員仍在逐一詢問。",
+        "訊息送達親友，沒有連同位置傳給接應端。"
+      ],
+      "hazard_lake_report_act_risk": [
+        "照片上傳較慢，接應人員還沒收到人數。",
+        "影像傳出之前，外頭仍在確認等待的人有哪些。"
+      ],
+      "option_lake_report_risk": [
+        "照片上傳較慢，接應人員還沒收到人數。",
+        "影像傳出之前，外頭仍在確認等待的人有哪些。"
+      ],
+      "scene_lake_report": [
+        "我看得清高處的路牌。訊號顯示能通話。",
+        "接應端在確認這區還有哪幾戶，手機此時可用。"
+      ],
+      "look_lake_report": [
+        "我看得清高處的路牌。訊號顯示能通話。",
+        "接應端在確認這區還有哪幾戶，手機此時可用。"
+      ],
+      "ask_lake_report": [
+        "阿蘭提議把高處的地名念完整。",
+        "阿蘭讀出一個清楚的地標。"
+      ],
+      "principle_lake_wait_act_ok": [
+        "阿蘭把鑰匙放回口袋，我們等到接應人員確認。",
+        "我留在同一處讓接應人員清點，回家還要等有通知。"
+      ],
+      "option_lake_wait_ok": [
+        "阿蘭把鑰匙放回口袋，我們等到接應人員確認。",
+        "我留在同一處讓接應人員清點，回家還要等有通知。"
+      ],
+      "hazard_lake_wait_act_myth": [
+        "我移開後，接應人員多花一次確認我在哪。",
+        "我往原路走了一小段，附近立著未移除的警戒牌。"
+      ],
+      "option_lake_wait_myth": [
+        "我移開後，接應人員多花一次確認我在哪。",
+        "我往原路走了一小段，附近立著未移除的警戒牌。"
+      ],
+      "hazard_lake_wait_act_risk": [
+        "靠近舊路時又被引導回等待點，清點得重新做。",
+        "我和阿蘭折回原區，管制尚未解除，又得返回高處。"
+      ],
+      "option_lake_wait_risk": [
+        "靠近舊路時又被引導回等待點，清點得重新做。",
+        "我和阿蘭折回原區，管制尚未解除，又得返回高處。"
+      ],
+      "scene_lake_wait": [
+        "雨聲變稀，廣播仍說等候通知。",
+        "我聽不到先前那麼大的雨聲，但警戒訊息還在。"
+      ],
+      "look_lake_wait": [
+        "雨聲變稀，廣播仍說等候通知。",
+        "我聽不到先前那麼大的雨聲，但警戒訊息還在。"
+      ],
+      "ask_lake_wait": [
+        "阿蘭望向來路，問能不能先回家拿倒放的物品。",
+        "阿蘭說想看看家裡，手還捏著鑰匙。"
+      ],
+      "look_default": [
+        "天還沒全亮，我和阿蘭在河谷聚落的家裡收拾早餐。里內廣播響了兩次，提到上游堰塞湖和撤離範圍。手機也亮起通知，我隔著窗聽見外面有人在叫住戶準備出門。",
+        "我跟阿蘭在河邊聚落的住家，正準備吃早飯。擴音器講到上游堰塞湖，手機幾乎同時跳出警訊。"
+      ],
+      "ask_default": [
+        "阿蘭放低聲音，聽著窗外的廣播。",
+        "阿蘭抬起頭，等我說清楚下一步。"
+      ],
+      "idle": [
+        "廣播聲短暫靜了下來。",
+        "我從屋外聽見下一段廣播前的電流聲。"
+      ],
+      "delay_tier_1": [
+        "廣播再念一次區域名稱，我們已比同批居民晚了一步。",
+        "附近人先往外移動，路上剩下的人少了。"
+      ],
+      "delay_tier_2": [
+        "又一段靠河的動線被管制，能走的地方更少。",
+        "遠處響起新一次警訊，我聽到廣播更新封閉的區域。"
+      ],
+      "delay_tier_3": [
+        "接應站開始分批清點，去向還沒確認的人得多等一輪。",
+        "指定地點再核對一遍人數，接應人員仍在處理延後抵達的住戶。"
+      ],
+      "end_safe": [
+        "我在指定高處聽見接應人員依住戶名單呼叫。阿蘭回應後，兩人的人數都被記下。",
+        "接應人員已核對我們所在的高地和兩人名單，我與阿蘭等到接手。"
+      ],
+      "end_delayed": [
+        "廣播再次清點時，終於念到我們的住戶資料。阿蘭回了聲，我也跟接應人員對上位置。",
+        "我和阿蘭在安全點等過一輪確認，接應人員才將兩人納入清點。"
+      ]
+    },
+    "look": [
+      {"when":{"clock":{"eq":0}},"narration":"look_lake_alert"},
+      {"when":{"clock":{"eq":1}},"narration":"look_lake_leave"},
+      {"when":{"clock":{"eq":2}},"narration":"look_lake_bridge"},
+      {"when":{"clock":{"eq":3}},"narration":"look_lake_water"},
+      {"when":{"clock":{"eq":4}},"narration":"look_lake_high"},
+      {"when":{"clock":{"eq":5}},"narration":"look_lake_report"},
+      {"when":{"clock":{"eq":6}},"narration":"look_lake_wait"},
+      {"when":{"always":true},"narration":"look_default"}
+    ],
+    "askCompanion": [
+      {"when":{"clock":{"eq":0}},"narration":"ask_lake_alert"},
+      {"when":{"clock":{"eq":1}},"narration":"ask_lake_leave"},
+      {"when":{"clock":{"eq":2}},"narration":"ask_lake_bridge"},
+      {"when":{"clock":{"eq":3}},"narration":"ask_lake_water"},
+      {"when":{"clock":{"eq":4}},"narration":"ask_lake_high"},
+      {"when":{"clock":{"eq":5}},"narration":"ask_lake_report"},
+      {"when":{"clock":{"eq":6}},"narration":"ask_lake_wait"},
+      {"when":{"always":true},"narration":"ask_default"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": []
+  },
+  "assets": []
+}

@@ -646,5 +646,89 @@
   "slide_shelter_risk": {
     "text": "我到戶外迎接下一批車，招手叫小安過來。",
     "visibleActions": 2
+  },
+  "lake_alert_ok": {
+    "text": "我對照門牌和官方撤離範圍。",
+    "visibleActions": 1
+  },
+  "lake_alert_myth": {
+    "text": "我聽鄰居說還早，請他晚點再通知。",
+    "visibleActions": 2
+  },
+  "lake_alert_risk": {
+    "text": "我從窗邊看河水，請阿蘭幫忙判斷。",
+    "visibleActions": 2
+  },
+  "lake_leave_ok": {
+    "text": "我請阿蘭和我走，沿指定路線離開。",
+    "visibleActions": 1
+  },
+  "lake_leave_myth": {
+    "text": "我等阿蘭整理袋子，在門邊看。",
+    "visibleActions": 2
+  },
+  "lake_leave_risk": {
+    "text": "我回房拿證件，並請她去找其他東西。",
+    "visibleActions": 2
+  },
+  "lake_bridge_ok": {
+    "text": "我依更新指示，改走同岸的替代路線。",
+    "visibleActions": 1
+  },
+  "lake_bridge_myth": {
+    "text": "我在封鎖線外等，再查看群組消息。",
+    "visibleActions": 2
+  },
+  "lake_bridge_risk": {
+    "text": "我趁橋面看起來乾，帶阿蘭跨過管制線。",
+    "visibleActions": 2
+  },
+  "lake_water_ok": {
+    "text": "我勸阿蘭離開水岸，沿著指示往外走。",
+    "visibleActions": 1
+  },
+  "lake_water_myth": {
+    "text": "我帶她靠近濕地，想看清水的位置。",
+    "visibleActions": 2
+  },
+  "lake_water_risk": {
+    "text": "我拍下河面變化，再沿人群走到欄杆旁。",
+    "visibleActions": 2
+  },
+  "lake_high_ok": {
+    "text": "我沿官方指示走到同岸高處的待援點。",
+    "visibleActions": 1
+  },
+  "lake_high_myth": {
+    "text": "我跨過濕滑的矮牆，想走較短的小徑。",
+    "visibleActions": 2
+  },
+  "lake_high_risk": {
+    "text": "我往堤頂走一段，找有空的接應處。",
+    "visibleActions": 2
+  },
+  "lake_report_ok": {
+    "text": "我向一一九報高地位置、人數及阻路。",
+    "visibleActions": 1
+  },
+  "lake_report_myth": {
+    "text": "我在家人群組說平安，等大家回應。",
+    "visibleActions": 2
+  },
+  "lake_report_risk": {
+    "text": "我先拍地名和低處道路，再把照片上傳。",
+    "visibleActions": 2
+  },
+  "lake_wait_ok": {
+    "text": "我和阿蘭留在高地，等官方通知。",
+    "visibleActions": 1
+  },
+  "lake_wait_myth": {
+    "text": "我去看原路狀況，再回來找阿蘭。",
+    "visibleActions": 2
+  },
+  "lake_wait_risk": {
+    "text": "我和她先回住家附近，再聽下一輪廣播。",
+    "visibleActions": 2
   }
 }

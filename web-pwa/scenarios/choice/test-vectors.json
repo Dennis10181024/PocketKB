@@ -881,6 +881,92 @@
           "sameAs": "all-correct"
         }
       ]
+    },
+    {
+      "file": "barrier-lake-downstream-draft.json",
+      "packSha256": "c639d9f369499d28a8f7c3f2d8d8ea6621c15099c894d2a03f87517e9984fc5d",
+      "cases": [
+        {
+          "id": "all-correct",
+          "choices": [
+            "lake_alert_ok",
+            "lake_leave_ok",
+            "lake_bridge_ok",
+            "lake_water_ok",
+            "lake_high_ok",
+            "lake_report_ok",
+            "lake_wait_ok"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "SAFE_RESCUE",
+            "injury": "NONE",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "lake_alert_myth",
+            "lake_leave_myth",
+            "lake_bridge_myth",
+            "lake_water_myth",
+            "lake_high_myth",
+            "lake_report_myth",
+            "lake_wait_myth"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "DELAYED_RESCUE",
+            "injury": "MODERATE",
+            "exposure": {
+              "harm": 2,
+              "delay": 7
+            }
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "lake_alert_ok",
+            "lake_leave_ok",
+            "lake_bridge_risk"
+          ],
+          "expected": {
+            "clock": 2,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "lake_alert_ok",
+            "lake_leave_ok",
+            "lake_bridge_risk"
+          ],
+          "retry": {
+            "decisionId": "lake_bridge",
+            "clock": 2,
+            "facts": {}
+          },
+          "resume": [
+            "lake_bridge_ok",
+            "lake_water_ok",
+            "lake_high_ok",
+            "lake_report_ok",
+            "lake_wait_ok"
+          ],
+          "sameAs": "all-correct"
+        }
+      ]
     }
   ]
 }

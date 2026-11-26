@@ -50,6 +50,14 @@
       "sha256": "14f73866ae7430a4dc40c54f33936b94bb00d0a878193a8e1e2dd9bfc634cfc7",
       "status": "draft",
       "contentNotice": "這一場包含山區撤離、道路受阻與非血腥受傷描述，可跳過或停止。"
+    },
+    {
+      "id": "barrier_lake_downstream_draft",
+      "title": "河谷聚落的廣播",
+      "file": "barrier-lake-downstream-draft.json",
+      "sha256": "c639d9f369499d28a8f7c3f2d8d8ea6621c15099c894d2a03f87517e9984fc5d",
+      "status": "draft",
+      "contentNotice": "這一場包含緊急撤離、水流聲與非血腥受傷描述，可跳過或停止。"
     }
   ]
 }

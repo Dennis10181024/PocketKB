@@ -711,3 +711,146 @@
 | 第 4 回合 | 我帶小安走到橋頭，先看水有多深。 | slide_creek_act_myth | 小腿撞傷（同伴） |
 | 第 5 回合 | 我跨過滑濕路肩，去找另一側的入口。 | slide_block_act_myth | 腳踝扭傷 |
 | 關鍵轉折 | 我比照去年的警訊，問朋友這裡穩不穩。 | slide_alert_act_myth | — |
+
+## 河谷聚落的廣播
+
+7 題，3 種可達結局，255 個可達非終止狀態。
+
+- 草稿，待人工審查。依林業保育署應變程序及地方公告區分河段禁入與指定社區撤離，轉線以主管機關指示為準。
+- 待人工查證：封橋時點、同岸替代道路與高地的安全性由劇本宣告，不能套用到真實地點；各處傷勢為合成分支。
+
+| 檢查 | 數據 |
+|---|---|
+| 最長＝正確（標點計入） | 1/7（14.3%） |
+| 最長＝正確（忽略標點） | 1/7（14.3%） |
+| 動作最多＝正確 | 0/7（0.0%） |
+| 最短＝正確（標點計入） | 2/7（28.6%） |
+| 最短＝正確（忽略標點） | 2/7（28.6%） |
+| 自我否定用詞 | 0/21 |
+| 同題最大字差 | 3 字 |
+
+比例含並列。動作數為按原文核對的可見行動標註。
+
+| 決策點／問題 | 選項 | 判定 | 字數 | 動作數 | 採用 ID | 來源 |
+|---|---|---|---:|---:|---|---|
+| lake_alert／廣播逐段念出撤離區，有幾個地名相似。我先做哪一件事？ | 我對照門牌和官方撤離範圍。 | 正確 | 13 | 1 | lake_alert_act_ok | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_alert／廣播逐段念出撤離區，有幾個地名相似。我先做哪一件事？ | 我聽鄰居說還早，請他晚點再通知。 | 迷思 | 16 | 2 | lake_alert_act_myth | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_alert／廣播逐段念出撤離區，有幾個地名相似。我先做哪一件事？ | 我從窗邊看河水，請阿蘭幫忙判斷。 | 危險／延誤 | 16 | 2 | lake_alert_act_risk | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_alert 字差 | — | — | 3 | — | — | — |
+| lake_leave／里內廣播要求這段街道撤離。阿蘭轉身去找家中的物品。我怎麼和她商量？ | 我請阿蘭和我走，沿指定路線離開。 | 正確 | 16 | 1 | lake_leave_act_ok | [public](https://prepare.mnd.gov.tw/emergency-responses) |
+| lake_leave／里內廣播要求這段街道撤離。阿蘭轉身去找家中的物品。我怎麼和她商量？ | 我等阿蘭整理袋子，在門邊看。 | 迷思 | 14 | 2 | lake_leave_act_myth | [public](https://prepare.mnd.gov.tw/emergency-responses) |
+| lake_leave／里內廣播要求這段街道撤離。阿蘭轉身去找家中的物品。我怎麼和她商量？ | 我回房拿證件，並請她去找其他東西。 | 危險／延誤 | 17 | 2 | lake_leave_act_risk | [public](https://prepare.mnd.gov.tw/emergency-responses) |
+| lake_leave 字差 | — | — | 3 | — | — | — |
+| lake_bridge／橋頭架起管制線。出發前我們原本打算穿過橋，現在怎麼選方向？ | 我依更新指示，改走同岸的替代路線。 | 正確 | 17 | 1 | lake_bridge_act_ok | [lake](https://www.forest.gov.tw/file/66794) |
+| lake_bridge／橋頭架起管制線。出發前我們原本打算穿過橋，現在怎麼選方向？ | 我在封鎖線外等，再查看群組消息。 | 迷思 | 16 | 2 | lake_bridge_act_myth | [lake](https://www.forest.gov.tw/file/66794) |
+| lake_bridge／橋頭架起管制線。出發前我們原本打算穿過橋，現在怎麼選方向？ | 我趁橋面看起來乾，帶阿蘭跨過管制線。 | 危險／延誤 | 18 | 2 | lake_bridge_act_risk | [lake](https://www.forest.gov.tw/file/66794) |
+| lake_bridge 字差 | — | — | 2 | — | — | — |
+| lake_water／我看見河水變濁，水上帶著樹枝。旁邊有人停下來看。我怎麼做？ | 我勸阿蘭離開水岸，沿著指示往外走。 | 正確 | 17 | 1 | lake_water_act_ok | [public](https://prepare.mnd.gov.tw/emergency-responses) |
+| lake_water／我看見河水變濁，水上帶著樹枝。旁邊有人停下來看。我怎麼做？ | 我帶她靠近濕地，想看清水的位置。 | 迷思 | 16 | 2 | lake_water_act_myth | [public](https://prepare.mnd.gov.tw/emergency-responses) |
+| lake_water／我看見河水變濁，水上帶著樹枝。旁邊有人停下來看。我怎麼做？ | 我拍下河面變化，再沿人群走到欄杆旁。 | 危險／延誤 | 18 | 2 | lake_water_act_risk | [public](https://prepare.mnd.gov.tw/emergency-responses) |
+| lake_water 字差 | — | — | 2 | — | — | — |
+| lake_high／前方平面道路不能走了，廣播指定同岸的高處待援點。我如何改變去向？ | 我沿官方指示走到同岸高處的待援點。 | 正確 | 17 | 1 | lake_high_act_ok | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_high／前方平面道路不能走了，廣播指定同岸的高處待援點。我如何改變去向？ | 我跨過濕滑的矮牆，想走較短的小徑。 | 迷思 | 17 | 2 | lake_high_act_myth | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_high／前方平面道路不能走了，廣播指定同岸的高處待援點。我如何改變去向？ | 我往堤頂走一段，找有空的接應處。 | 危險／延誤 | 16 | 2 | lake_high_act_risk | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_high 字差 | — | — | 1 | — | — | — |
+| lake_report／從高處看得到地名標誌，手機也有訊號。我怎麼讓外界知道我們在哪裡？ | 我向一一九報高地位置、人數及阻路。 | 正確 | 17 | 1 | lake_report_act_ok | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| lake_report／從高處看得到地名標誌，手機也有訊號。我怎麼讓外界知道我們在哪裡？ | 我在家人群組說平安，等大家回應。 | 迷思 | 16 | 2 | lake_report_act_myth | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| lake_report／從高處看得到地名標誌，手機也有訊號。我怎麼讓外界知道我們在哪裡？ | 我先拍地名和低處道路，再把照片上傳。 | 危險／延誤 | 18 | 2 | lake_report_act_risk | [call](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68) |
+| lake_report 字差 | — | — | 2 | — | — | — |
+| lake_wait／雨勢變小了，阿蘭提到想回家看看；廣播還沒解除限制。我怎麼處理？ | 我和阿蘭留在高地，等官方通知。 | 正確 | 15 | 1 | lake_wait_act_ok | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_wait／雨勢變小了，阿蘭提到想回家看看；廣播還沒解除限制。我怎麼處理？ | 我去看原路狀況，再回來找阿蘭。 | 迷思 | 15 | 2 | lake_wait_act_myth | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_wait／雨勢變小了，阿蘭提到想回家看看；廣播還沒解除限制。我怎麼處理？ | 我和她先回住家附近，再聽下一輪廣播。 | 危險／延誤 | 18 | 2 | lake_wait_act_risk | [county](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454) |
+| lake_wait 字差 | — | — | 3 | — | — | — |
+
+### 全對重播回顧全文
+
+結局傷勢清單｜無紀錄傷勢。
+
+#### 結果
+
+在指定高地獲得接應。本人傷勢分級為無傷。
+
+依更新避難路線抵達安全待救點，回報位置與人數。
+
+#### 做對的決定
+
+- 「我對照門牌和官方撤離範圍。」 河段禁入與特定地區撤離是不同通知。
+- 「我請阿蘭和我走，沿指定路線離開。」 正式撤離已發布時，延後出門可能錯過可用路線。
+- 「我依更新指示，改走同岸的替代路線。」 橋梁封閉後，仍乾的橋面不能代表安全。
+
+#### 下次可以補上的
+
+本場無此項。
+
+#### 這次的危險選擇與後果
+
+本場無此項。
+
+#### 關鍵轉折
+
+- 「我對照門牌和官方撤離範圍。」 → 門牌對上正式撤離的區域。 → 可以維持「我對照門牌和官方撤離範圍。」 河段禁入與特定地區撤離是不同通知。
+
+#### 官方依據
+
+- [花蓮縣政府：馬太鞍溪堰塞湖警戒與疏散](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454)
+- [全民安全指引：緊急應變](https://prepare.mnd.gov.tw/emergency-responses)
+- [林業保育署：國有林地堰塞湖應變標準作業程序](https://www.forest.gov.tw/file/66794)
+
+#### 帶走一個思考題
+
+- 如果我到陌生河谷旅行，收到警訊時如何確認自己是否在撤離範圍？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 關鍵轉折 | 我對照門牌和官方撤離範圍。 |  | — |
+
+
+### 亂玩重播回顧全文
+
+結局傷勢清單｜阿蘭：手掌擦傷、本人：腳踝扭傷。
+
+#### 結果
+
+延誤後在高地獲得接應。最嚴重的傷勢為腳踝扭傷。本人傷勢分級為中度傷勢・需送醫。撤離或救援延誤：等鄰居轉述最新訊息、等同伴整理物品。
+
+最早因等鄰居轉述最新訊息造成延誤，過程中出現腳踝扭傷。
+
+#### 做對的決定
+
+本場無此項。
+
+#### 下次可以補上的
+
+- 直到主管單位解除，留在指定地方並維持聯絡。
+- 報出可辨識地名、多少人、傷勢及無法通行的地點。
+
+#### 這次的危險選擇與後果
+
+- 第 1 回合「我聽鄰居說還早，請他晚點再通知。」 鄰居轉身後，廣播已開始通知下一批。 優先核對官方警報及本戶位置。
+- 第 4 回合「我帶她靠近濕地，想看清水的位置。」 靠岸處濕又滑，阿蘭跌了一下，手掌被地面擦傷（本回合傷勢：手掌擦傷）。 遠離濕滑水岸，在安全位置查看官方訊息。
+- 第 5 回合「我跨過濕滑的矮牆，想走較短的小徑。」 鞋子在濕牆上打滑，我的腳踝疼得不好走（本回合傷勢：腳踝扭傷）。 循現場指定的確認路線，別跨越積水或濕牆。
+
+#### 關鍵轉折
+
+- 「我聽鄰居說還早，請他晚點再通知。」 → 鄰居轉身後，廣播已開始通知下一批。 → 可改選「我對照門牌和官方撤離範圍。」 優先核對官方警報及本戶位置。
+
+#### 官方依據
+
+- [花蓮縣政府：馬太鞍溪堰塞湖警戒與疏散](https://www.hl.gov.tw/News_Content.aspx?n=32725&s=214454)
+- [全民安全指引：緊急應變](https://prepare.mnd.gov.tw/emergency-responses)
+- [消防署：119 報案要領](https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68)
+
+#### 帶走一個思考題
+
+- 如果我到陌生河谷旅行，收到警訊時如何確認自己是否在撤離範圍？
+
+#### 因果核對
+
+| 位置 | 原選項 | 當回合直接事件 | 事件中的傷勢／NPC 傷勢 |
+|---|---|---|---|
+| 第 1 回合 | 我聽鄰居說還早，請他晚點再通知。 | lake_alert_act_myth | — |
+| 第 4 回合 | 我帶她靠近濕地，想看清水的位置。 | lake_water_act_myth | 手掌擦傷（同伴） |
+| 第 5 回合 | 我跨過濕滑的矮牆，想走較短的小徑。 | lake_high_act_myth | 腳踝扭傷 |
+| 關鍵轉折 | 我聽鄰居說還早，請他晚點再通知。 | lake_alert_act_myth | — |

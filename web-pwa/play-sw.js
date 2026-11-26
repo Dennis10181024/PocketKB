@@ -1,7 +1,7 @@
 'use strict';
 
 const prefix = 'pocketkb-choice-play-';
-const cacheName = prefix + 'v4';
+const cacheName = prefix + 'v5';
 const packDirectory = './scenarios/choice/';
 const manifestUrl = packDirectory + 'manifest.json';
 const appFiles = [
