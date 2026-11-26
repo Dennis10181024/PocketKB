@@ -711,6 +711,91 @@
           }
         }
       ]
+    },
+    {
+      "file": "earthquake-home-trapped-draft.json",
+      "packSha256": "45c82253e5780ed7a2257315b7feec4fa5c6c57f814f7e28d459920636b64261",
+      "cases": [
+        {
+          "id": "all-correct",
+          "choices": [
+            "home_cover_ok",
+            "home_assess_ok",
+            "home_call_ok",
+            "home_signal_ok",
+            "home_shock_ok",
+            "home_wait_ok",
+            "home_handoff_ok"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "SAFE_RESCUE",
+            "injury": "NONE",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "reckless",
+          "choices": [
+            "home_cover_myth",
+            "home_assess_myth",
+            "home_call_myth",
+            "home_signal_myth",
+            "home_shock_myth",
+            "home_wait_myth",
+            "home_handoff_myth"
+          ],
+          "expected": {
+            "clock": 7,
+            "ending": "DELAYED_RESCUE",
+            "injury": "MODERATE",
+            "exposure": {
+              "harm": 3,
+              "delay": 7
+            }
+          }
+        },
+        {
+          "id": "fatal",
+          "choices": [
+            "home_cover_ok",
+            "home_assess_risk"
+          ],
+          "expected": {
+            "clock": 1,
+            "ending": "CRITICAL_FAILURE",
+            "injury": "NOT_ASSESSED",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
+        },
+        {
+          "id": "retry",
+          "choices": [
+            "home_cover_ok",
+            "home_assess_risk"
+          ],
+          "retry": {
+            "decisionId": "home_assess",
+            "clock": 1,
+            "facts": {}
+          },
+          "resume": [
+            "home_assess_ok",
+            "home_call_ok",
+            "home_signal_ok",
+            "home_shock_ok",
+            "home_wait_ok",
+            "home_handoff_ok"
+          ],
+          "sameAs": "all-correct"
+        }
+      ]
     }
   ]
 }

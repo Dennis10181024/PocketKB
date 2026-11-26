@@ -34,6 +34,14 @@
       "file": "typhoon-outage-draft.json",
       "sha256": "7c4a6ddb6989ca4bb9ebd1bcaa751b15bbf4956dcd562a42301e089d31321199",
       "status": "draft"
+    },
+    {
+      "id": "earthquake_home_trapped_draft",
+      "title": "住宅裡的第二次震動",
+      "file": "earthquake-home-trapped-draft.json",
+      "sha256": "45c82253e5780ed7a2257315b7feec4fa5c6c57f814f7e28d459920636b64261",
+      "status": "draft",
+      "contentNotice": "這一場包含受困和非血腥受傷描述，可跳過或隨時停止。"
     }
   ]
 }

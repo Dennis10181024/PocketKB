@@ -17,16 +17,20 @@ const sourceNotes={
     '公開查證：臺南市淹水避難須知、水利與消防宣導、CDC 淹水用電。斷電先確認手、站立處與配電箱動線乾燥安全。進水後避免涉水碰觸，退水後也先等專業確認。',
     '待人工查證：請電氣與防災專業人員複核以租屋／住宅為背景的總開關假設、樓層動線及救援交接。'
   ],
+  earthquake_home_trapped_draft:[
+    '草稿，待人工審查。中央氣象署與內政部支持就地掩護、震後評估及敲擊求救，消防署報案要領支持通報位置。出入口是否安全依題內已呈現的狀態。',
+    '待人工查證：公寓格局、斜櫃阻礙、餘震時點與各處傷勢均為合成情節。原舊包的 NCDR 大型 PDF 未能以網頁工具逐頁核對，本草稿不以其背書。'
+  ],
   typhoon_outage_draft:[
     '公開查證：消防防災館停電應變由區公所刊載，另以消防署 119、地方消防局一氧化碳宣導核對通報與燃燒設備。',
     '待人工查證：食品保存依品項與實測溫度而異。本包省略分鐘數、藥品可否繼續使用與再復電時的設備操作細節。'
   ]
 };
 const lines=['# 步驟 5.5 情境包草稿驗收','',
-  '草稿預設隱藏。「演練設定 → 顯示草稿情境」可手動查看。所有播放為固定劇本的規則重播，OpenAI API 呼叫 0 次。傷勢、升級節點與救援時間是教學情境設定，待專業審查。',''];
+  '草稿，待人工審查。預設隱藏，可由「演練設定 → 顯示草稿情境」開啟。以下為固定情境包的規則重播，OpenAI API 呼叫 0 次。傷勢、升級節點與救援時間是合成的教學情境設定。',''];
 for(const entry of manifest.packs.filter(item=>item.status==='draft')){
   const pack=require('../../web-pwa/scenarios/choice/'+entry.file);
-  const stats=createRuntime(validatePack(pack,schema)).verifyReachability();
+  const stats=createRuntime(validatePack(pack,schema)).verifyReachability({consistentInjury:true});
   const rows=optionAudit([pack]);
   lines.push('## '+pack.meta.title,'',
     stats.decisions+' 題，'+stats.endings+' 種可達結局，'+stats.states+' 個可達非終止狀態。',

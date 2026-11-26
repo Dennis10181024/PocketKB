@@ -478,5 +478,89 @@
   "typhoon_wire_risk": {
     "text": "我用手把路上的電線移開，讓人好走。",
     "visibleActions": 1
+  },
+  "home_cover_ok": {
+    "text": "我伏到矮桌下護頭，抓緊桌腳。",
+    "visibleActions": 1
+  },
+  "home_cover_myth": {
+    "text": "我抓穩窗邊立櫃，叫阿哲也靠過來。",
+    "visibleActions": 2
+  },
+  "home_cover_risk": {
+    "text": "我扶著餐桌起身，往門邊查看走道。",
+    "visibleActions": 2
+  },
+  "home_assess_ok": {
+    "text": "我原地查看傷勢和可見的出口。",
+    "visibleActions": 1
+  },
+  "home_assess_myth": {
+    "text": "我快步走近門邊，招手叫阿哲跟上。",
+    "visibleActions": 2
+  },
+  "home_assess_risk": {
+    "text": "我側身鑽進斜櫃後面，再伸手撐住櫃面。",
+    "visibleActions": 2
+  },
+  "home_call_ok": {
+    "text": "我打給一一九，報門牌和兩人正受困。",
+    "visibleActions": 1
+  },
+  "home_call_myth": {
+    "text": "我打給樓下鄰居，請他敲門看情況。",
+    "visibleActions": 2
+  },
+  "home_call_risk": {
+    "text": "我先錄下房裡的畫面，再傳給群組好友。",
+    "visibleActions": 2
+  },
+  "home_signal_ok": {
+    "text": "我在原地敲響金屬椅腳，停下聽回音。",
+    "visibleActions": 2
+  },
+  "home_signal_myth": {
+    "text": "我一直朝門口喊，叫阿哲也一起喊。",
+    "visibleActions": 2
+  },
+  "home_signal_risk": {
+    "text": "我踢了幾下門旁櫃角，想把聲音傳出去。",
+    "visibleActions": 1
+  },
+  "home_shock_ok": {
+    "text": "我趴回桌下護住頭頸，雙手抓緊桌腳。",
+    "visibleActions": 1
+  },
+  "home_shock_myth": {
+    "text": "我站在桌沿旁，伸手接快掉的物品。",
+    "visibleActions": 2
+  },
+  "home_shock_risk": {
+    "text": "我走向窗邊觀察，再回頭找阿哲的位置。",
+    "visibleActions": 2
+  },
+  "home_wait_ok": {
+    "text": "我在原地保存體力，留意接近門口的回聲。",
+    "visibleActions": 1
+  },
+  "home_wait_myth": {
+    "text": "我敲兩下散落玻璃，叫阿哲再去找物品。",
+    "visibleActions": 2
+  },
+  "home_wait_risk": {
+    "text": "我一面大聲報數，一面對門邊持續喊話。",
+    "visibleActions": 2
+  },
+  "home_handoff_ok": {
+    "text": "我從原位回答，照救援人員指示配合。",
+    "visibleActions": 1
+  },
+  "home_handoff_myth": {
+    "text": "我等人到門前，再請阿哲回應。",
+    "visibleActions": 2
+  },
+  "home_handoff_risk": {
+    "text": "我貼近斜櫃探頭，再催阿哲一起靠過來。",
+    "visibleActions": 2
   }
 }

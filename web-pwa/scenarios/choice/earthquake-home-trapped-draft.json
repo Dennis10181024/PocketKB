@@ -1,0 +1,426 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "earthquake_home_trapped_draft",
+    "title": "住宅裡的第二次震動",
+    "version": "1.0.0",
+    "hazard": "earthquake",
+    "skeletonVersion": "draft-choice-5.5",
+    "sources": [
+      {"id":"eq","title":"中央氣象署：地震防護","url":"https://scweb.cwa.gov.tw/zh-tw/page/intro/11"},
+      {"id":"moi","title":"內政部：地震防災預防措施","url":"https://ws.moi.gov.tw/Download.ashx?n=5qmf6Zec5a6J5YWo5a6j5bCOIOKAlOWcsOmch%2BmYsueBvemgkOmYsuaOquaWvS5wZGY%3D&u=LzAwMS9VcGxvYWQvNDA5L3JlbGZpbGUvMTEwNzIvMjgxODU3LzNmMGY5ZTMzLTE4MzQtNGEwZi1hNzJlLTVlZjY3YTM5MmYzNi5wZGY%3D"},
+      {"id":"call","title":"內政部消防署：119 報案要領","url":"https://www.nfa.gov.tw/cht/index.php?act=article&article_id=802&code=print&ids=68"}
+    ],
+    "status": "draft",
+    "contentNotice": "這一場包含受困和非血腥受傷描述，可跳過或隨時停止。"
+  },
+  "initial": {
+    "facts": {
+      "covered": false,
+      "assessed": false,
+      "reported": false,
+      "signalled": false,
+      "protected": false,
+      "managed": false,
+      "located": false
+    },
+    "exposure": {
+      "harm": 0,
+      "delay": 0
+    },
+    "npc": {
+      "peer": {
+        "name": "阿哲",
+        "state": "nearby",
+        "injured": false
+      }
+    },
+    "decisionId": "home_cover",
+    "openingNarration": "opening"
+  },
+  "limits": {
+    "maxTurns": 7
+  },
+  "catalog": {
+    "principles": [
+      {"id":"home_cover_act_ok","sourceIds":["eq"],"when":{"always":true},"review":{"why":"就地趴下、掩護、穩住可減少落物風險。","tip":"搖晃中就近找堅固桌子，護住頭頸並抓穩。","eligibleWhen":{"always":true},"priority":2},"normal":{"narration":"principle_home_cover_act_ok","effect":{"set":{"facts.covered":true},"injuries":[],"add":{}}}},
+      {"id":"home_assess_act_ok","sourceIds":["moi"],"when":{"always":true},"review":{"why":"震後先看傷勢與安全出口，避免在不穩定物件旁冒進。","tip":"由原地確認兩人能否回應，以及有沒有安全可見的動線。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_home_assess_act_ok","effect":{"set":{"facts.assessed":true},"injuries":[],"add":{}}}},
+      {"id":"home_call_act_ok","sourceIds":["call"],"when":{"always":true},"review":{"why":"先報具體位置能讓接線員定位。","tip":"先告知門牌樓層，再依詢問說明受困人數、傷勢及能辨識的入口。","eligibleWhen":{"always":true},"priority":4},"normal":{"narration":"principle_home_call_act_ok","effect":{"set":{"facts.reported":true},"injuries":[],"add":{}}}},
+      {"id":"home_signal_act_ok","sourceIds":["moi"],"when":{"always":true},"review":{"why":"電話無法使用時，有節奏的敲擊可讓外界察覺受困者。","tip":"使用伸手可及而穩固的物件發聲，留空檔聽回應。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_home_signal_act_ok","effect":{"set":{"facts.signalled":true},"injuries":[],"add":{}}}},
+      {"id":"home_shock_act_ok","sourceIds":["eq"],"when":{"always":true},"review":{"why":"餘震時仍需使用就近掩護。","tip":"感覺再次搖晃就停止移動，趴下、掩護、穩住。","eligibleWhen":{"always":true},"priority":6},"normal":{"narration":"principle_home_shock_act_ok","effect":{"set":{"facts.protected":true},"injuries":[],"add":{}}}},
+      {"id":"home_wait_act_ok","sourceIds":["moi"],"when":{"always":true},"review":{"why":"保留體力有助於維持回應能力。","tip":"固定在較安全位置，聽到有人靠近再短聲回應。","eligibleWhen":{"always":true},"priority":7},"normal":{"narration":"principle_home_wait_act_ok","effect":{"set":{"facts.managed":true},"injuries":[],"add":{}}}},
+      {"id":"home_handoff_act_ok","sourceIds":["moi"],"when":{"always":true},"review":{"why":"回應能減少救援人員反覆定位，現場動線由救援人員判斷。","tip":"有救援呼喊時清楚回應位置；聽指示後再移動。","eligibleWhen":{"always":true},"priority":8},"normal":{"narration":"principle_home_handoff_act_ok","effect":{"set":{"facts.located":true},"injuries":[],"add":{}}}}
+    ],
+    "hazards": [
+      {"id":"home_cover_act_myth","sourceIds":["eq"],"when":{"always":true},"review":{"why":"高櫃周圍易有落物。","tip":"晃動尚未停止時，改到手邊可及的堅固掩護。","eligibleWhen":{"always":true},"priority":2,"principleId":"home_cover_act_ok"},"normal":{"narration":"hazard_home_cover_act_myth","effect":{"set":{"npc.peer.state":"behind_cabinet"},"injuries":[{"id":"home_arm","subject":"player","label":"前臂擦傷","severity":"MILD"}],"add":{"exposure.harm":1,"exposure.delay":1},"delay":"站在搖動的高櫃旁"}}},
+      {"id":"home_cover_act_risk","sourceIds":["eq"],"when":{"always":true},"review":{"why":"移動到有櫃子及滑落物的門口增加風險。","tip":"先找就近掩護，主震過後再觀察動線。","eligibleWhen":{"always":true},"priority":2,"principleId":"home_cover_act_ok"},"normal":{"narration":"hazard_home_cover_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"搖晃時走到門邊"}}},
+      {"id":"home_assess_act_myth","sourceIds":["moi"],"when":{"always":true},"review":{"why":"接近斜靠物，同行者也會暴露在風險中。","tip":"先在原位詢問同伴狀況，不把人帶到不穩定的門口。","eligibleWhen":{"always":true},"priority":3,"principleId":"home_assess_act_ok"},"normal":{"narration":"hazard_home_assess_act_myth","effect":{"set":{"npc.peer.injured":true},"injuries":[{"id":"home_peer_hand","subject":"peer","label":"手背擦傷","severity":"MILD"}],"add":{"exposure.delay":1},"delay":"前往不穩定的門邊"}}},
+      {"id":"home_assess_act_risk","sourceIds":["moi"],"when":{"always":true},"review":{"why":"擠過不穩的重物可能讓自己失去退路。","tip":"找不到安全開口時，原處通報並等待專業救援。","eligibleWhen":{"always":true},"priority":3,"principleId":"home_assess_act_ok"},"normal":{"narration":"hazard_home_assess_act_risk","effect":{"set":{},"injuries":[],"add":{}}},"fatalEndingId":"home_assess_act_risk_ending"},
+      {"id":"home_call_act_myth","sourceIds":["call"],"when":{"always":true},"review":{"why":"先等待未確認的轉報會延後緊急通報。","tip":"有短暫訊號時，直接向救援服務報出可定位的資訊。","eligibleWhen":{"always":true},"priority":4,"principleId":"home_call_act_ok"},"normal":{"narration":"hazard_home_call_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"先等鄰居回覆"}}},
+      {"id":"home_call_act_risk","sourceIds":["call"],"when":{"always":true},"review":{"why":"錄影傳群組不能保證救援收到有效定位。","tip":"訊號不穩時先完成精簡的通報。","eligibleWhen":{"always":true},"priority":4,"principleId":"home_call_act_ok"},"normal":{"narration":"hazard_home_call_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"先錄影再傳訊息"}}},
+      {"id":"home_signal_act_myth","sourceIds":["moi"],"when":{"always":true},"review":{"why":"持續喊叫消耗體力，容易聽不到外部回應。","tip":"改採敲擊或短暫呼喊，間隔聽外頭聲音。","eligibleWhen":{"always":true},"priority":5,"principleId":"home_signal_act_ok"},"normal":{"narration":"hazard_home_signal_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"持續喊叫消耗體力"}}},
+      {"id":"home_signal_act_risk","sourceIds":["moi"],"when":{"always":true},"review":{"why":"用不穩定的物件發聲可能引發二次落物。","tip":"找穩固且能在原地觸及的物件。","eligibleWhen":{"always":true},"priority":5,"principleId":"home_signal_act_ok"},"normal":{"narration":"hazard_home_signal_act_risk","effect":{"set":{},"injuries":[{"id":"home_shin","subject":"player","label":"小腿撞傷","severity":"MILD"}],"add":{"exposure.harm":1,"exposure.delay":1},"delay":"敲擊不穩定的櫃子"}}},
+      {"id":"home_shock_act_myth","sourceIds":["eq"],"when":{"always":true},"review":{"why":"伸手保護物品讓身體留在落物路徑。","tip":"先保護自己，等晃動停下才處理物品。","eligibleWhen":{"always":true},"priority":6,"principleId":"home_shock_act_ok"},"normal":{"narration":"hazard_home_shock_act_myth","effect":{"set":{},"injuries":[{"id":"home_shoulder","subject":"player","label":"肩部撞傷","severity":"MODERATE"}],"add":{"exposure.harm":2,"exposure.delay":1},"delay":"餘震期間沒有掩護"}}},
+      {"id":"home_shock_act_risk","sourceIds":["eq"],"when":{"always":true},"review":{"why":"餘震中走向玻璃增加暴露與延誤。","tip":"晃動時不要穿越室內；從安全位置確認同伴。","eligibleWhen":{"always":true},"priority":6,"principleId":"home_shock_act_ok"},"normal":{"narration":"hazard_home_shock_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"餘震中在屋內移動"}}},
+      {"id":"home_wait_act_myth","sourceIds":["moi"],"when":{"always":true},"review":{"why":"不必要的翻找會消耗時間或接近不安全物件。","tip":"用摸得到且穩固的物件，在間隔保留聽外面的時間。","eligibleWhen":{"always":true},"priority":7,"principleId":"home_wait_act_ok"},"normal":{"narration":"hazard_home_wait_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"注意力轉向散落物"}}},
+      {"id":"home_wait_act_risk","sourceIds":["moi"],"when":{"always":true},"review":{"why":"持續發聲會消耗體力且遮住外部訊號。","tip":"分段求救，讓自己有休息與辨認回聲的空檔。","eligibleWhen":{"always":true},"priority":7,"principleId":"home_wait_act_ok"},"normal":{"narration":"hazard_home_wait_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"等待時多次無效呼喊"}}},
+      {"id":"home_handoff_act_myth","sourceIds":["moi"],"when":{"always":true},"review":{"why":"延後回應會讓人員多排查其他位置。","tip":"聽見救援人員呼喊時即回應自己的位置與人數。","eligibleWhen":{"always":true},"priority":8,"principleId":"home_handoff_act_ok"},"normal":{"narration":"hazard_home_handoff_act_myth","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"未即時回應救援呼叫"}}},
+      {"id":"home_handoff_act_risk","sourceIds":["moi"],"when":{"always":true},"review":{"why":"自行離開已報位置會增加定位困難。","tip":"從安全的原位回應，等外側人員指示可走的路線。","eligibleWhen":{"always":true},"priority":8,"principleId":"home_handoff_act_ok"},"normal":{"narration":"hazard_home_handoff_act_risk","effect":{"set":{},"injuries":[],"add":{"exposure.delay":1},"delay":"離開已報位置增加定位時間"}}}
+    ],
+    "channels": []
+  },
+  "beats": [
+    {"id":"scene_home_assess","at":1,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_home_assess","effect":{}},"decisionId":"home_assess"},
+    {"id":"scene_home_call","at":2,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_home_call","effect":{}},"decisionId":"home_call","after":{"beat":"scene_home_assess","turns":1}},
+    {"id":"scene_home_signal","at":3,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_home_signal","effect":{}},"decisionId":"home_signal","after":{"beat":"scene_home_call","turns":1}},
+    {"id":"scene_home_shock","at":4,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_home_shock","effect":{}},"decisionId":"home_shock","after":{"beat":"scene_home_signal","turns":1}},
+    {"id":"scene_home_wait","at":5,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_home_wait","effect":{}},"decisionId":"home_wait","after":{"beat":"scene_home_shock","turns":1}},
+    {"id":"scene_home_handoff","at":6,"when":{"always":true},"repeat":false,"normal":{"narration":"scene_home_handoff","effect":{}},"decisionId":"home_handoff","after":{"beat":"scene_home_wait","turns":1}}
+  ],
+  "decisions": [
+    {"id":"home_cover","prompt":"餐具從桌邊滾落，門口也傳來木頭碰撞聲。我第一步怎麼做？","when":{"clock":{"eq":0}},"options":[{"id":"home_cover_ok","text":"我伏到矮桌下護頭，抓緊桌腳。","class":"correct","safety":"safe","sourceIds":["eq"],"steps":[{"kind":"principle","id":"home_cover_act_ok"}],"cues":[],"effect":{},"narration":"option_home_cover_ok"},{"id":"home_cover_myth","text":"我抓穩窗邊立櫃，叫阿哲也靠過來。","class":"misconception","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"home_cover_act_myth"}],"cues":[],"effect":{},"narration":"option_home_cover_myth"},{"id":"home_cover_risk","text":"我扶著餐桌起身，往門邊查看走道。","class":"risk_or_delay","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"home_cover_act_risk"}],"cues":[],"effect":{},"narration":"option_home_cover_risk"}]},
+    {"id":"home_assess","prompt":"地板停晃後，櫃子橫斜在門口。阿哲叫了我的名字。我先確認什麼？","when":{"clock":{"eq":1}},"options":[{"id":"home_assess_ok","text":"我原地查看傷勢和可見的出口。","class":"correct","safety":"safe","sourceIds":["moi"],"steps":[{"kind":"principle","id":"home_assess_act_ok"}],"cues":[],"effect":{},"narration":"option_home_assess_ok"},{"id":"home_assess_myth","text":"我快步走近門邊，招手叫阿哲跟上。","class":"misconception","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_assess_act_myth"}],"cues":[],"effect":{},"narration":"option_home_assess_myth"},{"id":"home_assess_risk","text":"我側身鑽進斜櫃後面，再伸手撐住櫃面。","class":"risk_or_delay","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_assess_act_risk"}],"cues":[],"effect":{},"narration":"option_home_assess_risk"}]},
+    {"id":"home_call","prompt":"手機出現短暫訊號。街上的聲音離得很遠。我把這次聯絡用在哪裡？","when":{"clock":{"eq":2}},"options":[{"id":"home_call_ok","text":"我打給一一九，報門牌和兩人正受困。","class":"correct","safety":"safe","sourceIds":["call"],"steps":[{"kind":"principle","id":"home_call_act_ok"}],"cues":[],"effect":{},"narration":"option_home_call_ok"},{"id":"home_call_myth","text":"我打給樓下鄰居，請他敲門看情況。","class":"misconception","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"home_call_act_myth"}],"cues":[],"effect":{},"narration":"option_home_call_myth"},{"id":"home_call_risk","text":"我先錄下房裡的畫面，再傳給群組好友。","class":"risk_or_delay","safety":"unsafe","sourceIds":["call"],"steps":[{"kind":"hazard","id":"home_call_act_risk"}],"cues":[],"effect":{},"narration":"option_home_call_risk"}]},
+    {"id":"home_signal","prompt":"手機訊號中斷。我聽見外頭短暫靜了下來。現在怎麼讓外面注意到我們？","when":{"clock":{"eq":3}},"options":[{"id":"home_signal_ok","text":"我在原地敲響金屬椅腳，停下聽回音。","class":"correct","safety":"safe","sourceIds":["moi"],"steps":[{"kind":"principle","id":"home_signal_act_ok"}],"cues":[],"effect":{},"narration":"option_home_signal_ok"},{"id":"home_signal_myth","text":"我一直朝門口喊，叫阿哲也一起喊。","class":"misconception","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_signal_act_myth"}],"cues":[],"effect":{},"narration":"option_home_signal_myth"},{"id":"home_signal_risk","text":"我踢了幾下門旁櫃角，想把聲音傳出去。","class":"risk_or_delay","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_signal_act_risk"}],"cues":[],"effect":{},"narration":"option_home_signal_risk"}]},
+    {"id":"home_shock","prompt":"天花板又傳來碎響，腳下重新晃動。我接著怎麼做？","when":{"clock":{"eq":4}},"options":[{"id":"home_shock_ok","text":"我趴回桌下護住頭頸，雙手抓緊桌腳。","class":"correct","safety":"safe","sourceIds":["eq"],"steps":[{"kind":"principle","id":"home_shock_act_ok"}],"cues":[],"effect":{},"narration":"option_home_shock_ok"},{"id":"home_shock_myth","text":"我站在桌沿旁，伸手接快掉的物品。","class":"misconception","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"home_shock_act_myth"}],"cues":[],"effect":{},"narration":"option_home_shock_myth"},{"id":"home_shock_risk","text":"我走向窗邊觀察，再回頭找阿哲的位置。","class":"risk_or_delay","safety":"unsafe","sourceIds":["eq"],"steps":[{"kind":"hazard","id":"home_shock_act_risk"}],"cues":[],"effect":{},"narration":"option_home_shock_risk"}]},
+    {"id":"home_wait","prompt":"震動暫停，阿哲放低音量。樓外偶爾傳來人聲。我怎麼安排接下來的等待？","when":{"clock":{"eq":5}},"options":[{"id":"home_wait_ok","text":"我在原地保存體力，留意接近門口的回聲。","class":"correct","safety":"safe","sourceIds":["moi"],"steps":[{"kind":"principle","id":"home_wait_act_ok"}],"cues":[],"effect":{},"narration":"option_home_wait_ok"},{"id":"home_wait_myth","text":"我敲兩下散落玻璃，叫阿哲再去找物品。","class":"misconception","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_wait_act_myth"}],"cues":[],"effect":{},"narration":"option_home_wait_myth"},{"id":"home_wait_risk","text":"我一面大聲報數，一面對門邊持續喊話。","class":"risk_or_delay","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_wait_act_risk"}],"cues":[],"effect":{},"narration":"option_home_wait_risk"}]},
+    {"id":"home_handoff","prompt":"門外的聲音開始逐戶詢問。阿哲往較亮的地方探頭。我現在怎麼回應？","when":{"clock":{"eq":6}},"options":[{"id":"home_handoff_ok","text":"我從原位回答，照救援人員指示配合。","class":"correct","safety":"safe","sourceIds":["moi"],"steps":[{"kind":"principle","id":"home_handoff_act_ok"}],"cues":[],"effect":{},"narration":"option_home_handoff_ok"},{"id":"home_handoff_myth","text":"我等人到門前，再請阿哲回應。","class":"misconception","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_handoff_act_myth"}],"cues":[],"effect":{},"narration":"option_home_handoff_myth"},{"id":"home_handoff_risk","text":"我貼近斜櫃探頭，再催阿哲一起靠過來。","class":"risk_or_delay","safety":"unsafe","sourceIds":["moi"],"steps":[{"kind":"hazard","id":"home_handoff_act_risk"}],"cues":[],"effect":{},"narration":"option_home_handoff_risk"}]}
+  ],
+  "consequences": [
+    {"id":"escalating_delay","kind":"reckless","decisionId":null,"when":{"compare":{"left":{"ref":"exposure.delay"},"op":"gt","right":{"ref":"counter.escalating_delay"}}},"tiers":[{"fromCount":1,"result":{"narration":"delay_tier_1","effect":{}}},{"fromCount":2,"result":{"narration":"delay_tier_2","effect":{}}},{"fromCount":3,"result":{"narration":"delay_tier_3","effect":{}}}],"sourceIds":["eq"],"review":{"why":"受困時一連串無效嘗試可能延後外界取得可辨識的求救資訊。","tip":"先判斷現場與身體狀況，使用可用的通訊方式，根據外界聲音確認定位。","eligibleWhen":{"always":true},"priority":5}}
+  ],
+  "phaseRules": [],
+  "endings": [
+    {"id":"home_assess_act_risk_ending","type":"CRITICAL_FAILURE","phase":"fatal","when":{"always":true},"injury":"NOT_ASSESSED","narration":"end_home_assess_act_risk_ending","labels":[{"when":{"always":true},"text":"移動後再度受困"}],"summaries":[{"when":{"always":true},"text":"玩家進入斜櫃與門框的狹縫，出口受阻。"}]},
+    {"id":"safe","type":"SAFE_RESCUE","phase":"afterBeats","when":{"all":[{"clock":{"gte":7}},{"compare":{"left":{"ref":"exposure.delay"},"op":"eq","right":0}}]},"injury":"fromInjuries","narration":"end_safe","labels":[{"when":{"always":true},"text":"依定位獲救"}],"summaries":[{"when":{"always":true},"text":"位置已確認，救援人員依序接手。"}]},
+    {"id":"delayed","type":"DELAYED_RESCUE","phase":"afterBeats","when":{"clock":{"gte":7}},"injury":"fromInjuries","narration":"end_delayed","labels":[{"when":{"always":true},"text":"延誤後獲救"}],"summaries":[{"when":{"always":true},"text":"救援人員花了較長時間確認位置並接手。"}]}
+  ],
+  "injury": {
+    "score": {
+      "ref": "exposure.harm"
+    },
+    "noneMax": 0,
+    "mildMax": 1,
+    "moderateMax": 3
+  },
+  "review": {
+    "reflectionPrompt": "在朋友家遇到地震，我會先確認哪兩件事，才能報出有用的位置？"
+  },
+  "presentation": {
+    "narration": {
+      "opening": [
+        "晚上我和阿哲正在老公寓客廳收拾餐具。突然牆角傳出硬碰硬的聲響，餐桌在地上滑動。電燈晃了幾下，門口旁的櫃子開始搖。",
+        "我和阿哲在住家客廳，桌面上的餐具突然互相碰撞。門旁的櫃子來回搖動，我也感到腳下開始晃。"
+      ],
+      "principle_home_cover_act_ok": [
+        "我縮到桌下護住頭，手指牢牢扣住桌腳。",
+        "我貼地抓穩矮桌，落下的餐具沒有打到頭。"
+      ],
+      "option_home_cover_ok": [
+        "我縮到桌下護住頭，手指牢牢扣住桌腳。",
+        "我貼地抓穩矮桌，落下的餐具沒有打到頭。"
+      ],
+      "hazard_home_cover_act_myth": [
+        "窗邊的層板掉下一個盒子，擦過我的前臂。",
+        "我還靠在櫃邊時，滑落的盒子擦到手臂。"
+      ],
+      "option_home_cover_myth": [
+        "窗邊的層板掉下一個盒子，擦過我的前臂。",
+        "我還靠在櫃邊時，滑落的盒子擦到手臂。"
+      ],
+      "hazard_home_cover_act_risk": [
+        "我剛到門邊，掉下的杯子就在鞋旁碎開。",
+        "餐具滾到門口，擋在我腳前。"
+      ],
+      "option_home_cover_risk": [
+        "我剛到門邊，掉下的杯子就在鞋旁碎開。",
+        "餐具滾到門口，擋在我腳前。"
+      ],
+      "look_home_cover": [
+        "我聽到餐具一個個碰到地板。",
+        "門邊櫃子的背板發出碰撞聲。"
+      ],
+      "ask_home_cover": [
+        "阿哲把手撐在桌沿，還沒放低身體。",
+        "阿哲站在我附近，等我回應。"
+      ],
+      "principle_home_assess_act_ok": [
+        "我確認彼此狀況，唯一可見的門口被櫃子卡住。",
+        "我從原處看出動線中斷，又聽到阿哲回話。"
+      ],
+      "option_home_assess_ok": [
+        "我確認彼此狀況，唯一可見的門口被櫃子卡住。",
+        "我從原處看出動線中斷，又聽到阿哲回話。"
+      ],
+      "hazard_home_assess_act_myth": [
+        "木板邊緣擦到阿哲的手背，我聽到他吸了一口氣。",
+        "阿哲跟上來時，手背被伸出的木板刮了一下。"
+      ],
+      "option_home_assess_myth": [
+        "木板邊緣擦到阿哲的手背，我聽到他吸了一口氣。",
+        "阿哲跟上來時，手背被伸出的木板刮了一下。"
+      ],
+      "hazard_home_assess_act_risk": [
+        "我擠近狹縫，櫃面開始往下滑。",
+        "櫃角又移了一截，我聽見門框擠壓的聲音。"
+      ],
+      "end_home_assess_act_risk_ending": [
+        "我剛進狹縫，櫃面就一路壓到門框。可用的空間突然縮小，我退不回客廳。",
+        "我伸手碰到櫃面，木頭猛地滑向門框。身後的開口被封住了。"
+      ],
+      "option_home_assess_risk": [
+        "我擠近狹縫，櫃面開始往下滑。",
+        "櫃角又移了一截，我聽見門框擠壓的聲音。"
+      ],
+      "scene_home_assess": [
+        "我抬起頭，看到櫃子的上半部靠在門框。阿哲在我左手邊。",
+        "聲音弱下來，唯一可見的門口被一座斜櫃擋住。"
+      ],
+      "look_home_assess": [
+        "我抬起頭，看到櫃子的上半部靠在門框。阿哲在我左手邊。",
+        "聲音弱下來，唯一可見的門口被一座斜櫃擋住。"
+      ],
+      "ask_home_assess": [
+        "阿哲開口說他還能動，門邊的櫃子卻在輕響。",
+        "我聽見阿哲回話；門框旁還有灰塵細細往下掉。"
+      ],
+      "principle_home_call_act_ok": [
+        "接線員複誦門牌和客廳的位置，我接著回答人數。",
+        "我說出所在樓層，接線員確認收到了受困資訊。"
+      ],
+      "option_home_call_ok": [
+        "接線員複誦門牌和客廳的位置，我接著回答人數。",
+        "我說出所在樓層，接線員確認收到了受困資訊。"
+      ],
+      "hazard_home_call_act_myth": [
+        "電話轉入語音信箱；樓外仍沒有人知道哪一戶有狀況。",
+        "我等鄰居接起，訊號跳動了幾次，他沒有回話。"
+      ],
+      "option_home_call_myth": [
+        "電話轉入語音信箱；樓外仍沒有人知道哪一戶有狀況。",
+        "我等鄰居接起，訊號跳動了幾次，他沒有回話。"
+      ],
+      "hazard_home_call_act_risk": [
+        "畫面卡在傳送中，求救位置仍沒送到救援單位。",
+        "傳送圖示反覆跳動，我錯過了這段可用的通話訊號。"
+      ],
+      "option_home_call_risk": [
+        "畫面卡在傳送中，求救位置仍沒送到救援單位。",
+        "傳送圖示反覆跳動，我錯過了這段可用的通話訊號。"
+      ],
+      "scene_home_call": [
+        "螢幕亮起一格訊號，門外仍沒有回應。",
+        "手機重新連上網路又顯示通話訊號，我低頭看了一眼。"
+      ],
+      "look_home_call": [
+        "螢幕亮起一格訊號，門外仍沒有回應。",
+        "手機重新連上網路又顯示通話訊號，我低頭看了一眼。"
+      ],
+      "ask_home_call": [
+        "阿哲把聲音壓低，問我可不可以直接報這間的位置。",
+        "我從阿哲的位置看得到手機畫面；他正等我撥出。"
+      ],
+      "principle_home_signal_act_ok": [
+        "椅腳發出幾下清楚的聲響，我停下來聽。",
+        "我敲出分開的聲音，留了一段空白等回應。"
+      ],
+      "option_home_signal_ok": [
+        "椅腳發出幾下清楚的聲響，我停下來聽。",
+        "我敲出分開的聲音，留了一段空白等回應。"
+      ],
+      "hazard_home_signal_act_myth": [
+        "我們喊了一陣，阿哲說口乾，外面還沒有回音。",
+        "我的嗓音開始沙啞，阿哲靠著桌沿停下來喘氣。"
+      ],
+      "option_home_signal_myth": [
+        "我們喊了一陣，阿哲說口乾，外面還沒有回音。",
+        "我的嗓音開始沙啞，阿哲靠著桌沿停下來喘氣。"
+      ],
+      "hazard_home_signal_act_risk": [
+        "木櫃顫了一下，鬆落的小板撞到我的小腿。",
+        "櫃體傳出脆響，一片木板碰上我的腿。"
+      ],
+      "option_home_signal_risk": [
+        "木櫃顫了一下，鬆落的小板撞到我的小腿。",
+        "櫃體傳出脆響，一片木板碰上我的腿。"
+      ],
+      "scene_home_signal": [
+        "手機上的訊號格消失，只剩樓上的細碎振動聲。",
+        "手機訊號消失，外面轉為安靜。"
+      ],
+      "look_home_signal": [
+        "手機上的訊號格消失，只剩樓上的細碎振動聲。",
+        "手機訊號消失，外面轉為安靜。"
+      ],
+      "ask_home_signal": [
+        "阿哲輕碰手邊的金屬椅腳，聲音傳得很清楚。",
+        "阿哲側頭聽門外，指了指伸手可及的椅腳。"
+      ],
+      "principle_home_shock_act_ok": [
+        "我把頭縮低，桌腳在手裡滑了一下又穩住。",
+        "我回到可及的掩護，身體貼近地面。"
+      ],
+      "option_home_shock_ok": [
+        "我把頭縮低，桌腳在手裡滑了一下又穩住。",
+        "我回到可及的掩護，身體貼近地面。"
+      ],
+      "hazard_home_shock_act_myth": [
+        "一個鬆開的燈件打到我肩上，我動手時肩膀發痛。",
+        "我伸手時頭頂一響，掉落物撞中肩部。"
+      ],
+      "option_home_shock_myth": [
+        "一個鬆開的燈件打到我肩上，我動手時肩膀發痛。",
+        "我伸手時頭頂一響，掉落物撞中肩部。"
+      ],
+      "hazard_home_shock_act_risk": [
+        "我走到一半，另一波搖晃讓我蹲在原地。",
+        "我靠近窗邊前聽到玻璃震得更響，只好停下。"
+      ],
+      "option_home_shock_risk": [
+        "我走到一半，另一波搖晃讓我蹲在原地。",
+        "我靠近窗邊前聽到玻璃震得更響，只好停下。"
+      ],
+      "scene_home_shock": [
+        "杯子又在地板上滾動，桌面開始晃。",
+        "新的搖晃把原本靜下來的桌腳推動了。"
+      ],
+      "look_home_shock": [
+        "杯子又在地板上滾動，桌面開始晃。",
+        "新的搖晃把原本靜下來的桌腳推動了。"
+      ],
+      "ask_home_shock": [
+        "阿哲往我這邊看，手已靠近可抓住的桌腳。",
+        "阿哲低著頭，朝桌腳的位置望。"
+      ],
+      "principle_home_wait_act_ok": [
+        "我讓自己安靜下來，聽見外面有人開始逐戶問話。",
+        "阿哲和我放低聲音，等辨認得到的呼聲。"
+      ],
+      "option_home_wait_ok": [
+        "我讓自己安靜下來，聽見外面有人開始逐戶問話。",
+        "阿哲和我放低聲音，等辨認得到的呼聲。"
+      ],
+      "hazard_home_wait_act_myth": [
+        "阿哲停下找東西的動作，我們錯過一段近處呼聲。",
+        "玻璃碎響蓋過外面的腳步，阿哲回身時外頭已安靜。"
+      ],
+      "option_home_wait_myth": [
+        "阿哲停下找東西的動作，我們錯過一段近處呼聲。",
+        "玻璃碎響蓋過外面的腳步，阿哲回身時外頭已安靜。"
+      ],
+      "hazard_home_wait_act_risk": [
+        "我講好幾次後嗓音變小，沒有聽清外面的呼聲。",
+        "我的聲音逐漸沙啞，幾句從樓外傳來的問話被蓋住。"
+      ],
+      "option_home_wait_risk": [
+        "我講好幾次後嗓音變小，沒有聽清外面的呼聲。",
+        "我的聲音逐漸沙啞，幾句從樓外傳來的問話被蓋住。"
+      ],
+      "scene_home_wait": [
+        "新的搖晃停了。阿哲靠近我坐下，兩人都把聲音壓低。",
+        "我聽到遠處喊聲，阿哲在旁邊小聲回應我。"
+      ],
+      "look_home_wait": [
+        "新的搖晃停了。阿哲靠近我坐下，兩人都把聲音壓低。",
+        "我聽到遠處喊聲，阿哲在旁邊小聲回應我。"
+      ],
+      "ask_home_wait": [
+        "阿哲問我們能不能等聽清楚外頭的聲音再回應。",
+        "阿哲小聲問，剛才的喊聲是從哪一邊傳來的。"
+      ],
+      "principle_home_handoff_act_ok": [
+        "門外的人對上我們的位置，要我們留在原地等接手。",
+        "我回應樓層和房間後，救援人員確認從外側接近。"
+      ],
+      "option_home_handoff_ok": [
+        "門外的人對上我們的位置，要我們留在原地等接手。",
+        "我回應樓層和房間後，救援人員確認從外側接近。"
+      ],
+      "hazard_home_handoff_act_myth": [
+        "外頭的人先走到隔壁門，我們稍後才被再次詢問。",
+        "我們等了一陣，外面的聲音先向隔壁移動。"
+      ],
+      "option_home_handoff_myth": [
+        "外頭的人先走到隔壁門，我們稍後才被再次詢問。",
+        "我們等了一陣，外面的聲音先向隔壁移動。"
+      ],
+      "hazard_home_handoff_act_risk": [
+        "我和阿哲多靠近了一點，救援人員要再確認兩人位置。",
+        "斜櫃遮住視線，我的位置改變了，呼聲沒有立刻對上。"
+      ],
+      "option_home_handoff_risk": [
+        "我和阿哲多靠近了一點，救援人員要再確認兩人位置。",
+        "斜櫃遮住視線，我的位置改變了，呼聲沒有立刻對上。"
+      ],
+      "scene_home_handoff": [
+        "門外有人說正在找受困住戶，問聲一戶戶接近。",
+        "樓梯間傳來人員點名，這次的聲音很靠近。"
+      ],
+      "look_home_handoff": [
+        "門外有人說正在找受困住戶，問聲一戶戶接近。",
+        "樓梯間傳來人員點名，這次的聲音很靠近。"
+      ],
+      "ask_home_handoff": [
+        "阿哲低聲說他聽見外面喊樓層，但看不到完整的出口。",
+        "阿哲指向亮處，仍等門外的人確認我們的位置。"
+      ],
+      "look_default": [
+        "晚上我和阿哲正在老公寓客廳收拾餐具。突然牆角傳出硬碰硬的聲響，餐桌在地上滑動。電燈晃了幾下，門口旁的櫃子開始搖。",
+        "我和阿哲在住家客廳，桌面上的餐具突然互相碰撞。門旁的櫃子來回搖動，我也感到腳下開始晃。"
+      ],
+      "ask_default": [
+        "阿哲壓低聲音問我有沒有聽到外面的動靜。",
+        "阿哲側過臉，望向有聲響的方向。"
+      ],
+      "idle": [
+        "我聽見灰塵落下的細響。",
+        "屋外一度安靜下來。"
+      ],
+      "delay_tier_1": [
+        "我和阿哲多停了一會兒，外面沒有立即收到我們的訊息。",
+        "屋外的腳步聲遠了些，我們的第一次聯繫沒接上。"
+      ],
+      "delay_tier_2": [
+        "我又聽到樓外有人走過，這次的聯繫仍斷斷續續。",
+        "時間拖長了，阿哲多等了一輪才聽到外頭的聲音。"
+      ],
+      "delay_tier_3": [
+        "公寓外有人在不同位置敲問，我們得等到確認是這一戶。",
+        "樓外還在逐戶確認，阿哲抬頭等下一次呼叫。"
+      ],
+      "end_safe": [
+        "我聽見救援人員叫出門牌，便從原位回應。阿哲在我旁邊等到有人接手。",
+        "外面傳來對上位置的喊聲；我們留在原處回應，直到救援人員把人接出去。"
+      ],
+      "end_delayed": [
+        "救援人員逐戶確認後才叫到我們，聲音終於停在客廳外。阿哲跟我一起等到有人接手。",
+        "我等到外頭重新確認受困位置，救援人員才來接手。阿哲伸手示意自己也在。"
+      ]
+    },
+    "look": [
+      {"when":{"clock":{"eq":0}},"narration":"look_home_cover"},
+      {"when":{"clock":{"eq":1}},"narration":"look_home_assess"},
+      {"when":{"clock":{"eq":2}},"narration":"look_home_call"},
+      {"when":{"clock":{"eq":3}},"narration":"look_home_signal"},
+      {"when":{"clock":{"eq":4}},"narration":"look_home_shock"},
+      {"when":{"clock":{"eq":5}},"narration":"look_home_wait"},
+      {"when":{"clock":{"eq":6}},"narration":"look_home_handoff"},
+      {"when":{"always":true},"narration":"look_default"}
+    ],
+    "askCompanion": [
+      {"when":{"clock":{"eq":0}},"narration":"ask_home_cover"},
+      {"when":{"clock":{"eq":1}},"narration":"ask_home_assess"},
+      {"when":{"clock":{"eq":2}},"narration":"ask_home_call"},
+      {"when":{"clock":{"eq":3}},"narration":"ask_home_signal"},
+      {"when":{"clock":{"eq":4}},"narration":"ask_home_shock"},
+      {"when":{"clock":{"eq":5}},"narration":"ask_home_wait"},
+      {"when":{"clock":{"eq":6}},"narration":"ask_home_handoff"},
+      {"when":{"always":true},"narration":"ask_default"}
+    ],
+    "idle": [
+      {"when":{"always":true},"narration":"idle"}
+    ],
+    "status": []
+  },
+  "assets": []
+}
