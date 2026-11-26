@@ -1,6 +1,10 @@
 package com.pocketkb.android.ui
 
 import android.graphics.Bitmap
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -91,6 +95,40 @@ class ChoiceScreenTest {
             rule.onNodeWithText("停止演練").performClick()
             rule.onNodeWithText("停止並回到清單").performClick()
             await("choice_pack_earthquake_school")
+        }
+    }
+
+    @Test fun readingSettingsEnlargeTextAndExposeSemantics() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val preferences = context.getSharedPreferences("choice-reading", 0)
+        val previousSize = preferences.getInt("size", 0)
+        val previousContrast = preferences.getBoolean("contrast", false)
+        preferences.edit().putInt("size", 0).putBoolean("contrast", false).commit()
+        try {
+            rule.onNodeWithText("開始情境演練").performClick()
+            rule.waitUntil(10_000) { rule.onAllNodesWithTag("choice_pack_drill_fire_dorm").fetchSemanticsNodes().isNotEmpty() }
+            val heading = rule.onNodeWithTag("choice_heading")
+            val baseline = heading.fetchSemanticsNode().boundsInRoot.height
+            rule.onNodeWithText("閱讀設定").performClick()
+            val larger = rule.onNodeWithTag("choice_read_size_2")
+            larger.assertIsNotSelected().performClick().assertIsSelected()
+            val contrast = rule.onNodeWithTag("choice_read_contrast")
+            contrast.assertIsOff().performClick().assertIsOn()
+            rule.onNodeWithText("完成").performClick()
+            check(heading.fetchSemanticsNode().boundsInRoot.height > baseline)
+            check(rule.onNodeWithTag("choice_read_canvas").captureToImage().toPixelMap()[0, 0] == Color.Black)
+            check(preferences.getInt("size", 0) == 2 && preferences.getBoolean("contrast", false))
+            rule.onNodeWithTag("choice_pack_drill_fire_dorm").performClick()
+            rule.onNode(hasScrollAction()).performScrollToNode(hasTestTag("choice_start"))
+            rule.onNodeWithTag("choice_start").performClick()
+            rule.waitUntil(10_000) { rule.onAllNodesWithTag("choice_prompt").fetchSemanticsNodes().isNotEmpty() }
+            rule.onNodeWithTag("choice_prompt")
+                .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
+            rule.onNode(hasScrollAction()).performScrollToNode(hasText("停止演練"))
+            rule.onNodeWithText("停止演練").performClick()
+            rule.onNodeWithText("停止並回到清單").performClick()
+        } finally {
+            preferences.edit().putInt("size", previousSize).putBoolean("contrast", previousContrast).commit()
         }
     }
 }

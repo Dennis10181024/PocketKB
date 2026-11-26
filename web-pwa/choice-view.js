@@ -8,6 +8,8 @@
   ];
   const directory='./scenarios/choice/';
   const storageKey='pocketkb:show-legacy-drills';
+  const displayKey='pocketkb:choice-reading';
+  const sizes={standard:'標準',large:'大',extra:'特大'};
   async function request(path,format){
     const response=await fetch(directory+path);
     if(!response.ok)throw new Error('Choice asset unavailable');
@@ -43,9 +45,15 @@
     let catalog=null, runtime=null, session=null, view=null, review=null, selected=null;
     let info='', error='', loading=false, openedAt=0;
     let studyLog=null, backgroundAt=null, backgroundTime=0;
+    let displayOpen=false, textSize='standard', highContrast=false;
     let showLegacy=false;
     let showDrafts=false;
-    try{showLegacy=!choiceOnly&&localStorage.getItem(storageKey)==='1';}catch{}
+    try{
+      showLegacy=!choiceOnly&&localStorage.getItem(storageKey)==='1';
+      const saved=JSON.parse(localStorage.getItem(displayKey)??'null');
+      if(saved&&Object.hasOwn(sizes,saved.textSize))textSize=saved.textSize;
+      highContrast=saved?.highContrast===true;
+    }catch{}
     function startTimer(){
       openedAt=performance.now();
       backgroundTime=0;
@@ -109,19 +117,25 @@
     function render(active){
       let content;
       const button=(id,label,primary=false)=>'<button type="button" id="'+id+'" class="'+(primary?'primary':'ghost')+'">'+label+'</button>';
+      const heading=title=>'<h2 id="choice-heading" tabindex="-1">'+esc(title)+'</h2>'+
+        '<details class="choice-display" id="choice-display" '+(displayOpen?'open':'')+'>'+
+        '<summary>閱讀設定</summary><div class="choice-display-controls">'+
+        '<label for="choice-size">文字大小</label><select id="choice-size">'+Object.entries(sizes).map(([id,label])=>
+          '<option value="'+id+'" '+(id===textSize?'selected':'')+'>'+label+'</option>').join('')+'</select>'+
+        '<label class="choice-setting"><input type="checkbox" id="choice-contrast" '+(highContrast?'checked':'')+'>高對比</label></div></details>';
       if(view?.state.ending){
-        content='<h2 id="choice-heading" tabindex="-1">'+esc(review.type)+'</h2>'+
+        content=heading(review.type)+
           (review.injury?'<p class="choice-grade">本人傷勢｜'+esc(review.injury)+'</p>':'')+
           duties(view.lines,esc)+'<h3>傷勢清單</h3>'+injuries(review.injuries)+
           '<h3>演練回顧</h3>'+renderReview(review)+'<div class="choice-tools">'+
           (review.canRetry?button('choice-retry','從這個決定重來',true):'')+
           (studyLog?button('choice-export','下載試玩紀錄'):'')+button('choice-reset','回到情境清單')+'</div>';
       }else if(view){
-        content='<h2 id="choice-heading" tabindex="-1">'+esc(selected.title)+'</h2>'+
+        content=heading(selected.title)+
           '<h3>現在發生什麼</h3><div class="choice-scene">'+view.lines.map(line=>'<p>'+esc(line)+'</p>').join('')+'</div>'+
           (view.status.length?'<p class="choice-status">現場狀態｜'+view.status.slice(0,2).map(esc).join('、')+'</p>':'')+
-          '<h3 id="choice-question">我面臨什麼決定</h3><p>'+esc(view.decision.prompt)+'</p>'+
-          '<div class="choice-options" role="group" aria-labelledby="choice-question">'+view.decision.options.map(option=>
+          '<h3 id="choice-question">我面臨什麼決定</h3><p id="choice-question-text">'+esc(view.decision.prompt)+'</p>'+
+          '<div class="choice-options" role="group" aria-labelledby="choice-question" aria-describedby="choice-question-text">'+view.decision.options.map(option=>
             '<button type="button" class="choice-option" data-choice-option="'+esc(option.id)+'">'+esc(option.text)+'</button>').join('')+'</div>'+
           '<div class="choice-tools">'+button('choice-observe','先看看四周')+button('choice-ask','問同伴')+'</div>'+
           '<p class="choice-inspection" role="status">'+esc(info)+'</p>'+
@@ -129,7 +143,7 @@
           button('choice-reset','結束並回到情境清單')+
           (studyLog?button('choice-exit-export','結束並下載紀錄'):'')+'</div></details>';
       }else if(selected){
-        content='<h2 id="choice-heading" tabindex="-1">'+esc(selected.title)+'</h2>'+
+        content=heading(selected.title)+
           '<p>演練中可能出現受傷的結果，你可以隨時停止。</p>'+
           '<p>劇情與評分為草稿，待人工審查。</p>'+
           (selected.contentNotice?'<p>'+esc(selected.contentNotice)+'</p>':'')+
@@ -137,7 +151,7 @@
           '<div class="choice-tools"><button type="button" class="primary" id="choice-start" '+(loading?'disabled':'')+'>'+(loading?'正在載入':'開始演練')+'</button>'+
           button('choice-reset',selected.status==='draft'?'跳過此情境':'回到情境清單')+'</div>';
       }else{
-        content='<h2 id="choice-heading" tabindex="-1">情境演練</h2><p>選一個情境，練習在災害發生時做決定。</p>'+
+        content=heading('情境演練')+'<p>選一個情境，練習在災害發生時做決定。</p>'+
           '<div class="choice-options">'+(catalog?.filter(row=>showDrafts||row.status!=='draft').map(row=>
             '<button type="button" class="choice-option" data-choice-pack="'+esc(row.id)+'">'+esc((row.status==='draft'?'草稿・':'')+row.title)+'</button>').join('')||
           (error?button('choice-refresh','重新載入'):'<p role="status">正在讀取情境清單。</p>'))+'</div>'+
@@ -147,11 +161,24 @@
           (showLegacy?duties(legacyScenarios,([id,title])=>'<a href="./online.html?scenario='+esc(id)+'">'+esc(title)+'</a>')+
             '<p>舊版對話劇本需啟動線上教練服務。</p>':'')+'</details>';
       }
-      return '<div class="view '+(active?'active':'')+' choice-drill" id="view-drill">'+content+
+      return '<div class="view '+(active?'active':'')+' choice-drill" id="view-drill" data-reading-size="'+textSize+
+        '" data-high-contrast="'+highContrast+'">'+content+
         (error?'<p role="alert">'+esc(error)+'</p>':'')+'</div>';
     }
     function bind(){
       const el=id=>document.querySelector('#choice-'+id);
+      el('display')?.addEventListener('toggle',event=>{displayOpen=event.target.open;});
+      function saveDisplay(){
+        const size=el('size').value;
+        if(Object.hasOwn(sizes,size))textSize=size;
+        highContrast=el('contrast').checked;
+        const drill=document.querySelector('#view-drill');
+        drill.dataset.readingSize=textSize;
+        drill.dataset.highContrast=String(highContrast);
+        try{localStorage.setItem(displayKey,JSON.stringify({textSize,highContrast}));}catch{}
+      }
+      el('size')?.addEventListener('change',saveDisplay);
+      el('contrast')?.addEventListener('change',saveDisplay);
       el('refresh')?.addEventListener('click',()=>{void loadCatalog();refresh();});
       el('start')?.addEventListener('click',start);
       el('reset')?.addEventListener('click',()=>{if(!loading)reset();});

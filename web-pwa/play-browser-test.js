@@ -5,6 +5,7 @@ const path = require('node:path');
 const { chromium } = require(process.env.POCKETKB_PLAYWRIGHT_MODULE || 'playwright');
 const { serve, lanAddresses } = require('../scripts/play-server');
 const { scenarios } = require('./scenarios/choice/test-vectors.json');
+const { packs } = require('./scenarios/choice/manifest.json');
 
 async function test() {
   const { server } = serve({ lan: lanAddresses().length > 0 });
@@ -44,7 +45,7 @@ async function test() {
         parseFloat(getComputedStyle(button).fontSize) >= 16 && button.getBoundingClientRect().height >= 48
       )));
       if (process.argv.includes('--screens')) {
-        await page.screenshot({ path: path.join(artifacts, name + '.png'), fullPage: true });
+        await page.screenshot({ path: path.join(artifacts, name + '.png'), fullPage: true, animations: 'disabled' });
       }
     }
     await page.goto(endpoint);
@@ -81,6 +82,31 @@ async function test() {
     const ended = (await readFile(await (await stopped).path(), 'utf8')).trim().split('\n').map(JSON.parse);
     assert.equal(ended.at(-2).eventType, 'retry');
     assert.equal(ended.at(-1).ending, 'EXITED');
+    await page.setViewportSize({ width: 320, height: 720 });
+    await page.getByText('閱讀設定', { exact: true }).tap();
+    await page.getByLabel('文字大小').selectOption('extra');
+    await page.getByLabel('高對比').check();
+    await page.reload();
+    const drill = page.locator('#view-drill');
+    await drill.waitFor();
+    assert.equal(await drill.getAttribute('data-reading-size'), 'extra');
+    assert.equal(await drill.getAttribute('data-high-contrast'), 'true');
+    assert.equal(await drill.evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(0, 0, 0)');
+    assert.ok(await page.locator('[data-choice-pack]').first().evaluate(node => parseFloat(getComputedStyle(node).fontSize) > 16));
+    const drafts = packs.filter(pack => pack.status === 'draft');
+    for (const pack of drafts) assert.equal(await page.locator('[data-choice-pack="' + pack.id + '"]').count(), 0);
+    await page.getByText('演練設定', { exact: true }).tap();
+    await page.getByLabel('顯示草稿情境').check();
+    for (const pack of drafts) {
+      await page.locator('[data-choice-pack="' + pack.id + '"]').tap();
+      await page.locator('#choice-start').tap();
+      const group = page.getByRole('group', { name: '我面臨什麼決定' });
+      await group.waitFor();
+      assert.equal(await group.getAttribute('aria-describedby'), 'choice-question-text');
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 320);
+      await page.getByText('停止演練', { exact: true }).tap();
+      await page.locator('#choice-reset').tap();
+    }
     assert.deepEqual(errors, []);
     assert.deepEqual(api, []);
     const privateHost = lanAddresses()[0];

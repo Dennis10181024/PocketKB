@@ -36,12 +36,14 @@ internal data class ChoiceScreenState(
     val model: ChoiceModelKind = ChoiceModelKind.E2B, val modelStatus: String = "",
     val modelBusy: Boolean = false, val answer: ChoiceKnowledgeAnswer? = null, val answerBusy: Boolean = false,
     val narration: List<String>? = null,
+    val readingSize: Int = 0, val highContrast: Boolean = false,
 )
 
 internal class ChoiceViewModel(app: Application) : AndroidViewModel(app) {
     private val assets = app.assets
     private val dao = PocketKbDatabase.get(app).drillHistoryDao()
     private val models = ChoiceModelServices.get(app)
+    private val readingPreferences = app.getSharedPreferences("choice-reading", 0)
     private val mutableState = MutableStateFlow(ChoiceScreenState())
     val state = mutableState.asStateFlow()
     private var runtime: ChoiceRuntime? = null
@@ -61,7 +63,10 @@ internal class ChoiceViewModel(app: Application) : AndroidViewModel(app) {
             val packs = withContext(Dispatchers.IO) {
                 assets.open("packs/manifest.json").bufferedReader().use { parsePackJson(it.readText()).rows("packs") }
             }
-            mutableState.value = mutableState.value.copy(packs = packs)
+            val (readingSize, highContrast) = withContext(Dispatchers.IO) {
+                readingPreferences.getInt("size", 0).coerceIn(0, 2) to readingPreferences.getBoolean("contrast", false)
+            }
+            mutableState.value = mutableState.value.copy(packs = packs, readingSize = readingSize, highContrast = highContrast)
             val saved = dao.choiceResume() ?: return@execute
             val entry = packs.firstOrNull { it["id"] == saved.scenarioId }
             if (entry != null) {
@@ -97,6 +102,11 @@ internal class ChoiceViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun preview(entry: PackObject?) { mutableState.value = state.value.copy(preview = entry, error = null) }
+    fun setReadingPreferences(size: Int, contrast: Boolean) {
+        require(size in 0..2)
+        readingPreferences.edit().putInt("size", size).putBoolean("contrast", contrast).apply()
+        mutableState.update { it.copy(readingSize = size, highContrast = contrast) }
+    }
     fun start() = execute {
         val entry = state.value.preview ?: return@execute
         val loaded = load(entry)

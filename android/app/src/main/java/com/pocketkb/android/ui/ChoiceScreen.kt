@@ -7,15 +7,27 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -23,6 +35,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pocketkb.android.ChoiceViewModel
+import com.pocketkb.android.ChoiceScreenState
 import com.pocketkb.android.ai.ChoiceModelKind
 import com.pocketkb.android.ai.gemmaDownloads
 import com.pocketkb.android.core.*
@@ -33,12 +46,27 @@ import kotlinx.coroutines.withContext
 @Composable
 internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, model: ChoiceViewModel = viewModel()) {
     val state by model.state.collectAsStateWithLifecycle()
+    val baseTypography = MaterialTheme.typography
+    val typography = remember(baseTypography, state.readingSize) {
+        baseTypography.readingScale(choiceReadingSizes[state.readingSize].second)
+    }
+    val colors = if (state.highContrast) choiceHighContrast else MaterialTheme.colorScheme
+    MaterialTheme(colorScheme = colors, typography = typography) {
+        Surface(modifier = modifier.fillMaxSize().testTag("choice_read_canvas"), color = colors.background) {
+            ChoiceScreenContent(state, model, onLegacy)
+        }
+    }
+}
+
+@Composable
+private fun ChoiceScreenContent(state: ChoiceScreenState, model: ChoiceViewModel, onLegacy: () -> Unit) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     var exit by remember { mutableStateOf(false) }
     var seeSettings by remember { mutableStateOf(false) }
+    var readingSettings by rememberSaveable { mutableStateOf(false) }
     var showDrafts by rememberSaveable { mutableStateOf(false) }
     var confirmModel by remember { mutableStateOf<ChoiceModelKind?>(null) }
     var question by rememberSaveable { mutableStateOf("") }
@@ -82,12 +110,16 @@ internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, mo
     if (exit) AlertDialog(onDismissRequest = { exit = false }, title = { Text("停止這次演練？") },
         confirmButton = { TextButton(onClick = { exit = false; model.exit() }) { Text("停止並回到清單") } },
         dismissButton = { TextButton(onClick = { exit = false }) { Text("繼續") } })
-    LazyColumn(modifier.fillMaxSize(), state = list, contentPadding = PaddingValues(18.dp),
+    if (readingSettings) ChoiceReadingDialog(state.readingSize, state.highContrast,
+        onChange = model::setReadingPreferences, onClose = { readingSettings = false })
+    LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = PaddingValues(18.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item {
             Text(review?.text("type") ?: state.preview?.text("title") ?: state.title.takeIf { view != null } ?: "情境演練",
-                style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() }.testTag("choice_heading"))
-            state.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.semantics { heading(); liveRegion = LiveRegionMode.Polite }.testTag("choice_heading"))
+            TextButton(onClick = { readingSettings = true }, modifier = Modifier.heightIn(min = 48.dp)) { Text("閱讀設定") }
+            state.error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
         }
         when {
             review != null -> {
@@ -153,7 +185,8 @@ internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, mo
                     val status = view.getValue("status").list().take(2)
                     if (status.isNotEmpty()) Text("現場狀態｜"+status.joinToString("、"))
                     SectionTitle("我面臨什麼決定")
-                    Text(decision.text("prompt"), modifier = Modifier.testTag("choice_prompt"))
+                    Text(decision.text("prompt"),
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }.testTag("choice_prompt"))
                 }
                 items(decision.rows("options"), key = { it.text("id") }) { option ->
                     OutlinedButton(onClick = { model.choose(option.text("id"), view.number("revision")) }, enabled = !state.busy,
@@ -167,7 +200,9 @@ internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, mo
                         TextButton(onClick = { model.inspect(false) }, enabled = !state.busy, modifier = Modifier.heightIn(min = 48.dp)) { Text("先看看四周") }
                         TextButton(onClick = { model.inspect(true) }, enabled = !state.busy, modifier = Modifier.heightIn(min = 48.dp)) { Text("問同伴") }
                     }
-                    state.observation?.let { Text(it, modifier = Modifier.testTag("choice_inspection")) }
+                    state.observation?.let {
+                        Text(it, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }.testTag("choice_inspection"))
+                    }
                     TextButton(onClick = { exit = true }, enabled = !state.busy, modifier = Modifier.heightIn(min = 48.dp)) { Text("停止演練") }
                 }
             }
@@ -215,4 +250,62 @@ internal fun ChoiceRoute(onLegacy: () -> Unit, modifier: Modifier = Modifier, mo
 @Composable
 private fun SectionTitle(label: String) {
     Text(label, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 10.dp).semantics { heading() })
+}
+
+private val choiceReadingSizes = listOf("標準" to 1f, "大" to 1.18f, "特大" to 1.36f)
+private val choiceAccent = Color(0xFFFFE58C)
+private val choiceLink = Color(0xFFAEE9FF)
+private val choiceHighContrast = darkColorScheme(
+    primary = choiceAccent, onPrimary = Color.Black, primaryContainer = choiceAccent, onPrimaryContainer = Color.Black,
+    secondary = choiceLink, onSecondary = Color.Black, secondaryContainer = choiceLink, onSecondaryContainer = Color.Black,
+    background = Color.Black, onBackground = Color.White, surface = Color.Black, onSurface = Color.White,
+    surfaceVariant = Color.Black, onSurfaceVariant = Color.White,
+    surfaceContainer = Color.Black, surfaceContainerHigh = Color.Black,
+    outline = Color.White, outlineVariant = Color.White, error = Color(0xFFFFB4AB),
+)
+
+private fun Typography.readingScale(factor: Float): Typography {
+    if (factor == 1f) return this
+    fun TextStyle.scaled() = copy(
+        fontSize = if (fontSize.type == TextUnitType.Sp) fontSize * factor else fontSize,
+        lineHeight = if (lineHeight.type == TextUnitType.Sp) lineHeight * factor else lineHeight,
+    )
+    return copy(
+        displayLarge = displayLarge.scaled(), displayMedium = displayMedium.scaled(), displaySmall = displaySmall.scaled(),
+        headlineLarge = headlineLarge.scaled(), headlineMedium = headlineMedium.scaled(), headlineSmall = headlineSmall.scaled(),
+        titleLarge = titleLarge.scaled(), titleMedium = titleMedium.scaled(), titleSmall = titleSmall.scaled(),
+        bodyLarge = bodyLarge.scaled(), bodyMedium = bodyMedium.scaled(), bodySmall = bodySmall.scaled(),
+        labelLarge = labelLarge.scaled(), labelMedium = labelMedium.scaled(), labelSmall = labelSmall.scaled(),
+    )
+}
+
+@Composable
+private fun ChoiceReadingDialog(size: Int, contrast: Boolean, onChange: (Int, Boolean) -> Unit, onClose: () -> Unit) {
+    AlertDialog(onDismissRequest = onClose, title = { Text("閱讀設定") },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                SectionTitle("文字大小")
+                Column(Modifier.selectableGroup()) {
+                    for ((index, option) in choiceReadingSizes.withIndex()) {
+                        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                            .selectable(size == index, role = Role.RadioButton, onClick = { onChange(index, contrast) })
+                            .testTag("choice_read_size_$index"),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            RadioButton(selected = size == index, onClick = null)
+                            Text(option.first)
+                        }
+                    }
+                }
+                Row(Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                    .toggleable(contrast, role = Role.Switch, onValueChange = { onChange(size, it) })
+                    .testTag("choice_read_contrast"),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Switch(checked = contrast, onCheckedChange = null)
+                    Text("高對比")
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onClose, modifier = Modifier.heightIn(min = 48.dp)) { Text("完成") } })
 }
