@@ -61,6 +61,19 @@ function play(runtime,session,choices){
   for(const optionId of choices)view=runtime.submitChoice(session,input(view,optionId));
   return view;
 }
+test('metro vectors preserve the driver intercom fact and the official equipment link',()=>{
+  const scenario=vectors.scenarios.find(row=>row.file==='metro-attack-draft.json');
+  const pack=readPack(scenario.file);
+  const allText=JSON.stringify(pack);
+  assert.doesNotMatch(allText,/對講機.*行控|行控.*對講機/u);
+  assert.match(allText,/高運量列車的緊急對講機接通司機員/u);
+  const equipmentUrl='https://www.metro.taipei/cp.aspx?n=C4B618682DB27979&s=7AB21391531CA32D';
+  for(const vector of scenario.cases.filter(row=>row.expected)){
+    const {review}=run(pack,vector.choices);
+    assert.ok(review.sources.some(source=>source.id==='metro'&&source.url===equipmentUrl),vector.id);
+    assert.doesNotMatch(JSON.stringify(review),/對講機.*行控|行控.*對講機/u,vector.id);
+  }
+});
 for(const scenario of vectors.scenarios){
   const pack=readPack(scenario.file);
   const find=id=>scenario.cases.find(row=>row.id===id);

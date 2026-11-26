@@ -3,7 +3,7 @@
   "meta": {
     "id": "metro_attack_draft",
     "title": "板南線車廂的突發騷動",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "hazard": "manmade",
     "skeletonVersion": "draft-choice-5.5",
     "sources": [
@@ -41,7 +41,7 @@
   "catalog": {
     "principles": [
       {"id":"metro_distance_act_ok","sourceIds":["npa"],"when":{"always":true},"review":{"why":"及早離開可減少留在威脅附近的時間。","tip":"有安全路線時朝遠離騷動的方向離開。","eligibleWhen":{"always":true},"priority":2},"normal":{"narration":"principle_metro_distance_act_ok","effect":{}}},
-      {"id":"metro_intercom_act_ok","sourceIds":["metro"],"when":{"always":true},"review":{"why":"行控能聯繫駕駛與站務。","tip":"在安全可及處，用對講機回報車廂位置。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_metro_intercom_act_ok","effect":{"set":{"facts.operatorNotified":true}}}},
+      {"id":"metro_intercom_act_ok","sourceIds":["metro"],"when":{"always":true},"review":{"why":"高運量列車的緊急對講機接通司機員，能直接回報車廂狀況。","tip":"在安全可及處，用緊急對講機向司機員回報車廂位置。","eligibleWhen":{"always":true},"priority":3},"normal":{"narration":"principle_metro_intercom_act_ok","effect":{"set":{"facts.operatorNotified":true}}}},
       {"id":"metro_doors_act_ok","sourceIds":["metro"],"when":{"always":true},"review":{"why":"依列車廣播和站務指示移動，可避免錯過指定動線。","tip":"等列車停穩，再依站務指示移動。","eligibleWhen":{"always":true},"priority":4},"normal":{"narration":"principle_metro_doors_act_ok","effect":{}}},
       {"id":"metro_platform_act_ok","sourceIds":["npa"],"when":{"always":true},"review":{"why":"順向離開可減少阻塞。","tip":"留意腳步，與同伴順向離場。","eligibleWhen":{"always":true},"priority":5},"normal":{"narration":"principle_metro_platform_act_ok","effect":{}}},
       {"id":"metro_hide_act_ok","sourceIds":["npa"],"when":{"all":[{"fact":"canEscape","eq":false},{"fact":"canHide","eq":true}]},"review":{"why":"暫時無法離開時可降低暴露。","tip":"找堅固遮蔽處並關閉手機。","eligibleWhen":{"always":true},"priority":6},"normal":{"narration":"principle_metro_hide_act_ok","effect":{}}},
@@ -50,11 +50,11 @@
     ],
     "hazards": [
       {"id":"metro_distance_act_myth","sourceIds":["npa"],"when":{"always":true},"review":{"why":"留在原地拍攝使撤離延後。","tip":"把注意力放回可通行的方向。","eligibleWhen":{"always":true},"priority":2,"principleId":"metro_distance_act_ok"},"normal":{"narration":"hazard_metro_distance_act_myth","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"injuries":[{"id":"metro_shoulder","label":"肩膀撞傷","severity":"MILD","subject":"player"}],"delay":"停留拍攝耽誤離開"}}},
-      {"id":"metro_distance_act_risk","sourceIds":["npa"],"when":{"fact":"canEscape","eq":true},"review":{"why":"靠近增加暴露且失去安全路線。","tip":"有安全路線時先遠離，留待警察處理。","eligibleWhen":{"always":true},"priority":2,"principleId":"metro_distance_act_ok"},"normal":{"narration":"hazard_metro_distance_act_risk","effect":{}},"fatalEndingId":"metro_distance_act_risk_ending"},
-      {"id":"metro_intercom_act_myth","sourceIds":["metro"],"when":{"always":true},"review":{"why":"依賴外部轉報使行控晚知道情況。","tip":"改向列車內的緊急對講機直接回報。","eligibleWhen":{"always":true},"priority":3,"principleId":"metro_intercom_act_ok"},"normal":{"narration":"hazard_metro_intercom_act_myth","effect":{"add":{"exposure.delay":1},"delay":"等朋友代報延誤行控通知"}}},
-      {"id":"metro_intercom_act_risk","sourceIds":["metro"],"when":{"always":true},"review":{"why":"逆向移動增加混亂，行控未收到位置。","tip":"在安全位置使用身邊的對講機。","eligibleWhen":{"always":true},"priority":3,"principleId":"metro_intercom_act_ok"},"normal":{"narration":"hazard_metro_intercom_act_risk","effect":{"add":{"exposure.delay":1},"delay":"逆行呼喊未讓行控收到位置"}}},
+      {"id":"metro_distance_act_risk","sourceIds":["npa","metro"],"when":{"fact":"canEscape","eq":true},"review":{"why":"靠近增加暴露且失去安全路線。","tip":"有安全路線就先遠離，依司機員或站務人員指示疏散。","eligibleWhen":{"always":true},"priority":2,"principleId":"metro_distance_act_ok"},"normal":{"narration":"hazard_metro_distance_act_risk","effect":{}},"fatalEndingId":"metro_distance_act_risk_ending"},
+      {"id":"metro_intercom_act_myth","sourceIds":["metro"],"when":{"always":true},"review":{"why":"依賴外部轉報會延誤司機員得知情況。","tip":"在安全可及處，改用車廂緊急對講機直接向司機員回報。","eligibleWhen":{"always":true},"priority":3,"principleId":"metro_intercom_act_ok"},"normal":{"narration":"hazard_metro_intercom_act_myth","effect":{"add":{"exposure.delay":1},"delay":"等朋友代報延誤司機員接獲通知"}}},
+      {"id":"metro_intercom_act_risk","sourceIds":["metro"],"when":{"always":true},"review":{"why":"逆向移動增加混亂，司機員也未收到車廂位置。","tip":"在安全位置用身邊的對講機向司機員回報，不必逆向移動。","eligibleWhen":{"always":true},"priority":3,"principleId":"metro_intercom_act_ok"},"normal":{"narration":"hazard_metro_intercom_act_risk","effect":{"add":{"exposure.delay":1},"delay":"逆行呼喊未讓司機員得知車廂位置"}}},
       {"id":"metro_doors_act_myth","sourceIds":["metro"],"when":{"always":true},"review":{"why":"提前搶位加劇擁擠。","tip":"扶穩腳步並留出門邊空間。","eligibleWhen":{"always":true},"priority":4,"principleId":"metro_doors_act_ok"},"normal":{"narration":"hazard_metro_doors_act_myth","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"injuries":[{"id":"metro_wrist","label":"手腕挫傷","severity":"MILD","subject":"player"}],"delay":"提前搶位造成門邊阻塞"}}},
-      {"id":"metro_doors_act_risk","sourceIds":["metro"],"when":{"always":true},"review":{"why":"未經指示離車會進入危險的行車區。","tip":"等候行控及站務指示，不自行走入軌道。","eligibleWhen":{"always":true},"priority":4,"principleId":"metro_doors_act_ok"},"normal":{"narration":"hazard_metro_doors_act_risk","effect":{}},"fatalEndingId":"metro_doors_act_risk_ending"},
+      {"id":"metro_doors_act_risk","sourceIds":["metro"],"when":{"always":true},"review":{"why":"未經指示離車會進入危險的行車區。","tip":"依司機員與站務人員的指示避難，不自行進入軌道。","eligibleWhen":{"always":true},"priority":4,"principleId":"metro_doors_act_ok"},"normal":{"narration":"hazard_metro_doors_act_risk","effect":{}},"fatalEndingId":"metro_doors_act_risk_ending"},
       {"id":"metro_platform_act_myth","sourceIds":["npa"],"when":{"always":true},"review":{"why":"停在窄口讓人流承壓。","tip":"跟著人流離開，等站務確認安全後再處理失物。","eligibleWhen":{"always":true},"priority":5,"principleId":"metro_platform_act_ok"},"normal":{"narration":"hazard_metro_platform_act_myth","effect":{"add":{"exposure.harm":1,"exposure.delay":1},"set":{"npc.peer.injured":true,"npc.peer.state":"wrist_hurt"},"injuries":[{"id":"metro_yu_wrist","label":"手腕受傷","severity":"MILD","subject":"peer"}],"delay":"停在車門口撿物阻斷人流"}}},
       {"id":"metro_platform_act_risk","sourceIds":["npa"],"when":{"always":true},"review":{"why":"推擠會使狹窄出口更難通行。","tip":"等前方有空間再移動。","eligibleWhen":{"always":true},"priority":5,"principleId":"metro_platform_act_ok"},"normal":{"narration":"hazard_metro_platform_act_risk","effect":{"add":{"exposure.harm":2,"exposure.delay":1},"injuries":[{"id":"metro_ankle","label":"腳踝扭傷","severity":"MODERATE","subject":"player"}],"delay":"推擠使車門動線短暫停住"}}},
       {"id":"metro_hide_act_myth","sourceIds":["npa"],"when":{"always":true},"review":{"why":"聲響使掩蔽失去效果。","tip":"保持安靜，待安全再打電話。","eligibleWhen":{"always":true},"priority":6,"principleId":"metro_hide_act_ok"},"normal":{"narration":"hazard_metro_hide_act_myth","effect":{"add":{"exposure.delay":1},"delay":"掩蔽時的擴音干擾安靜避險"}}},
@@ -147,20 +147,20 @@
         "小宇放下手機，抬頭看著車廂前方。"
       ],
       "principle_metro_intercom_act_ok": [
-        "行控從對講機傳來聲音，記下車廂位置。",
-        "我說完之後，對講機裡有人確認這節車廂。"
+        "司機員從緊急對講機回應，確認了車廂位置。",
+        "我說完之後，對講機傳來司機員複誦的車廂位置。"
       ],
       "option_metro_intercom_ok": [
-        "行控從對講機傳來聲音，記下車廂位置。",
-        "我說完之後，對講機裡有人確認這節車廂。"
+        "司機員從緊急對講機回應，確認了車廂位置。",
+        "我說完之後，對講機傳來司機員複誦的車廂位置。"
       ],
       "hazard_metro_intercom_act_myth": [
-        "我在等手機回覆，行控還未收到我的通報。",
-        "朋友還沒回話，對講機沒有接到我的訊息。"
+        "我在等朋友回覆，司機員還沒接到我的通報。",
+        "朋友還沒回話，我也還沒向司機員說明。"
       ],
       "option_metro_intercom_myth": [
-        "我在等手機回覆，行控還未收到我的通報。",
-        "朋友還沒回話，對講機沒有接到我的訊息。"
+        "我在等朋友回覆，司機員還沒接到我的通報。",
+        "朋友還沒回話，我也還沒向司機員說明。"
       ],
       "hazard_metro_intercom_act_risk": [
         "我逆著人流移回較擁擠的一側，說話聲被蓋住。",

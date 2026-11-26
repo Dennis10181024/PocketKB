@@ -304,7 +304,7 @@
     },
     {
       "file": "metro-attack-draft.json",
-      "packSha256": "7ff626f977229c843960e434b654bd5b9c6bb79663f2ff22a25a3f68934fecd7",
+      "packSha256": "eae63343141e4f79659c483f03ded57112ea19fa407b69aac1a9cd5e133a07c5",
       "cases": [
         {
           "id": "all-correct",
