@@ -62,7 +62,7 @@ function auditChoices(pack, rows) {
   for (const flag of ['lengthBias', 'significantBias', 'actionBias', 'shortestBias', 'shortestSignificantBias']) {
     amounts[flag] = rows.filter(row => row[flag]).length;
   }
-  if (pack.meta.status === 'draft') {
+  if (['draft', 'pending_review'].includes(pack.meta.status)) {
     for (const metric of Object.keys(amounts)) {
       if (amounts[metric] / rows.length > 0.35) errors.push(pack.meta.id + '｜' + describe[metric] + ' 超過 35%。');
     }
@@ -87,6 +87,9 @@ function compareEnd(state, expected) {
   if (!expected || state.ending?.type !== expected.ending || state.ending?.injury !== expected.injury ||
       state.clock !== expected.clock || !isDeepStrictEqual(state.exposure, expected.exposure)) {
     throw new Error('終局、傷勢、時序或暴露值與預期不一致');
+  }
+  if (expected.endingId && state.ending.id !== expected.endingId) {
+    throw new Error('未觸發預期的結局規則');
   }
   if (Object.entries(expected.facts ?? {}).some(([key, value]) => state.facts[key] !== value)) {
     throw new Error('終局事實與預期不一致');

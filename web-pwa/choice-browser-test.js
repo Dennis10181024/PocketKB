@@ -30,7 +30,8 @@ async function main(){
     };
     await page.goto(base+'/');
     await page.locator('[data-choice-pack]').nth(1).waitFor();
-    assert.equal(await page.locator('[data-choice-pack]').count(),2);
+    assert.equal(await page.locator('[data-choice-pack]').count(),3);
+    assert.match(await page.locator('[data-choice-pack="flood_low_home_draft"]').innerText(), /待審查/);
     assert.equal(await page.locator('a[href*="?scenario="]').count(),0);
     await page.getByText('演練設定',{exact:true}).click();
     await page.getByLabel('顯示舊版對話劇本').check();
@@ -43,7 +44,7 @@ async function main(){
       await page.getByText(/包含突發攻擊/).waitFor();
       await page.getByRole('button',{name:'跳過此情境'}).click();
       await page.getByLabel('顯示草稿情境').uncheck();
-      assert.equal(await page.locator('[data-choice-pack]').count(),2);
+      assert.equal(await page.locator('[data-choice-pack]').count(),3);
     }
     await page.evaluate(()=>navigator.serviceWorker.ready.then(()=>undefined));
     await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));

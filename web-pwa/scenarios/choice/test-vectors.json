@@ -405,7 +405,7 @@
     },
     {
       "file": "flood-low-home-draft.json",
-      "packSha256": "c4602fd5be0820b13530c807b8d5cefe97387a3c58de7a895858eb207d4e7788",
+      "packSha256": "d5b2a19db7cd624268df28f22759f7e9894137d93e254427952acb872a08b819",
       "cases": [
         {
           "id": "all-correct",
@@ -414,18 +414,28 @@
             "flood_wet_panel_ok",
             "flood_basement_ok",
             "flood_road_ok",
+            "flood_vertical_ok",
             "flood_call_ok",
             "flood_signal_ok",
             "flood_recovery_ok"
           ],
           "expected": {
-            "clock": 7,
+            "clock": 8,
             "ending": "SAFE_RESCUE",
             "injury": "NONE",
             "exposure": {
               "harm": 0,
               "delay": 0
-            }
+            },
+            "facts": {
+              "powerOff": true,
+              "basementResolved": true,
+              "upper": true,
+              "called": true,
+              "roofSignal": true
+            },
+            "injuries": [],
+            "endingId": "safe"
           }
         },
         {
@@ -435,18 +445,31 @@
             "flood_wet_panel_myth",
             "flood_basement_myth",
             "flood_road_myth",
+            "flood_vertical_myth",
             "flood_call_myth",
             "flood_signal_myth",
             "flood_recovery_myth"
           ],
           "expected": {
-            "clock": 7,
+            "clock": 8,
             "ending": "DELAYED_RESCUE",
             "injury": "MODERATE",
             "exposure": {
-              "harm": 4,
-              "delay": 7
-            }
+              "harm": 6,
+              "delay": 8
+            },
+            "facts": {
+              "basementResolved": true,
+              "upper": true,
+              "recoveryMistake": true
+            },
+            "injuries": [
+              "flood_palm",
+              "flood_peer_elbow",
+              "flood_vertical_ankle",
+              "flood_leg"
+            ],
+            "endingId": "delayed"
           }
         },
         {
@@ -462,7 +485,8 @@
             "exposure": {
               "harm": 0,
               "delay": 1
-            }
+            },
+            "endingId": "flood_wet_panel_act_risk_ending"
           }
         },
         {
@@ -479,7 +503,8 @@
             "exposure": {
               "harm": 0,
               "delay": 0
-            }
+            },
+            "endingId": "flood_basement_act_risk_ending"
           }
         },
         {
@@ -497,7 +522,8 @@
             "exposure": {
               "harm": 0,
               "delay": 0
-            }
+            },
+            "endingId": "flood_road_act_risk_ending"
           }
         },
         {
@@ -505,21 +531,42 @@
           "choices": [
             "flood_power_ok",
             "flood_wet_panel_ok",
-            "flood_basement_risk"
+            "flood_basement_ok",
+            "flood_road_risk"
           ],
           "retry": {
-            "decisionId": "flood_basement",
-            "clock": 2,
-            "facts": {}
+            "decisionId": "flood_road",
+            "clock": 3,
+            "facts": {
+              "powerOff": true,
+              "basementResolved": true
+            }
           },
           "resume": [
-            "flood_basement_ok",
             "flood_road_ok",
+            "flood_vertical_ok",
             "flood_call_ok",
             "flood_signal_ok",
             "flood_recovery_ok"
           ],
           "sameAs": "all-correct"
+        },
+        {
+          "id": "dry-cut-before-water",
+          "choices": [
+            "flood_power_ok"
+          ],
+          "checkpoint": {
+            "clock": 1,
+            "facts": {
+              "powerOff": true,
+              "waterAtEntry": true
+            },
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            }
+          }
         },
         {
           "id": "wet-panel-after-safe-cut",
@@ -542,6 +589,53 @@
               "flood_wet_panel_slip"
             ],
             "event": "flood_wet_panel_slip"
+          }
+        },
+        {
+          "id": "wet-panel-without-cut",
+          "choices": [
+            "flood_power_myth",
+            "flood_wet_panel_ok"
+          ],
+          "checkpoint": {
+            "clock": 2,
+            "facts": {
+              "powerOff": false,
+              "floorDry": false,
+              "panelAccessible": false
+            },
+            "exposure": {
+              "harm": 0,
+              "delay": 1
+            },
+            "hazards": []
+          }
+        },
+        {
+          "id": "safe-rescue-late-recovery-mistake",
+          "choices": [
+            "flood_power_ok",
+            "flood_wet_panel_ok",
+            "flood_basement_ok",
+            "flood_road_ok",
+            "flood_vertical_ok",
+            "flood_call_ok",
+            "flood_signal_ok",
+            "flood_recovery_myth"
+          ],
+          "expected": {
+            "clock": 8,
+            "ending": "SAFE_RESCUE",
+            "injury": "NONE",
+            "exposure": {
+              "harm": 0,
+              "delay": 0
+            },
+            "facts": {
+              "recoveryMistake": true
+            },
+            "injuries": [],
+            "endingId": "recovery_check_delay"
           }
         }
       ]

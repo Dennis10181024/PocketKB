@@ -220,7 +220,12 @@ private fun ChoiceScreenContent(state: ChoiceScreenState, model: ChoiceViewModel
                 items(state.packs.filter { showDrafts || it["status"] != "draft" }, key = { it.text("id") }) { pack ->
                     OutlinedButton(onClick = { model.preview(pack) }, enabled = !state.busy,
                         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("choice_pack_"+pack.text("id"))) {
-                        Text((if (pack["status"] == "draft") "草稿・" else "")+pack.text("title"))
+                        val prefix = when (pack["status"]) {
+                            "draft" -> "草稿・"
+                            "pending_review" -> "待審查・"
+                            else -> ""
+                        }
+                        Text(prefix + pack.text("title"))
                     }
                 }
                 item {

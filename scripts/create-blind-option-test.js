@@ -13,23 +13,29 @@ function shuffle(options, salt) {
   })).sort((a, b) => a.order.localeCompare(b.order)).map(row => row.option);
 }
 
-function generate() {
+function generate(planB = false) {
+  const selected = files.map((file, index) => ({ file, title: titles[index] }))
+    .filter(({ file }) => !planB || ['fire-dorm', 'earthquake-school', 'flood-low-home-draft'].includes(file));
   const quiz = [
-    '# PocketKB 選擇題盲測題本', '', '草稿，待人工審查。僅供組員試答。', '',
-    '各題以當下資訊選一項最適合的做法，在答案欄填 A、B、C 或 D。可跳過任何題目。看完題本前請先不要試玩或查看答案。捷運一節涉及突發攻擊與人群恐慌，若感到不安可跳過整節。', ''
+    '# PocketKB 選擇題盲測題本' + (planB ? '｜方案 B 正式三劇本' : ''), '',
+    '草稿，待人工審查。僅供組員試答。', '',
+    ...(planB ? [] : ['正式三劇本請使用[方案 B 題本](BLIND_OPTION_TEST_PLAN_B.md)，此份保留五個劇本供開發試答。', '']),
+    '各題以當下資訊選一項最適合的做法，在答案欄填 A、B、C 或 D。可跳過任何題目。看完題本前請先不要試玩或查看答案。' +
+      (planB ? '' : '捷運一節涉及突發攻擊與人群恐慌，若感到不安可跳過整節。'), ''
   ];
   const key = [
-    '# PocketKB 選擇題盲測答案與計分', '', '草稿，待人工審查。此檔由主持人保留，收卷後再公開。', '',
+    '# PocketKB 選擇題盲測答案與計分' + (planB ? '｜方案 B 正式三劇本' : ''), '',
+    '草稿，待人工審查。此檔由主持人保留，收卷後再公開。', '',
     '正確答計 1 分，其他有效選項計 0 分，空白、多選或跳過個別記錄。單題答對率＝答對人數 ÷ 該題有效作答人數。答對率嚴格大於 80% 的題目標記「可能太好猜」，剛好 80% 不標記。請同時列出有效樣本數，少量答卷僅提供修題線索。', '',
     '題本離開了互動時序；主持人可讓作答者圈出「靠文字外形猜到」的題，另記以前是否玩過正式題組。答對率用於修整選項，不代表訓練成效。', ''
   ];
-  for (const [index, file] of files.entries()) {
+  for (const [index, { file, title }] of selected.entries()) {
     const pack = JSON.parse(fs.readFileSync(path.join(directory, file + '.json'), 'utf8'));
-    quiz.push('## ' + titles[index], '');
-    key.push('## ' + titles[index], '', '| 題次 | 答案 |', '| --- | --- |');
+    quiz.push('## ' + title, '');
+    key.push('## ' + title, '', '| 題次 | 答案 |', '| --- | --- |');
     for (const [number, decision] of pack.decisions.entries()) {
       const ordinal = index + 1 + '-' + (number + 1);
-      const options = shuffle(decision.options, file + ':blind-v1:' + number);
+      const options = shuffle(decision.options, file + (planB ? ':blind-plan-b:' : ':blind-v1:') + number);
       quiz.push('### ' + ordinal + '　' + decision.prompt, '', ...options.map((option, optionIndex) =>
         '- ' + 'ABCD'[optionIndex] + '　' + option.text), '', '答案：＿＿', '');
       const letters = options.flatMap((option, optionIndex) => option.class === 'correct' ? ['ABCD'[optionIndex]] : []);
@@ -42,8 +48,11 @@ function generate() {
 
 if (require.main === module) {
   const { quiz, key } = generate();
+  const planB = generate(true);
   const docs = path.resolve(__dirname, '../docs');
   fs.writeFileSync(path.join(docs, 'BLIND_OPTION_TEST.md'), '\uFEFF' + quiz);
   fs.writeFileSync(path.join(docs, 'BLIND_OPTION_TEST_KEY.md'), '\uFEFF' + key);
+  fs.writeFileSync(path.join(docs, 'BLIND_OPTION_TEST_PLAN_B.md'), '\uFEFF' + planB.quiz);
+  fs.writeFileSync(path.join(docs, 'BLIND_OPTION_TEST_PLAN_B_KEY.md'), '\uFEFF' + planB.key);
 }
 module.exports = { generate };

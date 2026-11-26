@@ -23,10 +23,11 @@
     },
     {
       "id": "flood_low_home_draft",
-      "title": "一樓住家的水聲",
+      "title": "低窪住家的水聲",
       "file": "flood-low-home-draft.json",
-      "sha256": "c4602fd5be0820b13530c807b8d5cefe97387a3c58de7a895858eb207d4e7788",
-      "status": "draft"
+      "sha256": "d5b2a19db7cd624268df28f22759f7e9894137d93e254427952acb872a08b819",
+      "status": "pending_review",
+      "contentNotice": "本情境為待審查版本，包含積淹水、受困及非血腥的受傷結果。"
     },
     {
       "id": "typhoon_outage_draft",

@@ -94,6 +94,7 @@ async function test() {
     assert.equal(await drill.evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(0, 0, 0)');
     assert.ok(await page.locator('[data-choice-pack]').first().evaluate(node => parseFloat(getComputedStyle(node).fontSize) > 16));
     const drafts = packs.filter(pack => pack.status === 'draft');
+    assert.match(await page.locator('[data-choice-pack="flood_low_home_draft"]').innerText(), /待審查/);
     for (const pack of drafts) assert.equal(await page.locator('[data-choice-pack="' + pack.id + '"]').count(), 0);
     await page.getByText('演練設定', { exact: true }).tap();
     await page.getByLabel('顯示草稿情境').check();

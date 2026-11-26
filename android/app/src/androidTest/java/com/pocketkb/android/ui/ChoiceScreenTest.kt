@@ -62,6 +62,8 @@ class ChoiceScreenTest {
         rule.onNodeWithText("開始情境演練").performClick()
         rule.waitUntil(10_000) { rule.onAllNodesWithTag("choice_pack_drill_fire_dorm").fetchSemanticsNodes().isNotEmpty() }
         rule.onAllNodesWithTag("choice_pack_metro_attack_draft").assertCountEquals(0)
+        rule.onNode(hasScrollAction()).performScrollToNode(hasTestTag("choice_pack_flood_low_home_draft"))
+        rule.onNodeWithTag("choice_pack_flood_low_home_draft").assertTextContains("待審查", substring = true)
         rule.onNodeWithText("演練設定").performClick()
         rule.onNode(hasScrollAction()).performScrollToNode(hasText("顯示草稿情境"))
         rule.onNodeWithText("顯示草稿情境").performClick()

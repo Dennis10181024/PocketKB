@@ -25,6 +25,17 @@ test('Web exports choice metadata without player text, optional PII or narration
   assert.equal(rows[2].ending, 'EXITED');
 });
 
+test('plan B has a standalone blind booklet and matching host key', () => {
+  const { quiz, key } = generate(true);
+  assert.deepEqual([...quiz.matchAll(/^## (.+)$/gmu)].map(row => row[1]), ['宿舍火災','學校地震','低窪住宅淹水']);
+  const questions = [...quiz.matchAll(/^### (\d-\d+)　/gmu)].map(row => row[1]);
+  assert.equal(questions.length, 23);
+  assert.deepEqual(questions, [...key.matchAll(/^\| (\d-\d+) \| [A-D] \|$/gmu)].map(row => row[1]));
+  for(const [name,content] of [['BLIND_OPTION_TEST_PLAN_B.md',quiz],['BLIND_OPTION_TEST_PLAN_B_KEY.md',key]]){
+    assert.equal(fs.readFileSync(path.resolve(__dirname,'../../docs',name),'utf8').replace(/^\uFEFF/,'').replace(/\r\n/g,'\n'),content);
+  }
+});
+
 test('blind question booklet and separate key match all five fixed packs', () => {
   const { quiz, key } = generate();
   const headings = [...quiz.matchAll(/^### (\d-\d+)　/gm)];

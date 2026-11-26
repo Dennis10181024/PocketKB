@@ -47,6 +47,7 @@ function verify(state,expected){
   assert.equal(state.clock,expected.clock);
   assert.equal(state.ending.type,expected.ending);
   assert.equal(state.ending.injury,expected.injury);
+  if(expected.endingId)assert.equal(state.ending.id,expected.endingId);
   assert.deepEqual(state.exposure,expected.exposure);
   for(const [id,value] of Object.entries(expected.facts||{}))assert.equal(state.facts[id],value);
   if(expected.injuries)assert.deepEqual([...new Set(state.injuries.map(item=>item.id))].sort(),[...expected.injuries].sort());
@@ -159,10 +160,26 @@ test('option length, visible actions and negative wording do not leak the answer
       if(option.class==='partial')assert.ok(option.missingStep,option.id);
     }
   }
-  for(const pack of packs.filter(p=>p.meta.status==='draft')){
+  for(const pack of packs.filter(p=>['draft','pending_review'].includes(p.meta.status))){
     const questions=rows.filter(row=>row.packId===pack.meta.id);
     for(const key of ['shortestBias','shortestSignificantBias'])
       assert.ok(questions.filter(row=>row[key]).length/questions.length<=0.35,key+' '+pack.meta.id);
+  }
+});
+
+test('the formal flood rough vector escalates companion and rescue delays; the safe vector prevents both',()=>{
+  const bundle=vectors.scenarios.find(row=>row.file==='flood-low-home-draft.json');
+  const pack=readPack(bundle.file);
+  for(const [id,count] of [['all-correct',0],['reckless',2]]){
+    const {state,records}=run(pack,bundle.cases.find(row=>row.id===id).choices);
+    for(const event of ['peer_ramp_omission','missed_location_signal']){
+      assert.equal(state.counters[event]??0,count,event+' '+id);
+      const impacts=records.flatMap(row=>row.impacts).filter(row=>row.id===event);
+      assert.equal(impacts.length,count);
+      if(count===2)assert.notEqual(impacts[0].outcome,impacts[1].outcome);
+    }
+    assert.equal(state.npc.peer.injured,Boolean(count));
+    assert.equal(state.facts.upper,true);
   }
 });
 
@@ -192,7 +209,7 @@ test('each rough debrief uses the cited choice’s direct events and at most two
       assert.match(review.dangers.find(item=>item.optionId==='bathroom').outcome,/浴室.*煙/);
       assert.match(review.dangers.find(item=>item.optionId==='grab_handle').outcome,/掌心接觸燙傷/);
       assert.match(review.improvements.find(item=>item.id==='close_only').text,/小岑/);
-    }else{
+    }else if(scenario.file==='earthquake-school.json'){
       assert.match(records.find(item=>item.optionId==='rush_aftershock').impacts.find(item=>item.direct).outcome,/小腿/);
       assert.match(review.dangers.find(item=>item.optionId==='watch_door').outcome,/手腕受傷/);
     }

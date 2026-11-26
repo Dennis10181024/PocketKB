@@ -153,7 +153,8 @@
       }else{
         content=heading('情境演練')+'<p>選一個情境，練習在災害發生時做決定。</p>'+
           '<div class="choice-options">'+(catalog?.filter(row=>showDrafts||row.status!=='draft').map(row=>
-            '<button type="button" class="choice-option" data-choice-pack="'+esc(row.id)+'">'+esc((row.status==='draft'?'草稿・':'')+row.title)+'</button>').join('')||
+            '<button type="button" class="choice-option" data-choice-pack="'+esc(row.id)+'">'+esc(
+              (row.status==='draft'?'草稿・':row.status==='pending_review'?'待審查・':'')+row.title)+'</button>').join('')||
           (error?button('choice-refresh','重新載入'):'<p role="status">正在讀取情境清單。</p>'))+'</div>'+
           '<details class="choice-stop" '+(showLegacy||showDrafts?'open':'')+'><summary>演練設定</summary>'+
           (choiceOnly?'':'<label class="choice-setting"><input id="choice-legacy" type="checkbox" '+(showLegacy?'checked':'')+'>顯示舊版對話劇本</label>')+

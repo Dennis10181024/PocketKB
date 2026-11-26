@@ -10,9 +10,11 @@ const draft = fs.readFileSync(path.join(repo, 'docs/experiment/KNOWLEDGE_TEST_DR
 const letters = '甲乙丙丁';
 const trim = text => text.replace(/[\p{P}\s]/gu, '');
 
-test('knowledge draft has 30 four-option items, rationales and stem variants with length audit', () => {
+test('plan B knowledge draft has 20 four-option items, rationales and stem variants with length audit', () => {
   const questions = draft.split(/(?=^### \d{2}｜)/mu).slice(1);
-  assert.equal(questions.length, 30);
+  assert.equal(questions.length, 20);
+  assert.equal(questions.filter(body => Number(body.match(/### (\d+)/u)[1]) >= 13).length, 8);
+  assert.doesNotMatch(draft, /^## (?:捷運|颱風)/mu);
   const totals = [[], []];
   const answerCounts = new Map();
   for (const body of questions) {
@@ -34,15 +36,15 @@ test('knowledge draft has 30 four-option items, rationales and stem variants wit
     }
   }
 
-  assert.deepEqual([...answerCounts.values()].sort((a, b) => a - b), [7, 7, 8, 8]);
-  const percent = count => count + '/30（' + (count / 30 * 100).toFixed(1) + '%）';
+  assert.deepEqual([...answerCounts.values()].sort((a, b) => a - b), [5, 5, 5, 5]);
+  const percent = count => count + '/20（' + (count / 20 * 100).toFixed(1) + '%）';
   const modes = ['含標點，排除選項代號', '排除標點、空白與選項代號'];
   for (const [index, mode] of modes.entries()) {
     const set = totals[index];
     const longest = set.filter(row => row[0]).length;
     const shortest = set.filter(row => row[1]).length;
     const spread = Math.max(...set.map(row => row[2]));
-    assert.ok(longest <= 10 && shortest <= 10 && spread <= 5, mode);
+    assert.ok(longest <= 7 && shortest <= 7 && spread <= 5, mode);
     assert.ok(draft.includes('| ' + mode + ' | ' + percent(longest) + ' | ' + percent(shortest) + ' | ' + spread + ' 字 |'));
   }
 });
@@ -54,6 +56,6 @@ test('knowledge stems and options are distinct from the current choice pack text
     [decision.prompt, ...decision.options.map(option => option.text)]));
   const known = new Set(originals.map(trim));
   const written = [...draft.matchAll(/^- (?:[AB] 版：|[甲乙丙丁]　)(.+)$/gmu)];
-  assert.equal(written.length, 180);
+  assert.equal(written.length, 120);
   assert.deepEqual(written.map(row => trim(row[1])).filter(text => known.has(text)), []);
 });
